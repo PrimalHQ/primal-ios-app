@@ -90,10 +90,12 @@ class RemoteSignerSignInController: UIViewController {
         
         func valueForItem(_ name: String) -> String? { queryItems.first(where: { $0.name == name })?.value }
         
-        let iconView = UIImageView(image: .primalLogo).constrainToSize(48)
         let titleLabel = UILabel(valueForItem("name") ?? "Application", color: .foreground, font: .appFont(withSize: 18, weight: .bold))
         let urlLabel = UILabel(valueForItem("url") ?? "Unknown url", color: .foreground3, font: .appFont(withSize: 15, weight: .regular))
         let appPubkey = connection.host() ?? ""
+        let callback = valueForItem("callback")
+        
+        let iconView = UIImageView(image: .create(letter: String(titleLabel.text?.first ?? "A"), size: 48)).constrainToSize(48)
         
         if let image = valueForItem("image") {
             iconView.kf.setImage(with: URL(string: image))
@@ -177,7 +179,11 @@ class RemoteSignerSignInController: UIViewController {
         LoginManager.instance.$loadedProfiles.sink { [weak self] users in
             leftContentStack.arrangedSubviews.forEach { $0.removeFromSuperview() }
             
-            users.filter({ ICloudKeychainManager.instance.hasNsec($0.data.npub) }).forEach { user in
+            let npubs = LoginManager.instance.loggedInNpubs().filter({ ICloudKeychainManager.instance.hasNsec($0) })
+            
+            npubs.forEach { npub in
+                guard let user = users.first(where: { $0.data.npub == npub }) else { return }
+                
                 let button = UserSelectionButton(user: user)
                 
                 if self?.selectedNpub == nil {
@@ -220,6 +226,12 @@ class RemoteSignerSignInController: UIViewController {
             RemoteSigningManager.instance.initializeConnection(url: connection.absoluteString, userPubKey: pubkey, trustLevel: selectedTrust.trustLevel)
             
             dismiss(animated: true)
+            
+            defer {
+                if let callback, let deeplinkURL = URL(string: callback) {
+                    UIApplication.shared.open(deeplinkURL)
+                }
+            }
             
             guard let tokenData = AppDelegate.shared.pushNotificationsToken else { return }
             

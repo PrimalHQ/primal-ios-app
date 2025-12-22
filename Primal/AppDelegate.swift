@@ -55,7 +55,6 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     private var cancellables: Set<AnyCancellable> = []
     private(set) var pushNotificationsToken: Data?
     
-    var remoteSessionManager: RemoteSigningManager?
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         Self.shared = self
@@ -85,12 +84,14 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         AccountRepositoryFactory.shared.doInit(enableDbEncryption: false, enableLogs: true)
         
         _ = RemoteSigningManager.instance
-        remoteSessionManager = RemoteSigningManager()
-        
         
         UNUserNotificationCenter.current().delegate = self
         registerForPushNotifications()
         registerNotificationCategory()
+        
+        if #available(iOS 16.1, *) {
+            WidgetBridge = WidgetMainAppBridge()
+        }
         
         SocketRequest(name: "client_config", payload: nil).publisher()
             .receive(on: DispatchQueue.main)
@@ -113,6 +114,12 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         pushNotificationsToken = deviceToken
         updateNotificationsSettings()
+    }
+    
+    func applicationWillTerminate(_ application: UIApplication) {
+        if #available(iOS 16.1, *) {
+            RemoteSessionActivityManager.instance.endSignerActivity()
+        }
     }
     
     func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: any Error) {

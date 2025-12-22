@@ -144,4 +144,27 @@ extension Date {
         guard let yearsAgo = calendar.date(byAdding: .year, value: -18, to: now) else { return false }
         return self < yearsAgo
     }
+    
+    func elapsedTimeStringToNow() -> String {
+        let endDate = Date()
+        let seconds = max(0, Int(endDate.timeIntervalSince(self)))
+
+        switch seconds {
+        case 0..<60:
+            return "now"
+
+        case 60..<3600:
+            let minutes = seconds / 60
+            return "\(minutes)m"
+
+        case 3600..<86_400:
+            let hours = seconds / 3600
+            return "\(hours)h"
+
+        default:
+            let days = seconds / 86_400
+            return "\(days)d"
+        }
+    }
+
 }

@@ -74,7 +74,7 @@ class NWCWalletManager {
             let relay = items.first(where: { $0.name == "relay" })?.value,
             //            let relayURL = URL(string: relay),
             let secret = items.first(where: { $0.name == "secret" })?.value,
-            let secretPubkey = HexKeypair.privkeyToPubkey(secret),
+//            let secretPubkey = HexKeypair.privkeyToPubkey(secret),
             let serverPubkey = u.host
         else { return nil }
         
@@ -83,14 +83,13 @@ class NWCWalletManager {
         self.secret = secret
         address = items.first(where: { $0.name == "lud16" })?.value
         
-        let data = NostrWalletConnect(lightningAddress: nil, relays: [relay], pubkey: serverPubkey, keypair: .init(privateKey: secret, pubkey: secretPubkey))
+//        let data = NostrWalletConnect(lightningAddress: nil, relays: [relay], pubkey: serverPubkey, keypair: .init(privateKey: secret, pubkey: secretPubkey))
         
         let regConnection = PrimalApiClientFactory.shared.create(serverType: .caching)
         let walletConnection = PrimalApiClientFactory.shared.create(serverType: .wallet)
         
-        
-        let repo = PrimalRepositoryFactory.shared.createProfileRepository(cachingPrimalApiClient: regConnection, primalPublisher: SigningManager.instance)
-        let eventRepo = PrimalRepositoryFactory.shared.createEventRepository(cachingPrimalApiClient: regConnection)
+        let repo = PrimalRepositoryFactory.shared.createProfileRepository(cachingPrimalApiClient: regConnection, primalPublisher: SigningManager.instance, mediaCacher: MediaCacher.instance)
+        let eventRepo = PrimalRepositoryFactory.shared.createEventRepository(cachingPrimalApiClient: regConnection, mediaCacher: MediaCacher.instance)
         
         // WalletRepo wallet info by id (balance, transactions, etc.)
         walletRepo = WalletRepositoryFactory.shared.createWalletRepository(
@@ -244,5 +243,14 @@ extension NWCWalletManager: WalletImplementation {
                 print(error)
             }
         }
+    }
+}
+
+class MediaCacher: CachingMediaCacher {
+    static let instance = MediaCacher()
+    
+    func preCacheFeedMedia(urls: [String]) { }
+        
+    func preCacheUserAvatars(urls: [String]) {
     }
 }

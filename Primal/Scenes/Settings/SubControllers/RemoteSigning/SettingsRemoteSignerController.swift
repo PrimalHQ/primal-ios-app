@@ -102,8 +102,8 @@ extension UIImage {
     static func create(
         letter: String,
         size: CGFloat,
-        color: UIColor = .black,
-        backgroundColor: UIColor = .white
+        color: UIColor = .foreground3,
+        backgroundColor: UIColor = .foreground.withAlphaComponent(0.1)
     ) -> UIImage? {
         
         // 1. Define the canvas size

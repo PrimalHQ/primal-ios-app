@@ -44,7 +44,7 @@ class RemoteSigningManager {
         let signerPubkey = "82562bf3224b34e80ef420b96ad6061dbfdb34c9055ac1f8ca5fa562814b9876"
         let signerKeypair = NostrKeyPair(privateKey: "84900a8ca6e4260db5e75cfbd36b98f9c8f49afc82cd704455744de687e7b8b8", pubKey: signerPubkey)
         
-        remoteSigner = AccountServiceFactory.shared.createRemoteSignerService(signerKeyPair: signerKeypair, eventSignatureHandler: SigningManager.instance, nostrEncryptionService: EncryptionServiceHandler.instance, nostrEncryptionHandler: EncryptionServiceHandler.instance, connectionRepository: connectionRepo, sessionRepository: sessionRepo)
+        remoteSigner = AccountServiceFactory.shared.createRemoteSignerService(signerKeyPair: signerKeypair, eventSignatureHandler: SigningManager.instance, nostrEncryptionService: EncryptionServiceHandler.instance, nostrEncryptionHandler: EncryptionServiceHandler.instance, connectionRepository: connectionRepo, sessionRepository: sessionRepo, sessionInactivityTimeoutInMinutes: 0)
         
         remoteSigner.initialize()
         
@@ -112,6 +112,10 @@ class RemoteSigningManager {
                 print("REMOTE SIGNER error: \(error)")
             }
         }
+    }
+    
+    func endAllSessions() {
+        endSessions(activeSessions)
     }
     
     func endSessions(_ sessions: [AppSession]) {

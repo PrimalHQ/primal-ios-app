@@ -4610,6 +4610,9 @@ public var DEFAULT_ZAP_DEFAULT: PrimalShared.ContentZapDefault {
 public func resolveStreamStatus(status: PrimalShared.StreamStatus, streamingUrl: Swift.String?, startsAt: PrimalShared.KotlinLong?, endsAt: PrimalShared.KotlinLong?, createdAt: Swift.Int64) -> PrimalShared.StreamStatus
 public func buildSessionEventData(sessionId: Swift.String, signerPubKey: Swift.String, requestedAt: Swift.Int64, requestType: PrimalShared.LocalSignerMethodType, completedAt: PrimalShared.KotlinLong?, method: PrimalShared.RemoteRemoteSignerMethod?, response: PrimalShared.RemoteRemoteSignerMethodResponse?, requestState: PrimalShared.LocalRequestState?) -> PrimalShared.LocalSessionEventData?
 public func provideAccountDatabase() -> PrimalShared.LocalAccountDatabase
+extension PrimalShared.CachingMediaCacher {
+  public func cacheAvatarUrls(metadata: [PrimalShared.NostrEvent], cdnResources: [PrimalShared.PrimalEvent])
+}
 public func resolveBlossomUrls(originalUrl: Swift.String?, blossoms: [Swift.String]) -> [Swift.String]
 extension PrimalShared.KotlinKVariance : Swift.Sendable {}
 extension PrimalShared.KotlinKVariance : Swift.BitwiseCopyable {}

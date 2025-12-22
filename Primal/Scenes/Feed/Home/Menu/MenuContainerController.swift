@@ -169,11 +169,12 @@ private extension MenuContainerController {
         let premium = MenuItemButton(title: "PREMIUM", image: .menuSidebarPremium)
         let messages = MenuItemButton(title: "MESSAGES", image: .menuSidebarMessages)
         let bookmarks = MenuItemButton(title: "BOOKMARKS", image: .menuSidebarBookmarks)
+        let remoteLogin = MenuItemButton(title: "Remote Login", image: .remoteSessionIcon.scalePreservingAspectRatio(size: 18))
         let redeemCode = MenuItemButton(title: "Scan Code", image: .barcode.scalePreservingAspectRatio(size: 18))
         let settings = MenuItemButton(title: "SETTINGS", image: .menuSidebarSettings)
         let signOut = MenuItemButton(title: "SIGN OUT", image: .menuSidebarSignout)
         
-        let buttonsStack = UIStackView(arrangedSubviews: [profile, premium, messages, bookmarks, redeemCode, settings, signOut])
+        let buttonsStack = UIStackView(arrangedSubviews: [profile, premium, messages, bookmarks, remoteLogin, redeemCode, settings, signOut])
         [
             profileImageRow, titleStack, domainLabel, followStack,
             buttonsStack, UIView(), themeButton
@@ -298,6 +299,11 @@ private extension MenuContainerController {
         bookmarks.addAction(.init(handler: { [unowned self] _ in showViewController(PublicBookmarksViewController()) }), for: .touchUpInside)
         premium.addAction(.init(handler: { [unowned self] _ in showViewController(PremiumViewController()) }), for: .touchUpInside)
         redeemCode.addAction(.init(handler: { [unowned self] _ in
+            present(OnboardingParentViewController(.redeemCode()), animated: true)
+            animateClose()
+        }), for: .touchUpInside)
+        
+        remoteLogin.addAction(.init(handler: { [unowned self] _ in
             present(OnboardingParentViewController(.redeemCode()), animated: true)
             animateClose()
         }), for: .touchUpInside)

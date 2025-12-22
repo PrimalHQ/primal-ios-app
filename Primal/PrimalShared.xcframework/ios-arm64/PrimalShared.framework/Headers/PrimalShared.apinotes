@@ -23701,14 +23701,12 @@ Classes:
     MethodKind: "Instance"
     SwiftName: "initialize()"
     ResultType: "void"
-- Name: "PrimalSharedRemoteSignerServiceImplCompanion"
-  SwiftName: "RemoteSignerServiceImpl.Companion"
 - Name: "PrimalSharedAccountServiceFactory"
   SwiftName: "AccountServiceFactory"
   Methods:
-  - Selector: "createRemoteSignerServiceSignerKeyPair:eventSignatureHandler:nostrEncryptionService:nostrEncryptionHandler:connectionRepository:sessionRepository:"
+  - Selector: "createRemoteSignerServiceSignerKeyPair:eventSignatureHandler:nostrEncryptionService:nostrEncryptionHandler:connectionRepository:sessionRepository:sessionInactivityTimeoutInMinutes:"
     MethodKind: "Instance"
-    SwiftName: "createRemoteSignerService(signerKeyPair:eventSignatureHandler:nostrEncryptionService:nostrEncryptionHandler:connectionRepository:sessionRepository:)"
+    SwiftName: "createRemoteSignerService(signerKeyPair:eventSignatureHandler:nostrEncryptionService:nostrEncryptionHandler:connectionRepository:sessionRepository:sessionInactivityTimeoutInMinutes:)"
     ResultType: "id<PrimalSharedRemoteSignerService> _Nonnull"
     Parameters:
     - Position: 0
@@ -23723,6 +23721,8 @@ Classes:
       Type: "id<PrimalSharedConnectionRepository> _Nonnull"
     - Position: 5
       Type: "id<PrimalSharedSessionRepository> _Nonnull"
+    - Position: 6
+      Type: "int64_t"
 - Name: "PrimalSharedSessionEventMappersKt"
   SwiftName: "SessionEventMappersKt"
   Methods:
@@ -26404,9 +26404,9 @@ Classes:
 - Name: "PrimalSharedArticleRepositoryImpl"
   SwiftName: "ArticleRepositoryImpl"
   Methods:
-  - Selector: "initWithDispatcherProvider:articlesApi:database:"
+  - Selector: "initWithDispatcherProvider:articlesApi:database:mediaCacher:"
     MethodKind: "Instance"
-    SwiftName: "init(dispatcherProvider:articlesApi:database:)"
+    SwiftName: "init(dispatcherProvider:articlesApi:database:mediaCacher:)"
     Parameters:
     - Position: 0
       Type: "id<PrimalSharedUtilsDispatcherProvider> _Nonnull"
@@ -26414,6 +26414,8 @@ Classes:
       Type: "id<PrimalSharedRemoteArticlesApi> _Nonnull"
     - Position: 2
       Type: "PrimalSharedLocalPrimalDatabase * _Nonnull"
+    - Position: 3
+      Type: "id<PrimalSharedCachingMediaCacher> _Nullable"
   - Selector: "deleteArticleByATagArticleATag:completionHandler:"
     MethodKind: "Instance"
     SwiftName: "__deleteArticleByATag(articleATag:completionHandler:)"
@@ -26785,9 +26787,9 @@ Classes:
 - Name: "PrimalSharedEventRepositoryImpl"
   SwiftName: "EventRepositoryImpl"
   Methods:
-  - Selector: "initWithDispatcherProvider:eventStatsApi:database:"
+  - Selector: "initWithDispatcherProvider:eventStatsApi:database:mediaCacher:"
     MethodKind: "Instance"
-    SwiftName: "init(dispatcherProvider:eventStatsApi:database:)"
+    SwiftName: "init(dispatcherProvider:eventStatsApi:database:mediaCacher:)"
     Parameters:
     - Position: 0
       Type: "id<PrimalSharedUtilsDispatcherProvider> _Nonnull"
@@ -26795,6 +26797,8 @@ Classes:
       Type: "id<PrimalSharedRemoteEventStatsApi> _Nonnull"
     - Position: 2
       Type: "PrimalSharedLocalPrimalDatabase * _Nonnull"
+    - Position: 3
+      Type: "id<PrimalSharedCachingMediaCacher> _Nullable"
   - Selector: "fetchEventActionsEventId:kind:completionHandler:"
     MethodKind: "Instance"
     SwiftName: "__fetchEventActions(eventId:kind:completionHandler:)"
@@ -26914,9 +26918,9 @@ Classes:
 - Name: "PrimalSharedEventZapsMediator"
   SwiftName: "EventZapsMediator"
   Methods:
-  - Selector: "initWithEventId:userId:dispatcherProvider:eventStatsApi:database:"
+  - Selector: "initWithEventId:userId:dispatcherProvider:eventStatsApi:database:mediaCacher:"
     MethodKind: "Instance"
-    SwiftName: "init(eventId:userId:dispatcherProvider:eventStatsApi:database:)"
+    SwiftName: "init(eventId:userId:dispatcherProvider:eventStatsApi:database:mediaCacher:)"
     Parameters:
     - Position: 0
       Type: "NSString * _Nonnull"
@@ -26928,6 +26932,8 @@ Classes:
       Type: "id<PrimalSharedRemoteEventStatsApi> _Nonnull"
     - Position: 4
       Type: "PrimalSharedLocalPrimalDatabase * _Nonnull"
+    - Position: 5
+      Type: "id<PrimalSharedCachingMediaCacher> _Nullable"
   - Selector: "loadLoadType:state:completionHandler:"
     MethodKind: "Instance"
     SwiftName: "__load(loadType:state:completionHandler:)"
@@ -26947,9 +26953,9 @@ Classes:
 - Name: "PrimalSharedExploreRepositoryImpl"
   SwiftName: "ExploreRepositoryImpl"
   Methods:
-  - Selector: "initWithDispatcherProvider:exploreApi:database:"
+  - Selector: "initWithDispatcherProvider:exploreApi:database:mediaCacher:"
     MethodKind: "Instance"
-    SwiftName: "init(dispatcherProvider:exploreApi:database:)"
+    SwiftName: "init(dispatcherProvider:exploreApi:database:mediaCacher:)"
     Parameters:
     - Position: 0
       Type: "id<PrimalSharedUtilsDispatcherProvider> _Nonnull"
@@ -26957,6 +26963,8 @@ Classes:
       Type: "id<PrimalSharedRemoteExploreApi> _Nonnull"
     - Position: 2
       Type: "PrimalSharedLocalPrimalDatabase * _Nonnull"
+    - Position: 3
+      Type: "id<PrimalSharedCachingMediaCacher> _Nullable"
   - Selector: "fetchFollowListProfileId:identifier:completionHandler:"
     MethodKind: "Instance"
     SwiftName: "__fetchFollowList(profileId:identifier:completionHandler:)"
@@ -27067,20 +27075,22 @@ Classes:
       Type: "id<PrimalSharedPrimalApiClient> _Nonnull"
     - Position: 1
       Type: "id<PrimalSharedPrimalPublisher> _Nonnull"
-  - Selector: "createArticleRepositoryCachingPrimalApiClient:"
+  - Selector: "createArticleRepositoryCachingPrimalApiClient:mediaCacher:"
     MethodKind: "Instance"
-    SwiftName: "createArticleRepository(cachingPrimalApiClient:)"
+    SwiftName: "createArticleRepository(cachingPrimalApiClient:mediaCacher:)"
     ResultType: "id<PrimalSharedArticleRepository> _Nonnull"
     Parameters:
     - Position: 0
       Type: "id<PrimalSharedPrimalApiClient> _Nonnull"
+    - Position: 1
+      Type: "id<PrimalSharedCachingMediaCacher> _Nullable"
   - Selector: "createCachingImportRepository"
     MethodKind: "Instance"
     SwiftName: "createCachingImportRepository()"
     ResultType: "id<PrimalSharedCachingImportRepository> _Nonnull"
-  - Selector: "createChatRepositoryCachingPrimalApiClient:messageCipher:primalPublisher:"
+  - Selector: "createChatRepositoryCachingPrimalApiClient:messageCipher:primalPublisher:mediaCacher:"
     MethodKind: "Instance"
-    SwiftName: "createChatRepository(cachingPrimalApiClient:messageCipher:primalPublisher:)"
+    SwiftName: "createChatRepository(cachingPrimalApiClient:messageCipher:primalPublisher:mediaCacher:)"
     ResultType: "id<PrimalSharedChatRepository> _Nonnull"
     Parameters:
     - Position: 0
@@ -27089,6 +27099,8 @@ Classes:
       Type: "id<PrimalSharedMessageCipher> _Nonnull"
     - Position: 2
       Type: "id<PrimalSharedPrimalPublisher> _Nonnull"
+    - Position: 3
+      Type: "id<PrimalSharedCachingMediaCacher> _Nullable"
   - Selector: "createEventInteractionRepositoryCachingPrimalApiClient:primalPublisher:nostrZapperFactory:"
     MethodKind: "Instance"
     SwiftName: "createEventInteractionRepository(cachingPrimalApiClient:primalPublisher:nostrZapperFactory:)"
@@ -27107,13 +27119,15 @@ Classes:
     Parameters:
     - Position: 0
       Type: "id<PrimalSharedPrimalApiClient> _Nonnull"
-  - Selector: "createEventRepositoryCachingPrimalApiClient:"
+  - Selector: "createEventRepositoryCachingPrimalApiClient:mediaCacher:"
     MethodKind: "Instance"
-    SwiftName: "createEventRepository(cachingPrimalApiClient:)"
+    SwiftName: "createEventRepository(cachingPrimalApiClient:mediaCacher:)"
     ResultType: "id<PrimalSharedEventRepository> _Nonnull"
     Parameters:
     - Position: 0
       Type: "id<PrimalSharedPrimalApiClient> _Nonnull"
+    - Position: 1
+      Type: "id<PrimalSharedCachingMediaCacher> _Nullable"
   - Selector: "createEventUriRepositoryCachingPrimalApiClient:"
     MethodKind: "Instance"
     SwiftName: "createEventUriRepository(cachingPrimalApiClient:)"
@@ -27121,29 +27135,35 @@ Classes:
     Parameters:
     - Position: 0
       Type: "id<PrimalSharedPrimalApiClient> _Nonnull"
-  - Selector: "createExploreRepositoryCachingPrimalApiClient:"
+  - Selector: "createExploreRepositoryCachingPrimalApiClient:mediaCacher:"
     MethodKind: "Instance"
-    SwiftName: "createExploreRepository(cachingPrimalApiClient:)"
+    SwiftName: "createExploreRepository(cachingPrimalApiClient:mediaCacher:)"
     ResultType: "id<PrimalSharedExploreRepository> _Nonnull"
     Parameters:
     - Position: 0
       Type: "id<PrimalSharedPrimalApiClient> _Nonnull"
-  - Selector: "createFeedRepositoryCachingPrimalApiClient:"
+    - Position: 1
+      Type: "id<PrimalSharedCachingMediaCacher> _Nullable"
+  - Selector: "createFeedRepositoryCachingPrimalApiClient:mediaCacher:"
     MethodKind: "Instance"
-    SwiftName: "createFeedRepository(cachingPrimalApiClient:)"
+    SwiftName: "createFeedRepository(cachingPrimalApiClient:mediaCacher:)"
     ResultType: "id<PrimalSharedFeedRepository> _Nonnull"
     Parameters:
     - Position: 0
       Type: "id<PrimalSharedPrimalApiClient> _Nonnull"
-  - Selector: "createFeedsRepositoryCachingPrimalApiClient:signatureHandler:"
+    - Position: 1
+      Type: "id<PrimalSharedCachingMediaCacher> _Nullable"
+  - Selector: "createFeedsRepositoryCachingPrimalApiClient:signatureHandler:mediaCacher:"
     MethodKind: "Instance"
-    SwiftName: "createFeedsRepository(cachingPrimalApiClient:signatureHandler:)"
+    SwiftName: "createFeedsRepository(cachingPrimalApiClient:signatureHandler:mediaCacher:)"
     ResultType: "id<PrimalSharedFeedsRepository> _Nonnull"
     Parameters:
     - Position: 0
       Type: "id<PrimalSharedPrimalApiClient> _Nonnull"
     - Position: 1
       Type: "id<PrimalSharedNostrEventSignatureHandler> _Nonnull"
+    - Position: 2
+      Type: "id<PrimalSharedCachingMediaCacher> _Nullable"
   - Selector: "createMutedItemRepositoryCachingPrimalApiClient:primalPublisher:"
     MethodKind: "Instance"
     SwiftName: "createMutedItemRepository(cachingPrimalApiClient:primalPublisher:)"
@@ -27153,22 +27173,26 @@ Classes:
       Type: "id<PrimalSharedPrimalApiClient> _Nonnull"
     - Position: 1
       Type: "id<PrimalSharedPrimalPublisher> _Nonnull"
-  - Selector: "createNotificationRepositoryCachingPrimalApiClient:"
+  - Selector: "createNotificationRepositoryCachingPrimalApiClient:mediaCacher:"
     MethodKind: "Instance"
-    SwiftName: "createNotificationRepository(cachingPrimalApiClient:)"
+    SwiftName: "createNotificationRepository(cachingPrimalApiClient:mediaCacher:)"
     ResultType: "id<PrimalSharedNotificationRepository> _Nonnull"
     Parameters:
     - Position: 0
       Type: "id<PrimalSharedPrimalApiClient> _Nonnull"
-  - Selector: "createProfileRepositoryCachingPrimalApiClient:primalPublisher:"
+    - Position: 1
+      Type: "id<PrimalSharedCachingMediaCacher> _Nullable"
+  - Selector: "createProfileRepositoryCachingPrimalApiClient:primalPublisher:mediaCacher:"
     MethodKind: "Instance"
-    SwiftName: "createProfileRepository(cachingPrimalApiClient:primalPublisher:)"
+    SwiftName: "createProfileRepository(cachingPrimalApiClient:primalPublisher:mediaCacher:)"
     ResultType: "id<PrimalSharedProfileRepository> _Nonnull"
     Parameters:
     - Position: 0
       Type: "id<PrimalSharedPrimalApiClient> _Nonnull"
     - Position: 1
       Type: "id<PrimalSharedPrimalPublisher> _Nonnull"
+    - Position: 2
+      Type: "id<PrimalSharedCachingMediaCacher> _Nullable"
   - Selector: "createPublicBookmarksRepositoryCachingPrimalApiClient:primalPublisher:"
     MethodKind: "Instance"
     SwiftName: "createPublicBookmarksRepository(cachingPrimalApiClient:primalPublisher:)"
@@ -27185,15 +27209,17 @@ Classes:
     Parameters:
     - Position: 0
       Type: "id<PrimalSharedPrimalPublisher> _Nonnull"
-  - Selector: "createStreamRepositoryCachingPrimalApiClient:primalPublisher:"
+  - Selector: "createStreamRepositoryCachingPrimalApiClient:primalPublisher:mediaCacher:"
     MethodKind: "Instance"
-    SwiftName: "createStreamRepository(cachingPrimalApiClient:primalPublisher:)"
+    SwiftName: "createStreamRepository(cachingPrimalApiClient:primalPublisher:mediaCacher:)"
     ResultType: "id<PrimalSharedStreamRepository> _Nonnull"
     Parameters:
     - Position: 0
       Type: "id<PrimalSharedPrimalApiClient> _Nonnull"
     - Position: 1
       Type: "id<PrimalSharedPrimalPublisher> _Nonnull"
+    - Position: 2
+      Type: "id<PrimalSharedCachingMediaCacher> _Nullable"
   - Selector: "createUserDataCleanupRepository"
     MethodKind: "Instance"
     SwiftName: "createUserDataCleanupRepository()"
@@ -27216,9 +27242,9 @@ Classes:
 - Name: "PrimalSharedFeedsRepositoryImpl"
   SwiftName: "FeedsRepositoryImpl"
   Methods:
-  - Selector: "initWithDispatcherProvider:feedsApi:database:signatureHandler:"
+  - Selector: "initWithDispatcherProvider:feedsApi:database:signatureHandler:mediaCacher:"
     MethodKind: "Instance"
-    SwiftName: "init(dispatcherProvider:feedsApi:database:signatureHandler:)"
+    SwiftName: "init(dispatcherProvider:feedsApi:database:signatureHandler:mediaCacher:)"
     Parameters:
     - Position: 0
       Type: "id<PrimalSharedUtilsDispatcherProvider> _Nonnull"
@@ -27228,6 +27254,8 @@ Classes:
       Type: "PrimalSharedLocalPrimalDatabase * _Nonnull"
     - Position: 3
       Type: "id<PrimalSharedNostrEventSignatureHandler> _Nonnull"
+    - Position: 4
+      Type: "id<PrimalSharedCachingMediaCacher> _Nullable"
   - Selector: "addDvmFeedLocallyUserId:dvmFeed:specKind:completionHandler:"
     MethodKind: "Instance"
     SwiftName: "__addDvmFeedLocally(userId:dvmFeed:specKind:completionHandler:)"
@@ -27967,9 +27995,9 @@ Classes:
 - Name: "PrimalSharedNotificationRepositoryImpl"
   SwiftName: "NotificationRepositoryImpl"
   Methods:
-  - Selector: "initWithDispatcherProvider:database:notificationsApi:"
+  - Selector: "initWithDispatcherProvider:database:notificationsApi:mediaCacher:"
     MethodKind: "Instance"
-    SwiftName: "init(dispatcherProvider:database:notificationsApi:)"
+    SwiftName: "init(dispatcherProvider:database:notificationsApi:mediaCacher:)"
     Parameters:
     - Position: 0
       Type: "id<PrimalSharedUtilsDispatcherProvider> _Nonnull"
@@ -27977,6 +28005,8 @@ Classes:
       Type: "PrimalSharedLocalPrimalDatabase * _Nonnull"
     - Position: 2
       Type: "id<PrimalSharedRemoteNotificationsApi> _Nonnull"
+    - Position: 3
+      Type: "id<PrimalSharedCachingMediaCacher> _Nullable"
   - Selector: "markAllNotificationsAsSeenAuthorization:completionHandler:"
     MethodKind: "Instance"
     SwiftName: "__markAllNotificationsAsSeen(authorization:completionHandler:)"
@@ -28004,9 +28034,9 @@ Classes:
 - Name: "PrimalSharedNotificationsRemoteMediator"
   SwiftName: "NotificationsRemoteMediator"
   Methods:
-  - Selector: "initWithUserId:dispatcherProvider:notificationsApi:database:"
+  - Selector: "initWithUserId:dispatcherProvider:notificationsApi:database:mediaCacher:"
     MethodKind: "Instance"
-    SwiftName: "init(userId:dispatcherProvider:notificationsApi:database:)"
+    SwiftName: "init(userId:dispatcherProvider:notificationsApi:database:mediaCacher:)"
     Parameters:
     - Position: 0
       Type: "NSString * _Nonnull"
@@ -28016,6 +28046,8 @@ Classes:
       Type: "id<PrimalSharedRemoteNotificationsApi> _Nonnull"
     - Position: 3
       Type: "PrimalSharedLocalPrimalDatabase * _Nonnull"
+    - Position: 4
+      Type: "id<PrimalSharedCachingMediaCacher> _Nullable"
   - Selector: "initializeWithCompletionHandler:"
     MethodKind: "Instance"
     SwiftName: "__initialize(completionHandler:)"
@@ -28050,9 +28082,9 @@ Classes:
 - Name: "PrimalSharedProfileRepositoryImpl"
   SwiftName: "ProfileRepositoryImpl"
   Methods:
-  - Selector: "initWithDispatcherProvider:database:usersApi:wellKnownApi:primalPublisher:"
+  - Selector: "initWithDispatcherProvider:database:usersApi:wellKnownApi:primalPublisher:mediaCacher:"
     MethodKind: "Instance"
-    SwiftName: "init(dispatcherProvider:database:usersApi:wellKnownApi:primalPublisher:)"
+    SwiftName: "init(dispatcherProvider:database:usersApi:wellKnownApi:primalPublisher:mediaCacher:)"
     Parameters:
     - Position: 0
       Type: "id<PrimalSharedUtilsDispatcherProvider> _Nonnull"
@@ -28064,6 +28096,8 @@ Classes:
       Type: "id<PrimalSharedRemoteUserWellKnownApi> _Nonnull"
     - Position: 4
       Type: "id<PrimalSharedPrimalPublisher> _Nonnull"
+    - Position: 5
+      Type: "id<PrimalSharedCachingMediaCacher> _Nullable"
   - Selector: "fetchFollowersProfileId:completionHandler:"
     MethodKind: "Instance"
     SwiftName: "__fetchFollowers(profileId:completionHandler:)"
@@ -28777,6 +28811,20 @@ Classes:
     Parameters:
     - Position: 0
       Type: "NSArray<PrimalSharedFeedPost *> * _Nonnull"
+- Name: "PrimalSharedMediaCachingUtilsKt"
+  SwiftName: "MediaCachingUtilsKt"
+  Methods:
+  - Selector: "cacheAvatarUrls:metadata:cdnResources:"
+    MethodKind: "Class"
+    SwiftName: "cacheAvatarUrls(_:metadata:cdnResources:)"
+    ResultType: "void"
+    Parameters:
+    - Position: 0
+      Type: "id<PrimalSharedCachingMediaCacher> _Nonnull"
+    - Position: 1
+      Type: "NSArray<PrimalSharedNostrEvent *> * _Nonnull"
+    - Position: 2
+      Type: "NSArray<PrimalSharedPrimalEvent *> * _Nonnull"
 - Name: "PrimalSharedLocalPrimalDatabase"
   SwiftName: "LocalPrimalDatabase"
   Methods:
@@ -54761,6 +54809,23 @@ Protocols:
       Type: "NSString * _Nonnull"
     - Position: 2
       Type: "void (^ _Nonnull)(PrimalSharedLocalArticleFeedCrossRef * _Nullable_result, NSError * _Nullable)"
+- Name: "PrimalSharedCachingMediaCacher"
+  SwiftName: "CachingMediaCacher"
+  Methods:
+  - Selector: "preCacheFeedMediaUrls:"
+    MethodKind: "Instance"
+    SwiftName: "preCacheFeedMedia(urls:)"
+    ResultType: "void"
+    Parameters:
+    - Position: 0
+      Type: "NSArray<NSString *> * _Nonnull"
+  - Selector: "preCacheUserAvatarsUrls:"
+    MethodKind: "Instance"
+    SwiftName: "preCacheUserAvatars(urls:)"
+    ResultType: "void"
+    Parameters:
+    - Position: 0
+      Type: "NSArray<NSString *> * _Nonnull"
 - Name: "PrimalSharedRemoteArticlesApi"
   SwiftName: "RemoteArticlesApi"
   Methods:

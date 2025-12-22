@@ -7,6 +7,12 @@
 
 import UIKit
 
+extension UIColor {
+    static var highlight: UIColor {
+        Theme.current.isDarkTheme ? .init(rgb: 0x2E3726) : .init(rgb: 0xE8F3E8)
+    }
+}
+
 enum Theme: String {
     case sunriseWave, sunsetWave, midnightWave, iceWave
     

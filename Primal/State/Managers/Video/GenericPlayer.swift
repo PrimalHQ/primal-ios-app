@@ -77,7 +77,7 @@ extension AVAudioPlayer: PlayableProtocol {
             volume < 0.01
         }
         set {
-            volume = newValue ? 0 : 0.1
+            volume = newValue ? 0 : 0.8
         }
     }
     

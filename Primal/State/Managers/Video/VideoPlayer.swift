@@ -64,6 +64,8 @@ class VideoPlayer: NSObject, PlayerProtocol {
         shouldPause = false
         isPlaying = true
         
+        avPlayer.play()
+        
         VideoPlaybackManager.instance.currentlyPlaying = self
     }
     

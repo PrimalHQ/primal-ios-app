@@ -150,7 +150,7 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if FullScreenVideoPlayerController.instance == nil && !VideoPlaybackManager.instance.isLive {
             if abs(cachedContentOffset.y - scrollView.contentOffset.y) > 50 {
-                VideoPlaybackManager.instance.currentlyPlaying?.delayedPause()
+                VideoPlaybackManager.instance.currentlyPlayingVideo?.delayedPause()
             } else {
                 playVideoOnScroll()
             }

@@ -84,6 +84,10 @@ class RemoteSignerActiveSessionsController: UIViewController {
         buttonsParent.addSubview(buttonStack)
         buttonStack.pinToSuperview(edges: .horizontal, padding: 24).pinToSuperview(edges: .top, padding: 16).pinToSuperview(edges: .bottom, padding: 4, safeArea: true)
         
+        if let preselectId = RemoteSigningManager.instance.activeSessions.first?.sessionId {
+            selectedSessions.insert(preselectId)
+        }
+        
         Publishers.CombineLatest(RemoteSigningManager.instance.$activeSessions, LoginManager.instance.$loadedProfiles)
             .sink { [weak self] sessions, profiles in
                 contentStack.arrangedSubviews.forEach { $0.removeFromSuperview() }
@@ -189,7 +193,7 @@ class RemoteSignerActiveSessionsController: UIViewController {
 }
 
 class RemoteSignerSessionSelectionButton: MyButton {
-    let appImage = UIImageView(image: .primalLogo).constrainToSize(40)
+    let appImage = UIImageView().constrainToSize(40)
     let avatar = UserImageView(height: 28)
     let nameLabel = UILabel("", color: .foreground, font: .appFont(withSize: 16, weight: .bold))
     let nipLabel = UILabel("", color: .foreground4, font: .appFont(withSize: 14, weight: .regular))
@@ -224,9 +228,7 @@ class RemoteSignerSessionSelectionButton: MyButton {
         layer.borderColor = UIColor.accent.cgColor
         backgroundColor = .background3
         
-        if let url = URL(string: session.image ?? "") {
-            appImage.kf.setImage(with: url)
-        }
+        appImage.kf.setImage(with: URL(string: session.image ?? ""), placeholder: session.defaultImage(size: 40))
         
         avatar.setUserImage(user)
         nameLabel.text = session.name

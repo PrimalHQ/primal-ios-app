@@ -620,14 +620,24 @@
 		B9E0E6262EEAC89600F48B2A /* CheckboxRadioButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E0E6252EEAC86100F48B2A /* CheckboxRadioButton.swift */; };
 		B9E0E6282EEB188F00F48B2A /* RemoteSigningScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E0E6272EEB187D00F48B2A /* RemoteSigningScheme.swift */; };
 		B9E0E62A2EEB483A00F48B2A /* GenericPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E0E6292EEB483A00F48B2A /* GenericPlayer.swift */; };
-		B9E0E62D2EEB4EBA00F48B2A /* forest.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = B9E0E62C2EEB4EBA00F48B2A /* forest.mp3 */; };
-		B9E0E6302EF0655B00F48B2A /* PrimalShared.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9E0E62E2EF0654E00F48B2A /* PrimalShared.xcframework */; };
-		B9E0E6312EF0655B00F48B2A /* PrimalShared.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B9E0E62E2EF0654E00F48B2A /* PrimalShared.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		B9E0E6382EF08D0600F48B2A /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9E0E6372EF08D0500F48B2A /* WidgetKit.framework */; };
+		B9E0E63A2EF08D0600F48B2A /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9E0E6392EF08D0600F48B2A /* SwiftUI.framework */; };
+		B9E0E64B2EF08D0800F48B2A /* RemoteSignerWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = B9E0E6362EF08D0500F48B2A /* RemoteSignerWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		B9E0E6502EF16DDF00F48B2A /* Date+Extra.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E79D3A22A01530B008404DB /* Date+Extra.swift */; };
+		B9E0E6572EF1F6B500F48B2A /* RemoteSessionActivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E0E6562EF1F6AC00F48B2A /* RemoteSessionActivityManager.swift */; };
+		B9E0E66F2EF32BDE00F48B2A /* PrimalShared.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9E0E66D2EF32BCC00F48B2A /* PrimalShared.xcframework */; };
+		B9E0E6702EF32BDE00F48B2A /* PrimalShared.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B9E0E66D2EF32BCC00F48B2A /* PrimalShared.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B9E36BD82EE330AD00213CA0 /* RemoteSignerActiveSessionsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E36BD72EE330A400213CA0 /* RemoteSignerActiveSessionsController.swift */; };
 		B9E36BDB2EE714FE00213CA0 /* SettingsRemoteSignerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E36BDA2EE714F400213CA0 /* SettingsRemoteSignerController.swift */; };
 		B9E36BDD2EE76F9C00213CA0 /* SettingsConnectedAppController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E36BDC2EE76F8D00213CA0 /* SettingsConnectedAppController.swift */; };
 		B9E36BE22EE7786900213CA0 /* RemoteSignerConnectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E36BE12EE7786900213CA0 /* RemoteSignerConnectionCell.swift */; };
 		B9E36BE42EE778F800213CA0 /* RemoteSignerConnectionInfoActionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E36BE32EE778F800213CA0 /* RemoteSignerConnectionInfoActionCell.swift */; };
+		B9E67DD92EF47389002D7952 /* RemoteSignerDisclosureController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E67DD82EF4737D002D7952 /* RemoteSignerDisclosureController.swift */; };
+		B9E67DDA2EF4847C002D7952 /* Color.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9F2F8829F6AB8A00A9CDF3 /* Color.swift */; };
+		B9E67DDC2EF489D7002D7952 /* Fireplace.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = B9E67DDB2EF489D7002D7952 /* Fireplace.mp3 */; };
+		B9E67DDE2EF489DD002D7952 /* Relaxing Tune.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = B9E67DDD2EF489DD002D7952 /* Relaxing Tune.mp3 */; };
+		B9E67DE02EF48A00002D7952 /* White Noise.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = B9E67DDF2EF48A00002D7952 /* White Noise.mp3 */; };
+		B9E67DE22EF48B69002D7952 /* Gentle Rain.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = B9E67DE12EF48B69002D7952 /* Gentle Rain.mp3 */; };
 		B9E67E7D2D075E35006BB397 /* FeedElementUserCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E67E7C2D075E35006BB397 /* FeedElementUserCell.swift */; };
 		B9E67E7F2D0760B6006BB397 /* FeedElementTextCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E67E7E2D0760B6006BB397 /* FeedElementTextCell.swift */; };
 		B9E67E812D0762CD006BB397 /* FeedElementSmallZapGalleryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E67E802D0762CD006BB397 /* FeedElementSmallZapGalleryCell.swift */; };
@@ -727,6 +737,13 @@
 			remoteGlobalIDString = B9DFA0A22D7EFBC9002C6F34;
 			remoteInfo = primalShare;
 		};
+		B9E0E6492EF08D0800F48B2A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 939330EA29A3E36F003954C2 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B9E0E6352EF08D0500F48B2A;
+			remoteInfo = RemoteSignerWidgetExtension;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -736,7 +753,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				B9E0E6312EF0655B00F48B2A /* PrimalShared.xcframework in Embed Frameworks */,
+				B9E0E6702EF32BDE00F48B2A /* PrimalShared.xcframework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -748,6 +765,7 @@
 			dstSubfolderSpec = 13;
 			files = (
 				B9658AF32D9FF9460037E5DB /* PrimalNotifications.appex in Embed Foundation Extensions */,
+				B9E0E64B2EF08D0800F48B2A /* RemoteSignerWidgetExtension.appex in Embed Foundation Extensions */,
 				B9DFA0AD2D7EFBC9002C6F34 /* primalShare.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
@@ -1394,13 +1412,21 @@
 		B9E0E6252EEAC86100F48B2A /* CheckboxRadioButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckboxRadioButton.swift; sourceTree = "<group>"; };
 		B9E0E6272EEB187D00F48B2A /* RemoteSigningScheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSigningScheme.swift; sourceTree = "<group>"; };
 		B9E0E6292EEB483A00F48B2A /* GenericPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericPlayer.swift; sourceTree = "<group>"; };
-		B9E0E62C2EEB4EBA00F48B2A /* forest.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = forest.mp3; sourceTree = "<group>"; };
-		B9E0E62E2EF0654E00F48B2A /* PrimalShared.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = PrimalShared.xcframework; sourceTree = "<group>"; };
+		B9E0E6362EF08D0500F48B2A /* RemoteSignerWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = RemoteSignerWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		B9E0E6372EF08D0500F48B2A /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		B9E0E6392EF08D0600F48B2A /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		B9E0E6562EF1F6AC00F48B2A /* RemoteSessionActivityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSessionActivityManager.swift; sourceTree = "<group>"; };
+		B9E0E66D2EF32BCC00F48B2A /* PrimalShared.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = PrimalShared.xcframework; sourceTree = "<group>"; };
 		B9E36BD72EE330A400213CA0 /* RemoteSignerActiveSessionsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSignerActiveSessionsController.swift; sourceTree = "<group>"; };
 		B9E36BDA2EE714F400213CA0 /* SettingsRemoteSignerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsRemoteSignerController.swift; sourceTree = "<group>"; };
 		B9E36BDC2EE76F8D00213CA0 /* SettingsConnectedAppController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsConnectedAppController.swift; sourceTree = "<group>"; };
 		B9E36BE12EE7786900213CA0 /* RemoteSignerConnectionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSignerConnectionCell.swift; sourceTree = "<group>"; };
 		B9E36BE32EE778F800213CA0 /* RemoteSignerConnectionInfoActionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSignerConnectionInfoActionCell.swift; sourceTree = "<group>"; };
+		B9E67DD82EF4737D002D7952 /* RemoteSignerDisclosureController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSignerDisclosureController.swift; sourceTree = "<group>"; };
+		B9E67DDB2EF489D7002D7952 /* Fireplace.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Fireplace.mp3; sourceTree = "<group>"; };
+		B9E67DDD2EF489DD002D7952 /* Relaxing Tune.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "Relaxing Tune.mp3"; sourceTree = "<group>"; };
+		B9E67DDF2EF48A00002D7952 /* White Noise.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "White Noise.mp3"; sourceTree = "<group>"; };
+		B9E67DE12EF48B69002D7952 /* Gentle Rain.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "Gentle Rain.mp3"; sourceTree = "<group>"; };
 		B9E67E7C2D075E35006BB397 /* FeedElementUserCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedElementUserCell.swift; sourceTree = "<group>"; };
 		B9E67E7E2D0760B6006BB397 /* FeedElementTextCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedElementTextCell.swift; sourceTree = "<group>"; };
 		B9E67E802D0762CD006BB397 /* FeedElementSmallZapGalleryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedElementSmallZapGalleryCell.swift; sourceTree = "<group>"; };
@@ -1485,11 +1511,30 @@
 			);
 			target = B9DFA0A22D7EFBC9002C6F34 /* primalShare */;
 		};
+		B9E0E64C2EF08D0800F48B2A /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+				WidgetMainAppBridge.swift,
+			);
+			target = B9E0E6352EF08D0500F48B2A /* RemoteSignerWidgetExtension */;
+		};
+		B9E0E6552EF1F58200F48B2A /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				AppIntent.swift,
+				RemoteSignerWidgetAttributes.swift,
+				WidgetMainAppBridge.swift,
+				WidgetMainAppBridgeNoOp.swift,
+			);
+			target = 939330F129A3E36F003954C2 /* Primal */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		B9658AED2D9FF9460037E5DB /* PrimalNotifications */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (B9658AF62D9FF9460037E5DB /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = PrimalNotifications; sourceTree = "<group>"; };
 		B9DFA0A42D7EFBC9002C6F34 /* primalShare */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (B9DFA0B12D7EFBC9002C6F34 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = primalShare; sourceTree = "<group>"; };
+		B9E0E63B2EF08D0600F48B2A /* RemoteSignerWidget */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (B9E0E6552EF1F58200F48B2A /* PBXFileSystemSynchronizedBuildFileExceptionSet */, B9E0E64C2EF08D0800F48B2A /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = RemoteSignerWidget; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1508,7 +1553,7 @@
 				9393312129A3E44D003954C2 /* GenericJSON in Frameworks */,
 				9393312729A3E475003954C2 /* NWWebSocket in Frameworks */,
 				B907D3C12DBBF18B002B86DA /* LightningDevKit in Frameworks */,
-				B9E0E6302EF0655B00F48B2A /* PrimalShared.xcframework in Frameworks */,
+				B9E0E66F2EF32BDE00F48B2A /* PrimalShared.xcframework in Frameworks */,
 				B94F2BDF2ADDCD710041181B /* StoreKit.framework in Frameworks */,
 				B99E039C2C07C059006CCECB /* Ink in Frameworks */,
 				9E0DEAED29FD2F6900145E08 /* Lottie in Frameworks */,
@@ -1548,6 +1593,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		B9E0E6332EF08D0500F48B2A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B9E0E63A2EF08D0600F48B2A /* SwiftUI.framework in Frameworks */,
+				B9E0E6382EF08D0600F48B2A /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -1572,6 +1626,8 @@
 			isa = PBXGroup;
 			children = (
 				B94F2BDE2ADDCD710041181B /* StoreKit.framework */,
+				B9E0E6372EF08D0500F48B2A /* WidgetKit.framework */,
+				B9E0E6392EF08D0600F48B2A /* SwiftUI.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -1615,6 +1671,7 @@
 				9393310F29A3E370003954C2 /* PrimalUITests */,
 				B9DFA0A42D7EFBC9002C6F34 /* primalShare */,
 				B9658AED2D9FF9460037E5DB /* PrimalNotifications */,
+				B9E0E63B2EF08D0600F48B2A /* RemoteSignerWidget */,
 				939330F329A3E36F003954C2 /* Products */,
 				933DBDB12A1126CE008DCF1F /* Frameworks */,
 			);
@@ -1628,6 +1685,7 @@
 				9393310C29A3E370003954C2 /* PrimalUITests.xctest */,
 				B9DFA0A32D7EFBC9002C6F34 /* primalShare.appex */,
 				B9658AEC2D9FF9460037E5DB /* PrimalNotifications.appex */,
+				B9E0E6362EF08D0500F48B2A /* RemoteSignerWidgetExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1643,7 +1701,7 @@
 				9393312829A3E4E0003954C2 /* Common */,
 				9E9F2F9929F6ABA800A9CDF3 /* AppDelegate.swift */,
 				9E9F2F9829F6ABA800A9CDF3 /* SceneDelegate.swift */,
-				B9E0E62E2EF0654E00F48B2A /* PrimalShared.xcframework */,
+				B9E0E66D2EF32BCC00F48B2A /* PrimalShared.xcframework */,
 				9EB219EE2A06FD610037C3E5 /* MainLogo.png */,
 				939330F929A3E370003954C2 /* Assets.xcassets */,
 				939330FB29A3E370003954C2 /* Preview Content */,
@@ -2504,6 +2562,7 @@
 		B90DB0632E58DDDF00A67D4A /* Video */ = {
 			isa = PBXGroup;
 			children = (
+				B9E0E6562EF1F6AC00F48B2A /* RemoteSessionActivityManager.swift */,
 				B9E0E6292EEB483A00F48B2A /* GenericPlayer.swift */,
 				B914CD682A9E6B4A00CD0BD1 /* VideoPlaybackManager.swift */,
 				B90DB0662E58DDF500A67D4A /* VideoPlayer.swift */,
@@ -2869,6 +2928,7 @@
 				B9E36BD72EE330A400213CA0 /* RemoteSignerActiveSessionsController.swift */,
 				B9856EA22ED8B24E00B21500 /* RemoteSignerRootController.swift */,
 				B9856EA42ED9C92300B21500 /* RemoteSignerSignInController.swift */,
+				B9E67DD82EF4737D002D7952 /* RemoteSignerDisclosureController.swift */,
 			);
 			path = RemoteSigner;
 			sourceTree = "<group>";
@@ -3315,7 +3375,10 @@
 		B9E0E62B2EEB4EA400F48B2A /* Audio */ = {
 			isa = PBXGroup;
 			children = (
-				B9E0E62C2EEB4EBA00F48B2A /* forest.mp3 */,
+				B9E67DDB2EF489D7002D7952 /* Fireplace.mp3 */,
+				B9E67DDD2EF489DD002D7952 /* Relaxing Tune.mp3 */,
+				B9E67DDF2EF48A00002D7952 /* White Noise.mp3 */,
+				B9E67DE12EF48B69002D7952 /* Gentle Rain.mp3 */,
 			);
 			path = Audio;
 			sourceTree = "<group>";
@@ -3513,6 +3576,7 @@
 			dependencies = (
 				B9DFA0AC2D7EFBC9002C6F34 /* PBXTargetDependency */,
 				B9658AF22D9FF9460037E5DB /* PBXTargetDependency */,
+				B9E0E64A2EF08D0800F48B2A /* PBXTargetDependency */,
 			);
 			name = Primal;
 			packageProductDependencies = (
@@ -3621,6 +3685,28 @@
 			productReference = B9DFA0A32D7EFBC9002C6F34 /* primalShare.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
+		B9E0E6352EF08D0500F48B2A /* RemoteSignerWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B9E0E64D2EF08D0800F48B2A /* Build configuration list for PBXNativeTarget "RemoteSignerWidgetExtension" */;
+			buildPhases = (
+				B9E0E6322EF08D0500F48B2A /* Sources */,
+				B9E0E6332EF08D0500F48B2A /* Frameworks */,
+				B9E0E6342EF08D0500F48B2A /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				B9E0E63B2EF08D0600F48B2A /* RemoteSignerWidget */,
+			);
+			name = RemoteSignerWidgetExtension;
+			packageProductDependencies = (
+			);
+			productName = RemoteSignerWidgetExtension;
+			productReference = B9E0E6362EF08D0500F48B2A /* RemoteSignerWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -3628,7 +3714,7 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1630;
+				LastSwiftUpdateCheck = 2610;
 				LastUpgradeCheck = 1520;
 				TargetAttributes = {
 					939330F129A3E36F003954C2 = {
@@ -3648,6 +3734,9 @@
 					};
 					B9DFA0A22D7EFBC9002C6F34 = {
 						CreatedOnToolsVersion = 16.2;
+					};
+					B9E0E6352EF08D0500F48B2A = {
+						CreatedOnToolsVersion = 26.1.1;
 					};
 				};
 			};
@@ -3685,6 +3774,7 @@
 				9393310B29A3E370003954C2 /* PrimalUITests */,
 				B9DFA0A22D7EFBC9002C6F34 /* primalShare */,
 				B9658AEB2D9FF9460037E5DB /* PrimalNotifications */,
+				B9E0E6352EF08D0500F48B2A /* RemoteSignerWidgetExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -3694,6 +3784,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B9E67DDE2EF489DD002D7952 /* Relaxing Tune.mp3 in Resources */,
 				9EB219E62A0676760037C3E5 /* RobotoFlex-All.ttf in Resources */,
 				B99E03972C061D67006CCECB /* longForm.html in Resources */,
 				9EF4BFCE2A93CE1B003396AA /* loadingSpinnerBlue.json in Resources */,
@@ -3705,6 +3796,7 @@
 				B94F2BFF2AE95D790041181B /* Nacelle-Black.otf in Resources */,
 				939330FD29A3E370003954C2 /* Preview Assets.xcassets in Resources */,
 				B9CE4DA92B682C840060A1B8 /* transferSuccess.json in Resources */,
+				B9E67DDC2EF489D7002D7952 /* Fireplace.mp3 in Resources */,
 				B94F2BFD2AE95D790041181B /* Nacelle-Heavy.otf in Resources */,
 				B94429332BD94C5A00746FBC /* zapGallerySkeletonLight.json in Resources */,
 				B906AAE72C91C46D0089813F /* smallPillLoader.json in Resources */,
@@ -3719,6 +3811,7 @@
 				B99E03A42C09D095006CCECB /* markdown.css in Resources */,
 				B94F2C002AE95D790041181B /* Nacelle-Light.otf in Resources */,
 				939330FA29A3E370003954C2 /* Assets.xcassets in Resources */,
+				B9E67DE22EF48B69002D7952 /* Gentle Rain.mp3 in Resources */,
 				B94F2BFA2AE95D790041181B /* Nacelle-Regular.otf in Resources */,
 				B94429202BD2836800746FBC /* zap-medium.json in Resources */,
 				B906AAE52C91C46D0089813F /* smallPillLoaderLight.json in Resources */,
@@ -3732,9 +3825,9 @@
 				B94429282BD592C400746FBC /* zapGallerySkeleton.json in Resources */,
 				B94F2BFC2AE95D790041181B /* Nacelle-SemiBold.otf in Resources */,
 				9310AB0729AAF06B0038B6F4 /* Launch Screen.storyboard in Resources */,
+				B9E67DE02EF48A00002D7952 /* White Noise.mp3 in Resources */,
 				B9CE4DB92B6D101A0060A1B8 /* walletLightning.json in Resources */,
 				B91E570F2CC82C7A00C14809 /* genericSkeletonLight.json in Resources */,
-				B9E0E62D2EEB4EBA00F48B2A /* forest.mp3 in Resources */,
 				9393313B29A3E5D3003954C2 /* RobotoFlex-Regular.ttf in Resources */,
 				B9B1AB9A2B2C730400837312 /* regions.json in Resources */,
 			);
@@ -3762,6 +3855,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		B9DFA0A12D7EFBC9002C6F34 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B9E0E6342EF08D0500F48B2A /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -3823,6 +3923,7 @@
 				B90032852BD0183600ADD2E5 /* NoteZapsRequest.swift in Sources */,
 				B9E0E6262EEAC89600F48B2A /* CheckboxRadioButton.swift in Sources */,
 				B9C6D23B2CA5BDE300B2EEBE /* ExploreFeedPreviewParentController.swift in Sources */,
+				B9E0E6572EF1F6B500F48B2A /* RemoteSessionActivityManager.swift in Sources */,
 				B98DD8B22C493D7D00E8369A /* PostRequestResult+Article.swift in Sources */,
 				B94F2BAF2AD04FE40041181B /* WalletManager.swift in Sources */,
 				B94A0E262AA8E42B00DEBFE1 /* ChatTableCell.swift in Sources */,
@@ -4116,6 +4217,7 @@
 				B94F2BCF2AD995250041181B /* WalletNavView.swift in Sources */,
 				9EE07ABE2A1CFDB800FB6C86 /* Theme.swift in Sources */,
 				B98DD8E02C66634A00E8369A /* FeedPickerController.swift in Sources */,
+				B9E67DD92EF47389002D7952 /* RemoteSignerDisclosureController.swift in Sources */,
 				B91E57092CC7EE9C00C14809 /* BookmarkedArticleFeedController.swift in Sources */,
 				B9B290512B457EE10069C87F /* WalletSendAmountController.swift in Sources */,
 				B9F9331F2B8904570064B495 /* CheckNip05Manager.swift in Sources */,
@@ -4429,6 +4531,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		B9E0E6322EF08D0500F48B2A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B9E67DDA2EF4847C002D7952 /* Color.swift in Sources */,
+				B9E0E6502EF16DDF00F48B2A /* Date+Extra.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -4451,6 +4562,11 @@
 			isa = PBXTargetDependency;
 			target = B9DFA0A22D7EFBC9002C6F34 /* primalShare */;
 			targetProxy = B9DFA0AB2D7EFBC9002C6F34 /* PBXContainerItemProxy */;
+		};
+		B9E0E64A2EF08D0800F48B2A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B9E0E6352EF08D0500F48B2A /* RemoteSignerWidgetExtension */;
+			targetProxy = B9E0E6492EF08D0800F48B2A /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -4609,7 +4725,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.6.16;
+				MARKETING_VERSION = 2.6.22;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -4658,7 +4774,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.6.16;
+				MARKETING_VERSION = 2.6.22;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -4871,6 +4987,75 @@
 			};
 			name = Release;
 		};
+		B9E0E64E2EF08D0800F48B2A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 7B23MN6TDM;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = RemoteSignerWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = RemoteSignerWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal.RemoteSignerWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		B9E0E64F2EF08D0800F48B2A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 7B23MN6TDM;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = RemoteSignerWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = RemoteSignerWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal.RemoteSignerWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -4924,6 +5109,15 @@
 			buildConfigurations = (
 				B9DFA0AF2D7EFBC9002C6F34 /* Debug */,
 				B9DFA0B02D7EFBC9002C6F34 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B9E0E64D2EF08D0800F48B2A /* Build configuration list for PBXNativeTarget "RemoteSignerWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B9E0E64E2EF08D0800F48B2A /* Debug */,
+				B9E0E64F2EF08D0800F48B2A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

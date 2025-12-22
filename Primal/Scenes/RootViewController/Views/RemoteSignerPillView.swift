@@ -8,7 +8,7 @@
 import UIKit
 
 class RemoteSignerPillView: UIView, Themeable {
-    let messageView = UIView().constrainToSize(height: 44)
+    let messageView = UIView().constrainToSize(height: 40)
     let messageLabel = UILabel("Remote Session Active", color: .background, font: .appFont(withSize: 16, weight: .semibold))
 
     let iconView = UIView().constrainToSize(36)
@@ -58,7 +58,7 @@ class RemoteSignerPillView: UIView, Themeable {
     init() {
         super.init(frame: .zero)
         
-        messageView.layer.cornerRadius = 22
+        messageView.layer.cornerRadius = 20
         let messageStack = UIStackView([alternateIcon, messageLabel])
         messageStack.alignment = .center
         messageStack.spacing = 8

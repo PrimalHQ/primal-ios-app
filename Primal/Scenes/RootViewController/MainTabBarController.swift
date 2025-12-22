@@ -16,6 +16,14 @@ extension UIViewController {
     var mainTabBarController: MainTabBarController? {
         parent as? MainTabBarController ?? parent?.mainTabBarController
     }
+    
+    func smartPresent(_ vc: UIViewController) {
+        if let presentedViewController {
+            presentedViewController.smartPresent(vc)
+            return
+        }
+        present(vc, animated: true)
+    }
 }
 
 enum MainTab: String {
@@ -38,8 +46,10 @@ final class MainTabBarController: UIViewController, Themeable {
     lazy var explore = MainNavigationController(rootViewController: MenuContainerController(child: ExploreViewController()))
 
     let vcParentView = UIView()
-    let noConnectionView = NoConnectionView().constrainToSize(44)
-    let remoteSignerView = RemoteSignerPillView().constrainToSize(44)
+    let noConnectionView = NoConnectionView().constrainToSize(height: 44)
+    let remoteSignerView = RemoteSignerPillView().constrainToSize(height: 44)
+    lazy var indicatorStack = UIStackView(axis: .vertical, [noConnectionView, remoteSignerView])
+    
     lazy var buttons = tabs.map { _ in UIButton() }
     let notificationIndicator = NotificationsIndicator()
     
@@ -273,12 +283,11 @@ private extension MainTabBarController {
         vcParentView.addSubview(nav.view)
         nav.view.pinToSuperview()
         nav.didMove(toParent: self)
-
+        
         view.addSubview(vStack)
         vStack.pinToSuperview(edges: [.bottom, .horizontal])
         safeAreaSpacer.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
         
-        let indicatorStack = UIStackView(axis: .vertical, [noConnectionView, remoteSignerView])
         indicatorStack.spacing = 8
         indicatorStack.isUserInteractionEnabled = false
         view.addSubview(indicatorStack)
@@ -303,7 +312,7 @@ private extension MainTabBarController {
             notificationIndicator.pin(to: imageView, edges: [.top, .trailing], padding: -4)
         }
         notificationIndicator.isHidden = true
-
+        
         vStack.axis = .vertical
         
         NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)
@@ -343,7 +352,7 @@ private extension MainTabBarController {
         view.addSubview(remoteSignerButton)
         remoteSignerButton.centerToView(remoteSignerView.iconView)
         remoteSignerButton.addAction(.init(handler: { [weak self] _ in
-            self?.present(RemoteSignerRootController(.activeSessions), animated: true)
+            self?.smartPresent(RemoteSignerRootController(.activeSessions))
         }), for: .touchUpInside)
         
         Publishers.CombineLatest(
@@ -375,7 +384,7 @@ private extension MainTabBarController {
             }
             
             let new = RemoteSignerPendingEventsController(sessionId: first.key, events: first.value)
-            present(RemoteSignerRootController(.custom(new)), animated: true)
+            smartPresent(RemoteSignerRootController(.custom(new)))
             oldRemoteSignerPopup = new
         }
         .store(in: &cancellables)
@@ -385,35 +394,36 @@ private extension MainTabBarController {
             remoteSignerButton.isHidden = !isActive
             
             UIApplication.shared.isIdleTimerDisabled = isActive
+            
+            if #available(iOS 16.1, *) {
+                if isActive {
+                    RemoteSessionActivityManager.instance.startSignerActivity()
+                    if !RemoteSessionActivityManager.instance.isAudioAllowed {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(3) + .milliseconds(300)) {
+                            if let first = RemoteSigningManager.instance.activeSessions.first {
+                                self?.smartPresent(RemoteSignerRootController(.custom(RemoteSignerDisclosureController(session: first))))
+                            }
+                        }
+                    }
+                } else {
+                    RemoteSessionActivityManager.instance.endSignerActivity()
+                }
+            }
         }
         .store(in: &cancellables)
         
-        NotificationCenter.default.publisher(for: UIApplication.didEnterBackgroundNotification)
-            .sink { _ in
-                guard
-                    RemoteSigningManager.instance.isActive,
-                    !((VideoPlaybackManager.instance.currentlyPlayingVideo?.isLive ?? false) && (VideoPlaybackManager.instance.currentlyPlayingVideo?.isPlaying ?? false)),
-                    let path = Bundle.main.path(forResource: "forest", ofType: "mp3")
-                else { return }
-                
-                let url = URL(fileURLWithPath: path)
-
-                guard let audioPlayer = try? AVAudioPlayer(contentsOf: url) else { return }
+        if #available(iOS 16.1, *) {
+            NotificationCenter.default.publisher(for: UIApplication.didEnterBackgroundNotification)
+                .sink { _ in
+                    guard
+                        RemoteSigningManager.instance.isActive,
+                        !((VideoPlaybackManager.instance.currentlyPlayingVideo?.isLive ?? false) && (VideoPlaybackManager.instance.currentlyPlayingVideo?.isPlaying ?? false))
+                    else { return }
                     
-                audioPlayer.numberOfLoops = -1
-                audioPlayer.volume
-                
-                try? AVAudioSession.sharedInstance().setCategory(.playback, options: [.mixWithOthers])
-                try? AVAudioSession.sharedInstance().setActive(true)
-
-                VideoPlaybackManager.instance.isMuted = false
-
-                let player = GenericPlayer<AVAudioPlayer>(playerInit: { audioPlayer })
-                player.play()
-                
-                
-            }
-            .store(in: &cancellables)
+                    RemoteSessionActivityManager.instance.playSong()
+                }
+                .store(in: &cancellables)
+        }
         
         let didEnterForegroundPublisher = NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification).map({ _ in true })
         let delay5SecondsForegroundPublisher = didEnterForegroundPublisher.delay(for: .seconds(5), scheduler: RunLoop.main).map({ _ in false })
