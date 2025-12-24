@@ -9,7 +9,7 @@ import UIKit
 import PrimalShared
 
 protocol RemoteSignerPermissionEditCellDelegate: AnyObject {
-    func remoteSignerPermissionEditCell(_ cell: RemoteSignerPermissionEditCell, didSelect action: PermissionAction)
+    func remoteSignerPermissionEditCell(_ cell: RemoteSignerPermissionEditCell, didSelect action: AppPermissionAction)
 }
 
 final class RemoteSignerPermissionEditCell: UITableViewCell {
@@ -47,12 +47,12 @@ final class RemoteSignerPermissionEditCell: UITableViewCell {
         picker.addAction(.init(handler: { [weak self] _ in
             guard let self else { return }
             let value = picker.selectedSegmentIndex
-            let action: PermissionAction = value == 0 ? .approve : (value == 1 ? .deny : .ask)
+            let action: AppPermissionAction = value == 0 ? .approve : (value == 1 ? .deny : .ask)
             delegate?.remoteSignerPermissionEditCell(self, didSelect: action)
         }), for: .valueChanged)
     }
 
-    func configure(permission: AppPermissionGroup, connection: AppConnection, delegate: RemoteSignerPermissionEditCellDelegate?) {
+    func configure(permission: AppPermissionGroup, connection: RemoteAppConnection, delegate: RemoteSignerPermissionEditCellDelegate?) {
         self.delegate = delegate
         
         titleLabel.text = permission.title

@@ -11,8 +11,8 @@ import PrimalShared
 final class SettingsEditConnectionName: UIViewController, Themeable {
     let valueInput = UITextField()
     
-    let connection: AppConnection
-    init(connection: AppConnection) {
+    let connection: RemoteAppConnection
+    init(connection: RemoteAppConnection) {
         self.connection = connection
         super.init(nibName: nil, bundle: nil)
         

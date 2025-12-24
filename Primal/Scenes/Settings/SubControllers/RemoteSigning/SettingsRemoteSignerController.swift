@@ -9,19 +9,19 @@ import Combine
 import UIKit
 import PrimalShared
 
-extension AppConnection: @retroactive Identifiable {
+extension RemoteAppConnection: @retroactive Identifiable {
     
 }
 
 class SettingsRemoteSignerController: UIViewController, Themeable {
     
     enum TableItem: Hashable {
-        case connection(AppConnection, ParsedUser)
+        case connection(RemoteAppConnection, ParsedUser)
     }
     
     var cancellables: Set<AnyCancellable> = []
     
-    @Published var items: [AppConnection] = []
+    @Published var items: [RemoteAppConnection] = []
     
     let dataSource: UITableViewDiffableDataSource<SingleSection, TableItem>
     
@@ -85,13 +85,13 @@ extension SettingsRemoteSignerController: UITableViewDelegate {
     }
 }
 
-extension AppConnection {
+extension RemoteAppConnection {
     func defaultImage(size: CGFloat, color: UIColor = .foreground3, background: UIColor = .foreground.withAlphaComponent(0.1)) -> UIImage? {
         return UIImage.create(letter: String(self.name?.first ?? "?"), size: size, color: color, backgroundColor: background)
     }
 }
 
-extension AppSession {
+extension RemoteAppSession {
     func defaultImage(size: CGFloat, color: UIColor = .foreground3, background: UIColor = .foreground.withAlphaComponent(0.1)) -> UIImage? {
         return UIImage.create(letter: String(self.name?.first ?? "?"), size: size, color: color, backgroundColor: background)
     }

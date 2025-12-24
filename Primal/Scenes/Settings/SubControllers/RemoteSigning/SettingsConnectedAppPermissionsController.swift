@@ -18,8 +18,8 @@ class SettingsConnectedAppPermissionsController: UIViewController {
     }
     
     enum TableItem: Hashable {
-        case mainInfo(AppConnection, lastSession: AppSession?)
-        case permission(AppPermissionGroup, AppConnection)
+        case mainInfo(RemoteAppConnection, lastSession: RemoteAppSession?)
+        case permission(AppPermissionGroup, RemoteAppConnection)
         case reset
         
         var cellId: String {
@@ -33,7 +33,7 @@ class SettingsConnectedAppPermissionsController: UIViewController {
     
     var cancellables: Set<AnyCancellable> = []
     
-    @Published var items: [AppConnection] = []
+    @Published var items: [RemoteAppConnection] = []
     
     let dataSource: UITableViewDiffableDataSource<TableSections, TableItem>
     
@@ -104,7 +104,7 @@ class SettingsConnectedAppPermissionsController: UIViewController {
     
     func refresh() {
         Publishers.CombineLatest3(
-            RemoteSignerManager.instance.sessionRepo.observeSessionsByClientPubKey(clientPubKey: connectionID).toPublisher().map { $0 as [AppSession] },
+            RemoteSignerManager.instance.sessionRepo.observeSessionsByClientPubKey(clientPubKey: connectionID).toPublisher().map { $0 as [RemoteAppSession] },
             RemoteSignerManager.instance.connectionRepo.observeConnection(clientPubKey: connectionID).toPublisher(),
             RemoteSignerManager.instance.permissionRepo.observePermissions(clientPubKey: connectionID).toPublisher()
         )
@@ -154,7 +154,7 @@ extension SettingsConnectedAppPermissionsController: UITableViewDelegate {
 }
 
 extension SettingsConnectedAppPermissionsController: RemoteSignerPermissionEditCellDelegate {
-    func remoteSignerPermissionEditCell(_ cell: RemoteSignerPermissionEditCell, didSelect action: PrimalShared.PermissionAction) {
+    func remoteSignerPermissionEditCell(_ cell: RemoteSignerPermissionEditCell, didSelect action: PrimalShared.AppPermissionAction) {
         var snapshot = dataSource.snapshot()
         var permissions = snapshot.itemIdentifiers(inSection: .permissions)
         guard
