@@ -638,6 +638,7 @@
 		B9E67DDE2EF489DD002D7952 /* Soft Pulse.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = B9E67DDD2EF489DD002D7952 /* Soft Pulse.mp3 */; };
 		B9E67DE02EF48A00002D7952 /* White Noise.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = B9E67DDF2EF48A00002D7952 /* White Noise.mp3 */; };
 		B9E67DE22EF48B69002D7952 /* Gentle Rain.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = B9E67DE12EF48B69002D7952 /* Gentle Rain.mp3 */; };
+		B9E67E262EFC1106002D7952 /* PushNotificationsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E67E252EFC1100002D7952 /* PushNotificationsManager.swift */; };
 		B9E67E7D2D075E35006BB397 /* FeedElementUserCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E67E7C2D075E35006BB397 /* FeedElementUserCell.swift */; };
 		B9E67E7F2D0760B6006BB397 /* FeedElementTextCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E67E7E2D0760B6006BB397 /* FeedElementTextCell.swift */; };
 		B9E67E812D0762CD006BB397 /* FeedElementSmallZapGalleryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E67E802D0762CD006BB397 /* FeedElementSmallZapGalleryCell.swift */; };
@@ -1427,6 +1428,7 @@
 		B9E67DDD2EF489DD002D7952 /* Soft Pulse.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "Soft Pulse.mp3"; sourceTree = "<group>"; };
 		B9E67DDF2EF48A00002D7952 /* White Noise.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "White Noise.mp3"; sourceTree = "<group>"; };
 		B9E67DE12EF48B69002D7952 /* Gentle Rain.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "Gentle Rain.mp3"; sourceTree = "<group>"; };
+		B9E67E252EFC1100002D7952 /* PushNotificationsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushNotificationsManager.swift; sourceTree = "<group>"; };
 		B9E67E7C2D075E35006BB397 /* FeedElementUserCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedElementUserCell.swift; sourceTree = "<group>"; };
 		B9E67E7E2D0760B6006BB397 /* FeedElementTextCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedElementTextCell.swift; sourceTree = "<group>"; };
 		B9E67E802D0762CD006BB397 /* FeedElementSmallZapGalleryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedElementSmallZapGalleryCell.swift; sourceTree = "<group>"; };
@@ -2562,7 +2564,6 @@
 		B90DB0632E58DDDF00A67D4A /* Video */ = {
 			isa = PBXGroup;
 			children = (
-				B9E0E6562EF1F6AC00F48B2A /* RemoteSignerActivityManager.swift */,
 				B9E0E6292EEB483A00F48B2A /* GenericPlayer.swift */,
 				B914CD682A9E6B4A00CD0BD1 /* VideoPlaybackManager.swift */,
 				B90DB0662E58DDF500A67D4A /* VideoPlayer.swift */,
@@ -2587,7 +2588,9 @@
 		B917982B2EE0690D00EF29EF /* RemoteSigning */ = {
 			isa = PBXGroup;
 			children = (
+				B9E67E252EFC1100002D7952 /* PushNotificationsManager.swift */,
 				B91798292EE0690D00EF29EF /* RemoteSignerManager.swift */,
+				B9E0E6562EF1F6AC00F48B2A /* RemoteSignerActivityManager.swift */,
 				B917982A2EE0690D00EF29EF /* SigningManager.swift */,
 				B91798322EE093B800EF29EF /* EncryptionServiceHandler.swift */,
 			);
@@ -3927,6 +3930,7 @@
 				B98DD8B22C493D7D00E8369A /* PostRequestResult+Article.swift in Sources */,
 				B94F2BAF2AD04FE40041181B /* WalletManager.swift in Sources */,
 				B94A0E262AA8E42B00DEBFE1 /* ChatTableCell.swift in Sources */,
+				B9E67E262EFC1106002D7952 /* PushNotificationsManager.swift in Sources */,
 				B98DD8B82C49540700E8369A /* HighlightUsersView.swift in Sources */,
 				B94F2BC42AD581B30041181B /* WalletInfoCell.swift in Sources */,
 				9ED415F72A40FE0100892235 /* SearchViewController.swift in Sources */,
@@ -4725,7 +4729,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.6.25;
+				MARKETING_VERSION = 2.6.27;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -4774,7 +4778,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.6.25;
+				MARKETING_VERSION = 2.6.27;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

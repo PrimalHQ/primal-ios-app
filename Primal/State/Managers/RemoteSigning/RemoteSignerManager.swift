@@ -10,6 +10,13 @@ import Foundation
 import PrimalShared
 import NostrSDK
 import GenericJSON
+import UserNotifications
+
+extension PrimalShared.NostrEvent {
+    convenience init(primalObject: NostrObject) {
+        self.init(id: primalObject.id, pubKey: primalObject.pubkey, createdAt: Int64(primalObject.created_at), kind: Int32(primalObject.kind), tags: NostrExtensions.shared.mapAsListOfJsonArray(tags: primalObject.tags), content: primalObject.content, sig: primalObject.sig)
+    }
+}
 
 class RemoteSignerManager {
     static let instance = RemoteSignerManager()
@@ -22,6 +29,23 @@ class RemoteSignerManager {
     let remoteSigner: any RemoteSignerService
     
     var cancellables: Set<AnyCancellable> = []
+
+    var signerPubkey: String { signerKeypair.pubKey }
+    let signerKeypair: NostrKeyPair = {
+        if let pubkey = UserDefaults.standard.string(forKey: "signerPubkey"), let privkey = UserDefaults.standard.string(forKey: "signerPrivkey") {
+            return .init(privateKey: privkey, pubKey: pubkey)
+        }
+        
+        guard let newKeypair = NostrKeypair.generate()?.hexVariant, let privkey = newKeypair.privkey else {
+            return .init(privateKey: "84900a8ca6e4260db5e75cfbd36b98f9c8f49afc82cd704455744de687e7b8b8", pubKey: "82562bf3224b34e80ef420b96ad6061dbfdb34c9055ac1f8ca5fa562814b9876")
+        }
+        
+        UserDefaults.standard.set(newKeypair.privkey, forKey: "signerPrivkey")
+        UserDefaults.standard.set(newKeypair.pubkey, forKey: "signerPubkey")
+        
+        return .init(privateKey: privkey, pubKey: newKeypair.pubkey)
+    }()
+    
     
     @Published var activeSessions: [AppSession] = []
     
@@ -29,21 +53,20 @@ class RemoteSignerManager {
     
     var permissionsMap: [String: String] = [:]
     
+    var missedEventsFromNotifications: [PrimalShared.NostrEvent] = []
+    
     var isActive: Bool { !activeSessions.isEmpty }
     var isActivePublisher: AnyPublisher<Bool, Never> {
         $activeSessions.map({ !$0.isEmpty }).removeDuplicates().eraseToAnyPublisher()
     }
     
     var pendingActionsPublisher: AnyPublisher<[SessionEvent], Never> {
-        let signerPubkey = "82562bf3224b34e80ef420b96ad6061dbfdb34c9055ac1f8ca5fa562814b9876"
         return sessionEventRepo.observeEventsPendingUserAction(signerPubKey: signerPubkey).toPublisher()
             .replaceError(with: [])
             .eraseToAnyPublisher()
     }
  
     init() {
-        let signerPubkey = "82562bf3224b34e80ef420b96ad6061dbfdb34c9055ac1f8ca5fa562814b9876"
-        let signerKeypair = NostrKeyPair(privateKey: "84900a8ca6e4260db5e75cfbd36b98f9c8f49afc82cd704455744de687e7b8b8", pubKey: signerPubkey)
         
         remoteSigner = AccountServiceFactory.shared.createRemoteSignerService(signerKeyPair: signerKeypair, eventSignatureHandler: SigningManager.instance, nostrEncryptionService: EncryptionServiceHandler.instance, nostrEncryptionHandler: EncryptionServiceHandler.instance, connectionRepository: connectionRepo, sessionRepository: sessionRepo, sessionInactivityTimeoutInMinutes: 0)
         
@@ -60,7 +83,7 @@ class RemoteSignerManager {
         
         Publishers.CombineLatest(
             connectionRepo.observeAllConnections(signerPubKey: signerPubkey).toPublisher().replaceError(with: []),
-            AppDelegate.shared.$pushNotificationsToken
+            PushNotificationsManager.instance.$pushNotificationsToken
         )
             .receive(on: DispatchQueue.main)
             .sink { [weak self] (connections, tokenData) in
@@ -81,18 +104,15 @@ class RemoteSignerManager {
                         "clientPubKeys": [.string(appPubkey)]
                     ]
                     
-                    let signerPubkey = "82562bf3224b34e80ef420b96ad6061dbfdb34c9055ac1f8ca5fa562814b9876"
-                    let privkey = "84900a8ca6e4260db5e75cfbd36b98f9c8f49afc82cd704455744de687e7b8b8"
-                    
                     guard let contentString = contentJson.encodeToString() else { continue }
 
-                    guard let object = NostrObject.createNostrObjectAndSign(pubkey: signerPubkey, privkey: privkey, content: contentString, kind: 1337, tags: [["d", "Primal-iOS-App"]]) else { continue }
+                    guard let object = NostrObject.createNostrObjectAndSign(pubkey: signerPubkey, privkey: signerKeypair.privateKey, content: contentString, kind: 1337, tags: [["d", "Primal-iOS-App"]]) else { continue }
                     
                     signerEvents.append(object)
                 }
                 
                 UserDefaults.standard.signerNotificationEnableEvents = signerEvents
-                AppDelegate.shared.updateNotificationsSettings()
+                PushNotificationsManager.instance.updateNotificationsSettings()
             }
             .store(in: &cancellables)
         
@@ -129,10 +149,57 @@ class RemoteSignerManager {
         }
     }
     
-    func initializeConnection(url: String, userPubKey: String, trustLevel: TrustLevel) {
-        let signerPubkey = "82562bf3224b34e80ef420b96ad6061dbfdb34c9055ac1f8ca5fa562814b9876"
-        let signerKeypair = NostrKeyPair(privateKey: "84900a8ca6e4260db5e75cfbd36b98f9c8f49afc82cd704455744de687e7b8b8", pubKey: signerPubkey)
+    func processNotifications(_ notifications: [UNNotification]) {
         
+        let eventsWithPubkeys: [(event: [String: Any], eventPubkey: String, id: String, notification: UNNotification)] = notifications.compactMap {
+            guard
+                let extra = $0.request.content.userInfo["extra"] as? [String: Any],
+                let event = extra["nip46_event"] as? [String: Any],
+                let eventPubkey = extra["nip46_event_pubkey"] as? String,
+                let eventId = event["id"] as? String
+            else { return nil }
+            
+            return (event, eventPubkey, eventId, $0)
+        }
+        
+        guard !eventsWithPubkeys.isEmpty else { return }
+        
+        missedEventsFromNotifications = eventsWithPubkeys.compactMap {
+            guard
+                let id = $0.0["id"] as? String,
+                let pubkey = $0.0["pubkey"] as? String,
+                let createdAt = $0.0["created_at"] as? Double,
+                let kind = $0.0["kind"] as? Double,
+                let tags = $0.0["tags"] as? [[String]],
+                let content = $0.0["content"] as? String,
+                let sig = $0.0["sig"] as? String
+            else { return nil }
+            
+            return .init(id: id, pubKey: pubkey, createdAt: Int64(createdAt), kind: Int32(kind), tags: NostrExtensions.shared.mapAsListOfJsonArray(tags: tags), content: content, sig: sig)
+        }
+        
+        let eventPubkeys = eventsWithPubkeys.map({ $0.eventPubkey }).unique()
+        
+        Task {
+            do {
+                for eventPubkey in eventPubkeys {
+                    if let active = try await sessionRepo.findActiveSessionForConnection(clientPubKey: eventPubkey).getOrNull() {
+                        print("NO ACTION")
+                    } else {
+                        try await sessionRepo.startSession(clientPubKey: eventPubkey)
+                    }
+                }
+                
+                let result = try await sessionEventRepo.processMissedEvents(signerKeyPair: signerKeypair, eventIds: eventsWithPubkeys.map { $0.id })
+                
+                PushNotificationsManager.instance.dismissNotifications(eventsWithPubkeys.map { $0.notification })
+            } catch {
+                print(error)
+            }
+        }
+    }
+    
+    func initializeConnection(url: String, userPubKey: String, trustLevel: TrustLevel) {
         let signerConnectionInit = AccountRepositoryFactory.shared.createSignerConnectionInitializer(connectionRepository: connectionRepo, sessionRepository: sessionRepo)
         
         Task {
@@ -157,6 +224,6 @@ class RemoteSignerManager {
 
 extension RemoteSignerManager: Nip46EventsHandler {
     func __fetchNip46Events(eventIds: [String]) async throws -> UtilsResult<NSArray> {
-        UtilsResult<NSArray>.companion.success(value: []) as! UtilsResult<NSArray>
+        UtilsResult<NSArray>.companion.success(value: missedEventsFromNotifications) as! UtilsResult<NSArray>
     }
 }

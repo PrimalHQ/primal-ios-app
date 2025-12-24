@@ -79,14 +79,14 @@ class PushNotificationCell: UITableViewCell, Themeable {
                         UIApplication.shared.registerForRemoteNotifications()
                         
                         DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
-                            guard let tokenData = AppDelegate.shared.pushNotificationsToken else { return }
+                            guard let tokenData = PushNotificationsManager.instance.pushNotificationsToken else { return }
 
                             let token = tokenData.map { String(format: "%02.2hhx", $0) }.joined()
 
                             guard let event = NostrObject.notificationsEnableEvent(token: token) else { return }
                             
                             UserDefaults.standard.notificationEnableEvents.append(event)
-                            AppDelegate.shared.updateNotificationsSettings()
+                            PushNotificationsManager.instance.updateNotificationsSettings()
                             self?.delegate?.updatedPushNotificationSettings()
                         }
                     } else {

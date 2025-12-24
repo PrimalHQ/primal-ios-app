@@ -117,7 +117,7 @@ final class SettingsNotificationsViewController: UIViewController, Themeable {
                     
                     guard !UserDefaults.standard.notificationEnableEvents.contains(where: { $0.pubkey == IdentityManager.instance.userHexPubkey }) else { return }
                     
-                    guard let tokenData = AppDelegate.shared.pushNotificationsToken else {
+                    guard let tokenData = PushNotificationsManager.instance.pushNotificationsToken else {
                         pushView.switchView.isOn = false
                         pushNotificationsEnabled = false
                         registerForPushNotifications()
@@ -133,7 +133,7 @@ final class SettingsNotificationsViewController: UIViewController, Themeable {
                         return
                     }
                     UserDefaults.standard.notificationEnableEvents.append(event)
-                    AppDelegate.shared.updateNotificationsSettings()
+                    PushNotificationsManager.instance.updateNotificationsSettings()
                 } else {
                     guard UserDefaults.standard.notificationEnableEvents.contains(where: { $0.pubkey == IdentityManager.instance.userHexPubkey }) else { return }
                     
@@ -144,7 +144,7 @@ final class SettingsNotificationsViewController: UIViewController, Themeable {
                                 break
                             default:
                                 UserDefaults.standard.notificationEnableEvents.removeAll(where: { $0.pubkey == IdentityManager.instance.userHexPubkey })
-                                AppDelegate.shared.updateNotificationsSettings()
+                                PushNotificationsManager.instance.updateNotificationsSettings()
                             }
                         }
                     }

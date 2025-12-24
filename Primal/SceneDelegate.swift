@@ -36,6 +36,10 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
     }
     
+    func sceneDidBecomeActive(_ scene: UIScene) {
+        PushNotificationsManager.instance.checkDeliveredNotifications()
+    }
+    
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
         guard let firstUrl = URLContexts.first?.url else {
             return
