@@ -356,7 +356,7 @@ private extension MainTabBarController {
         }), for: .touchUpInside)
         
         Publishers.CombineLatest(
-            RemoteSigningManager.instance.pendingActionsPublisher,
+            RemoteSignerManager.instance.pendingActionsPublisher,
             $oldRemoteSignerPopup
         )
         .debounce(for: 0.3, scheduler: RunLoop.main)
@@ -389,7 +389,7 @@ private extension MainTabBarController {
         }
         .store(in: &cancellables)
         
-        RemoteSigningManager.instance.isActivePublisher.sink { [weak self] isActive in
+        RemoteSignerManager.instance.isActivePublisher.sink { [weak self] isActive in
             self?.remoteSignerView.isOff = !isActive
             remoteSignerButton.isHidden = !isActive
             
@@ -397,16 +397,17 @@ private extension MainTabBarController {
             
             if #available(iOS 16.1, *) {
                 if isActive {
-                    RemoteSessionActivityManager.instance.startSignerActivity()
-                    if !RemoteSessionActivityManager.instance.isAudioAllowed {
+                    RemoteSignerActivityManager.instance.startSignerActivity()
+                    RemoteSignerActivityManager.instance.playSong()
+                    if !RemoteSignerActivityManager.instance.isAudioAllowed {
                         DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(3) + .milliseconds(300)) {
-                            if let first = RemoteSigningManager.instance.activeSessions.first {
+                            if let first = RemoteSignerManager.instance.activeSessions.first {
                                 self?.smartPresent(RemoteSignerRootController(.custom(RemoteSignerDisclosureController(session: first))))
                             }
                         }
                     }
                 } else {
-                    RemoteSessionActivityManager.instance.endSignerActivity()
+                    RemoteSignerActivityManager.instance.endSignerActivity()
                 }
             }
         }
@@ -416,11 +417,11 @@ private extension MainTabBarController {
             NotificationCenter.default.publisher(for: UIApplication.didEnterBackgroundNotification)
                 .sink { _ in
                     guard
-                        RemoteSigningManager.instance.isActive,
+                        RemoteSignerManager.instance.isActive,
                         !((VideoPlaybackManager.instance.currentlyPlayingVideo?.isLive ?? false) && (VideoPlaybackManager.instance.currentlyPlayingVideo?.isPlaying ?? false))
                     else { return }
                     
-                    RemoteSessionActivityManager.instance.playSong()
+                    RemoteSignerActivityManager.instance.playSong()
                 }
                 .store(in: &cancellables)
         }

@@ -223,36 +223,13 @@ class RemoteSignerSignInController: UIViewController {
         connectButton.addAction(.init(handler: { [weak self] _ in
             guard let self, let pubkey = selectedNpub?.npubToPubkey() else { return }
             
-            RemoteSigningManager.instance.initializeConnection(url: connection.absoluteString, userPubKey: pubkey, trustLevel: selectedTrust.trustLevel)
+            RemoteSignerManager.instance.initializeConnection(url: connection.absoluteString, userPubKey: pubkey, trustLevel: selectedTrust.trustLevel)
             
             dismiss(animated: true)
             
-            defer {
-                if let callback, let deeplinkURL = URL(string: callback) {
-                    UIApplication.shared.open(deeplinkURL)
-                }
+            if let callback, let deeplinkURL = URL(string: callback) {
+                UIApplication.shared.open(deeplinkURL)
             }
-            
-            guard let tokenData = AppDelegate.shared.pushNotificationsToken else { return }
-            
-            let token = tokenData.map { String(format: "%02.2hhx", $0) }.joined()
-
-            let contentJson: [String: JSON] = [
-                "token": .string(token),
-                "relays": .array(relays.map({ .string($0) })),
-                "clientPubKeys": [.string(appPubkey)]
-            ]
-            
-            let signerPubkey = "82562bf3224b34e80ef420b96ad6061dbfdb34c9055ac1f8ca5fa562814b9876"
-            let privkey = "84900a8ca6e4260db5e75cfbd36b98f9c8f49afc82cd704455744de687e7b8b8"
-            
-            guard let contentString = contentJson.encodeToString() else { return }
-
-            guard let object = NostrObject.createNostrObjectAndSign(pubkey: signerPubkey, privkey: privkey, content: contentString, kind: 1337, tags: [["d", "Primal-iOS-App"]]) else { return }
-            
-            UserDefaults.standard.signerNotificationEnableEvents = [object]
-            AppDelegate.shared.updateNotificationsSettings()
-            
         }), for: .touchUpInside)
     }
 }

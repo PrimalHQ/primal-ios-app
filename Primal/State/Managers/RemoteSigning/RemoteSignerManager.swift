@@ -9,9 +9,10 @@ import Combine
 import Foundation
 import PrimalShared
 import NostrSDK
+import GenericJSON
 
-class RemoteSigningManager {
-    static let instance = RemoteSigningManager()
+class RemoteSignerManager {
+    static let instance = RemoteSignerManager()
     
     let connectionRepo = AccountRepositoryFactory.shared.createConnectionRepository()
     let sessionRepo = AccountRepositoryFactory.shared.createSessionRepository()
@@ -57,12 +58,41 @@ class RemoteSigningManager {
             }
             .store(in: &cancellables)
         
-        connectionRepo.observeAllConnections(signerPubKey: signerPubkey)
-            .toPublisher()
-//            .map { $0 as [AppConnection] }
+        Publishers.CombineLatest(
+            connectionRepo.observeAllConnections(signerPubKey: signerPubkey).toPublisher().replaceError(with: []),
+            AppDelegate.shared.$pushNotificationsToken
+        )
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] connections in
+            .sink { [weak self] (connections, tokenData) in
                 self?.activeConnections = connections
+                
+                guard let self, let tokenData else { return }
+                let currentToken = tokenData.map { String(format: "%02.2hhx", $0) }.joined()
+
+                var signerEvents: [NostrObject] = []
+                
+                for connection in connections {
+                    let relays = connection.relays
+                    let appPubkey = connection.clientPubKey
+
+                    let contentJson: [String: JSON] = [
+                        "token": .string(currentToken),
+                        "relays": .array(relays.map({ .string($0) })),
+                        "clientPubKeys": [.string(appPubkey)]
+                    ]
+                    
+                    let signerPubkey = "82562bf3224b34e80ef420b96ad6061dbfdb34c9055ac1f8ca5fa562814b9876"
+                    let privkey = "84900a8ca6e4260db5e75cfbd36b98f9c8f49afc82cd704455744de687e7b8b8"
+                    
+                    guard let contentString = contentJson.encodeToString() else { continue }
+
+                    guard let object = NostrObject.createNostrObjectAndSign(pubkey: signerPubkey, privkey: privkey, content: contentString, kind: 1337, tags: [["d", "Primal-iOS-App"]]) else { continue }
+                    
+                    signerEvents.append(object)
+                }
+                
+                UserDefaults.standard.signerNotificationEnableEvents = signerEvents
+                AppDelegate.shared.updateNotificationsSettings()
             }
             .store(in: &cancellables)
         
@@ -125,7 +155,7 @@ class RemoteSigningManager {
     }
 }
 
-extension RemoteSigningManager: Nip46EventsHandler {
+extension RemoteSignerManager: Nip46EventsHandler {
     func __fetchNip46Events(eventIds: [String]) async throws -> UtilsResult<NSArray> {
         UtilsResult<NSArray>.companion.success(value: []) as! UtilsResult<NSArray>
     }

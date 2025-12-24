@@ -53,7 +53,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     static var shared: AppDelegate!
     
     private var cancellables: Set<AnyCancellable> = []
-    private(set) var pushNotificationsToken: Data?
+    @Published private(set) var pushNotificationsToken: Data?
     
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
@@ -83,7 +83,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         WalletRepositoryFactory.shared.doInit(enableDbEncryption: false, enableLogs: true)
         AccountRepositoryFactory.shared.doInit(enableDbEncryption: false, enableLogs: true)
         
-        _ = RemoteSigningManager.instance
+        _ = RemoteSignerManager.instance
         
         UNUserNotificationCenter.current().delegate = self
         registerForPushNotifications()
@@ -118,7 +118,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func applicationWillTerminate(_ application: UIApplication) {
         if #available(iOS 16.1, *) {
-            RemoteSessionActivityManager.instance.endSignerActivity()
+            RemoteSignerActivityManager.instance.endSignerActivity()
         }
     }
     
@@ -133,7 +133,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         
         let oldSignerEvents = UserDefaults.standard.signerNotificationEnableEvents
         
-        if oldSignerEvents.isEmpty {
+        if !oldSignerEvents.isEmpty {
             var payload: [String: JSON] = [
                 "events_from_users": .array(oldSignerEvents.map { $0.toJSON() }),
                 "platform": "iOS",

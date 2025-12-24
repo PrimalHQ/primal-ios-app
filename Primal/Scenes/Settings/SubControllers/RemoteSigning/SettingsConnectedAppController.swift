@@ -100,8 +100,8 @@ class SettingsConnectedAppController: UIViewController {
         tableView.delegate = self
         
         Publishers.CombineLatest(
-            RemoteSigningManager.instance.sessionRepo.observeSessionsByClientPubKey(clientPubKey: connectionID).toPublisher(),
-            RemoteSigningManager.instance.connectionRepo.observeConnection(clientPubKey: connectionID).toPublisher()
+            RemoteSignerManager.instance.sessionRepo.observeSessionsByClientPubKey(clientPubKey: connectionID).toPublisher(),
+            RemoteSignerManager.instance.connectionRepo.observeConnection(clientPubKey: connectionID).toPublisher()
         )
         .map { ($0.0 as [AppSession], $0.1) }
         .debounce(for: 0.2, scheduler: DispatchQueue.main)
@@ -199,7 +199,7 @@ extension SettingsConnectedAppController: RemoteSignerConnectionAutostartCellDel
         alert.addAction(UIAlertAction(title: "Switch", style: .default, handler: { [weak self] _ in
             guard let self = self else { return }
             Task {
-                try? await RemoteSigningManager.instance.connectionRepo.updateTrustLevel(clientPubKey: self.connectionID, trustLevel: trustLevel)
+                try? await RemoteSignerManager.instance.connectionRepo.updateTrustLevel(clientPubKey: self.connectionID, trustLevel: trustLevel)
             }
         }))
         present(alert, animated: true)
@@ -207,7 +207,7 @@ extension SettingsConnectedAppController: RemoteSignerConnectionAutostartCellDel
     
     func autostartChanged(_ isOn: Bool) {
         Task {
-            try? await RemoteSigningManager.instance.connectionRepo.updateConnectionAutoStart(clientPubKey: connectionID, autoStart: isOn)
+            try? await RemoteSignerManager.instance.connectionRepo.updateConnectionAutoStart(clientPubKey: connectionID, autoStart: isOn)
         }
     }
 
@@ -220,7 +220,7 @@ extension SettingsConnectedAppController: RemoteSignerConnectionAutostartCellDel
             navigationController?.popViewController(animated: true)
             Task { @MainActor in
                 do {
-                    try await RemoteSigningManager.instance.connectionRepo.deleteConnectionAndData(clientPubKey: self.connectionID)
+                    try await RemoteSignerManager.instance.connectionRepo.deleteConnectionAndData(clientPubKey: self.connectionID)
                 } catch {
                     print(error)
                 }
@@ -234,7 +234,7 @@ extension SettingsConnectedAppController: RemoteSignerConnectionAutostartCellDel
     }
 
     func startStopSession() {
-        let repo = RemoteSigningManager.instance.sessionRepo
+        let repo = RemoteSignerManager.instance.sessionRepo
         
         Task {
             do {

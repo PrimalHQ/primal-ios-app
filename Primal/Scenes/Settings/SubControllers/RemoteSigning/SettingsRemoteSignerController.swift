@@ -56,7 +56,7 @@ class SettingsRemoteSignerController: UIViewController, Themeable {
         tableView.delegate = self
         tableView.register(RemoteSignerConnectionCell.self, forCellReuseIdentifier: RemoteSignerConnectionCell.reuseID)
         
-        Publishers.CombineLatest(LoginManager.instance.$loadedProfiles, RemoteSigningManager.instance.$activeConnections)
+        Publishers.CombineLatest(LoginManager.instance.$loadedProfiles, RemoteSignerManager.instance.$activeConnections)
             .sink { [weak self] (profiles, connections) in
                 var snapshot = NSDiffableDataSourceSnapshot<SingleSection, TableItem>()
                 snapshot.appendSections([.main])
@@ -80,7 +80,7 @@ class SettingsRemoteSignerController: UIViewController, Themeable {
 
 extension SettingsRemoteSignerController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        guard let connection = RemoteSigningManager.instance.activeConnections[safe: indexPath.row] else { return }
+        guard let connection = RemoteSignerManager.instance.activeConnections[safe: indexPath.row] else { return }
         show(SettingsConnectedAppController(appConnection: connection), sender: nil)
     }
 }

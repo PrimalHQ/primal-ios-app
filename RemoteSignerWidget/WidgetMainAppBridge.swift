@@ -9,18 +9,19 @@
 @available(iOS 16.1, *)
 class WidgetMainAppBridge: WidgetMainAppBridgeProtocol {
     func endAllSessions() {
-        RemoteSigningManager.instance.endAllSessions()
+        RemoteSignerActivityManager.instance.endSignerActivity()
+        RemoteSignerManager.instance.endAllSessions()
     }
     
     func nextSong() {
-        RemoteSessionActivityManager.instance.nextSong()
+        RemoteSignerActivityManager.instance.nextSong()
     }
     
     func prevSong() {
-        RemoteSessionActivityManager.instance.prevSong()
+        RemoteSignerActivityManager.instance.prevSong()
     }
     
     func toggleMute() {
-        RemoteSessionActivityManager.instance.toggleMute()
+        RemoteSignerActivityManager.instance.toggleMute()
     }
 }

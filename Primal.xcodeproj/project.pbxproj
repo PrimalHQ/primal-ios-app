@@ -278,7 +278,7 @@
 		B91797E92EDDCB8F00EF29EF /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = B91797E82EDDCB8F00EF29EF /* KeychainAccess */; };
 		B91797FE2EDDD21D00EF29EF /* NostrSDK in Frameworks */ = {isa = PBXBuildFile; productRef = B91797FD2EDDD21D00EF29EF /* NostrSDK */; };
 		B91798002EDDD23200EF29EF /* NostrSDK in Frameworks */ = {isa = PBXBuildFile; productRef = B91797FF2EDDD23200EF29EF /* NostrSDK */; };
-		B917982C2EE0690D00EF29EF /* RemoteSigningManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91798292EE0690D00EF29EF /* RemoteSigningManager.swift */; };
+		B917982C2EE0690D00EF29EF /* RemoteSignerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91798292EE0690D00EF29EF /* RemoteSignerManager.swift */; };
 		B917982D2EE0690D00EF29EF /* SigningManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B917982A2EE0690D00EF29EF /* SigningManager.swift */; };
 		B91798332EE093B800EF29EF /* EncryptionServiceHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91798322EE093B800EF29EF /* EncryptionServiceHandler.swift */; };
 		B917983A2EE0E37600EF29EF /* GenericJSON in Frameworks */ = {isa = PBXBuildFile; productRef = B91798392EE0E37600EF29EF /* GenericJSON */; };
@@ -624,7 +624,7 @@
 		B9E0E63A2EF08D0600F48B2A /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9E0E6392EF08D0600F48B2A /* SwiftUI.framework */; };
 		B9E0E64B2EF08D0800F48B2A /* RemoteSignerWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = B9E0E6362EF08D0500F48B2A /* RemoteSignerWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		B9E0E6502EF16DDF00F48B2A /* Date+Extra.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E79D3A22A01530B008404DB /* Date+Extra.swift */; };
-		B9E0E6572EF1F6B500F48B2A /* RemoteSessionActivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E0E6562EF1F6AC00F48B2A /* RemoteSessionActivityManager.swift */; };
+		B9E0E6572EF1F6B500F48B2A /* RemoteSignerActivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E0E6562EF1F6AC00F48B2A /* RemoteSignerActivityManager.swift */; };
 		B9E0E66F2EF32BDE00F48B2A /* PrimalShared.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9E0E66D2EF32BCC00F48B2A /* PrimalShared.xcframework */; };
 		B9E0E6702EF32BDE00F48B2A /* PrimalShared.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B9E0E66D2EF32BCC00F48B2A /* PrimalShared.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B9E36BD82EE330AD00213CA0 /* RemoteSignerActiveSessionsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E36BD72EE330A400213CA0 /* RemoteSignerActiveSessionsController.swift */; };
@@ -635,7 +635,7 @@
 		B9E67DD92EF47389002D7952 /* RemoteSignerDisclosureController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E67DD82EF4737D002D7952 /* RemoteSignerDisclosureController.swift */; };
 		B9E67DDA2EF4847C002D7952 /* Color.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9F2F8829F6AB8A00A9CDF3 /* Color.swift */; };
 		B9E67DDC2EF489D7002D7952 /* Fireplace.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = B9E67DDB2EF489D7002D7952 /* Fireplace.mp3 */; };
-		B9E67DDE2EF489DD002D7952 /* Relaxing Tune.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = B9E67DDD2EF489DD002D7952 /* Relaxing Tune.mp3 */; };
+		B9E67DDE2EF489DD002D7952 /* Soft Pulse.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = B9E67DDD2EF489DD002D7952 /* Soft Pulse.mp3 */; };
 		B9E67DE02EF48A00002D7952 /* White Noise.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = B9E67DDF2EF48A00002D7952 /* White Noise.mp3 */; };
 		B9E67DE22EF48B69002D7952 /* Gentle Rain.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = B9E67DE12EF48B69002D7952 /* Gentle Rain.mp3 */; };
 		B9E67E7D2D075E35006BB397 /* FeedElementUserCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E67E7C2D075E35006BB397 /* FeedElementUserCell.swift */; };
@@ -1072,7 +1072,7 @@
 		B914CD762AA62EFA00CD0BD1 /* VideoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoCell.swift; sourceTree = "<group>"; };
 		B914CD782AA62F4D00CD0BD1 /* YoutubeVideoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YoutubeVideoCell.swift; sourceTree = "<group>"; };
 		B914CD7A2AA8A23700CD0BD1 /* ChatManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatManager.swift; sourceTree = "<group>"; };
-		B91798292EE0690D00EF29EF /* RemoteSigningManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSigningManager.swift; sourceTree = "<group>"; };
+		B91798292EE0690D00EF29EF /* RemoteSignerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSignerManager.swift; sourceTree = "<group>"; };
 		B917982A2EE0690D00EF29EF /* SigningManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SigningManager.swift; sourceTree = "<group>"; };
 		B91798322EE093B800EF29EF /* EncryptionServiceHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EncryptionServiceHandler.swift; sourceTree = "<group>"; };
 		B91798742EE320A000EF29EF /* RemoteSignerPillView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSignerPillView.swift; sourceTree = "<group>"; };
@@ -1415,7 +1415,7 @@
 		B9E0E6362EF08D0500F48B2A /* RemoteSignerWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = RemoteSignerWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		B9E0E6372EF08D0500F48B2A /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		B9E0E6392EF08D0600F48B2A /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
-		B9E0E6562EF1F6AC00F48B2A /* RemoteSessionActivityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSessionActivityManager.swift; sourceTree = "<group>"; };
+		B9E0E6562EF1F6AC00F48B2A /* RemoteSignerActivityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSignerActivityManager.swift; sourceTree = "<group>"; };
 		B9E0E66D2EF32BCC00F48B2A /* PrimalShared.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = PrimalShared.xcframework; sourceTree = "<group>"; };
 		B9E36BD72EE330A400213CA0 /* RemoteSignerActiveSessionsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSignerActiveSessionsController.swift; sourceTree = "<group>"; };
 		B9E36BDA2EE714F400213CA0 /* SettingsRemoteSignerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsRemoteSignerController.swift; sourceTree = "<group>"; };
@@ -1424,7 +1424,7 @@
 		B9E36BE32EE778F800213CA0 /* RemoteSignerConnectionInfoActionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSignerConnectionInfoActionCell.swift; sourceTree = "<group>"; };
 		B9E67DD82EF4737D002D7952 /* RemoteSignerDisclosureController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSignerDisclosureController.swift; sourceTree = "<group>"; };
 		B9E67DDB2EF489D7002D7952 /* Fireplace.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Fireplace.mp3; sourceTree = "<group>"; };
-		B9E67DDD2EF489DD002D7952 /* Relaxing Tune.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "Relaxing Tune.mp3"; sourceTree = "<group>"; };
+		B9E67DDD2EF489DD002D7952 /* Soft Pulse.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "Soft Pulse.mp3"; sourceTree = "<group>"; };
 		B9E67DDF2EF48A00002D7952 /* White Noise.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "White Noise.mp3"; sourceTree = "<group>"; };
 		B9E67DE12EF48B69002D7952 /* Gentle Rain.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "Gentle Rain.mp3"; sourceTree = "<group>"; };
 		B9E67E7C2D075E35006BB397 /* FeedElementUserCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedElementUserCell.swift; sourceTree = "<group>"; };
@@ -2562,7 +2562,7 @@
 		B90DB0632E58DDDF00A67D4A /* Video */ = {
 			isa = PBXGroup;
 			children = (
-				B9E0E6562EF1F6AC00F48B2A /* RemoteSessionActivityManager.swift */,
+				B9E0E6562EF1F6AC00F48B2A /* RemoteSignerActivityManager.swift */,
 				B9E0E6292EEB483A00F48B2A /* GenericPlayer.swift */,
 				B914CD682A9E6B4A00CD0BD1 /* VideoPlaybackManager.swift */,
 				B90DB0662E58DDF500A67D4A /* VideoPlayer.swift */,
@@ -2587,7 +2587,7 @@
 		B917982B2EE0690D00EF29EF /* RemoteSigning */ = {
 			isa = PBXGroup;
 			children = (
-				B91798292EE0690D00EF29EF /* RemoteSigningManager.swift */,
+				B91798292EE0690D00EF29EF /* RemoteSignerManager.swift */,
 				B917982A2EE0690D00EF29EF /* SigningManager.swift */,
 				B91798322EE093B800EF29EF /* EncryptionServiceHandler.swift */,
 			);
@@ -3376,7 +3376,7 @@
 			isa = PBXGroup;
 			children = (
 				B9E67DDB2EF489D7002D7952 /* Fireplace.mp3 */,
-				B9E67DDD2EF489DD002D7952 /* Relaxing Tune.mp3 */,
+				B9E67DDD2EF489DD002D7952 /* Soft Pulse.mp3 */,
 				B9E67DDF2EF48A00002D7952 /* White Noise.mp3 */,
 				B9E67DE12EF48B69002D7952 /* Gentle Rain.mp3 */,
 			);
@@ -3784,7 +3784,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B9E67DDE2EF489DD002D7952 /* Relaxing Tune.mp3 in Resources */,
+				B9E67DDE2EF489DD002D7952 /* Soft Pulse.mp3 in Resources */,
 				9EB219E62A0676760037C3E5 /* RobotoFlex-All.ttf in Resources */,
 				B99E03972C061D67006CCECB /* longForm.html in Resources */,
 				9EF4BFCE2A93CE1B003396AA /* loadingSpinnerBlue.json in Resources */,
@@ -3923,7 +3923,7 @@
 				B90032852BD0183600ADD2E5 /* NoteZapsRequest.swift in Sources */,
 				B9E0E6262EEAC89600F48B2A /* CheckboxRadioButton.swift in Sources */,
 				B9C6D23B2CA5BDE300B2EEBE /* ExploreFeedPreviewParentController.swift in Sources */,
-				B9E0E6572EF1F6B500F48B2A /* RemoteSessionActivityManager.swift in Sources */,
+				B9E0E6572EF1F6B500F48B2A /* RemoteSignerActivityManager.swift in Sources */,
 				B98DD8B22C493D7D00E8369A /* PostRequestResult+Article.swift in Sources */,
 				B94F2BAF2AD04FE40041181B /* WalletManager.swift in Sources */,
 				B94A0E262AA8E42B00DEBFE1 /* ChatTableCell.swift in Sources */,
@@ -4158,7 +4158,7 @@
 				9E83DF702A573E5100F2C379 /* UIStackView+Extra.swift in Sources */,
 				B9E67EAF2D09E576006BB397 /* DerivativeClasses.swift in Sources */,
 				B9DAA45D2D51550300B00B82 /* LegendListController.swift in Sources */,
-				B917982C2EE0690D00EF29EF /* RemoteSigningManager.swift in Sources */,
+				B917982C2EE0690D00EF29EF /* RemoteSignerManager.swift in Sources */,
 				B917982D2EE0690D00EF29EF /* SigningManager.swift in Sources */,
 				9ED415FC2A41E02200892235 /* SearchHeaderView.swift in Sources */,
 				9E83DF812A6ED99500F2C379 /* PostingImageView.swift in Sources */,
@@ -4725,7 +4725,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.6.22;
+				MARKETING_VERSION = 2.6.25;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -4774,7 +4774,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.6.22;
+				MARKETING_VERSION = 2.6.25;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

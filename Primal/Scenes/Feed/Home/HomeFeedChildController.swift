@@ -36,7 +36,7 @@ class HomeFeedChildController: PostFeedViewController {
         
         view.addSubview(newPostsViewParent)
         newPostsViewParent.addSubview(newPostsView)
-        newPostsViewParent.pinToSuperview(edges: .top, padding: 138).centerToSuperview(axis: .horizontal)
+        newPostsViewParent.pinToSuperview(edges: .top, padding: 130).centerToSuperview(axis: .horizontal)
         newPostsViewParent.alpha = 0
         
         newPostsView.pinToSuperview(edges: .vertical).pinToSuperview(edges: .horizontal)

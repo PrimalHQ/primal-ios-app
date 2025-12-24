@@ -84,11 +84,11 @@ class RemoteSignerActiveSessionsController: UIViewController {
         buttonsParent.addSubview(buttonStack)
         buttonStack.pinToSuperview(edges: .horizontal, padding: 24).pinToSuperview(edges: .top, padding: 16).pinToSuperview(edges: .bottom, padding: 4, safeArea: true)
         
-        if let preselectId = RemoteSigningManager.instance.activeSessions.first?.sessionId {
+        if let preselectId = RemoteSignerManager.instance.activeSessions.first?.sessionId {
             selectedSessions.insert(preselectId)
         }
         
-        Publishers.CombineLatest(RemoteSigningManager.instance.$activeSessions, LoginManager.instance.$loadedProfiles)
+        Publishers.CombineLatest(RemoteSignerManager.instance.$activeSessions, LoginManager.instance.$loadedProfiles)
             .sink { [weak self] sessions, profiles in
                 contentStack.arrangedSubviews.forEach { $0.removeFromSuperview() }
                 
@@ -122,7 +122,7 @@ class RemoteSignerActiveSessionsController: UIViewController {
         ])
         
         $selectedSessions.sink { selected in
-            let all = RemoteSigningManager.instance.activeSessions.map { $0.sessionId }
+            let all = RemoteSignerManager.instance.activeSessions.map { $0.sessionId }
             
             selectButton.configuration = .accent(selected.count == all.count ? "Deselect All" : "Select All", font: .appFont(withSize: 16, weight: .regular))
             
@@ -162,10 +162,10 @@ class RemoteSignerActiveSessionsController: UIViewController {
         selectButton.addAction(.init(handler: { [weak self] _ in
             guard let self else { return }
             
-            if self.selectedSessions.count == RemoteSigningManager.instance.activeSessions.count {
+            if self.selectedSessions.count == RemoteSignerManager.instance.activeSessions.count {
                 self.selectedSessions = []
             } else {
-                self.selectedSessions = Set(RemoteSigningManager.instance.activeSessions.map(\.sessionId))
+                self.selectedSessions = Set(RemoteSignerManager.instance.activeSessions.map(\.sessionId))
             }
         }), for: .touchUpInside)
         
@@ -173,8 +173,8 @@ class RemoteSignerActiveSessionsController: UIViewController {
             guard
                 let self,
                 let sessionId = selectedSessions.first,
-                let clientPubKey = RemoteSigningManager.instance.activeSessions.first(where: { $0.sessionId == sessionId })?.clientPubKey,
-                let connection = RemoteSigningManager.instance.activeConnections.first(where: { $0.clientPubKey == clientPubKey }),
+                let clientPubKey = RemoteSignerManager.instance.activeSessions.first(where: { $0.sessionId == sessionId })?.clientPubKey,
+                let connection = RemoteSignerManager.instance.activeConnections.first(where: { $0.clientPubKey == clientPubKey }),
                 let nav: UINavigationController = navigationController ?? presentingViewController?.findInChildren()
             else { return }
             nav.pushViewController(SettingsConnectedAppController(appConnection: connection), animated: true)
@@ -183,11 +183,11 @@ class RemoteSignerActiveSessionsController: UIViewController {
         
         disConnectButton.addAction(.init(handler: { [weak self] _ in
             guard let self else { return }
-            let sessions = RemoteSigningManager.instance.activeSessions.filter { self.selectedSessions.contains($0.sessionId) }
+            let sessions = RemoteSignerManager.instance.activeSessions.filter { self.selectedSessions.contains($0.sessionId) }
             
             guard !sessions.isEmpty else { return }
             
-            RemoteSigningManager.instance.endSessions(sessions)
+            RemoteSignerManager.instance.endSessions(sessions)
         }), for: .touchUpInside)
     }
 }

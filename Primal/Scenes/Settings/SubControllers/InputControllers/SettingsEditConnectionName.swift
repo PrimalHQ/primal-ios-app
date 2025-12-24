@@ -31,7 +31,7 @@ final class SettingsEditConnectionName: UIViewController, Themeable {
         if value.isEmpty { return }
 
         Task {
-            try? await RemoteSigningManager.instance.connectionRepo.updateConnectionName(clientPubKey: connection.clientPubKey, name: value)
+            try? await RemoteSignerManager.instance.connectionRepo.updateConnectionName(clientPubKey: connection.clientPubKey, name: value)
         }
     }
     

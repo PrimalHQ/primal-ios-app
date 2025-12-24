@@ -1,5 +1,5 @@
 //
-//  RemoteSessionActivityManager.swift
+//  RemoteSignerActivityManager.swift
 //  Primal
 //
 //  Created by Pavle Stevanović on 16. 12. 2025..
@@ -10,8 +10,8 @@ import ActivityKit
 import AVFAudio
 
 @available(iOS 16.1, *)
-class RemoteSessionActivityManager {
-    static let instance = RemoteSessionActivityManager()
+class RemoteSignerActivityManager {
+    static let instance = RemoteSignerActivityManager()
     
     var isAudioMuted: Bool = UserDefaults.standard.bool(forKey: "remoteSignerIsAudioMutedKey") {
         didSet {
@@ -19,9 +19,9 @@ class RemoteSessionActivityManager {
         }
     }
     
-    var isAudioAllowed: Bool = UserDefaults.standard.bool(forKey: "remoteSignerIsAudioAllowedKey1") {
+    var isAudioAllowed: Bool = UserDefaults.standard.bool(forKey: "remoteSignerIsAudioAllowedKey4") {
         didSet {
-            UserDefaults.standard.set(isAudioAllowed, forKey: "remoteSignerIsAudioAllowedKey1")
+            UserDefaults.standard.set(isAudioAllowed, forKey: "remoteSignerIsAudioAllowedKey4")
         }
     }
 
@@ -37,14 +37,14 @@ class RemoteSessionActivityManager {
         }
         return nil
     }
-    var soundNames = ["Relaxing Tune", "Fireplace", "White Noise", "Gentle Rain"]
+    var soundNames = ["Soft Pulse", "Fireplace", "White Noise", "Gentle Rain"]
     
     var currentSongName: String? {
         soundNames[safe: currentlyPlaying]
     }
     
     var connectedApps: [String] {
-        RemoteSigningManager.instance.activeSessions.map { $0.name ?? "Unknown" }
+        RemoteSignerManager.instance.activeSessions.map { $0.name ?? "Unknown" }
     }
     
     var activity: Activity<RemoteSignerWidgetAttributes>?
@@ -154,6 +154,7 @@ class RemoteSessionActivityManager {
         
         isAudioMuted.toggle()
         remotePlayer.setMutedCustom(isAudioMuted)
+        
         updateActivity()
     }
 }
@@ -168,7 +169,7 @@ class RemoteSessionAudioPlayer: GenericPlayer<AVAudioPlayer> {
         guard let audioPlayer = try? AVAudioPlayer(contentsOf: url) else { return nil }
             
         audioPlayer.numberOfLoops = -1
-        audioPlayer.volume = RemoteSessionActivityManager.instance.isAudioMuted ? 0 : 0.8
+        audioPlayer.volume = RemoteSignerActivityManager.instance.isAudioMuted ? 0 : 1
         
         super.init(playerInit: { audioPlayer })
     }
@@ -183,6 +184,6 @@ class RemoteSessionAudioPlayer: GenericPlayer<AVAudioPlayer> {
     
     override func pause() {
         super.pause()
-        RemoteSessionActivityManager.instance.updateActivity()
+        RemoteSignerActivityManager.instance.updateActivity()
     }
 }

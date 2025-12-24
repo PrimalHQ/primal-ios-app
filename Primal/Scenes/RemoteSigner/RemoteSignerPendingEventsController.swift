@@ -93,7 +93,7 @@ class RemoteSignerPendingEventsController: UIViewController {
         view.addSubview(mainStack)
         mainStack.pinToSuperview(edges: [.horizontal, .bottom]).pinToSuperview(edges: .top, padding: 32)
         
-        RemoteSigningManager.instance.sessionRepo.observeSession(sessionId: sessionId).toPublisher().first()
+        RemoteSignerManager.instance.sessionRepo.observeSession(sessionId: sessionId).toPublisher().first()
             .receive(on: DispatchQueue.main)
             .sink { session in
                 appIcon.kf.setImage(with: URL(string: session?.image ?? ""), placeholder: session?.defaultImage(size: 40))
@@ -162,7 +162,7 @@ class RemoteSignerPendingEventsController: UIViewController {
             }
         }), for: .touchUpInside)
         
-        let sessionEventRepo = RemoteSigningManager.instance.sessionEventRepo
+        let sessionEventRepo = RemoteSignerManager.instance.sessionEventRepo
         rejectButton.addAction(.init(handler: { [weak self] _ in
             guard let self else { return }
             
@@ -268,7 +268,7 @@ class RemoteSignerEventSelectionCell: UITableViewCell {
     func configure(event: SessionEvent, selected: Bool, delegate: RemoteSignerEventSelectionCellDelegate?) {
         self.delegate = delegate
         checkButton.isSelected = selected
-        nameLabel.text = RemoteSigningManager.instance.permissionsMap[event.requestTypeId] ?? event.requestTypeId
+        nameLabel.text = RemoteSignerManager.instance.permissionsMap[event.requestTypeId] ?? event.requestTypeId
         dateLabel.text = Self.dateFormatter.string(from: .init(timeIntervalSince1970: TimeInterval(event.requestedAt)))
     }
 }
