@@ -210,7 +210,7 @@ class RemoteSignerSessionSelectionButton: MyButton {
         }
     }
     
-    init(user: ParsedUser, session: AppSession) {
+    init(user: ParsedUser, session: RemoteAppSession) {
         super.init(frame: .zero)
         
         let nameSuperStack = UIStackView(axis: .vertical, [nameLabel, nipLabel])

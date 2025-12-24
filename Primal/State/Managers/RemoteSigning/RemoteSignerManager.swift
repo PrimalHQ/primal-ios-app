@@ -23,9 +23,9 @@ class RemoteSignerManager {
     
     var cancellables: Set<AnyCancellable> = []
     
-    @Published var activeSessions: [AppSession] = []
+    @Published var activeSessions: [RemoteAppSession] = []
     
-    @Published var activeConnections: [AppConnection] = []
+    @Published var activeConnections: [RemoteAppConnection] = []
     
     var permissionsMap: [String: String] = [:]
     
@@ -137,7 +137,13 @@ class RemoteSignerManager {
         
         Task {
             do {
-                let result = try await signerConnectionInit.initialize(signerPubKey: signerPubkey, userPubKey: userPubKey, connectionUrl: url, trustLevel: trustLevel).getOrThrow()
+                let result = try await signerConnectionInit.initialize(
+                    signerPubKey: signerPubkey,
+                    userPubKey: userPubKey,
+                    connectionUrl: url,
+                    trustLevel: trustLevel,
+                    nwcConnectionString: nil,
+                ).getOrThrow()
             } catch let error {
                 print("REMOTE SIGNER error: \(error)")
             }
@@ -148,7 +154,7 @@ class RemoteSignerManager {
         endSessions(activeSessions)
     }
     
-    func endSessions(_ sessions: [AppSession]) {
+    func endSessions(_ sessions: [RemoteAppSession]) {
         Task {
             try? await sessionRepo.endSessions(sessionIds: sessions.map { $0.sessionId })
         }

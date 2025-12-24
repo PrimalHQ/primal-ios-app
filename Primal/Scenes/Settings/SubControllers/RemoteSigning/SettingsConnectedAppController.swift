@@ -18,11 +18,11 @@ class SettingsConnectedAppController: UIViewController {
     }
     
     enum TableItem: Hashable {
-        case mainInfo(AppConnection, lastSession: AppSession?)
+        case mainInfo(RemoteAppConnection, lastSession: RemoteAppSession?)
         case autoStart(Bool)
         case trust(TrustLevel, Bool)
         case permissionDetails
-        case session(AppSession)
+        case session(RemoteAppSession)
         
         var cellId: String {
             switch self {
@@ -37,16 +37,16 @@ class SettingsConnectedAppController: UIViewController {
     
     var cancellables: Set<AnyCancellable> = []
     
-    @Published var items: [AppConnection] = []
+    @Published var items: [RemoteAppConnection] = []
     
     let dataSource: UITableViewDiffableDataSource<TableSections, TableItem>
     
     let tableView = UITableView(frame: .zero, style: .insetGrouped)
     
     let connectionID: String
-    let connection: AppConnection
+    let connection: RemoteAppConnection
     
-    init(appConnection: AppConnection) {
+    init(appConnection: RemoteAppConnection) {
         connection = appConnection
         connectionID = appConnection.clientPubKey
         var wSelf: SettingsConnectedAppController?
@@ -103,7 +103,7 @@ class SettingsConnectedAppController: UIViewController {
             RemoteSignerManager.instance.sessionRepo.observeSessionsByClientPubKey(clientPubKey: connectionID).toPublisher(),
             RemoteSignerManager.instance.connectionRepo.observeConnection(clientPubKey: connectionID).toPublisher()
         )
-        .map { ($0.0 as [AppSession], $0.1) }
+        .map { ($0.0 as [RemoteAppSession], $0.1) }
         .debounce(for: 0.2, scheduler: DispatchQueue.main)
         .sink { [weak self] sessions, connection in
             guard let connection else { return }

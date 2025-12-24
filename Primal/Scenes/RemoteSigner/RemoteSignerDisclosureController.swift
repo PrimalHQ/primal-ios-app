@@ -16,8 +16,8 @@ class RemoteSignerDisclosureController: UIViewController {
     
     let designHeight: CGFloat = 556
     
-    let session: AppSession
-    init(session: AppSession) {
+    let session: RemoteAppSession
+    init(session: RemoteAppSession) {
         self.session = session
         super.init(nibName: nil, bundle: nil)
         

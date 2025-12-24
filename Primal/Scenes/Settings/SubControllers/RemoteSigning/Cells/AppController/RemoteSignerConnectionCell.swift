@@ -45,7 +45,7 @@ final class RemoteSignerConnectionCell: UITableViewCell {
         stack.setCustomSpacing(20, after: titleLabel)
     }
 
-    func configure(connection: AppConnection, user: ParsedUser) {
+    func configure(connection: RemoteAppConnection, user: ParsedUser) {
         activeDot.backgroundColor = connection.autoStart ? .init(rgb: 0x66E205) : .foreground5
         
         iconView.kf.setImage(with: URL(string: connection.image ?? ""), placeholder: connection.defaultImage(size: 20))

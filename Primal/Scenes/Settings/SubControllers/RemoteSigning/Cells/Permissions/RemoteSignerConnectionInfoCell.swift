@@ -46,7 +46,7 @@ final class RemoteSignerConnectionInfoCell: UITableViewCell {
         formatter.setLocalizedDateFormatFromTemplate("MMM d, yyyy h:mm a")
     }
 
-    func configure(connection: AppConnection, lastStart: Date?) {
+    func configure(connection: RemoteAppConnection, lastStart: Date?) {
         iconView.kf.setImage(with: URL(string: connection.image ?? ""), placeholder: connection.defaultImage(size: 48))
         titleLabel.text = connection.name
         

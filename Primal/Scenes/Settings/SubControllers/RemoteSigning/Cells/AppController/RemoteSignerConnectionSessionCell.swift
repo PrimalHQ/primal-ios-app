@@ -43,7 +43,7 @@ final class RemoteSignerConnectionSessionCell: UITableViewCell {
         formatter.setLocalizedDateFormatFromTemplate("MMM d, yyyy h:mm a")
     }
 
-    func configure(session: AppSession) {
+    func configure(session: RemoteAppSession) {
         iconView.kf.setImage(with: URL(string: session.image ?? ""), placeholder: session.defaultImage(size: 20))
         
         titleLabel.text = formatter.string(from: .init(timeIntervalSince1970: TimeInterval(session.sessionStartedAt)))

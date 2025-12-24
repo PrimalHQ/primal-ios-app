@@ -78,7 +78,7 @@ final class RemoteSignerConnectionInfoActionCell: UITableViewCell {
         }), for: .touchUpInside)
     }
 
-    func configure(connection: AppConnection, lastStart: Date?, isActive: Bool, delegate: RemoteSignerConnectionInfoActionCellDelegate?) {
+    func configure(connection: RemoteAppConnection, lastStart: Date?, isActive: Bool, delegate: RemoteSignerConnectionInfoActionCellDelegate?) {
         self.delegate = delegate
         
         iconView.kf.setImage(with: URL(string: connection.image ?? ""), placeholder: connection.defaultImage(size: 48))
