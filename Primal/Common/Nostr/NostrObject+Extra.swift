@@ -11,15 +11,15 @@ import GenericJSON
 import StoreKit
 
 extension NostrObject {
-    static func fromJSONDict(_ object: [String: JSON]) -> Self {
-        .init(
+    static func fromJSONDict(_ object: [String: JSON]) -> NostrObject {
+        NostrObject(
             id: object["id"]?.stringValue ?? "",
             sig: object["sig"]?.stringValue ?? "",
             tags: object["tags"]?.arrayValue?.map { $0.arrayValue?.map { $0.stringValue ?? "" } ?? [] } ?? [],
             pubkey: object["pubkey"]?.stringValue ?? "",
-            created_at: object["created_at"]?.doubleValue ?? -1,
+            created_at: Int64(object["created_at"]?.doubleValue ?? -1),
             kind: Int(object["kind"]?.doubleValue ?? -1),
-            content: object["content"].stringValue ?? ""
+            content: object["content"]?.stringValue ?? ""
         )
     }
     
