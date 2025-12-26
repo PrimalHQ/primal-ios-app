@@ -104,13 +104,13 @@ class SettingsConnectedAppPermissionsController: UIViewController {
     
     func refresh() {
         Publishers.CombineLatest3(
-            RemoteSignerManager.instance.sessionRepo.observeSessionsByApp(appIdentifier: connectionID).toPublisher().map { $0 as [AppSession] },
+            RemoteSignerManager.instance.sessionRepo.observeSessionsByAppIdentifier(appIdentifier: connectionID).toPublisher().map { $0 as [AppSession] },
             RemoteSignerManager.instance.connectionRepo.observeConnection(clientPubKey: connectionID).toPublisher(),
-            RemoteSignerManager.instance.permissionRepo.observePermissions(appIdentifier: connectionID).toPublisher()
+            RemoteSignerManager.instance.permissionRepo.observePermissions(clientPubKey: connectionID).toPublisher()
         )
         .first()  // Ugly table jumps on successive changes (probably something about not being to identify permission groups as same cells
         .receive(on: DispatchQueue.main)
-        .sink { [weak self] sessions, connection, permissions in
+        .sink { [weak self] (sessions, connection, permissions) in
             guard let connection else { return }
             
             var snapshot = NSDiffableDataSourceSnapshot<TableSections, TableItem>()
@@ -143,7 +143,7 @@ extension SettingsConnectedAppPermissionsController: UITableViewDelegate {
             alert.addAction(.init(title: "Reset", style: .destructive, handler: { [weak self] _ in
                 guard let self else { return }
                 Task { @MainActor in
-                    _ = try await RemoteSignerManager.instance.permissionRepo.resetPermissionsToDefault(identifier: self.connectionID)
+                    _ = try await RemoteSignerManager.instance.permissionRepo.resetPermissionsToDefault(clientPubKey: self.connectionID)
                     self.refresh()
                 }
             }))
@@ -167,7 +167,7 @@ extension SettingsConnectedAppPermissionsController: RemoteSignerPermissionEditC
             do {
                 let result = try await RemoteSignerManager.instance.permissionRepo.updatePermissionsAction(
                     permissionIds: group.permissionIds,
-                    appIdentifier: connection.clientPubKey,
+                    clientPubKey: connection.clientPubKey,
                     action: action,
                 )
                 

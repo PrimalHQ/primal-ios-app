@@ -61,7 +61,7 @@ class RemoteSignerManager {
     }
     
     var pendingActionsPublisher: AnyPublisher<[SessionEvent], Never> {
-        return sessionEventRepo.observeEventsPendingUserActionForRemoteSigner(signerPubKey: signerPubkey).toPublisher()
+        return sessionEventRepo.observeEventsPendingUserAction(signerPubKey: signerPubkey).toPublisher()
             .replaceError(with: [])
             .eraseToAnyPublisher()
     }
@@ -148,20 +148,7 @@ class RemoteSignerManager {
         }
     }
     
-    func processNotifications(_ notifications: [UNNotification]) {
-        let remoteSignerNotifications: [UNNotification] = notifications.compactMap {
-            guard
-                let extra = $0.request.content.userInfo["extra"] as? [String: Any],
-                let event = extra["nip46_event"] as? [String: Any],
-                let eventPubkey = extra["nip46_event_pubkey"] as? String,
-                let eventId = event["id"] as? String
-            else { return nil }
-            
-            return $0
-        }
-        
-        guard !remoteSignerNotifications.isEmpty else { return }
-        
+    func processMissedEvents() {
         guard let object = NostrObject.createNostrObjectAndSign(pubkey: signerPubkey, privkey: signerKeypair.privateKey, content: "", kind: 1337, tags: [["d", "Primal-iOS-App"]]) else { return }
 
         SocketRequest(name: "get_queued_events_for_nip46", payload: ["event_from_signer": object.toJSON()]).publisher()
@@ -176,16 +163,15 @@ class RemoteSignerManager {
                 Task {
                     do {
                         for eventPubkey in eventPubkeys {
-                            if let active = try await sessionRepo.findFirstOpenSessionByAppIdentifier(appIdentifier: eventPubkey).getOrNull() {
+                            if let active = try await sessionRepo.findActiveSessionForConnection(clientPubKey: eventPubkey).getOrNull() {
                                 print("NO ACTION")
                             } else {
-                                _ = try await sessionRepo.startRemoteSession(appIdentifier: eventPubkey)
+                                _ = try await sessionRepo.startSession(clientPubKey: eventPubkey)
                             }
                         }
                         
-                        let result = try await sessionEventRepo.notifyMissedNostrEvents(signerKeyPair: signerKeypair, eventIds: eventIds)
+                        let result = try await sessionEventRepo.processMissedEvents(signerKeyPair: signerKeypair, eventIds: eventIds)
                         
-                        PushNotificationsManager.instance.dismissNotifications(remoteSignerNotifications)
                     } catch {
                         print(error)
                     }
@@ -223,12 +209,29 @@ class RemoteSignerManager {
     }
     
     func checkDeliveredNotifications() {
+        RemoteSignerManager.instance.processMissedEvents()
+        
         UNUserNotificationCenter.current().getDeliveredNotifications  { notifications in
             // Background thread
             DispatchQueue.main.async {
-                RemoteSignerManager.instance.processNotifications(notifications)
+                RemoteSignerManager.instance.dismissRemoteSignerNotifications(notifications)
             }
         }
+    }
+    
+    private func dismissRemoteSignerNotifications(_ notifications: [UNNotification]) {
+        let remoteSignerNotifications: [UNNotification] = notifications.compactMap {
+            guard
+                let extra = $0.request.content.userInfo["extra"] as? [String: Any],
+                let event = extra["nip46_event"] as? [String: Any],
+                let eventPubkey = extra["nip46_event_pubkey"] as? String,
+                let eventId = event["id"] as? String
+            else { return nil }
+            
+            return $0
+        }
+        
+        PushNotificationsManager.instance.dismissNotifications(remoteSignerNotifications)
     }
 }
 

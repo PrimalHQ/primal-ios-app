@@ -93,7 +93,7 @@ class RemoteSignerPendingEventsController: UIViewController {
         view.addSubview(mainStack)
         mainStack.pinToSuperview(edges: [.horizontal, .bottom]).pinToSuperview(edges: .top, padding: 32)
         
-        RemoteSignerManager.instance.sessionRepo.observeRemoteSession(sessionId: sessionId).toPublisher().first()
+        RemoteSignerManager.instance.sessionRepo.observeSession(sessionId: sessionId).toPublisher().first()
             .receive(on: DispatchQueue.main)
             .sink { session in
                 appIcon.kf.setImage(with: URL(string: session?.image ?? ""), placeholder: session?.defaultImage(size: 40))
@@ -171,7 +171,7 @@ class RemoteSignerPendingEventsController: UIViewController {
             let choice = alwaysSwitch.isOn ? UserChoice.alwaysReject : .reject
                 
             Task {
-                try await sessionEventRepo.respondToRemoteEvents(userChoices: self.selectedEvents.map({
+                try await sessionEventRepo.respondToEvents(userChoices: self.selectedEvents.map({
                     .init(sessionEventId: $0, userChoice: choice)
                 }))
             }
@@ -183,7 +183,7 @@ class RemoteSignerPendingEventsController: UIViewController {
             let choice = alwaysSwitch.isOn ? UserChoice.alwaysAllow : .allow
                 
             Task {
-                try await sessionEventRepo.respondToRemoteEvents(userChoices: self.selectedEvents.map({
+                try await sessionEventRepo.respondToEvents(userChoices: self.selectedEvents.map({
                     .init(sessionEventId: $0, userChoice: choice)
                 }))
             }

@@ -147,7 +147,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
         
         if let extra = notification.request.content.userInfo["extra"] as? [String: Any], extra["nip46_event"] != nil {
-            RemoteSignerManager.instance.processNotifications([notification])
+            RemoteSignerManager.instance.processMissedEvents()
             completionHandler([])
             return
         }
@@ -157,8 +157,6 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
     
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
         let userInfo = response.notification.request.content.userInfo
-        
-        RemoteSignerManager.instance.processNotifications([response.notification])
         
         if let extra = userInfo["extra"] as? [String: Any] {
             var waitForOpen = false
