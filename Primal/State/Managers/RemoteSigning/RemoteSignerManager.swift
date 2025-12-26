@@ -67,7 +67,6 @@ class RemoteSignerManager {
     }
  
     init() {
-        
         remoteSigner = AccountServiceFactory.shared.createRemoteSignerService(signerKeyPair: signerKeypair, eventSignatureHandler: SigningManager.instance, nostrEncryptionService: EncryptionServiceHandler.instance, nostrEncryptionHandler: EncryptionServiceHandler.instance, connectionRepository: connectionRepo, sessionRepository: sessionRepo, sessionInactivityTimeoutInMinutes: 0)
         
         remoteSigner.initialize()
@@ -150,8 +149,7 @@ class RemoteSignerManager {
     }
     
     func processNotifications(_ notifications: [UNNotification]) {
-        
-        let eventsWithPubkeys: [(event: [String: Any], eventPubkey: String, id: String, notification: UNNotification)] = notifications.compactMap {
+        let remoteSignerNotifications: [UNNotification] = notifications.compactMap {
             guard
                 let extra = $0.request.content.userInfo["extra"] as? [String: Any],
                 let event = extra["nip46_event"] as? [String: Any],
@@ -159,44 +157,41 @@ class RemoteSignerManager {
                 let eventId = event["id"] as? String
             else { return nil }
             
-            return (event, eventPubkey, eventId, $0)
+            return $0
         }
         
-        guard !eventsWithPubkeys.isEmpty else { return }
+        guard !remoteSignerNotifications.isEmpty else { return }
         
-        missedEventsFromNotifications = eventsWithPubkeys.compactMap {
-            guard
-                let id = $0.0["id"] as? String,
-                let pubkey = $0.0["pubkey"] as? String,
-                let createdAt = $0.0["created_at"] as? Double,
-                let kind = $0.0["kind"] as? Double,
-                let tags = $0.0["tags"] as? [[String]],
-                let content = $0.0["content"] as? String,
-                let sig = $0.0["sig"] as? String
-            else { return nil }
-            
-            return .init(id: id, pubKey: pubkey, createdAt: Int64(createdAt), kind: Int32(kind), tags: NostrExtensions.shared.mapAsListOfJsonArray(tags: tags), content: content, sig: sig)
-        }
-        
-        let eventPubkeys = eventsWithPubkeys.map({ $0.eventPubkey }).unique()
-        
-        Task {
-            do {
-                for eventPubkey in eventPubkeys {
-                    if let active = try await sessionRepo.findActiveSessionForConnection(clientPubKey: eventPubkey).getOrNull() {
-                        print("NO ACTION")
-                    } else {
-                        try await sessionRepo.startSession(clientPubKey: eventPubkey)
+        guard let object = NostrObject.createNostrObjectAndSign(pubkey: signerPubkey, privkey: signerKeypair.privateKey, content: "", kind: 1337, tags: [["d", "Primal-iOS-App"]]) else { return }
+
+        SocketRequest(name: "get_queued_events_for_nip46", payload: ["event_from_signer": object.toJSON()]).publisher()
+            .sink(receiveValue: { [self] res in
+                guard !res.events.isEmpty else { return }
+                
+                missedEventsFromNotifications = res.events.compactMap { .init(primalObject: NostrObject.fromJSONDict($0)) }
+                             
+                let eventPubkeys = missedEventsFromNotifications.map({ $0.pubKey }).unique()
+                let eventIds = missedEventsFromNotifications.map({ $0.id })
+
+                Task {
+                    do {
+                        for eventPubkey in eventPubkeys {
+                            if let active = try await sessionRepo.findActiveSessionForConnection(clientPubKey: eventPubkey).getOrNull() {
+                                print("NO ACTION")
+                            } else {
+                                _ = try await sessionRepo.startSession(clientPubKey: eventPubkey)
+                            }
+                        }
+                        
+                        let result = try await sessionEventRepo.processMissedEvents(signerKeyPair: signerKeypair, eventIds: eventIds)
+                        
+                        PushNotificationsManager.instance.dismissNotifications(remoteSignerNotifications)
+                    } catch {
+                        print(error)
                     }
                 }
-                
-                let result = try await sessionEventRepo.processMissedEvents(signerKeyPair: signerKeypair, eventIds: eventsWithPubkeys.map { $0.id })
-                
-                PushNotificationsManager.instance.dismissNotifications(eventsWithPubkeys.map { $0.notification })
-            } catch {
-                print(error)
-            }
-        }
+            })
+            .store(in: &self.cancellables)
     }
     
     func initializeConnection(url: String, userPubKey: String, trustLevel: TrustLevel) {
@@ -228,23 +223,12 @@ class RemoteSignerManager {
     }
     
     func checkDeliveredNotifications() {
-//        UNUserNotificationCenter.current().getDeliveredNotifications  { notifications in
-//            // Background thread
-//            DispatchQueue.main.async {
-//                RemoteSignerManager.instance.processNotifications(notifications)
-//            }
-//        }
-        
-        guard let object = NostrObject.createNostrObjectAndSign(pubkey: signerPubkey, privkey: signerKeypair.privateKey, content: "", kind: 1337, tags: [["d", "Primal-iOS-App"]]) else { return }
-
-        
-        SocketRequest(name: "get_queued_events_for_nip46", payload: ["event_from_signer": object.toJSON()]).publisher()
-            .sink(receiveValue: { res in
-                let events = res.events
-                
-                print(events)
-            })
-            .store(in: &cancellables)
+        UNUserNotificationCenter.current().getDeliveredNotifications  { notifications in
+            // Background thread
+            DispatchQueue.main.async {
+                RemoteSignerManager.instance.processNotifications(notifications)
+            }
+        }
     }
 }
 

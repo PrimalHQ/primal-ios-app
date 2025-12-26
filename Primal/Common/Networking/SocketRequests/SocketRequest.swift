@@ -90,6 +90,7 @@ extension PostRequestResult {
     func handlePostEvent(_ payload: [String: JSON]) {
         guard let kind = NostrKind(rawValue: Int(payload["kind"]?.doubleValue ?? -1337)) else {
             print("UNKNOWN KIND")
+            events.append(payload)
             return
         }
         

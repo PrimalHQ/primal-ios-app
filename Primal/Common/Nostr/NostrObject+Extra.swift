@@ -11,6 +11,18 @@ import GenericJSON
 import StoreKit
 
 extension NostrObject {
+    static func fromJSONDict(_ object: [String: JSON]) -> Self {
+        .init(
+            id: object["id"]?.stringValue ?? "",
+            sig: object["sig"]?.stringValue ?? "",
+            tags: object["tags"]?.arrayValue?.map { $0.arrayValue?.map { $0.stringValue ?? "" } ?? [] } ?? [],
+            pubkey: object["pubkey"]?.stringValue ?? "",
+            created_at: object["created_at"]?.doubleValue ?? -1,
+            kind: Int(object["kind"]?.doubleValue ?? -1),
+            content: object["content"].stringValue ?? ""
+        )
+    }
+    
     func toJSON() -> JSON {
         .object([
             "id": .string(id),
