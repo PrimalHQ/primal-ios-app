@@ -226,6 +226,26 @@ class RemoteSignerManager {
             try? await sessionRepo.endSessions(sessionIds: sessions.map { $0.sessionId })
         }
     }
+    
+    func checkDeliveredNotifications() {
+//        UNUserNotificationCenter.current().getDeliveredNotifications  { notifications in
+//            // Background thread
+//            DispatchQueue.main.async {
+//                RemoteSignerManager.instance.processNotifications(notifications)
+//            }
+//        }
+        
+        guard let object = NostrObject.createNostrObjectAndSign(pubkey: signerPubkey, privkey: signerKeypair.privateKey, content: "", kind: 1337, tags: [["d", "Primal-iOS-App"]]) else { return }
+
+        
+        SocketRequest(name: "get_queued_events_for_nip46", payload: ["event_from_signer": object.toJSON()]).publisher()
+            .sink(receiveValue: { res in
+                let events = res.events
+                
+                print(events)
+            })
+            .store(in: &cancellables)
+    }
 }
 
 extension RemoteSignerManager: Nip46EventsHandler {

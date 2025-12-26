@@ -37,7 +37,7 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
     
     func sceneDidBecomeActive(_ scene: UIScene) {
-        PushNotificationsManager.instance.checkDeliveredNotifications()
+        RemoteSignerManager.instance.checkDeliveredNotifications()
     }
     
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {

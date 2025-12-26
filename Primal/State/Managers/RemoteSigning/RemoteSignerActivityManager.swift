@@ -109,7 +109,7 @@ class RemoteSignerActivityManager {
         }
 
         guard let remotePlayer = VideoPlaybackManager.instance.currentlyPlaying as? RemoteSessionAudioPlayer else { return }
-        remotePlayer.pause()
+        VideoPlaybackManager.instance.currentlyPlaying = nil
     }
     
     func nextSong() {
@@ -183,6 +183,7 @@ class RemoteSessionAudioPlayer: GenericPlayer<AVAudioPlayer> {
     }
     
     override func pause() {
+        if VideoPlaybackManager.instance.currentlyPlaying === self { return } // Disable pausing if there isn't something else playing
         super.pause()
         RemoteSignerActivityManager.instance.updateActivity()
     }

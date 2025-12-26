@@ -20,21 +20,6 @@ class PushNotificationsManager {
     
     private init() {}
     
-    func checkDeliveredNotifications() {
-        UNUserNotificationCenter.current().getDeliveredNotifications  { notifications in
-            // Background thread
-            
-            print(notifications)
-            
-            DispatchQueue.main.async {
-                print("Checking \(notifications.count) notifications")
-                // Update your UI or Badge count here
-                
-                RemoteSignerManager.instance.processNotifications(notifications)
-            }
-        }
-    }
-    
     func dismissNotifications(_ notifications: [UNNotification]) {
         UNUserNotificationCenter.current().removeDeliveredNotifications(withIdentifiers: notifications.map { $0.request.identifier })
     }

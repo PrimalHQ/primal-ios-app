@@ -13,6 +13,23 @@ enum RemoteSignerStartMode {
     case custom(UIViewController)
 }
 
+class RemoteSignerNavigationController: UINavigationController {
+    override var viewControllers: [UIViewController] {
+        didSet {
+            preferredContentSize = viewControllers.last?.preferredContentSize ?? preferredContentSize
+            parent?.sheetPresentationController?.invalidateDetents()
+        }
+    }
+    
+    override init(rootViewController: UIViewController) {
+        super.init(rootViewController: rootViewController)
+        preferredContentSize = rootViewController.preferredContentSize
+        setNavigationBarHidden(true, animated: false)
+    }
+    
+    required init?(coder aDecoder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+}
+
 class RemoteSignerRootController: UIViewController {
     
     var child: UIViewController
@@ -29,7 +46,7 @@ class RemoteSignerRootController: UIViewController {
         case .activeSessions:
             child = RemoteSignerActiveSessionsController()
         case .custom(let vc):
-            child = vc
+            child = RemoteSignerNavigationController(rootViewController: vc)
         }
         super.init(nibName: nil, bundle: nil)
         

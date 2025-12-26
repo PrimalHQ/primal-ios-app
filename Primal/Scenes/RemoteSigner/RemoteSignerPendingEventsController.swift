@@ -107,8 +107,10 @@ class RemoteSignerPendingEventsController: UIViewController {
                     self?.selectedEvents = self?.selectedEvents.filter { id in events.contains(where: { $0.eventId == id }) } ?? []
                 }
                 
-                self?.preferredContentSize = .init(width: 400, height: 350 + 64 * events.count)
-                self?.parent?.sheetPresentationController?.invalidateDetents()
+                let prefSize = CGSize(width: 400, height: 350 + 64 * events.count)
+                self?.preferredContentSize = prefSize
+                self?.navigationController?.preferredContentSize = prefSize
+                self?.parent?.parent?.sheetPresentationController?.invalidateDetents()
                 
                 if events.isEmpty {
                     self?.dismiss(animated: true)
@@ -219,7 +221,11 @@ extension RemoteSignerPendingEventsController: RemoteSignerEventSelectionCellDel
 }
 
 extension RemoteSignerPendingEventsController: UITableViewDelegate {
-    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        guard let event = allEvents[safe: indexPath.row] else { return }
+
+        navigationController?.pushViewController(RemoteSignerEventDetailsController(event: event), animated: true)
+    }
 }
 
 protocol RemoteSignerEventSelectionCellDelegate: AnyObject {

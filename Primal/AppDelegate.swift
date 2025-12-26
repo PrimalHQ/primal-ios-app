@@ -78,8 +78,8 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         _ = SmartContactsManager.instance
         ArticleWebViewCache.setup()
         
-        WalletRepositoryFactory.shared.doInit(enableDbEncryption: false, enableLogs: true)
-        AccountRepositoryFactory.shared.doInit(enableDbEncryption: false, enableLogs: true)
+        WalletRepositoryFactory.shared.doInit(enableDbEncryption: true, enableLogs: true)
+        AccountRepositoryFactory.shared.doInit(enableDbEncryption: true, enableLogs: true)
         
         _ = RemoteSignerManager.instance
         
