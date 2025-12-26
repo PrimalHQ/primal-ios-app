@@ -18,7 +18,7 @@ class SettingsConnectedAppPermissionsController: UIViewController {
     }
     
     enum TableItem: Hashable {
-        case mainInfo(RemoteAppConnection, lastSession: RemoteAppSession?)
+        case mainInfo(RemoteAppConnection, lastSession: AppSession?)
         case permission(AppPermissionGroup, RemoteAppConnection)
         case reset
         
@@ -104,9 +104,9 @@ class SettingsConnectedAppPermissionsController: UIViewController {
     
     func refresh() {
         Publishers.CombineLatest3(
-            RemoteSignerManager.instance.sessionRepo.observeSessionsByClientPubKey(clientPubKey: connectionID).toPublisher().map { $0 as [RemoteAppSession] },
+            RemoteSignerManager.instance.sessionRepo.observeSessionsByApp(appIdentifier: connectionID).toPublisher().map { $0 as [AppSession] },
             RemoteSignerManager.instance.connectionRepo.observeConnection(clientPubKey: connectionID).toPublisher(),
-            RemoteSignerManager.instance.permissionRepo.observePermissions(clientPubKey: connectionID).toPublisher()
+            RemoteSignerManager.instance.permissionRepo.observePermissions(appIdentifier: connectionID).toPublisher()
         )
         .first()  // Ugly table jumps on successive changes (probably something about not being to identify permission groups as same cells
         .receive(on: DispatchQueue.main)
@@ -143,7 +143,7 @@ extension SettingsConnectedAppPermissionsController: UITableViewDelegate {
             alert.addAction(.init(title: "Reset", style: .destructive, handler: { [weak self] _ in
                 guard let self else { return }
                 Task { @MainActor in
-                    _ = try await RemoteSignerManager.instance.permissionRepo.resetPermissionsToDefault(clientPubKey: self.connectionID)
+                    _ = try await RemoteSignerManager.instance.permissionRepo.resetPermissionsToDefault(identifier: self.connectionID)
                     self.refresh()
                 }
             }))
@@ -165,7 +165,11 @@ extension SettingsConnectedAppPermissionsController: RemoteSignerPermissionEditC
         
         Task { @MainActor in
             do {
-                let result = try await RemoteSignerManager.instance.permissionRepo.updatePermissionsAction(permissionIds: group.permissionIds, clientPubKey: connection.clientPubKey, action: action)
+                let result = try await RemoteSignerManager.instance.permissionRepo.updatePermissionsAction(
+                    permissionIds: group.permissionIds,
+                    appIdentifier: connection.clientPubKey,
+                    action: action,
+                )
                 
                 group = .init(groupId: group.groupId, title: group.title, action: action, permissionIds: group.permissionIds)
                 permissions[index.row] = .permission(group, connection)

@@ -61,7 +61,7 @@ class RemoteSignerManager {
     }
     
     var pendingActionsPublisher: AnyPublisher<[SessionEvent], Never> {
-        return sessionEventRepo.observeEventsPendingUserAction(signerPubKey: signerPubkey).toPublisher()
+        return sessionEventRepo.observeEventsPendingUserActionForRemoteSigner(signerPubKey: signerPubkey).toPublisher()
             .replaceError(with: [])
             .eraseToAnyPublisher()
     }
@@ -71,7 +71,7 @@ class RemoteSignerManager {
         
         remoteSigner.initialize()
         
-        sessionRepo.observeActiveSessions(signerPubKey: signerPubkey)
+        sessionRepo.observeOngoingSessions(signerPubKey: signerPubkey)
             .toPublisher()
 //            .map { $0 as [AppSession] }
             .receive(on: DispatchQueue.main)
@@ -176,14 +176,14 @@ class RemoteSignerManager {
                 Task {
                     do {
                         for eventPubkey in eventPubkeys {
-                            if let active = try await sessionRepo.findActiveSessionForConnection(clientPubKey: eventPubkey).getOrNull() {
+                            if let active = try await sessionRepo.findFirstOpenSessionByAppIdentifier(appIdentifier: eventPubkey).getOrNull() {
                                 print("NO ACTION")
                             } else {
-                                _ = try await sessionRepo.startSession(clientPubKey: eventPubkey)
+                                _ = try await sessionRepo.startRemoteSession(appIdentifier: eventPubkey)
                             }
                         }
                         
-                        let result = try await sessionEventRepo.processMissedEvents(signerKeyPair: signerKeypair, eventIds: eventIds)
+                        let result = try await sessionEventRepo.notifyMissedNostrEvents(signerKeyPair: signerKeypair, eventIds: eventIds)
                         
                         PushNotificationsManager.instance.dismissNotifications(remoteSignerNotifications)
                     } catch {
