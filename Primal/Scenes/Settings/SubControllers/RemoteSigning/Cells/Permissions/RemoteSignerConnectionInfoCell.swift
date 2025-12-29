@@ -41,7 +41,7 @@ final class RemoteSignerConnectionInfoCell: UITableViewCell {
         topStack.setCustomSpacing(10, after: iconView)
         
         contentView.addSubview(topStack)
-        topStack.pinToSuperview(padding: 16)
+        topStack.pinToSuperview(edges: [.horizontal, .bottom], padding: 16).pinToSuperview(edges: .top)
         
         formatter.setLocalizedDateFormatFromTemplate("MMM d, yyyy h:mm a")
     }
@@ -56,6 +56,19 @@ final class RemoteSignerConnectionInfoCell: UITableViewCell {
         } else {
             lastSessionLabel.text = "Last session: Never"
         }
+        
+        titleLabel.textColor = .foreground
+        lastSessionLabel.textColor = .foreground3
+        
+        backgroundColor = .background5
+    }
+
+    func configure(session: RemoteAppSession) {
+        iconView.kf.setImage(with: URL(string: session.image ?? ""), placeholder: session.defaultImage(size: 48))
+        titleLabel.text = session.name
+        
+        let start = Date(timeIntervalSince1970: TimeInterval(session.sessionStartedAt))
+        lastSessionLabel.text = "Started on: \(formatter.string(from: start))"
         
         titleLabel.textColor = .foreground
         lastSessionLabel.textColor = .foreground3

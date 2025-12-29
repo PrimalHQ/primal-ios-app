@@ -84,7 +84,7 @@ class SettingsConnectedAppPermissionsController: UIViewController {
         tableView.register(RemoteSignerConnectionSimpleAccentCell.self, forCellReuseIdentifier: RemoteSignerConnectionSimpleAccentCell.reuseID)
         
         tableView.contentInsetAdjustmentBehavior = .never
-        tableView.contentInset = .init(top: 20, left: 0, bottom: 60, right: 0)
+        tableView.contentInset = .init(top: -10, left: 0, bottom: 60, right: 0)
         
         tableView.delegate = self
         

@@ -439,6 +439,8 @@
 		B95677822EFF1C3A00B8166C /* PrimalShared.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B956777F2EFF1C2B00B8166C /* PrimalShared.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B95677842F02E85400B8166C /* EventDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B95677832F02E85400B8166C /* EventDetailsView.swift */; };
 		B95677862F02FAAE00B8166C /* SettingsRemoteSessionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B95677852F02FAA500B8166C /* SettingsRemoteSessionController.swift */; };
+		B95677882F03095000B8166C /* RemoteSignerEventCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B95677872F03094700B8166C /* RemoteSignerEventCell.swift */; };
+		B956778A2F030DA500B8166C /* SettingsRemoteEventController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B95677892F030D8100B8166C /* SettingsRemoteEventController.swift */; };
 		B9658AC32D9EADB60037E5DB /* SettingsMediaUploadsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9658AC22D9EADA60037E5DB /* SettingsMediaUploadsController.swift */; };
 		B9658AC72D9EB5750037E5DB /* SettingsEditMediaUploadsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9658AC62D9EB5750037E5DB /* SettingsEditMediaUploadsController.swift */; };
 		B9658AF32D9FF9460037E5DB /* PrimalNotifications.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = B9658AEC2D9FF9460037E5DB /* PrimalNotifications.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -1236,6 +1238,8 @@
 		B956777F2EFF1C2B00B8166C /* PrimalShared.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = PrimalShared.xcframework; sourceTree = "<group>"; };
 		B95677832F02E85400B8166C /* EventDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventDetailsView.swift; sourceTree = "<group>"; };
 		B95677852F02FAA500B8166C /* SettingsRemoteSessionController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsRemoteSessionController.swift; sourceTree = "<group>"; };
+		B95677872F03094700B8166C /* RemoteSignerEventCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSignerEventCell.swift; sourceTree = "<group>"; };
+		B95677892F030D8100B8166C /* SettingsRemoteEventController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsRemoteEventController.swift; sourceTree = "<group>"; };
 		B9658AC22D9EADA60037E5DB /* SettingsMediaUploadsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsMediaUploadsController.swift; sourceTree = "<group>"; };
 		B9658AC62D9EB5750037E5DB /* SettingsEditMediaUploadsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsEditMediaUploadsController.swift; sourceTree = "<group>"; };
 		B9658AEC2D9FF9460037E5DB /* PrimalNotifications.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = PrimalNotifications.appex; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -3402,6 +3406,7 @@
 				B9E36BDC2EE76F8D00213CA0 /* SettingsConnectedAppController.swift */,
 				B9D331F82EE85F270023D541 /* SettingsConnectedAppPermissionsController.swift */,
 				B95677852F02FAA500B8166C /* SettingsRemoteSessionController.swift */,
+				B95677892F030D8100B8166C /* SettingsRemoteEventController.swift */,
 			);
 			path = RemoteSigning;
 			sourceTree = "<group>";
@@ -3412,6 +3417,7 @@
 				B9D331FB2EE860D90023D541 /* Permissions */,
 				B9D331FA2EE860BD0023D541 /* AppController */,
 				B9D331F42EE84DD80023D541 /* RemoteSignerConnectionSimpleAccentCell.swift */,
+				B95677872F03094700B8166C /* RemoteSignerEventCell.swift */,
 			);
 			path = Cells;
 			sourceTree = "<group>";
@@ -4088,6 +4094,7 @@
 				B9E67EA42D09D8F9006BB397 /* ThreadElementInvoiceCell.swift in Sources */,
 				B99E7BD52B238C7200756F40 /* ImageFullScreenViewController.swift in Sources */,
 				B9DD12FB2CB85F3400C435FD /* DatabaseManager+Nip05Check.swift in Sources */,
+				B956778A2F030DA500B8166C /* SettingsRemoteEventController.swift in Sources */,
 				B9B9E57B2CB6E2C00065DD7C /* SimpleInfoView.swift in Sources */,
 				B9C672DD2E2A570600243B45 /* SafeTableView.swift in Sources */,
 				B91EF0B42CE3D45100299ECF /* GenericSliderView.swift in Sources */,
@@ -4223,6 +4230,7 @@
 				9E0DEAFB29FD4B3300145E08 /* FollowProfileCell.swift in Sources */,
 				B98DD8EA2C80670200E8369A /* DropdownNavigationView.swift in Sources */,
 				B906AB162C9B52C10089813F /* DatabaseManager+Profile.swift in Sources */,
+				B95677882F03095000B8166C /* RemoteSignerEventCell.swift in Sources */,
 				B9CE4DAE2B695F320060A1B8 /* WalletOnchainTierPickController.swift in Sources */,
 				B9B290572B4DB2950069C87F /* SettingsWalletViewController.swift in Sources */,
 				B9B9E56B2CB44E710065DD7C /* ExplorePeopleCell.swift in Sources */,
@@ -4741,7 +4749,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.6.30;
+				MARKETING_VERSION = 2.6.31;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -4790,7 +4798,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.6.30;
+				MARKETING_VERSION = 2.6.31;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

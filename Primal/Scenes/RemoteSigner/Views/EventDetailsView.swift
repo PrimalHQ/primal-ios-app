@@ -13,69 +13,6 @@ extension SessionEvent {
     var eventDetails: [(title: String, text: String, copyText: String)] {
         var result: [(String, String, String)] = []
         
-        if let signEvent = self as? SessionEvent.SignEvent, let json: [String: JSON] = signEvent.unsignedNostrEventJson.decode(){
-            if let pubkey = json["pubkey"]?.stringValue {
-                let shortPubkey = pubkey.prefix(12) + "..." + pubkey.suffix(12)
-                result.append(("Pubkey", shortPubkey.string, pubkey))
-            }
-            if let eventKind = json["kind"]?.doubleValue {
-                let intKind = Int(eventKind)
-                
-                if let kindDesc = RemoteSignerManager.instance.permissionsMap[requestTypeId] {
-                    result.append(("Event kind", "\(intKind) - \(kindDesc)", "\(intKind)"))
-                } else {
-                    result.append(("Event kind", "\(intKind)", "\(intKind)"))
-                }
-            }
-            if let tags = json["tags"]?.arrayValue {
-                var text = ""
-                
-                for tag in tags {
-                    guard let tagArray = tag.arrayValue else { continue }
-                    
-                    var lineText = ""
-                    
-                    for (index, tagElement) in tagArray.enumerated() {
-                        guard let string = tagElement.stringValue else { continue }
-                        
-                        if lineText.count > 25 {
-                            lineText += ", ..."
-                            break
-                        }
-                        
-                        if index != 0 {
-                            lineText += ", "
-                        }
-                        
-                        if lineText.count + string.count + 2 <= 35 {
-                            if index == 0 {
-                                lineText.append("\"\(string.uppercased())\"")
-                            } else {
-                                lineText.append("\"\(string)\"")
-                            }
-                        } else {
-                            let prefixLength = min(30 - lineText.count, 15)
-                            lineText.append("\"\(string.prefix(prefixLength))...\"")
-                        }
-                    }
-                    
-                    if !lineText.isEmpty {
-                        if text.isEmpty {
-                            text.append(lineText)
-                        } else {
-                            text.append("\n" + lineText)
-                        }
-                    }
-                }
-                
-                if !text.isEmpty {
-                    result.append(("Tags", text, tags.encodeToString() ?? text))
-                }
-            }
-            if let content = json["content"]?.stringValue {
-                result.append(("Content", content, content))
-            }
-        }
         if let encryptEvent = self as? SessionEvent.Encrypt {
             result.append(("Plain text", encryptEvent.plainText ?? "", encryptEvent.plainText ?? ""))
             result.append(("Encrypted text", encryptEvent.encryptedText ?? "", encryptEvent.encryptedText ?? ""))
@@ -86,7 +23,94 @@ extension SessionEvent {
         }
         
         if let readPubkey = self as? SessionEvent.GetPublicKey {
-            result.append(("Pubkey", readPubkey.publicKey ?? "", readPubkey.publicKey ?? ""))
+            let pubkey = readPubkey.publicKey ?? ""
+            let shortPubkey = pubkey.prefix(12) + "..." + pubkey.suffix(12)
+            result.append(("Pubkey", shortPubkey.string, pubkey))
+        }
+        
+        guard
+            let signEvent = self as? SessionEvent.SignEvent,
+            let json: [String: JSON] = signEvent.signedNostrEventJson?.decode() ?? signEvent.unsignedNostrEventJson.decode()
+        else { return result }
+        
+        if let id = json["id"]?.stringValue {
+            let shortId = id.prefix(12) + "..." + id.suffix(12)
+            result.append(("ID", shortId.string, id))
+        }
+        
+        if let pubkey = json["pubkey"]?.stringValue {
+            let shortPubkey = pubkey.prefix(12) + "..." + pubkey.suffix(12)
+            result.append(("Pubkey", shortPubkey.string, pubkey))
+        }
+        
+        if let eventKind = json["kind"]?.doubleValue {
+            let intKind = Int(eventKind)
+            
+            if let kindDesc = RemoteSignerManager.instance.permissionsMap[requestTypeId] {
+                result.append(("Event kind", "\(intKind) - \(kindDesc)", "\(intKind)"))
+            } else {
+                result.append(("Event kind", "\(intKind)", "\(intKind)"))
+            }
+        }
+        
+        if let createdAt = json["created_at"]?.doubleValue {
+            let intCreatedAt = Int(createdAt)
+            result.append(("Created at", "\(intCreatedAt)", "\(intCreatedAt)"))
+        }
+        
+        if let tags = json["tags"]?.arrayValue {
+            var text = ""
+            
+            for tag in tags {
+                guard let tagArray = tag.arrayValue else { continue }
+                
+                var lineText = ""
+                
+                for (index, tagElement) in tagArray.enumerated() {
+                    guard let string = tagElement.stringValue else { continue }
+                    
+                    if lineText.count > 25 {
+                        lineText += ", ..."
+                        break
+                    }
+                    
+                    if index != 0 {
+                        lineText += ", "
+                    }
+                    
+                    if lineText.count + string.count + 2 <= 35 {
+                        if index == 0 {
+                            lineText.append("\"\(string.uppercased())\"")
+                        } else {
+                            lineText.append("\"\(string)\"")
+                        }
+                    } else {
+                        let prefixLength = min(30 - lineText.count, 15)
+                        lineText.append("\"\(string.prefix(prefixLength))...\"")
+                    }
+                }
+                
+                if !lineText.isEmpty {
+                    if text.isEmpty {
+                        text.append(lineText)
+                    } else {
+                        text.append("\n" + lineText)
+                    }
+                }
+            }
+            
+            if !text.isEmpty {
+                result.append(("Tags", text, tags.encodeToString() ?? text))
+            }
+        }
+        
+        if let content = json["content"]?.stringValue {
+            result.append(("Content", content, content))
+        }
+        
+        if let sig = json["sig"]?.stringValue {
+            let shortSig = sig.prefix(12) + "..." + sig.suffix(12)
+            result.append(("Pubkey", shortSig.string, sig))
         }
         
         return result

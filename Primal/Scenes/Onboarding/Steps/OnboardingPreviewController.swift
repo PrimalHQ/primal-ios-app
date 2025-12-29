@@ -303,7 +303,10 @@ final class KeyKeychainInfoView: UIView {
         let botContent = UIView()
         botContent.backgroundColor = .black.withAlphaComponent(0.2)
         
-        let botStack = UIStackView([UILabel("Save account in iCloud Keychain", color: .white, font: .appFont(withSize: 16, weight: .regular)), onlineSwitch])
+        let descLabel = UILabel("Save account in iCloud Keychain", color: .white, font: .appFont(withSize: 16, weight: .regular))
+        descLabel.adjustsFontSizeToFitWidth = true
+        
+        let botStack = UIStackView([descLabel, onlineSwitch])
         botStack.spacing = 10
         
         botContent.addSubview(botStack)

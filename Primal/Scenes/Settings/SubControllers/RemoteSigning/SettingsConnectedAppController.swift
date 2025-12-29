@@ -150,7 +150,7 @@ extension SettingsConnectedAppController: UITableViewDelegate {
         case .permissionDetails:
             show(SettingsConnectedAppPermissionsController(connectionId: connectionID), sender: nil)
         case .session(let session):
-            showErrorMessage("Not ready to show session \(session.sessionId)")
+            show(SettingsRemoteSessionController(session: session), sender: nil)
         default: return
         }
     }

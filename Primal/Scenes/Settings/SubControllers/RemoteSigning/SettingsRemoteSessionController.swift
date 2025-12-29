@@ -13,23 +13,19 @@ final class SettingsRemoteSessionController: UIViewController {
     
     enum TableSections: Int, CaseIterable {
         case main
-        case connection
-        case actions
+        case events
     }
     
     enum TableItem: Hashable {
         case sessionInfo(RemoteAppSession)
-        case connectionInfo(RemoteAppConnection, lastSession: RemoteAppSession?)
-        case endSession(RemoteAppSession)
+        case eventInfo(SessionEvent)
         
         var cellId: String {
             switch self {
             case .sessionInfo:
-                return RemoteSignerConnectionSessionCell.reuseID
-            case .connectionInfo:
-                return RemoteSignerConnectionInfoActionCell.reuseID
-            case .endSession:
-                return RemoteSignerConnectionSimpleAccentCell.reuseID
+                return RemoteSignerConnectionInfoCell.reuseID
+            case .eventInfo:
+                return RemoteSignerEventCell.reuseID
             }
         }
     }
@@ -40,16 +36,11 @@ final class SettingsRemoteSessionController: UIViewController {
     let dataSource: UITableViewDiffableDataSource<TableSections, TableItem>
     
     private let sessionId: String
-    private let initialSession: RemoteAppSession
-    
-    // Cached values to build the snapshot
-    private var currentSession: RemoteAppSession
-    private var parentConnection: RemoteAppConnection?
-    private var recentSessionsForConnection: [RemoteAppSession] = []
+    private var session: RemoteAppSession
+    private var events: [SessionEvent] = []
     
     init(session: RemoteAppSession) {
-        self.initialSession = session
-        self.currentSession = session
+        self.session = session
         self.sessionId = session.sessionId
         
         var wSelf: SettingsRemoteSessionController?
@@ -59,20 +50,9 @@ final class SettingsRemoteSessionController: UIViewController {
             
             switch item {
             case .sessionInfo(let session):
-                (cell as? RemoteSignerConnectionSessionCell)?.configure(session: session)
-            case .connectionInfo(let connection, let lastSession):
-                var lastStart: Date?
-                if let start = lastSession?.sessionStartedAt {
-                    lastStart = .init(timeIntervalSince1970: TimeInterval(start))
-                }
-                (cell as? RemoteSignerConnectionInfoActionCell)?.configure(
-                    connection: connection,
-                    lastStart: lastStart,
-                    isActive: lastSession != nil && lastSession?.sessionEndedAt == nil,
-                    delegate: wSelf
-                )
-            case .endSession:
-                (cell as? RemoteSignerConnectionSimpleAccentCell)?.configureWithText("End Session")
+                (cell as? RemoteSignerConnectionInfoCell)?.configure(session: session)
+            case .eventInfo(let event):
+                (cell as? RemoteSignerEventCell)?.configure(event: event)
             }
             
             return cell
@@ -102,27 +82,18 @@ private extension SettingsRemoteSessionController {
         
         tableView.delegate = self
         tableView.contentInsetAdjustmentBehavior = .never
-        tableView.contentInset = .init(top: 20, left: 0, bottom: 60, right: 0)
+        tableView.contentInset = .init(top: -10, left: 0, bottom: 60, right: 0)
         
-        tableView.register(RemoteSignerConnectionSessionCell.self, forCellReuseIdentifier: RemoteSignerConnectionSessionCell.reuseID)
-        tableView.register(RemoteSignerConnectionInfoActionCell.self, forCellReuseIdentifier: RemoteSignerConnectionInfoActionCell.reuseID)
-        tableView.register(RemoteSignerConnectionSimpleAccentCell.self, forCellReuseIdentifier: RemoteSignerConnectionSimpleAccentCell.reuseID)
+        tableView.register(RemoteSignerConnectionInfoCell.self, forCellReuseIdentifier: RemoteSignerConnectionInfoCell.reuseID)
+        tableView.register(RemoteSignerEventCell.self, forCellReuseIdentifier: RemoteSignerEventCell.reuseID)
     }
     
     func applySnapshot() {
         var snapshot = NSDiffableDataSourceSnapshot<TableSections, TableItem>()
-        snapshot.appendSections([.main, .connection, .actions])
+        snapshot.appendSections([.main, .events])
         
-        snapshot.appendItems([.sessionInfo(currentSession)], toSection: .main)
-        
-        if let connection = parentConnection {
-            let last = recentSessionsForConnection.first
-            snapshot.appendItems([.connectionInfo(connection, lastSession: last)], toSection: .connection)
-        }
-        
-        if currentSession.sessionEndedAt == nil {
-            snapshot.appendItems([.endSession(currentSession)], toSection: .actions)
-        }
+        snapshot.appendItems([.sessionInfo(session)], toSection: .main)
+        snapshot.appendItems(events.map { .eventInfo($0) }, toSection: .events)
         
         dataSource.apply(snapshot, animatingDifferences: false)
     }
@@ -136,25 +107,17 @@ private extension SettingsRemoteSessionController {
             .observeSession(sessionId: sessionId)
             .toPublisher()
         
-        // Observe parent connection and its recent sessions
-        // We derive clientPubKey from the initial session to subscribe to relevant streams.
-        let clientPubKey = initialSession.clientPubKey
-        
-        let connectionPub = RemoteSignerManager.instance.connectionRepo
-            .observeConnection(clientPubKey: clientPubKey)
+        let eventsPub = RemoteSignerManager.instance.sessionEventRepo
+            .observeCompletedEventsForSession(sessionId: sessionId)
             .toPublisher()
         
-        let sessionsForConnectionPub = RemoteSignerManager.instance.sessionRepo
-            .observeSessionsByClientPubKey(clientPubKey: clientPubKey)
-            .toPublisher()
-        
-        Publishers.CombineLatest3(sessionPub, connectionPub, sessionsForConnectionPub)
+        Publishers.CombineLatest(sessionPub, eventsPub)
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] session, connection, sessions in
+            .sink { [weak self] session, events in
                 guard let self else { return }
-                if let session { self.currentSession = session }
-                self.parentConnection = connection
-                self.recentSessionsForConnection = sessions
+                
+                self.session = session ?? self.session
+                self.events = events
                 self.applySnapshot()
             }
             .store(in: &cancellables)
@@ -180,13 +143,11 @@ extension SettingsRemoteSessionController: UITableViewDelegate {
         else { return }
         
         switch item {
-        case .endSession(let session):
-            confirmEndSession(session)
-        case .connectionInfo(let connection, _):
-            show(SettingsConnectedAppController(appConnection: connection), sender: nil)
+            
         case .sessionInfo:
-            // Could push a deeper detail if desired
             break
+        case .eventInfo(let event):
+            show(SettingsRemoteEventController(event: event), sender: nil)
         }
     }
     
@@ -203,43 +164,6 @@ extension SettingsRemoteSessionController: UITableViewDelegate {
             }
         }))
         present(alert, animated: true)
-    }
-}
-
-// MARK: - Bridge actions from connection info cell (edit name / delete / start-stop)
-extension SettingsRemoteSessionController: RemoteSignerConnectionInfoActionCellDelegate {
-    func deleteConnection() {
-        guard let connection = parentConnection else { return }
-        let alert = UIAlertController(title: "Are you sure?", message: "Delete this connection?", preferredStyle: .alert)
-        alert.addAction(.init(title: "Cancel", style: .cancel))
-        alert.addAction(.init(title: "Delete", style: .destructive, handler: { [weak self] _ in
-            guard let self else { return }
-            self.navigationController?.popViewController(animated: true)
-            Task { @MainActor in
-                try? await RemoteSignerManager.instance.connectionRepo.deleteConnectionAndData(clientPubKey: connection.clientPubKey)
-            }
-        }))
-        present(alert, animated: true)
-    }
-    
-    func editName() {
-        guard let connection = parentConnection else { return }
-        show(SettingsEditConnectionName(connection: connection), sender: nil)
-    }
-    
-    func startStopSession() {
-        guard let connection = parentConnection else { return }
-        let repo = RemoteSignerManager.instance.sessionRepo
-        
-        Task {
-            do {
-                if currentSession.sessionEndedAt == nil {
-                    _ = try await repo.endSessions(sessionIds: [currentSession.sessionId])
-                } else {
-                    _ = try await repo.startSession(clientPubKey: connection.clientPubKey)
-                }
-            }
-        }
     }
 }
 

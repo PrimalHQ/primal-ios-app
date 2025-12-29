@@ -43,7 +43,7 @@ class RemoteSignerEventDetailsController: UIViewController {
         
         let date = Date(timeIntervalSince1970: Double(event.requestedAt))
         let dateFormatter = DateFormatter()
-        dateFormatter.locale = .current
+        dateFormatter.setLocalizedDateFormatFromTemplate("MMM d, yyyy h:mm a")
         let subtitleLabel = UILabel(dateFormatter.string(from: date), color: .foreground3, font: .appFont(withSize: 14, weight: .regular))
         
         let topStack = UIStackView(axis: .vertical, [titleLabel, subtitleLabel])
@@ -60,7 +60,7 @@ class RemoteSignerEventDetailsController: UIViewController {
         // MARK: - Main Stack
         let mainStack = UIStackView(axis: .vertical, [appStack, SpacerView(height: 16), SpacerView(height: 1, color: .background3), topStack, contentScroll, buttonsParent])
         view.addSubview(mainStack)
-        mainStack.pinToSuperview(edges: [.horizontal, .bottom]).pinToSuperview(edges: .top, padding: 32)
+        mainStack.pinToSuperview(edges: [.horizontal, .bottom]).pinToSuperview(edges: .top, padding: 10, safeArea: true)
         
         RemoteSignerManager.instance.sessionRepo.observeSession(sessionId: sessionId).toPublisher().first()
             .receive(on: DispatchQueue.main)
