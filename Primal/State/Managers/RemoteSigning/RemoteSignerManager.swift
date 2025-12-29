@@ -73,7 +73,6 @@ class RemoteSignerManager {
         
         sessionRepo.observeOngoingSessions(signerPubKey: signerPubkey)
             .toPublisher()
-//            .map { $0 as [AppSession] }
             .receive(on: DispatchQueue.main)
             .sink { [weak self] sessions in
                 self?.activeSessions = sessions
@@ -115,26 +114,6 @@ class RemoteSignerManager {
             }
             .store(in: &cancellables)
         
-        let sessionEventRepo = AccountRepositoryFactory.shared.createSessionEventRepository(nip46EventsHandler: self)
-//        "3bfadd33-08ec-4ba1-b902-b62c7ea90166"
-//        sessionRepo.observeSessionsByConnectionId(connectionId: "8ab4d840-6272-43de-a0de-1b93539b23ba")
-//            .toPublisher()
-//            .sink { session in
-//                for session in session.makeIterator() {
-//                    print(session.sessionId)
-//                    
-//                    sessionEventRepo.observeEventsForSession(sessionId: session.sessionId)
-//                        .toPublisher()
-//                        .sink { sessionEvents in
-//                            for event in sessionEvents.makeIterator() {
-//                                print(event.description)
-//                            }
-//                        }
-//                        .store(in: &self.cancellables)
-//                }
-//            }
-//            .store(in: &cancellables)
-//        
         Task { @MainActor in
             guard let permissionsMap = try await permissionRepo.getNamingMap().getOrThrow() else { return }
             

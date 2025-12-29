@@ -84,28 +84,31 @@ class RemoteSignerActiveSessionsController: UIViewController {
         buttonsParent.addSubview(buttonStack)
         buttonStack.pinToSuperview(edges: .horizontal, padding: 24).pinToSuperview(edges: .top, padding: 16).pinToSuperview(edges: .bottom, padding: 4, safeArea: true)
         
-        if let preselectId = RemoteSignerManager.instance.activeSessions.first?.sessionId {
-            selectedSessions.insert(preselectId)
-        }
-        
         Publishers.CombineLatest(RemoteSignerManager.instance.$activeSessions, LoginManager.instance.$loadedProfiles)
             .sink { [weak self] sessions, profiles in
+                guard let self else { return }
+                
                 contentStack.arrangedSubviews.forEach { $0.removeFromSuperview() }
                 
-                self?.preferredContentSize = .init(width: 400, height: 190 + 70 * sessions.count)
+                preferredContentSize = .init(width: 400, height: 190 + 70 * sessions.count)
                 
                 if sessions.isEmpty {
-                    self?.dismiss(animated: true)
+                    dismiss(animated: true)
+                }
+                
+                selectedSessions = selectedSessions.filter({ id in sessions.contains(where: { $0.sessionId == id })})
+                if selectedSessions.isEmpty == true {
+                    selectedSessions = Set(sessions.map { $0.sessionId })
                 }
                 
                 sessions.forEach { session in
                     let user = profiles.first(where: { $0.data.pubkey == session.userPubKey }) ?? .init(data: .init(pubkey: session.userPubKey))
                     
                     let button = RemoteSignerSessionSelectionButton(user: user, session: session)
-                    button.isSelected = self?.selectedSessions.contains(session.sessionId) ?? false
+                    button.isSelected = self.selectedSessions.contains(session.sessionId)
                     contentStack.addArrangedSubview(button)
                     
-                    button.addAction(.init(handler: { _ in
+                    button.addAction(.init(handler: { [weak self] _ in
                         guard let self else { return }
                         if self.selectedSessions.contains(session.sessionId) {
                             self.selectedSessions.remove(session.sessionId)

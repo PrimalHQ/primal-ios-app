@@ -365,17 +365,13 @@ private extension MainTabBarController {
             
             let groups = events.groupByFilter { $0.sessionId }
             
-            if let oldPopup {
+            if let oldPopup, oldPopup.presentingViewController != nil {
                 if let events = groups[oldPopup.sessionId] {
                     oldPopup.allEvents = events
-                    
-                    if oldPopup.presentingViewController == nil {
-                        present(RemoteSignerRootController(.custom(oldPopup)), animated: true)
-                    }
                     return
                 }
                 
-                if oldPopup.presentingViewController != nil { oldPopup.dismiss(animated: true) }
+                oldPopup.dismiss(animated: true)
             }
             
             guard let first = groups.first else {

@@ -17,6 +17,11 @@ class RemoteSignerNavigationController: UINavigationController {
     override var viewControllers: [UIViewController] {
         didSet {
             preferredContentSize = viewControllers.last?.preferredContentSize ?? preferredContentSize
+        }
+    }
+    
+    override var preferredContentSize: CGSize {
+        didSet {
             parent?.sheetPresentationController?.invalidateDetents()
         }
     }
@@ -28,6 +33,30 @@ class RemoteSignerNavigationController: UINavigationController {
     }
     
     required init?(coder aDecoder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    
+    override func pushViewController(_ viewController: UIViewController, animated: Bool) {
+        if animated, let sheet = parent?.sheetPresentationController {
+            sheet.animateChanges {
+                self.preferredContentSize = viewController.preferredContentSize
+            }
+        } else {
+            preferredContentSize = viewController.preferredContentSize
+        }
+        
+        super.pushViewController(viewController, animated: animated)
+    }
+    
+    override func popViewController(animated: Bool) -> UIViewController? {
+        if animated, let sheet = parent?.sheetPresentationController {
+            sheet.animateChanges {
+                preferredContentSize = viewControllers.dropLast().last?.preferredContentSize ?? preferredContentSize
+            }
+        } else {
+            preferredContentSize = viewControllers.dropLast().last?.preferredContentSize ?? preferredContentSize
+        }
+        
+        return super.popViewController(animated: animated)
+    }
 }
 
 class RemoteSignerRootController: UIViewController {

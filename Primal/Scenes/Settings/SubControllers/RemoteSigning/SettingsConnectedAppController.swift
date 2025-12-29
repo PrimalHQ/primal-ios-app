@@ -100,10 +100,9 @@ class SettingsConnectedAppController: UIViewController {
         tableView.delegate = self
         
         Publishers.CombineLatest(
-            RemoteSignerManager.instance.sessionRepo.observeSessionsByAppIdentifier(appIdentifier: connectionID).toPublisher(),
+            RemoteSignerManager.instance.sessionRepo.observeSessionsByClientPubKey(clientPubKey: connectionID).toPublisher(),
             RemoteSignerManager.instance.connectionRepo.observeConnection(clientPubKey: connectionID).toPublisher()
         )
-        .map { ($0.0 as [RemoteAppSession], $0.1) }
         .debounce(for: 0.2, scheduler: DispatchQueue.main)
         .sink { [weak self] sessions, connection in
             guard let connection else { return }

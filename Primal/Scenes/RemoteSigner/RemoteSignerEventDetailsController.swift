@@ -16,13 +16,11 @@ class RemoteSignerEventDetailsController: UIViewController {
     let event: SessionEvent
     var sessionId: String { event.sessionId }
     
-    let descTextView = UITextView()
-    
     init(event: SessionEvent) {
         self.event = event
         super.init(nibName: nil, bundle: nil)
         
-        preferredContentSize = .init(width: 400, height: 500)
+        preferredContentSize = .init(width: 400, height: 600)
     }
     
     required init?(coder: NSCoder) {
@@ -34,8 +32,6 @@ class RemoteSignerEventDetailsController: UIViewController {
     
         view.backgroundColor = .background4
         
-        
-        
         let appIcon = UIImageView().constrainToSize(40)
         let appTitleLabel = UILabel("", color: .foreground, font: .appFont(withSize: 18, weight: .bold))
         let appStack = UIStackView(axis: .vertical, [appIcon, appTitleLabel])
@@ -43,23 +39,26 @@ class RemoteSignerEventDetailsController: UIViewController {
         appStack.alignment = .center
         
         let title = RemoteSignerManager.instance.permissionsMap[event.requestTypeId] ?? event.requestTypeId
-        let titleLabel = UILabel("Publish Note - \(title):", color: .foreground3, font: .appFont(withSize: 16, weight: .regular))
-        let subtitleLabel = UILabel(event.requestedAt.localized(), color: .foreground3, font: .appFont(withSize: 14, weight: .regular))
+        let titleLabel = UILabel("\(title) - Event Details:", color: .foreground3, font: .appFont(withSize: 16, weight: .regular))
         
-        let topStack = UIStackView([titleLabel, subtitleLabel])
-        topStack.alignment = .center
+        let date = Date(timeIntervalSince1970: Double(event.requestedAt))
+        let dateFormatter = DateFormatter()
+        dateFormatter.locale = .current
+        let subtitleLabel = UILabel(dateFormatter.string(from: date), color: .foreground3, font: .appFont(withSize: 14, weight: .regular))
+        
+        let topStack = UIStackView(axis: .vertical, [titleLabel, subtitleLabel])
         topStack.isLayoutMarginsRelativeArrangement = true
         topStack.layoutMargins = .init(top: 16, left: 24, bottom: 0, right: 24)
         
-        descTextView.backgroundColor = .background5
-        descTextView.text = event.description
+        let contentScroll = EventDetailsView(event: event)
         
-        let approveButton = UIButton(configuration: .accentPill(text: "Back", font: .appFont(withSize: 16, weight: .semibold)))
+        let approveButton = UIButton(configuration: .accentPill(text: "Back", font: .appFont(withSize: 16, weight: .semibold))).constrainToSize(height: 40)
         let buttonsParent = UIView()
         buttonsParent.addSubview(approveButton)
         approveButton.pinToSuperview(edges: .horizontal, padding: 20).pinToSuperview(edges: .top, padding: 16).pinToSuperview(edges: .bottom, padding: 4, safeArea: true)
         
-        let mainStack = UIStackView(axis: .vertical, [appStack, SpacerView(height: 16), SpacerView(height: 1, color: .background3), topStack, descTextView, buttonsParent])
+        // MARK: - Main Stack
+        let mainStack = UIStackView(axis: .vertical, [appStack, SpacerView(height: 16), SpacerView(height: 1, color: .background3), topStack, contentScroll, buttonsParent])
         view.addSubview(mainStack)
         mainStack.pinToSuperview(edges: [.horizontal, .bottom]).pinToSuperview(edges: .top, padding: 32)
         

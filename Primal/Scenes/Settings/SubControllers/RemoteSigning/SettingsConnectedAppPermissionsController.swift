@@ -18,7 +18,7 @@ class SettingsConnectedAppPermissionsController: UIViewController {
     }
     
     enum TableItem: Hashable {
-        case mainInfo(RemoteAppConnection, lastSession: AppSession?)
+        case mainInfo(RemoteAppConnection, lastSession: RemoteAppSession?)
         case permission(AppPermissionGroup, RemoteAppConnection)
         case reset
         
@@ -104,7 +104,7 @@ class SettingsConnectedAppPermissionsController: UIViewController {
     
     func refresh() {
         Publishers.CombineLatest3(
-            RemoteSignerManager.instance.sessionRepo.observeSessionsByAppIdentifier(appIdentifier: connectionID).toPublisher().map { $0 as [AppSession] },
+            RemoteSignerManager.instance.sessionRepo.observeSessionsByClientPubKey(clientPubKey: connectionID).toPublisher(),
             RemoteSignerManager.instance.connectionRepo.observeConnection(clientPubKey: connectionID).toPublisher(),
             RemoteSignerManager.instance.permissionRepo.observePermissions(clientPubKey: connectionID).toPublisher()
         )
