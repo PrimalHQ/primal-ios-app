@@ -23,6 +23,8 @@ final class OnboardingScanCodeController: OnboardingBaseViewController, QRCaptur
     
     var textSearch: String?
     
+    var navigationControllerForSearchResults: UINavigationController? { RootViewController.instance.findInChildren() }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         

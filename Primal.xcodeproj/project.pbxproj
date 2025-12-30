@@ -441,6 +441,9 @@
 		B95677862F02FAAE00B8166C /* SettingsRemoteSessionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B95677852F02FAA500B8166C /* SettingsRemoteSessionController.swift */; };
 		B95677882F03095000B8166C /* RemoteSignerEventCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B95677872F03094700B8166C /* RemoteSignerEventCell.swift */; };
 		B956778A2F030DA500B8166C /* SettingsRemoteEventController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B95677892F030D8100B8166C /* SettingsRemoteEventController.swift */; };
+		B95677AE2F03EFF300B8166C /* ScanAnythingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B95677AD2F03EFED00B8166C /* ScanAnythingController.swift */; };
+		B95677B02F0400A700B8166C /* ScanAnythingQRController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B95677AF2F04009D00B8166C /* ScanAnythingQRController.swift */; };
+		B95677B22F04029D00B8166C /* ScanAnythingKeyboardController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B95677B12F04029500B8166C /* ScanAnythingKeyboardController.swift */; };
 		B9658AC32D9EADB60037E5DB /* SettingsMediaUploadsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9658AC22D9EADA60037E5DB /* SettingsMediaUploadsController.swift */; };
 		B9658AC72D9EB5750037E5DB /* SettingsEditMediaUploadsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9658AC62D9EB5750037E5DB /* SettingsEditMediaUploadsController.swift */; };
 		B9658AF32D9FF9460037E5DB /* PrimalNotifications.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = B9658AEC2D9FF9460037E5DB /* PrimalNotifications.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -1240,6 +1243,9 @@
 		B95677852F02FAA500B8166C /* SettingsRemoteSessionController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsRemoteSessionController.swift; sourceTree = "<group>"; };
 		B95677872F03094700B8166C /* RemoteSignerEventCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSignerEventCell.swift; sourceTree = "<group>"; };
 		B95677892F030D8100B8166C /* SettingsRemoteEventController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsRemoteEventController.swift; sourceTree = "<group>"; };
+		B95677AD2F03EFED00B8166C /* ScanAnythingController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanAnythingController.swift; sourceTree = "<group>"; };
+		B95677AF2F04009D00B8166C /* ScanAnythingQRController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanAnythingQRController.swift; sourceTree = "<group>"; };
+		B95677B12F04029500B8166C /* ScanAnythingKeyboardController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanAnythingKeyboardController.swift; sourceTree = "<group>"; };
 		B9658AC22D9EADA60037E5DB /* SettingsMediaUploadsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsMediaUploadsController.swift; sourceTree = "<group>"; };
 		B9658AC62D9EB5750037E5DB /* SettingsEditMediaUploadsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsEditMediaUploadsController.swift; sourceTree = "<group>"; };
 		B9658AEC2D9FF9460037E5DB /* PrimalNotifications.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = PrimalNotifications.appex; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -2493,6 +2499,9 @@
 		B9009B582B0FCF3B002B0613 /* QRCodes */ = {
 			isa = PBXGroup;
 			children = (
+				B95677B12F04029500B8166C /* ScanAnythingKeyboardController.swift */,
+				B95677AF2F04009D00B8166C /* ScanAnythingQRController.swift */,
+				B95677AD2F03EFED00B8166C /* ScanAnythingController.swift */,
 				B9009B592B0FD28A002B0613 /* ProfileQRController.swift */,
 				B9009B5B2B0FD390002B0613 /* ProfileShowQRController.swift */,
 				B9009B5D2B0FDFE3002B0613 /* ProfileScanQRController.swift */,
@@ -4144,6 +4153,7 @@
 				939427142A436AF3001C1E10 /* RelayURL.swift in Sources */,
 				B9E67E812D0762CD006BB397 /* FeedElementSmallZapGalleryCell.swift in Sources */,
 				B901C3972BADF36100C3AA69 /* OnboardingWalletCodeController.swift in Sources */,
+				B95677B02F0400A700B8166C /* ScanAnythingQRController.swift in Sources */,
 				B99E03812BF75FEE006CCECB /* PostCellNantesDelegate.swift in Sources */,
 				B9E67EA82D09D8F9006BB397 /* ThreadElementPostPreviewCell.swift in Sources */,
 				B9CE4DA12B63C8D80060A1B8 /* WalletSendSpinnerAnimator.swift in Sources */,
@@ -4248,6 +4258,7 @@
 				B9DD12F72CB800A900C435FD /* PostPreviewPostPreviewView.swift in Sources */,
 				B944292E2BD81B6000746FBC /* ZapGallery.swift in Sources */,
 				9EF4BFD02A955FB5003396AA /* NewPostButton.swift in Sources */,
+				B95677B22F04029D00B8166C /* ScanAnythingKeyboardController.swift in Sources */,
 				B98B787B2EC21F72006134F9 /* CloudRemoveLoginView.swift in Sources */,
 				B94F2BC22AD57AD20041181B /* TransactionHeader.swift in Sources */,
 				9E6924A42A02925F00CAC54C /* MainTabBarController.swift in Sources */,
@@ -4352,6 +4363,7 @@
 				B91E56ED2CB9965200C14809 /* AdvancedSearchTimePickerController.swift in Sources */,
 				9E83DF6C2A573DF700F2C379 /* TextRepresenting.swift in Sources */,
 				B91EF0C72CEA106900299ECF /* PremiumManageContactsHeaderCell.swift in Sources */,
+				B95677AE2F03EFF300B8166C /* ScanAnythingController.swift in Sources */,
 				B9E67EA62D09D8F9006BB397 /* ThreadElementSmallZapGalleryCell.swift in Sources */,
 				B9DAA4612D53DC2C00B00B82 /* FeedElementTidalPreviewCell.swift in Sources */,
 				9E8834CA2A379672005DB548 /* NSRange+Extra.swift in Sources */,
@@ -4749,7 +4761,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.6.31;
+				MARKETING_VERSION = 2.6.32;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -4798,7 +4810,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.6.31;
+				MARKETING_VERSION = 2.6.32;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

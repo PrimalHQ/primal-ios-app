@@ -299,12 +299,12 @@ private extension MenuContainerController {
         bookmarks.addAction(.init(handler: { [unowned self] _ in showViewController(PublicBookmarksViewController()) }), for: .touchUpInside)
         premium.addAction(.init(handler: { [unowned self] _ in showViewController(PremiumViewController()) }), for: .touchUpInside)
         redeemCode.addAction(.init(handler: { [unowned self] _ in
-            present(OnboardingParentViewController(.redeemCode()), animated: true)
+            present(ScanAnythingController(), animated: true)
             animateClose()
         }), for: .touchUpInside)
         
         remoteLogin.addAction(.init(handler: { [unowned self] _ in
-            present(OnboardingParentViewController(.redeemCode()), animated: true)
+            present(ScanAnythingController(style: .remoteLogin), animated: true)
             animateClose()
         }), for: .touchUpInside)
         

@@ -41,6 +41,8 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
     
     lazy var dataSource: NoteFeedDatasource = RegularFeedDatasource(tableView: table, delegate: self)
     
+    var navigationControllerForSearchResults: UINavigationController? { navigationController }
+    
     func postForIndexPath(_ indexPath: IndexPath) -> ParsedContent? {
         dataSource.postForIndexPath(indexPath)
     }

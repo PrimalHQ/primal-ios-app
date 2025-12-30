@@ -36,6 +36,8 @@ final class ChatViewController: UIViewController, Themeable, WalletSearchControl
     
     let chatManager: ChatManager
     
+    var navigationControllerForSearchResults: UINavigationController? { navigationController }
+    
     private var textHeightConstraint: NSLayoutConstraint?
     let textInputView = SelfSizingTextView()
     private let placeholderLabel = UILabel()
