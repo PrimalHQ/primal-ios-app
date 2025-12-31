@@ -78,6 +78,8 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         _ = SmartContactsManager.instance
         ArticleWebViewCache.setup()
         
+        ICloudKeychainManager.instance.setupForIcloudNewUsers()
+        
         WalletRepositoryFactory.shared.doInit(enableDbEncryption: true, enableLogs: true)
         AccountRepositoryFactory.shared.doInit(enableDbEncryption: true, enableLogs: true)
         

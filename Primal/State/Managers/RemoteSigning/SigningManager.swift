@@ -36,7 +36,8 @@ extension SigningManager: NostrEventSignatureHandler {
             privkey: privateKey,
             content: unsignedNostrEvent.content,
             kind: Int(unsignedNostrEvent.kind),
-            tags: tags
+            tags: tags,
+            createdAt: unsignedNostrEvent.createdAt
         ) else {
             completionHandler(SignResult.Rejected(error: .init(message: "Failed to sign", cause: nil)), nil)
             return

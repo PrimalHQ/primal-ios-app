@@ -238,7 +238,7 @@ extension SettingsConnectedAppController: RemoteSignerConnectionAutostartCellDel
         Task {
             do {
                 guard let active = try await repo.findActiveSessionForConnection(clientPubKey: connectionID).getOrNull() else {
-                    _ = try await repo.startSession(clientPubKey: connectionID)
+                    let res = try await repo.startSession(clientPubKey: connectionID)
                     return
                 }
                 

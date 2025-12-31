@@ -223,12 +223,27 @@ class RemoteSignerSignInController: UIViewController {
         connectButton.addAction(.init(handler: { [weak self] _ in
             guard let self, let pubkey = selectedNpub?.npubToPubkey() else { return }
             
-            RemoteSignerManager.instance.initializeConnection(url: connection.absoluteString, userPubKey: pubkey, trustLevel: selectedTrust.trustLevel)
-            
             dismiss(animated: true)
-            
-            if let callback, let deeplinkURL = URL(string: callback) {
-                UIApplication.shared.open(deeplinkURL)
+            Task { @MainActor in
+                guard let connection = try await RemoteSignerManager.instance.initializeConnection(url: self.connection.absoluteString, userPubKey: pubkey, trustLevel: self.selectedTrust.trustLevel) else {
+                    return
+                }
+                
+                if #available(iOS 16.1, *), !RemoteSignerActivityManager.instance.isAudioAllowed {
+                    try await Task.sleep(for: .seconds(3) + .milliseconds(300))
+                    
+                    RootViewController.instance.smartPresent(RemoteSignerRootController(.custom(RemoteSignerDisclosureController(connection: connection) {
+                        if let callback, let deeplinkURL = URL(string: callback) {
+                            UIApplication.shared.open(deeplinkURL)
+                        }
+                    })))
+                } else {
+                    try await Task.sleep(for: .seconds(1))
+                    
+                    if let callback, let deeplinkURL = URL(string: callback) {
+                        await UIApplication.shared.open(deeplinkURL)
+                    }
+                }
             }
         }), for: .touchUpInside)
     }

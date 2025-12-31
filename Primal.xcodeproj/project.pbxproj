@@ -240,6 +240,7 @@
 		B9031D4E2AC2075600C7489F /* ChatTimeCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9031D4D2AC2075600C7489F /* ChatTimeCell.swift */; };
 		B9031D502AC2075E00C7489F /* ChatLoadingCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9031D4F2AC2075E00C7489F /* ChatLoadingCell.swift */; };
 		B9031D522ACDDD4200C7489F /* ReplyingToView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9031D512ACDDD4200C7489F /* ReplyingToView.swift */; };
+		B904E9A32F042BFD006D195C /* CloudPopupController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B904E9A22F042BDD006D195C /* CloudPopupController.swift */; };
 		B90585382C9DDFD600FC4108 /* SettingsDevModeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90585372C9DDFD600FC4108 /* SettingsDevModeController.swift */; };
 		B906AAE52C91C46D0089813F /* smallPillLoaderLight.json in Resources */ = {isa = PBXBuildFile; fileRef = B906AAD72C91C46D0089813F /* smallPillLoaderLight.json */; };
 		B906AAE72C91C46D0089813F /* smallPillLoader.json in Resources */ = {isa = PBXBuildFile; fileRef = B906AAD92C91C46D0089813F /* smallPillLoader.json */; };
@@ -1048,6 +1049,7 @@
 		B9031D4D2AC2075600C7489F /* ChatTimeCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatTimeCell.swift; sourceTree = "<group>"; };
 		B9031D4F2AC2075E00C7489F /* ChatLoadingCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatLoadingCell.swift; sourceTree = "<group>"; };
 		B9031D512ACDDD4200C7489F /* ReplyingToView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReplyingToView.swift; sourceTree = "<group>"; };
+		B904E9A22F042BDD006D195C /* CloudPopupController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudPopupController.swift; sourceTree = "<group>"; };
 		B90585372C9DDFD600FC4108 /* SettingsDevModeController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsDevModeController.swift; sourceTree = "<group>"; };
 		B906AAD72C91C46D0089813F /* smallPillLoaderLight.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = smallPillLoaderLight.json; sourceTree = "<group>"; };
 		B906AAD92C91C46D0089813F /* smallPillLoader.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = smallPillLoader.json; sourceTree = "<group>"; };
@@ -2229,12 +2231,12 @@
 		9E88349A2A21150D005DB548 /* RootViewController */ = {
 			isa = PBXGroup;
 			children = (
+				B904E9A12F042BCA006D195C /* MainTabBar */,
+				B9A200952B55A0D7003B6C6B /* MainNavigationController */,
 				B9CE4DBA2B7154750060A1B8 /* Views */,
 				9E6B38CD29F954D500144073 /* RootViewController.swift */,
 				9E9F2F6A29F6AB6400A9CDF3 /* IntroVideoController.swift */,
-				9E6924A32A02925F00CAC54C /* MainTabBarController.swift */,
 				9E88349B2A211577005DB548 /* RootAnimatorToSignIn.swift */,
-				B9A335222E54B5DC000B2CA7 /* LivePlayerMoveGesture.swift */,
 			);
 			path = RootViewController;
 			sourceTree = "<group>";
@@ -2307,7 +2309,6 @@
 				B99E7BD12B238A6800756F40 /* ImageGallery */,
 				9E88349A2A21150D005DB548 /* RootViewController */,
 				B9C672D72E252D6A00243B45 /* LiveVideoPlayer */,
-				B9A200952B55A0D7003B6C6B /* MainNavigationController */,
 				9ED416102A4CAC2300892235 /* Notifications */,
 				9ECFD31E2A0138AB000D1B2F /* Feed */,
 				9E9C42152A1401F500F9D7ED /* Explore */,
@@ -2535,6 +2536,16 @@
 				B9FAC6472D31A95800B57EF6 /* LinkPreviewManager.swift */,
 			);
 			path = SmallManagers;
+			sourceTree = "<group>";
+		};
+		B904E9A12F042BCA006D195C /* MainTabBar */ = {
+			isa = PBXGroup;
+			children = (
+				B904E9A22F042BDD006D195C /* CloudPopupController.swift */,
+				9E6924A32A02925F00CAC54C /* MainTabBarController.swift */,
+				B9A335222E54B5DC000B2CA7 /* LivePlayerMoveGesture.swift */,
+			);
+			path = MainTabBar;
 			sourceTree = "<group>";
 		};
 		B906AB052C99F3F70089813F /* Database */ = {
@@ -4078,6 +4089,7 @@
 				B9009B632B110AB6002B0613 /* PrimalEndpointsManager.swift in Sources */,
 				B9CE4DD62B7F675F0060A1B8 /* CircularProgressBar.swift in Sources */,
 				B9E36BD82EE330AD00213CA0 /* RemoteSignerActiveSessionsController.swift in Sources */,
+				B904E9A32F042BFD006D195C /* CloudPopupController.swift in Sources */,
 				B9E67ECD2D13021C006BB397 /* HighlightCommentsDatasource.swift in Sources */,
 				9309D2332A5EA82A00FD2127 /* Array+Extra.swift in Sources */,
 				B9F9331D2B88F72E0064B495 /* PremiumViewController.swift in Sources */,
@@ -4761,7 +4773,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.6.32;
+				MARKETING_VERSION = 2.6.35;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -4810,7 +4822,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.6.32;
+				MARKETING_VERSION = 2.6.35;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

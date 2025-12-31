@@ -16,9 +16,12 @@ class RemoteSignerDisclosureController: UIViewController {
     
     let designHeight: CGFloat = 556
     
-    let session: RemoteAppSession
-    init(session: RemoteAppSession) {
-        self.session = session
+    let connection: RemoteAppConnection
+    let callback: () -> Void
+    var didCallCallback = false
+    init(connection: RemoteAppConnection, callback: @escaping () -> Void) {
+        self.connection = connection
+        self.callback = callback
         super.init(nibName: nil, bundle: nil)
         
         let realWidth = RootViewController.instance.view.frame.size.width
@@ -29,17 +32,26 @@ class RemoteSignerDisclosureController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+        if !didCallCallback {
+            callback()
+            didCallCallback = true
+        }
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         view.backgroundColor = .background3
         
-        let name = session.name ?? "Application"
+        let name = connection.name ?? "Application"
         let titleLabel = UILabel(name, color: .foreground, font: .appFont(withSize: 18, weight: .bold))
         let activeLabel = UILabel("Session active with \(name)", color: .init(rgb: 0x52CE0A), font: .appFont(withSize: 16, weight: .regular))
         
         let iconView = UIImageView().constrainToSize(48)
-        iconView.kf.setImage(with: URL(string: session.image ?? ""), placeholder: session.defaultImage(size: 48))
+        iconView.kf.setImage(with: URL(string: connection.image ?? ""), placeholder: connection.defaultImage(size: 48))
         
         let topStack = UIStackView(axis: .vertical, [SpacerView(height: 32), iconView, titleLabel, activeLabel, SpacerView(height: 20)])
         topStack.alignment = .center

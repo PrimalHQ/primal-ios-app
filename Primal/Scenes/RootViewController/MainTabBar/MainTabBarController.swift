@@ -122,7 +122,8 @@ final class MainTabBarController: UIViewController, Themeable {
             circleBorderView.alpha = newValue ? 1 : 0
         }
     }
-
+    
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     init() {
         super.init(nibName: nil, bundle: nil)
         setup()
@@ -138,8 +139,17 @@ final class MainTabBarController: UIViewController, Themeable {
     deinit {
         continousConnection?.end()
     }
-
-    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        guard let npub = IdentityManager.instance.userHexPubkey.hexToNpub(), var usersToRemind = UserDefaults.standard.object(forKey: .icloudRemindUsersKey) as? [String], usersToRemind.contains(npub) else { return }
+        
+        smartPresent(CloudPopupController())
+        
+        usersToRemind.remove(object: npub)
+        UserDefaults.standard.set(usersToRemind, forKey: .icloudRemindUsersKey)
+    }
 
     func hideForMenu() {
         UIView.animate(withDuration: 0.3) {
@@ -395,13 +405,6 @@ private extension MainTabBarController {
                 if isActive {
                     RemoteSignerActivityManager.instance.startSignerActivity()
                     RemoteSignerActivityManager.instance.playSong()
-                    if !RemoteSignerActivityManager.instance.isAudioAllowed {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(3) + .milliseconds(300)) {
-                            if let first = RemoteSignerManager.instance.activeSessions.first {
-                                self?.smartPresent(RemoteSignerRootController(.custom(RemoteSignerDisclosureController(session: first))))
-                            }
-                        }
-                    }
                 } else {
                     RemoteSignerActivityManager.instance.endSignerActivity()
                 }
