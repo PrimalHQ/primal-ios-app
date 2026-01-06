@@ -8,6 +8,7 @@
 import Combine
 import UIKit
 import PrimalShared
+import Kingfisher
 
 class RemoteSignerEventDetailsController: UIViewController {
     
@@ -65,7 +66,11 @@ class RemoteSignerEventDetailsController: UIViewController {
         RemoteSignerManager.instance.sessionRepo.observeSession(sessionId: sessionId).toPublisher().first()
             .receive(on: DispatchQueue.main)
             .sink { session in
-                appIcon.kf.setImage(with: URL(string: session?.image ?? ""), placeholder: session?.defaultImage(size: 40))
+                appIcon.kf.setImage(
+                    with: URL(string: session?.image ?? ""),
+                    placeholder: session?.defaultImage(size: 40),
+                    options: [.processor(RoundCornerImageProcessor(radius: .heightFraction(0.5)))]
+                )
                 appTitleLabel.text = session?.name
             }
             .store(in: &cancellables)

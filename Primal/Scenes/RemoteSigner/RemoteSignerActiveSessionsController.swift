@@ -8,6 +8,7 @@
 import Combine
 import UIKit
 import PrimalShared
+import Kingfisher
 
 extension UIButton.Configuration {
     static func disabled(_ text: String) -> UIButton.Configuration {
@@ -231,7 +232,11 @@ class RemoteSignerSessionSelectionButton: MyButton {
         layer.borderColor = UIColor.accent.cgColor
         backgroundColor = .background3
         
-        appImage.kf.setImage(with: URL(string: session.image ?? ""), placeholder: session.defaultImage(size: 40))
+        appImage.kf.setImage(
+            with: URL(string: session.image ?? ""),
+            placeholder: session.defaultImage(size: 40),
+            options: [.processor(RoundCornerImageProcessor(radius: .heightFraction(0.5)))]
+        )
         
         avatar.setUserImage(user)
         nameLabel.text = session.name

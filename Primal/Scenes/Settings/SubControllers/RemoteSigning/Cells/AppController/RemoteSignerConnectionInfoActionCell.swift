@@ -7,6 +7,7 @@
 
 import UIKit
 import PrimalShared
+import Kingfisher
 
 protocol RemoteSignerConnectionInfoActionCellDelegate: AnyObject {
     func deleteConnection()
@@ -81,7 +82,11 @@ final class RemoteSignerConnectionInfoActionCell: UITableViewCell {
     func configure(connection: RemoteAppConnection, lastStart: Date?, isActive: Bool, delegate: RemoteSignerConnectionInfoActionCellDelegate?) {
         self.delegate = delegate
         
-        iconView.kf.setImage(with: URL(string: connection.image ?? ""), placeholder: connection.defaultImage(size: 48))
+        iconView.kf.setImage(
+            with: URL(string: connection.image ?? ""),
+            placeholder: connection.defaultImage(size: 48),
+            options: [.processor(RoundCornerImageProcessor(radius: .heightFraction(0.5)))]
+        )
         titleLabel.text = connection.name
         
         if let lastStart {

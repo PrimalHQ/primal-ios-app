@@ -80,10 +80,9 @@ struct RemoteSignerWidgetExpandedView: View {
 struct RemoteSignerWidgetLiveActivity: Widget {
     var body: some WidgetConfiguration {
         ActivityConfiguration(for: RemoteSignerWidgetAttributes.self) { context in
-            
             RemoteSignerWidgetExpandedView(context: context)
-            .padding(.horizontal, 20)
-            .padding(.vertical, 18)
+                .padding(.horizontal, 20)
+                .padding(.vertical, 18)
         } dynamicIsland: { context in
             DynamicIsland {
                 DynamicIslandExpandedRegion(.bottom) {
@@ -91,11 +90,20 @@ struct RemoteSignerWidgetLiveActivity: Widget {
                 }
             } compactLeading: {
                 Image(context.attributes.isBlue ? .dynamicIslandLogoBlue :.dynamicIslandLogo)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 20, height: 20) // Explicit size constraint
             } compactTrailing: {
                 Image(.signingSession)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 20, height: 20) // Add explicit size
                     .foregroundStyle(Color(uiColor: .init(rgb: 0xDDDDDD)))
             } minimal: {
                 Image(context.attributes.isBlue ? .dynamicIslandLogoBlue :.dynamicIslandLogo)
+                    .resizable() 
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 16, height: 16)
             }
             .widgetURL(URL(string: "http://www.apple.com"))
             .keylineTint(Color.red)

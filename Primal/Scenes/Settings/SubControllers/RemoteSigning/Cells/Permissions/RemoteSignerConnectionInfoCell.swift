@@ -8,6 +8,7 @@
 
 import UIKit
 import PrimalShared
+import Kingfisher
 
 final class RemoteSignerConnectionInfoCell: UITableViewCell {
 
@@ -47,7 +48,11 @@ final class RemoteSignerConnectionInfoCell: UITableViewCell {
     }
 
     func configure(connection: RemoteAppConnection, lastStart: Date?) {
-        iconView.kf.setImage(with: URL(string: connection.image ?? ""), placeholder: connection.defaultImage(size: 48))
+        iconView.kf.setImage(
+            with: URL(string: connection.image ?? ""),
+            placeholder: connection.defaultImage(size: 48),
+            options: [.processor(RoundCornerImageProcessor(radius: .heightFraction(0.5)))]
+        )
         titleLabel.text = connection.name
         
         if let lastStart {
@@ -64,7 +69,11 @@ final class RemoteSignerConnectionInfoCell: UITableViewCell {
     }
 
     func configure(session: RemoteAppSession) {
-        iconView.kf.setImage(with: URL(string: session.image ?? ""), placeholder: session.defaultImage(size: 48))
+        iconView.kf.setImage(
+            with: URL(string: session.image ?? ""),
+            placeholder: session.defaultImage(size: 48),
+            options: [.processor(RoundCornerImageProcessor(radius: .heightFraction(0.5)))]
+        )
         titleLabel.text = session.name
         
         let start = Date(timeIntervalSince1970: TimeInterval(session.sessionStartedAt))

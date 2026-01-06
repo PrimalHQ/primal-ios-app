@@ -366,16 +366,15 @@ private extension MainTabBarController {
         }), for: .touchUpInside)
         
         Publishers.CombineLatest(
-            RemoteSignerManager.instance.pendingActionsPublisher,
+            RemoteSignerManager.instance.pendingActionsPublisher.receive(on: DispatchQueue.main),
             $oldRemoteSignerPopup
         )
-        .debounce(for: 0.3, scheduler: RunLoop.main)
         .sink { [weak self] events, oldPopup in
             guard let self else { return }
             
             let groups = events.groupByFilter { $0.sessionId }
             
-            if let oldPopup, oldPopup.presentingViewController != nil {
+            if let oldPopup, oldPopup.presentingViewController != nil || oldPopup.presentedViewController != nil {
                 if let events = groups[oldPopup.sessionId] {
                     oldPopup.allEvents = events
                     return

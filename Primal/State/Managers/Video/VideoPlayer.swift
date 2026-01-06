@@ -28,6 +28,7 @@ class VideoPlayer: NSObject, PlayerProtocol {
     var isLive: Bool { live != nil }
     
     var cancellables: Set<AnyCancellable> = []
+    private var playerItemObserver: NSKeyValueObservation?
     
     init(url: String, originalURL: String, userPubkey: String, live: ParsedLiveEvent? = nil) {
         self.url = url
@@ -39,25 +40,6 @@ class VideoPlayer: NSObject, PlayerProtocol {
         if ContentDisplaySettings.autoPlayVideos {
             _ = avPlayer // Force init
         }
-    }
-    
-    init(staticVideo: AVPlayer) {
-        url = ""
-        userPubkey = ""
-        originalURL = ""
-        super.init()
-        
-        avPlayer = staticVideo
-        NotificationCenter.default.publisher(for: .AVPlayerItemDidPlayToEndTime, object: staticVideo.currentItem)
-//            .receive(on: DispatchQueue.main)
-            .sink { [weak staticVideo] _ in
-                staticVideo?.seek(to: .zero)
-            }
-            .store(in: &cancellables)
-    }
-    
-    deinit {
-        
     }
     
     func play() {
@@ -93,10 +75,16 @@ class VideoPlayer: NSObject, PlayerProtocol {
             return player
         }
         
-        let player = AVPlayer(url: url)
+        let item = AVPlayerItem(url: url)
+        let player = AVPlayer(playerItem: item)
         player.actionAtItemEnd = .none
-        player.addObserver(self, forKeyPath: "status", options: [.new, .initial], context: nil)
         player.isMuted = true
+        
+        playerItemObserver = item.observe(\.status, options: [.new, .initial]) { [weak self] player, value in
+            guard case .failed = value.newValue else { return }
+            
+            self?.attemptBlossomLoad()
+        }
         
         NotificationCenter.default.publisher(for: .AVPlayerItemDidPlayToEndTime, object: player.currentItem)
 //            .receive(on: DispatchQueue.main)
@@ -110,25 +98,6 @@ class VideoPlayer: NSObject, PlayerProtocol {
             .store(in: &cancellables)
         
         return player
-    }
-
-    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
-        guard
-            keyPath == "status", 
-            let item = object as? AVPlayerLooper,
-            case .failed = item.status
-        else { return }
-        
-        (object as? NSObject)?.removeObserver(self, forKeyPath: "status")
-                
-        attemptBlossomLoad()
-    }
-    
-    @objc private func playerItemFailed(_ notification: Notification) {
-        if let error = notification.userInfo?[AVPlayerItemFailedToPlayToEndTimeErrorKey] as? NSError {
-            print("AVPlayerItemFailedToPlayToEndTime: \(error.localizedDescription)")
-        }
-        attemptBlossomLoad()
     }
 
     func attemptBlossomLoad() {
@@ -152,9 +121,12 @@ class VideoPlayer: NSObject, PlayerProtocol {
         }
         
         let item = AVPlayerItem(url: finalURL)
-        avPlayer.removeObserver(self, forKeyPath: "status")
         avPlayer = .init(playerItem: item)
         url = finalURL.absoluteString
-        avPlayer.addObserver(self, forKeyPath: "status", options: [.new, .initial], context: nil)
+        playerItemObserver = item.observe(\.status, options: [.new, .initial]) { [weak self] player, value in
+            guard case .failed = value.newValue else { return }
+            
+            self?.attemptBlossomLoad()
+        }
     }
 }

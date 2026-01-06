@@ -16,7 +16,7 @@ extension RemoteAppConnection: @retroactive Identifiable {
 class SettingsRemoteSignerController: UIViewController, Themeable {
     
     enum TableItem: Hashable {
-        case connection(RemoteAppConnection, ParsedUser)
+        case connection(RemoteAppConnection, ParsedUser, Bool)
     }
     
     var cancellables: Set<AnyCancellable> = []
@@ -30,14 +30,14 @@ class SettingsRemoteSignerController: UIViewController, Themeable {
     init() {
         dataSource = UITableViewDiffableDataSource<SingleSection, TableItem>(tableView: tableView) { tableView, indexPath, item in
             switch item {
-            case .connection(let connection, let user):
+            case .connection(let connection, let user, let isActive):
                 
                 let cell = tableView.dequeueReusableCell(
                     withIdentifier: RemoteSignerConnectionCell.reuseID,
                     for: indexPath
                 )
                 
-                (cell as? RemoteSignerConnectionCell)?.configure(connection: connection, user: user)
+                (cell as? RemoteSignerConnectionCell)?.configure(connection: connection, user: user, isActive: isActive)
                 
                 return cell
             }
@@ -56,12 +56,16 @@ class SettingsRemoteSignerController: UIViewController, Themeable {
         tableView.delegate = self
         tableView.register(RemoteSignerConnectionCell.self, forCellReuseIdentifier: RemoteSignerConnectionCell.reuseID)
         
-        Publishers.CombineLatest(LoginManager.instance.$loadedProfiles, RemoteSignerManager.instance.$activeConnections)
-            .sink { [weak self] (profiles, connections) in
+        Publishers.CombineLatest3(
+            LoginManager.instance.$loadedProfiles,
+            RemoteSignerManager.instance.$activeConnections,
+            RemoteSignerManager.instance.$activeSessions
+        )
+            .sink { [weak self] (profiles, connections, sessions) in
                 var snapshot = NSDiffableDataSourceSnapshot<SingleSection, TableItem>()
                 snapshot.appendSections([.main])
                 snapshot.appendItems(connections.map { connection in
-                    .connection(connection, profiles.first(where: { $0.data.pubkey == connection.userPubKey }) ?? .init(data: .init(pubkey: connection.userPubKey)))
+                        .connection(connection, profiles.first(where: { $0.data.pubkey == connection.userPubKey }) ?? .init(data: .init(pubkey: connection.userPubKey)), sessions.contains(where: { $0.clientPubKey == connection.clientPubKey }))
                 })
                 self?.dataSource.apply(snapshot)
             }

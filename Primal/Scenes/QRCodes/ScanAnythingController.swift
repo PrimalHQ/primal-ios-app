@@ -58,7 +58,7 @@ final class ScanAnythingController: UIPageViewController {
         case .remoteLogin:
             qrController.titleLabel.text = "Remote Login"
             qrController.descTitleLabel.text = "Login to Any Nostr App"
-            qrController.descLabel.text = "Use your Primal account to login to any Nostr app that supports remote sign in. "
+            qrController.descLabel.text = "Use your Primal account to login to any\nNostr app that supports remote sign in. "
         }
         
         dataSource = self

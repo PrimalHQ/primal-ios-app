@@ -8,6 +8,7 @@
 import UIKit
 import Combine
 import PrimalShared
+import Kingfisher
 
 @available(iOS 16.1, *)
 class RemoteSignerDisclosureController: UIViewController {
@@ -51,7 +52,11 @@ class RemoteSignerDisclosureController: UIViewController {
         let activeLabel = UILabel("Session active with \(name)", color: .init(rgb: 0x52CE0A), font: .appFont(withSize: 16, weight: .regular))
         
         let iconView = UIImageView().constrainToSize(48)
-        iconView.kf.setImage(with: URL(string: connection.image ?? ""), placeholder: connection.defaultImage(size: 48))
+        iconView.kf.setImage(
+            with: URL(string: connection.image ?? ""),
+            placeholder: connection.defaultImage(size: 48),
+            options: [.processor(RoundCornerImageProcessor(radius: .heightFraction(0.5)))]
+        )
         
         let topStack = UIStackView(axis: .vertical, [SpacerView(height: 32), iconView, titleLabel, activeLabel, SpacerView(height: 20)])
         topStack.alignment = .center

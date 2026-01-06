@@ -17,14 +17,27 @@ class CloudPopupController: UIViewController {
         super.init(nibName: nil, bundle: nil)
         
         sheetPresentationController?.detents = [.custom(resolver: { [weak self] _ in
-            guard let size = self?.view.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize) else { return 480 }
-            return size.height
+            let size = RootViewController.instance.view.frame.size
+            
+            return 450 * size.width / 375
         })]
+        
+//        sheetPresentationController?.detents = [.custom(resolver: { [weak self] _ in
+//            guard let size = self?.view.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize) else { return 480 }
+//            return size.height
+//        })]
         sheetPresentationController?.prefersGrabberVisible = true
     }
     
     override func viewDidLoad() {
         view.backgroundColor = .background4
+        
+        let mainView = UIView().constrainToSize(width: 375, height: 400)
+        view.addSubview(mainView)
+        mainView.centerToSuperview()
+        
+        let size = RootViewController.instance.view.frame.size
+        mainView.transform = .init(scaleX: size.width / 375, y: size.width / 375)
         
         let userImage = UserImageView(height: 48)
         let switchView = SettingsSwitchView("Save key in iCloud Keychain")
@@ -53,8 +66,8 @@ class CloudPopupController: UIViewController {
         dismissButton.pinToSuperview(edges: .horizontal)
         descLabel.pinToSuperview(edges: .horizontal, padding: 12)
         
-        view.addSubview(mainStack)
-        mainStack.pinToSuperview(edges: .horizontal, padding: 20).pinToSuperview(edges: .top, padding: 32).pinToSuperview(edges: .bottom, padding: 30)
+        mainView.addSubview(mainStack)
+        mainStack.pinToSuperview(edges: .horizontal, padding: 20).pinToSuperview(edges: .vertical)
         
         IdentityManager.instance.$parsedUser.compactMap({ $0 }).first().sink { user in
             userImage.setUserImage(user)

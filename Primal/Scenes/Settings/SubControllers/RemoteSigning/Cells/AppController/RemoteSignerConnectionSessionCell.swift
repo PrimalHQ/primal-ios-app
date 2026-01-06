@@ -7,6 +7,7 @@
 
 import UIKit
 import PrimalShared
+import Kingfisher
 
 final class RemoteSignerConnectionSessionCell: UITableViewCell {
 
@@ -44,7 +45,11 @@ final class RemoteSignerConnectionSessionCell: UITableViewCell {
     }
 
     func configure(session: RemoteAppSession) {
-        iconView.kf.setImage(with: URL(string: session.image ?? ""), placeholder: session.defaultImage(size: 20))
+        iconView.kf.setImage(
+            with: URL(string: session.image ?? ""),
+            placeholder: session.defaultImage(size: 20),
+            options: [.processor(RoundCornerImageProcessor(radius: .heightFraction(0.5)))]
+        )
         
         titleLabel.text = formatter.string(from: .init(timeIntervalSince1970: TimeInterval(session.sessionStartedAt)))
         

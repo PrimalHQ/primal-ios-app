@@ -8,6 +8,7 @@
 import Combine
 import UIKit
 import PrimalShared
+import Kingfisher
 
 class RemoteSignerPendingEventsController: UIViewController {
     
@@ -96,27 +97,33 @@ class RemoteSignerPendingEventsController: UIViewController {
         RemoteSignerManager.instance.sessionRepo.observeSession(sessionId: sessionId).toPublisher().first()
             .receive(on: DispatchQueue.main)
             .sink { session in
-                appIcon.kf.setImage(with: URL(string: session?.image ?? ""), placeholder: session?.defaultImage(size: 40))
+                appIcon.kf.setImage(
+                    with: URL(string: session?.image ?? ""),
+                    placeholder: session?.defaultImage(size: 40),
+                    options: [.processor(RoundCornerImageProcessor(radius: .heightFraction(0.5)))]
+                )
                 appTitleLabel.text = session?.name
             }
             .store(in: &cancellables)
         
-        $allEvents
-            .sink { [weak self] events in
-                if self?.selectedEvents.contains(where: { id in !events.contains(where: { $0.eventId == id }) }) ?? false {
-                    self?.selectedEvents = self?.selectedEvents.filter { id in events.contains(where: { $0.eventId == id }) } ?? []
+        $allEvents.map({ $0.map(\.sessionId) }).withPrevious()
+            .sink { [weak self] oldEventsIds, eventIds in
+                guard let self else { return }
+                
+                selectedEvents = selectedEvents
+                    .filter { eventIds.contains($0) } // Remove events that are no longer in the list
+                    .union(eventIds.filter { oldEventsIds.contains($0) }) // Add events that weren't previously on the list
+                
+                let prefSize = CGSize(width: 400, height: 350 + 64 * eventIds.count)
+                preferredContentSize = prefSize
+                navigationController?.preferredContentSize = prefSize
+                parent?.parent?.sheetPresentationController?.invalidateDetents()
+                
+                if eventIds.isEmpty {
+                    dismiss(animated: true)
                 }
                 
-                let prefSize = CGSize(width: 400, height: 350 + 64 * events.count)
-                self?.preferredContentSize = prefSize
-                self?.navigationController?.preferredContentSize = prefSize
-                self?.parent?.parent?.sheetPresentationController?.invalidateDetents()
-                
-                if events.isEmpty {
-                    self?.dismiss(animated: true)
-                }
-                
-                self?.table.reloadData()
+                table.reloadData()
             }
             .store(in: &cancellables)
         

@@ -148,25 +148,22 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
         }
     }
     
-    var cachedContentOffset: CGPoint = .zero
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        if FullScreenVideoPlayerController.instance == nil && !VideoPlaybackManager.instance.isLive {
-            if abs(cachedContentOffset.y - scrollView.contentOffset.y) > 50 {
-                VideoPlaybackManager.instance.currentlyPlayingVideo?.delayedPause()
-            } else {
-                playVideoOnScroll()
-            }
-        }
-        
-        cachedContentOffset = scrollView.contentOffset
-        
         let newPosition = scrollView.contentOffset.y
         let delta = newPosition - prevPosition
         prevPosition = newPosition
         
         // System sometimes updates table contentOffset without moving the cells
-        // so if delta is larger than 50 we ignore it
-        if abs(delta) > 50 { return }
+        // so if delta is larger than 300 we ignore it
+        if abs(delta) > 300 { return }
+        
+        if FullScreenVideoPlayerController.instance == nil && !VideoPlaybackManager.instance.isLive {
+            if abs(delta) > 50 {
+                VideoPlaybackManager.instance.currentlyPlayingVideo?.delayedPause()
+            } else {
+                playVideoOnScroll()
+            }
+        }
         
         let theoreticalNewTransform = (prevTransform - delta).clamped(to: -barsMaxTransform...0)
         let newTransform = newPosition <= -topBarHeight ? 0 : theoreticalNewTransform

@@ -7,6 +7,7 @@
 
 import UIKit
 import PrimalShared
+import Kingfisher
 
 final class RemoteSignerConnectionCell: UITableViewCell {
 
@@ -45,10 +46,14 @@ final class RemoteSignerConnectionCell: UITableViewCell {
         stack.setCustomSpacing(20, after: titleLabel)
     }
 
-    func configure(connection: RemoteAppConnection, user: ParsedUser) {
-        activeDot.backgroundColor = connection.autoStart ? .init(rgb: 0x66E205) : .foreground5
+    func configure(connection: RemoteAppConnection, user: ParsedUser, isActive: Bool) {
+        activeDot.backgroundColor = isActive ? .init(rgb: 0x66E205) : .foreground5
         
-        iconView.kf.setImage(with: URL(string: connection.image ?? ""), placeholder: connection.defaultImage(size: 20))
+        iconView.kf.setImage(
+            with: URL(string: connection.image ?? ""),
+            placeholder: connection.defaultImage(size: 20),
+            options: [.processor(RoundCornerImageProcessor(radius: .heightFraction(0.5)))]
+        )
         titleLabel.text = connection.name
         userIcon.setUserImage(user)
         
