@@ -61,7 +61,7 @@ class RemoteSignerManager {
     }
     
     var pendingActionsPublisher: AnyPublisher<[SessionEvent], Never> {
-        return sessionEventRepo.observeEventsPendingUserAction(signerPubKey: signerPubkey).toPublisher()
+        return sessionEventRepo.observeEventsPendingUserActionForRemoteSigner(signerPubKey: signerPubkey).toPublisher()
             .replaceError(with: [])
             .eraseToAnyPublisher()
     }
@@ -142,14 +142,14 @@ class RemoteSignerManager {
                 Task {
                     do {
                         for eventPubkey in eventPubkeys {
-                            if let active = try await sessionRepo.findActiveSessionForConnection(clientPubKey: eventPubkey).getOrNull() {
-                                print("NO ACTION")
-                            } else {
-                                _ = try await sessionRepo.startSession(clientPubKey: eventPubkey)
-                            }
+//                            if let active = try await sessionRepo.fin//findActiveSessionForConnection(clientPubKey: eventPubkey).getOrNull() {
+//                                print("NO ACTION")
+//                            } else {
+//                                _ = try await sessionRepo.startSession(clientPubKey: eventPubkey)
+//                            }
                         }
                         
-                        let result = try await sessionEventRepo.processMissedEvents(signerKeyPair: signerKeypair, eventIds: eventIds)
+                        let result = try await sessionEventRepo.notifyMissedNostrEvents(signerKeyPair: signerKeypair, eventIds: eventIds)
                         
                     } catch {
                         print(error)

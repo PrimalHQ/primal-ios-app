@@ -104,11 +104,11 @@ private extension SettingsRemoteSessionController {
     func bindData() {
         // Observe updates to the specific session
         let sessionPub = RemoteSignerManager.instance.sessionRepo
-            .observeSession(sessionId: sessionId)
+            .observeRemoteSession(sessionId: sessionId)
             .toPublisher()
         
         let eventsPub = RemoteSignerManager.instance.sessionEventRepo
-            .observeCompletedEventsForSession(sessionId: sessionId)
+            .observeCompletedEventsForRemoteSession(sessionId: sessionId)
             .toPublisher()
         
         Publishers.CombineLatest(sessionPub, eventsPub)

@@ -63,7 +63,7 @@ class RemoteSignerEventDetailsController: UIViewController {
         view.addSubview(mainStack)
         mainStack.pinToSuperview(edges: [.horizontal, .bottom]).pinToSuperview(edges: .top, padding: 10, safeArea: true)
         
-        RemoteSignerManager.instance.sessionRepo.observeSession(sessionId: sessionId).toPublisher().first()
+        RemoteSignerManager.instance.sessionRepo.observeRemoteSession(sessionId: sessionId).toPublisher().first()
             .receive(on: DispatchQueue.main)
             .sink { session in
                 appIcon.kf.setImage(

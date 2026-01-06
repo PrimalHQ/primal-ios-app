@@ -241,6 +241,8 @@
 		B9031D502AC2075E00C7489F /* ChatLoadingCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9031D4F2AC2075E00C7489F /* ChatLoadingCell.swift */; };
 		B9031D522ACDDD4200C7489F /* ReplyingToView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9031D512ACDDD4200C7489F /* ReplyingToView.swift */; };
 		B904E9A32F042BFD006D195C /* CloudPopupController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B904E9A22F042BDD006D195C /* CloudPopupController.swift */; };
+		B904EA0F2F0D3A3F006D195C /* PrimalShared.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = B904EA0D2F0D3A27006D195C /* PrimalShared.xcframework */; };
+		B904EA102F0D3A3F006D195C /* PrimalShared.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B904EA0D2F0D3A27006D195C /* PrimalShared.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B90585382C9DDFD600FC4108 /* SettingsDevModeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90585372C9DDFD600FC4108 /* SettingsDevModeController.swift */; };
 		B906AAE52C91C46D0089813F /* smallPillLoaderLight.json in Resources */ = {isa = PBXBuildFile; fileRef = B906AAD72C91C46D0089813F /* smallPillLoaderLight.json */; };
 		B906AAE72C91C46D0089813F /* smallPillLoader.json in Resources */ = {isa = PBXBuildFile; fileRef = B906AAD92C91C46D0089813F /* smallPillLoader.json */; };
@@ -436,8 +438,6 @@
 		B94F2C082AF5501A0041181B /* TabSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94F2C072AF5501A0041181B /* TabSelectionView.swift */; };
 		B950FB102C3303560088F9E3 /* WebConnectInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B950FB0F2C3303560088F9E3 /* WebConnectInputView.swift */; };
 		B956775D2EFD76D500B8166C /* RemoteSignerEventDetailsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B956775C2EFD76CD00B8166C /* RemoteSignerEventDetailsController.swift */; };
-		B95677812EFF1C3A00B8166C /* PrimalShared.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = B956777F2EFF1C2B00B8166C /* PrimalShared.xcframework */; };
-		B95677822EFF1C3A00B8166C /* PrimalShared.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B956777F2EFF1C2B00B8166C /* PrimalShared.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B95677842F02E85400B8166C /* EventDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B95677832F02E85400B8166C /* EventDetailsView.swift */; };
 		B95677862F02FAAE00B8166C /* SettingsRemoteSessionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B95677852F02FAA500B8166C /* SettingsRemoteSessionController.swift */; };
 		B95677882F03095000B8166C /* RemoteSignerEventCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B95677872F03094700B8166C /* RemoteSignerEventCell.swift */; };
@@ -763,7 +763,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				B95677822EFF1C3A00B8166C /* PrimalShared.xcframework in Embed Frameworks */,
+				B904EA102F0D3A3F006D195C /* PrimalShared.xcframework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1050,6 +1050,7 @@
 		B9031D4F2AC2075E00C7489F /* ChatLoadingCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatLoadingCell.swift; sourceTree = "<group>"; };
 		B9031D512ACDDD4200C7489F /* ReplyingToView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReplyingToView.swift; sourceTree = "<group>"; };
 		B904E9A22F042BDD006D195C /* CloudPopupController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudPopupController.swift; sourceTree = "<group>"; };
+		B904EA0D2F0D3A27006D195C /* PrimalShared.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = PrimalShared.xcframework; sourceTree = "<group>"; };
 		B90585372C9DDFD600FC4108 /* SettingsDevModeController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsDevModeController.swift; sourceTree = "<group>"; };
 		B906AAD72C91C46D0089813F /* smallPillLoaderLight.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = smallPillLoaderLight.json; sourceTree = "<group>"; };
 		B906AAD92C91C46D0089813F /* smallPillLoader.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = smallPillLoader.json; sourceTree = "<group>"; };
@@ -1240,7 +1241,6 @@
 		B950FB0F2C3303560088F9E3 /* WebConnectInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebConnectInputView.swift; sourceTree = "<group>"; };
 		B950FB112C35DD260088F9E3 /* Primal.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Primal.entitlements; sourceTree = "<group>"; };
 		B956775C2EFD76CD00B8166C /* RemoteSignerEventDetailsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSignerEventDetailsController.swift; sourceTree = "<group>"; };
-		B956777F2EFF1C2B00B8166C /* PrimalShared.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = PrimalShared.xcframework; sourceTree = "<group>"; };
 		B95677832F02E85400B8166C /* EventDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventDetailsView.swift; sourceTree = "<group>"; };
 		B95677852F02FAA500B8166C /* SettingsRemoteSessionController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsRemoteSessionController.swift; sourceTree = "<group>"; };
 		B95677872F03094700B8166C /* RemoteSignerEventCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSignerEventCell.swift; sourceTree = "<group>"; };
@@ -1573,7 +1573,7 @@
 				9393312129A3E44D003954C2 /* GenericJSON in Frameworks */,
 				9393312729A3E475003954C2 /* NWWebSocket in Frameworks */,
 				B907D3C12DBBF18B002B86DA /* LightningDevKit in Frameworks */,
-				B95677812EFF1C3A00B8166C /* PrimalShared.xcframework in Frameworks */,
+				B904EA0F2F0D3A3F006D195C /* PrimalShared.xcframework in Frameworks */,
 				B94F2BDF2ADDCD710041181B /* StoreKit.framework in Frameworks */,
 				B99E039C2C07C059006CCECB /* Ink in Frameworks */,
 				9E0DEAED29FD2F6900145E08 /* Lottie in Frameworks */,
@@ -1721,7 +1721,7 @@
 				9393312829A3E4E0003954C2 /* Common */,
 				9E9F2F9929F6ABA800A9CDF3 /* AppDelegate.swift */,
 				9E9F2F9829F6ABA800A9CDF3 /* SceneDelegate.swift */,
-				B956777F2EFF1C2B00B8166C /* PrimalShared.xcframework */,
+				B904EA0D2F0D3A27006D195C /* PrimalShared.xcframework */,
 				9EB219EE2A06FD610037C3E5 /* MainLogo.png */,
 				939330F929A3E370003954C2 /* Assets.xcassets */,
 				939330FB29A3E370003954C2 /* Preview Content */,
@@ -4773,7 +4773,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.6.36;
+				MARKETING_VERSION = 2.6.39;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -4822,7 +4822,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.6.36;
+				MARKETING_VERSION = 2.6.39;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

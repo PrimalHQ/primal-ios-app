@@ -100,7 +100,7 @@ class SettingsConnectedAppController: UIViewController {
         tableView.delegate = self
         
         Publishers.CombineLatest(
-            RemoteSignerManager.instance.sessionRepo.observeSessionsByClientPubKey(clientPubKey: connectionID).toPublisher(),
+            RemoteSignerManager.instance.sessionRepo.observeRemoteSessionsByApp(appIdentifier: connectionID).toPublisher(),
             RemoteSignerManager.instance.connectionRepo.observeConnection(clientPubKey: connectionID).toPublisher()
         )
         .debounce(for: 0.2, scheduler: DispatchQueue.main)
@@ -237,8 +237,8 @@ extension SettingsConnectedAppController: RemoteSignerConnectionAutostartCellDel
         
         Task {
             do {
-                guard let active = try await repo.findActiveSessionForConnection(clientPubKey: connectionID).getOrNull() else {
-                    let res = try await repo.startSession(clientPubKey: connectionID)
+                guard let active = try await repo.findFirstOpenSessionByAppIdentifier(appIdentifier: connectionID).getOrNull() else {
+                    let res = try await repo.startRemoteSession(appIdentifier: connectionID)
                     return
                 }
                 
