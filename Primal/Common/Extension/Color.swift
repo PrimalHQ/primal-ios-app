@@ -9,10 +9,6 @@ import Foundation
 import SwiftUI
 
 extension UIColor {
-    static var highlight: UIColor {
-        Theme.current.isDarkTheme ? .init(rgb: 0x2E3726) : .init(rgb: 0xE8F3E8)
-    }
-    
     static let pro = UIColor(rgb: 0xE47C00)
     static let gold = UIColor(rgb: 0xFFA02F)
     static let live = UIColor(rgb: 0xEE0000)

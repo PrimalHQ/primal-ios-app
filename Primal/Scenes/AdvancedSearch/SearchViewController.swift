@@ -30,6 +30,8 @@ final class SearchViewController: UIViewController, Themeable, WalletSearchContr
         }
     }
     
+    var navigationControllerForSearchResults: UINavigationController? { navigationController }
+    
     let scope: SearchScope
     let searchType: SearchType
     init(scope: SearchScope = .global, type: SearchType = .notes) {

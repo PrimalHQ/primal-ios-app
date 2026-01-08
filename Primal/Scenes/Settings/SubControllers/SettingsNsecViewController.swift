@@ -19,6 +19,7 @@ class SettingsNsecViewController: UIViewController, Themeable {
         $0.setTitleColor(.accent, for: .highlighted)
     }
     let pubIcon = UserImageView(height: 44)
+    let iCloudSwitch = UISwitch()
     
     var isShowingNsec = false {
         didSet {
@@ -37,6 +38,7 @@ class SettingsNsecViewController: UIViewController, Themeable {
         view.backgroundColor = .background
         
         navigationItem.leftBarButtonItem = customBackButton
+        iCloudSwitch.tintColor = .accent
     }
 }
 
@@ -63,6 +65,8 @@ private extension SettingsNsecViewController {
     
     func setupView() {
         title = "Keys"
+        
+        let npub = ICloudKeychainManager.instance.getLoginInfo()?.nVariant.npub ?? ""
         
         let pubTitle = SettingsTitleViewVibrant(title: "YOUR PUBLIC KEY")
         let pubLabelParent = ThemeableView().setTheme { $0.backgroundColor = .background3 }
@@ -99,6 +103,10 @@ private extension SettingsNsecViewController {
         let dangerStack = UIStackView([dangerIcon, SpacerView(width: 6), dangerTitle, UIView()])
         let deleteButton = DeleteAccountButton()
         
+        let iCloudStack = UIStackView([ThemeableLabel("Save key in iCloud Keychain", textColor: { .foreground }, font: .appFont(withSize: 16, weight: .regular)), iCloudSwitch])
+        iCloudStack.alignment = .center
+        iCloudSwitch.isOn = ICloudKeychainManager.instance.hasSavedNpubOnline(npub)
+        
         let stack = UIStackView(arrangedSubviews: [
             pubTitle,       SpacerView(height: 16),
             pubLabelParent, SpacerView(height: 22),
@@ -107,6 +115,7 @@ private extension SettingsNsecViewController {
             border,         SpacerView(height: 26),
             titleStack,     SpacerView(height: 8),
             secLabelParent, SpacerView(height: 22),
+            iCloudStack,    SpacerView(height: 22),
             copySecButton,  SpacerView(height: 16),
             secLabelDesc,   SpacerView(height: 20),
             border2,        SpacerView(height: 32),
@@ -136,7 +145,7 @@ private extension SettingsNsecViewController {
         
         pubLabel.font = .appFont(withSize: 12, weight: .medium)
         pubLabel.numberOfLines = 2
-        pubLabel.text = ICloudKeychainManager.instance.getLoginInfo()?.nVariant.npub
+        pubLabel.text = npub
         
         [pubLabelDesc, secLabelDesc, dangerDesc].forEach {
             $0.font = .appFont(withSize: 14, weight: .regular)
@@ -171,6 +180,30 @@ private extension SettingsNsecViewController {
             alert.addAction(.init(title: "Cancel", style: .cancel))
             self?.present(alert, animated: true)
         }), for: .touchUpInside)
+        
+        iCloudSwitch.addAction(.init(handler: { [weak self] _ in
+            guard let self, !npub.isEmpty else { return }
+            
+            let isOn = iCloudSwitch.isOn
+            
+            if isOn {
+                ICloudKeychainManager.instance.toggleOnlineSyncForNpub(npub, on: isOn)
+                
+                view.showToast("Key added to iCloud")
+            } else {
+                authenticateWithFaceID { [weak self] success in
+                    guard let self else { return }
+                    
+                    if success {
+                        ICloudKeychainManager.instance.toggleOnlineSyncForNpub(npub, on: isOn)
+                        
+                        view.showToast("Key removed from iCloud")
+                    } else {
+                        iCloudSwitch.isOn = !isOn
+                    }
+                }
+            }
+        }), for: .valueChanged)
     }
     
     // MARK: - @objc methods

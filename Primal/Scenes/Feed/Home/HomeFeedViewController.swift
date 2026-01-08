@@ -8,6 +8,7 @@
 import Combine
 import UIKit
 import AVKit
+import NostrSDK
 
 extension UIButton.Configuration {
     static func navChevronButton(title: String) -> UIButton.Configuration {

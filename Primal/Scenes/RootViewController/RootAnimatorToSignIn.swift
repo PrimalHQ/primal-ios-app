@@ -41,7 +41,7 @@ struct RootAnimatorToSignIn {
                     introVC.removeFromParent()
                 }
                 
-                let views = [onboarding.screenshot, onboarding.signupButton, onboarding.signinButton, onboarding.redeemCodeButton, onboarding.termsBothLines]
+                let views = [onboarding.screenshot, onboarding.signupButton, onboarding.signinButton, onboarding.termsBothLines]
                 views.forEach {
                     $0.alpha = 0
                     $0.transform = .init(translationX: 0, y: 100)
@@ -72,10 +72,10 @@ struct RootAnimatorToSignIn {
                     promise(.success(()))
                 }
                 
-                UIView.animate(withDuration: 17 / speed, delay: 8 / speed) {
-                    onboarding.redeemCodeButton.alpha = 1
-                    onboarding.redeemCodeButton.transform = .identity
-                }
+//                UIView.animate(withDuration: 17 / speed, delay: 8 / speed) {
+//                    onboarding.redeemCodeButton.alpha = 1
+//                    onboarding.redeemCodeButton.transform = .identity
+//                }
                 
                 UIView.animate(withDuration: 17 / speed, delay: 12 / speed) {
                     onboarding.termsBothLines.alpha = 1

@@ -6,5 +6,9 @@
 	<array>
 		<string>group.primal</string>
 	</array>
+	<key>keychain-access-groups</key>
+	<array>
+		<string>$(AppIdentifierPrefix)net.primal.iosapp.Primal</string>
+	</array>
 </dict>
 </plist>

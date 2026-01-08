@@ -41,6 +41,8 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
     
     lazy var dataSource: NoteFeedDatasource = RegularFeedDatasource(tableView: table, delegate: self)
     
+    var navigationControllerForSearchResults: UINavigationController? { navigationController }
+    
     func postForIndexPath(_ indexPath: IndexPath) -> ParsedContent? {
         dataSource.postForIndexPath(indexPath)
     }
@@ -123,7 +125,7 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
     
     func playVideoOnScroll() {
         if let presentedViewController, !presentedViewController.isBeingDismissed { return }
-        if let current = VideoPlaybackManager.instance.currentlyPlaying, current.isLive && current.isPlaying { return }
+        if let current = VideoPlaybackManager.instance.currentlyPlayingVideo, current.isLive && current.isPlaying { return }
         guard ContentDisplaySettings.autoPlayVideos, table.window != nil, FullScreenVideoPlayerController.instance == nil else { return }
         
         let allVideoCells = table.visibleCells.flatMap { ($0 as? FeedElementVideoCell)?.currentVideoCells ?? [] }
@@ -146,25 +148,22 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
         }
     }
     
-    var cachedContentOffset: CGPoint = .zero
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        if FullScreenVideoPlayerController.instance == nil && !VideoPlaybackManager.instance.isLive {
-            if abs(cachedContentOffset.y - scrollView.contentOffset.y) > 50 {
-                VideoPlaybackManager.instance.currentlyPlaying?.delayedPause()
-            } else {
-                playVideoOnScroll()
-            }
-        }
-        
-        cachedContentOffset = scrollView.contentOffset
-        
         let newPosition = scrollView.contentOffset.y
         let delta = newPosition - prevPosition
         prevPosition = newPosition
         
         // System sometimes updates table contentOffset without moving the cells
-        // so if delta is larger than 50 we ignore it
-        if abs(delta) > 50 { return }
+        // so if delta is larger than 300 we ignore it
+        if abs(delta) > 300 { return }
+        
+        if FullScreenVideoPlayerController.instance == nil && !VideoPlaybackManager.instance.isLive {
+            if abs(delta) > 50 {
+                VideoPlaybackManager.instance.currentlyPlayingVideo?.delayedPause()
+            } else {
+                playVideoOnScroll()
+            }
+        }
         
         let theoreticalNewTransform = (prevTransform - delta).clamped(to: -barsMaxTransform...0)
         let newTransform = newPosition <= -topBarHeight ? 0 : theoreticalNewTransform
@@ -803,11 +802,11 @@ extension NoteViewController: PostCellDelegate {
             return
         }
         
-        if VideoPlaybackManager.instance.currentlyPlaying?.originalURL != url {
+        if VideoPlaybackManager.instance.currentlyPlayingVideo?.originalURL != url {
             VideoPlayer(url: url, originalURL: url, userPubkey: "").play()
         }
         
-        guard let player = VideoPlaybackManager.instance.currentlyPlaying else { return }
+        guard let player = VideoPlaybackManager.instance.currentlyPlayingVideo else { return }
         
         present(FullScreenVideoPlayerController(player), animated: true)
     }

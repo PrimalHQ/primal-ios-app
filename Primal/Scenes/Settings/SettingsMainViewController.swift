@@ -76,6 +76,7 @@ private extension SettingsMainViewController {
         let wallet = SettingsOptionButton(title: "Wallet")
         let network = SettingsOptionButton(title: "Network")
         let appearance = SettingsOptionButton(title: "Appearance")
+        let connectedApps = SettingsOptionButton(title: "Connected Apps")
         let contentDisplay = SettingsOptionButton(title: "Content Display")
         let muted = SettingsOptionButton(title: "Muted Content")
         let mediaUploads = SettingsOptionButton(title: "Media Uploads")
@@ -87,7 +88,7 @@ private extension SettingsMainViewController {
         let versionTitleLabel = SettingsTitleView(title: "VERSION")
         
         let bottomStack = UIStackView(arrangedSubviews: [versionTitleLabel, versionLabel, UIView()])
-        let stack = UIStackView(arrangedSubviews: [keys, wallet, network, appearance, contentDisplay, muted, mediaUploads, notifications, devMode, zaps, SpacerView(height: 40), bottomStack])
+        let stack = UIStackView(arrangedSubviews: [keys, wallet, network, appearance, connectedApps, contentDisplay, muted, mediaUploads, notifications, devMode, zaps, SpacerView(height: 40), bottomStack])
         
         let scroll = UIScrollView()
         
@@ -131,6 +132,10 @@ private extension SettingsMainViewController {
         
         network.addAction(.init(handler: { [weak self] _ in
             self?.navigationController?.pushViewController(SettingsNetworkViewController(), animated: true)
+        }), for: .touchUpInside)
+        
+        connectedApps.addAction(.init(handler: { [weak self] _ in
+            self?.navigationController?.pushViewController(SettingsRemoteSignerController(), animated: true)
         }), for: .touchUpInside)
         
         contentDisplay.addAction(.init(handler: { [weak self] _ in

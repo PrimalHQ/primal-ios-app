@@ -9,7 +9,7 @@ import UIKit
 
 final class ProfileQRController: OnboardingParentViewController {
     let profile: ProfileShowQRController
-    lazy var scanController = ProfileScanQRController()
+    lazy var scanController = ProfileScanQRController(backgroundIndex: 2.5)
     
     init(user: ParsedUser? = IdentityManager.instance.parsedUser) {
         profile = ProfileShowQRController(user: user)

@@ -300,7 +300,7 @@ private extension LargeBalanceConversionView {
     func updateLabels(_ isBitcoinPrimary: Bool, _ balance: Int) {
         let usdAmount = balance.satsToUsdAmountString(roundingStyle)
         
-        guard animateBalanceChange else {
+        guard animateBalanceChange && largeAmountLabel.text != nil else {
             if isBitcoinPrimary {
                 largeAmountLabel.text = balance.satsToBitcoinString()
                 smallAmountLabel.text = "$\(usdAmount) USD"

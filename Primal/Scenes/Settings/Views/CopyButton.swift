@@ -23,7 +23,7 @@ final class CopyButton: MyButton, Themeable {
         label.font = .appFont(withSize: 18, weight: .medium)
         label.textColor = .white
         
-        layer.cornerRadius = 8
+        layer.cornerRadius = 24
         layer.masksToBounds = true
         
         let stack = UIStackView(arrangedSubviews: [icon, label])

@@ -9,12 +9,7 @@ import SwiftUI
 import UIKit
 
 final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
-    lazy var deeplinkCoordinator: DeeplinkCoordinatorProtocol = DeeplinkCoordinator(handlers: [
-        PrimalSchemeDeeplinkHandler(),
-        NostrSchemeDeeplinkHandler(),
-        NWCSchemeDeeplinkHandler(),
-        PrimalWebsiteScheme.shared
-    ])
+    lazy var deeplinkCoordinator: DeeplinkCoordinatorProtocol = DeeplinkCoordinator.shared
     
     var window: UIWindow?
     
@@ -33,6 +28,10 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         if let userActivity = connectionOptions.userActivities.first(where: { $0.activityType == NSUserActivityTypeBrowsingWeb }), let url = userActivity.webpageURL {
             deeplinkCoordinator.handleURL(url)
         }
+    }
+    
+    func sceneDidBecomeActive(_ scene: UIScene) {
+        RemoteSignerManager.instance.checkDeliveredNotifications()
     }
     
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {

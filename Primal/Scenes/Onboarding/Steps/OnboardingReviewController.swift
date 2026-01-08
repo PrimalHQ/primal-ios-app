@@ -9,21 +9,18 @@ import Combine
 import UIKit
 import SafariServices
 
-final class OnboardingReviewController: UIViewController, OnboardingViewController {
+final class OnboardingReviewController: OnboardingBaseViewController {
     let continueButton = OnboardingMainButton("Activate Wallet")
     let skipButton = SolidColorUIButton(title: "I’ll do this later", color: .white)
-    
-    let titleLabel: UILabel = .init()
-    let backButton = UIButton()
     
     var cancellables: Set<AnyCancellable> = []
     
     var session: OnboardingSession
     let profile: AccountCreationData
-    init(profile: AccountCreationData, session: OnboardingSession) {
+    init(profile: AccountCreationData, session: OnboardingSession, backgroundIndex: CGFloat) {
         self.session = session
         self.profile = profile
-        super.init(nibName: nil, bundle: nil)
+        super.init(backgroundIndex: backgroundIndex)
         
         setup()
     }
@@ -35,7 +32,7 @@ final class OnboardingReviewController: UIViewController, OnboardingViewControll
 
 private extension OnboardingReviewController {
     func setup() {
-        addBackground(5)
+        addBackground()
         addNavigationBar("Primal Wallet")
         backButton.isHidden = true
         

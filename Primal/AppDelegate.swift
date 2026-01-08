@@ -11,11 +11,17 @@ import AVFAudio
 import GRDB
 import Intents
 import GenericJSON
+import PrimalShared
 
 extension UserDefaults {
     var notificationEnableEvents: [NostrObject] {
         get { string(forKey: "notificationEnableEventsKey")?.decode() ?? [] }
         set { setValue(newValue.encodeToString(), forKey: "notificationEnableEventsKey") }
+    }
+    
+    var signerNotificationEnableEvents: [NostrObject] {
+        get { string(forKey: "signerNotificationEnableEventsKey")?.decode() ?? [] }
+        set { setValue(newValue.encodeToString(), forKey: "signerNotificationEnableEventsKey") }
     }
     
     var currentUserEnabledNotifications: Bool {
@@ -47,8 +53,6 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     static var shared: AppDelegate!
     
     private var cancellables: Set<AnyCancellable> = []
-    private(set) var pushNotificationsToken: Data?
-    
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         Self.shared = self
@@ -74,9 +78,20 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         _ = SmartContactsManager.instance
         ArticleWebViewCache.setup()
         
+        ICloudKeychainManager.instance.setupForIcloudNewUsers()
+        
+        WalletRepositoryFactory.shared.doInit(enableDbEncryption: true, enableLogs: true)
+        AccountRepositoryFactory.shared.doInit(enableDbEncryption: true, enableLogs: true)
+        
+        _ = RemoteSignerManager.instance
+        
         UNUserNotificationCenter.current().delegate = self
-        registerForPushNotifications()
+        PushNotificationsManager.instance.registerForPushNotifications()
         registerNotificationCategory()
+        
+        if #available(iOS 16.1, *) {
+            WidgetBridge = WidgetMainAppBridge()
+        }
         
         SocketRequest(name: "client_config", payload: nil).publisher()
             .receive(on: DispatchQueue.main)
@@ -97,67 +112,17 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     
     // MARK: - Push Notifications
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-        pushNotificationsToken = deviceToken
-        updateNotificationsSettings()
+        PushNotificationsManager.instance.setToken(deviceToken)
+    }
+    
+    func applicationWillTerminate(_ application: UIApplication) {
+        if #available(iOS 16.1, *) {
+            RemoteSignerActivityManager.instance.endSignerActivity()
+        }
     }
     
     func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: any Error) {
         print("Failed to register for remote notifications: \(error.localizedDescription)")
-    }
-    
-    func updateNotificationsSettings() {
-        guard let deviceToken = pushNotificationsToken else { return }
-        
-        let currentToken = deviceToken.map { String(format: "%02.2hhx", $0) }.joined()
-        
-        let pubkeys = LoginManager.instance.loggedInNpubs().compactMap { $0.npubToPubkey() }
-        
-        let oldEvents = UserDefaults.standard.notificationEnableEvents
-        let filteredEvents = oldEvents.filter {
-            if !pubkeys.contains($0.pubkey) { return false }
-         
-            guard
-                let contentData: [String: String] = $0.content.decode(),
-                let token = contentData["token"]
-            else { return false }
-            
-            return token == currentToken
-        }
-        
-        if oldEvents.count != filteredEvents.count {
-            UserDefaults.standard.notificationEnableEvents = filteredEvents
-        }
-        
-        var payload: [String: JSON] = [
-            "events_from_users": .array(filteredEvents.map { $0.toJSON() }),
-            "platform": "iOS",
-            "token": .string(currentToken)
-        ]
-        #if DEBUG
-        payload["environment"] = "sandbox"
-        #endif
-        
-        SocketRequest(name: "update_push_notification_token", payload: .object(payload))
-            .publisher()
-            .sink { res in
-                print(res.message)
-            }
-            .store(in: &cancellables)
-    }
-    
-    func registerForPushNotifications() {
-        UNUserNotificationCenter.current().getNotificationSettings { [weak self] settings in
-            DispatchQueue.main.async {
-                switch settings.authorizationStatus {
-                case .authorized, .provisional, .ephemeral:
-                    UIApplication.shared.registerForRemoteNotifications()
-                case .denied, .notDetermined:
-                    break
-                @unknown default:
-                    print("Unknown permission status")
-                }
-            }
-        }
     }
     
 }
@@ -182,6 +147,13 @@ private extension AppDelegate {
 
 extension AppDelegate: UNUserNotificationCenterDelegate {
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        
+        if let extra = notification.request.content.userInfo["extra"] as? [String: Any], extra["nip46_event"] != nil {
+            RemoteSignerManager.instance.processMissedEvents()
+            completionHandler([])
+            return
+        }
+        
         completionHandler([.banner, .sound, .badge])
     }
     
@@ -191,8 +163,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         if let extra = userInfo["extra"] as? [String: Any] {
             var waitForOpen = false
             if let userPubkey = extra["user_pubkey"] as? String, IdentityManager.instance.userHexPubkey != userPubkey, let npub = userPubkey.hexToNpub() {
-                let key = ICloudKeychainManager.instance.getSavedNsec(npub) ?? npub
-                _ = LoginManager.instance.login(key)
+                _ = LoginManager.instance.login(npub)
                 RootViewController.instance.reset()
                 waitForOpen = true
             }

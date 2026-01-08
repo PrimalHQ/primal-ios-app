@@ -19,6 +19,7 @@ class HomeFeedChildController: PostFeedViewController {
     @Published var didReachEnd = false
     
     weak var menuContainer: MenuContainerController?
+    weak var tabController: MainTabBarController?
 
     override init(feed: FeedManager) {
         super.init(feed: feed)
@@ -35,7 +36,7 @@ class HomeFeedChildController: PostFeedViewController {
         
         view.addSubview(newPostsViewParent)
         newPostsViewParent.addSubview(newPostsView)
-        newPostsViewParent.pinToSuperview(edges: .top, padding: 138).centerToSuperview(axis: .horizontal)
+        newPostsViewParent.pinToSuperview(edges: .top, padding: 130).centerToSuperview(axis: .horizontal)
         newPostsViewParent.alpha = 0
         
         newPostsView.pinToSuperview(edges: .vertical).pinToSuperview(edges: .horizontal)
@@ -69,6 +70,7 @@ class HomeFeedChildController: PostFeedViewController {
         super.viewDidAppear(animated)
         
         menuContainer = findParent()
+        tabController = findParent()
         
         navigationController?.setNavigationBarHidden(false, animated: animated)
     }
@@ -145,6 +147,9 @@ class HomeFeedChildController: PostFeedViewController {
         parentHomeVC?.postButtonParent.transform = .init(translationX: 0, y: -transform)
         
         newPostsViewParent.transform = .init(translationX: 0, y: transform)
+        
+        tabController?.indicatorStack.alpha = 1 - percent
+        tabController?.indicatorStack.transform = .init(translationX: 0, y: transform)
         
         if /*feed.newPosts.0 == 0 &&*/ table.contentOffset.y < 0 {
             newPostsViewParent.alpha = min((1 - (percent * 4)).clamped(to: 0...1), 1 - min(100, -2 * table.contentOffset.y) / 100)

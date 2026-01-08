@@ -1,0 +1,82 @@
+//
+//  RemoteSignerEventDetailsController.swift
+//  Primal
+//
+//  Created by Pavle Stevanović on 25. 12. 2025..
+//
+
+import Combine
+import UIKit
+import PrimalShared
+import Kingfisher
+
+class RemoteSignerEventDetailsController: UIViewController {
+    
+    var cancellables: Set<AnyCancellable> = []
+    
+    let event: SessionEvent
+    var sessionId: String { event.sessionId }
+    
+    init(event: SessionEvent) {
+        self.event = event
+        super.init(nibName: nil, bundle: nil)
+        
+        preferredContentSize = .init(width: 400, height: 600)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+    
+        view.backgroundColor = .background4
+        
+        let appIcon = UIImageView().constrainToSize(40)
+        let appTitleLabel = UILabel("", color: .foreground, font: .appFont(withSize: 18, weight: .bold))
+        let appStack = UIStackView(axis: .vertical, [appIcon, appTitleLabel])
+        appStack.spacing = 10
+        appStack.alignment = .center
+        
+        let title = RemoteSignerManager.instance.permissionsMap[event.requestTypeId] ?? event.requestTypeId
+        let titleLabel = UILabel("\(title) - Event Details:", color: .foreground3, font: .appFont(withSize: 16, weight: .regular))
+        
+        let date = Date(timeIntervalSince1970: Double(event.requestedAt))
+        let dateFormatter = DateFormatter()
+        dateFormatter.setLocalizedDateFormatFromTemplate("MMM d, yyyy h:mm a")
+        let subtitleLabel = UILabel(dateFormatter.string(from: date), color: .foreground3, font: .appFont(withSize: 14, weight: .regular))
+        
+        let topStack = UIStackView(axis: .vertical, [titleLabel, subtitleLabel])
+        topStack.isLayoutMarginsRelativeArrangement = true
+        topStack.layoutMargins = .init(top: 16, left: 24, bottom: 0, right: 24)
+        
+        let contentScroll = EventDetailsView(event: event)
+        
+        let approveButton = UIButton(configuration: .accentPill(text: "Back", font: .appFont(withSize: 16, weight: .semibold))).constrainToSize(height: 40)
+        let buttonsParent = UIView()
+        buttonsParent.addSubview(approveButton)
+        approveButton.pinToSuperview(edges: .horizontal, padding: 20).pinToSuperview(edges: .top, padding: 16).pinToSuperview(edges: .bottom, padding: 4, safeArea: true)
+        
+        // MARK: - Main Stack
+        let mainStack = UIStackView(axis: .vertical, [appStack, SpacerView(height: 16), SpacerView(height: 1, color: .background3), topStack, contentScroll, buttonsParent])
+        view.addSubview(mainStack)
+        mainStack.pinToSuperview(edges: [.horizontal, .bottom]).pinToSuperview(edges: .top, padding: 10, safeArea: true)
+        
+        RemoteSignerManager.instance.sessionRepo.observeRemoteSession(sessionId: sessionId).toPublisher().first()
+            .receive(on: DispatchQueue.main)
+            .sink { session in
+                appIcon.kf.setImage(
+                    with: URL(string: session?.image ?? ""),
+                    placeholder: session?.defaultImage(size: 40),
+                    options: [.processor(RoundCornerImageProcessor(radius: .heightFraction(0.5)))]
+                )
+                appTitleLabel.text = session?.name
+            }
+            .store(in: &cancellables)
+        
+        approveButton.addAction(.init(handler: { [weak self] _ in
+            self?.navigationController?.popViewController(animated: true)
+        }), for: .touchUpInside)
+    }
+}

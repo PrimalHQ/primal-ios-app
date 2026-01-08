@@ -9,10 +9,28 @@ import UserNotifications
 import Intents
 import UniformTypeIdentifiers
 
-class NotificationService: UNNotificationServiceExtension {
+extension String {
+    func decode<T: Codable>() -> T? {
+        do {
+            return try JSONDecoder().decode(T.self, from: Data(utf8))
+        } catch {
+            print("Error decoding \(T.self) from \(self) error \(error)")
+        }
+        return nil
+    }
+}
 
+class NotificationService: UNNotificationServiceExtension {
     var contentHandler: ((UNNotificationContent) -> Void)?
     var bestAttemptContent: UNMutableNotificationContent?
+    
+    var session = {
+        let config = URLSessionConfiguration.ephemeral
+        config.waitsForConnectivity = false
+        config.timeoutIntervalForRequest = 5
+        config.timeoutIntervalForResource = 5
+        return URLSession(configuration: config)
+    }()
 
     override func didReceive(_ request: UNNotificationRequest, withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void) {
         self.contentHandler = contentHandler
@@ -21,8 +39,47 @@ class NotificationService: UNNotificationServiceExtension {
         guard let bestAttemptContent else { contentHandler(request.content); return }
         
         let userInfo = request.content.userInfo
+        
+        // TODO: - handle remote signing notification
+        
         guard
-            let communicationData = userInfo["extra"] as? [String: Any],
+            let communicationData = userInfo["extra"] as? [String: Any]
+        else {
+            contentHandler(bestAttemptContent)
+            return
+        }
+        
+//        let qaNpub = "npub13rxpxjc6vh65aay2eswlxejsv0f7530sf64c4arydetpckhfjpustsjeaf"
+//        if   let qaNsec = keychain[qaNpub], let keypair = Keypair(nsec: qaNsec),
+//             let obj = try? NostrEvent(kind: EventKind.textNote, content: "Test post from notification i mean really", tags: [], createdAt: Int64(Date().timeIntervalSince1970), signedBy: keypair) {
+//         
+//            var request = URLRequest(url: URL(string: "https://cache1.primal.net/api/")!, cachePolicy: .reloadIgnoringLocalAndRemoteCacheData)
+//            
+//            let body: Any = ["broadcast_events", [
+//                "events": [[
+//                    "id": obj.id,
+//                    "pubkey": obj.pubkey,
+//                    "content": obj.content,
+//                    "created_at": obj.createdAt,
+//                    "kind": obj.kind.rawValue,
+//                    "tags": obj.tags.map { $0.raw },
+//                    "sig": obj.signature as Any
+//                ]],
+//                "relays": ["wss://relay.primal.net"]
+//            ]] as Any
+//            
+//            if let requestBody = try? JSONSerialization.data(withJSONObject: body) {
+//                request.httpMethod = "POST"
+//                request.httpBody = requestBody
+//                request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+//            }
+//            
+//            session
+//                .dataTask(with: request)
+//                .resume()
+//        }
+        
+        guard
             let userId = communicationData["user_pubkey"] as? String,
             let userName = communicationData["user_displayname"] as? String
         else {

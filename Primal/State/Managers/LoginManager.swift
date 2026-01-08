@@ -33,7 +33,7 @@ final class LoginManager {
             .store(in: &cancellables)
     }
     
-    func loggedInNpubs() -> [String] { ICloudKeychainManager.instance.npubs }
+    func loggedInNpubs() -> [String] { ICloudKeychainManager.instance.localNpubs }
     
     func login(_ key: String) -> Bool {
         guard let type = NKeypair.type(key) else { return false }
@@ -102,9 +102,9 @@ final class LoginManager {
     }
     
     private func loginMethod() -> LoginMethod? {
-        guard let npub = ICloudKeychainManager.instance.npubs.first else { return nil }
+        guard let npub = ICloudKeychainManager.instance.localNpubs.first else { return nil }
         
-        if let _ = ICloudKeychainManager.instance.getSavedNsec(npub) {
+        if ICloudKeychainManager.instance.hasNsec(npub) {
             cachedMethod = .nsec
             return .nsec
         } 
@@ -125,7 +125,10 @@ extension LoginManager {
             .receive(on: DispatchQueue.main)
             .sink(receiveCompletion: { _ in }) { [weak self] users in
                 guard let self else { return }
-                loadedProfiles = users
+                
+                if loadedProfiles.map({ $0.data.pubkey }).sorted() != users.map({ $0.data.pubkey }).sorted() {
+                    loadedProfiles = users
+                }
                 
                 let missing = allPubkeys.filter { pubkey in !self.loadedProfiles.contains(where: { $0.data.pubkey == pubkey })}
         

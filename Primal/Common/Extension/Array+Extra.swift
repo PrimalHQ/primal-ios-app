@@ -56,4 +56,12 @@ extension Sequence {
         var seen: Set<T> = []
         return filter { seen.insert(filterF($0)).inserted }
     }
+    
+    func groupByFilter<T>(_ filterF: (Element) -> T) -> [T: [Element]] {
+        var groups: [T: [Element]] = [:]
+        for element in self {
+            groups[filterF(element), default: []].append(element)
+        }
+        return groups
+    }
 }

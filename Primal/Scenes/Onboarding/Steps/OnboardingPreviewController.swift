@@ -9,7 +9,7 @@ import Combine
 import UIKit
 import SafariServices
 
-final class OnboardingPreviewController: UIViewController, OnboardingViewController {
+final class OnboardingPreviewController: OnboardingBaseViewController {
     enum State {
         case ready
         case created
@@ -38,9 +38,7 @@ final class OnboardingPreviewController: UIViewController, OnboardingViewControl
     let continueButton = OnboardingMainButton("Create Account Now")
     let secondScreen = UIStackView(axis: .vertical, [])
     let loadingSpinner = LoadingSpinnerView().constrainToSize(height: 70)
-    
-    let titleLabel: UILabel = .init()
-    let backButton = UIButton()
+    let infoView = KeyKeychainInfoView()
     
     var isUploading: Bool = false {
         didSet {
@@ -55,10 +53,10 @@ final class OnboardingPreviewController: UIViewController, OnboardingViewControl
     
     var session: OnboardingSession
     
-    init(data: AccountCreationData, session: OnboardingSession) {
+    init(data: AccountCreationData, session: OnboardingSession, backgroundIndex: CGFloat) {
         self.oldData = data
         self.session = session
-        super.init(nibName: nil, bundle: nil)
+        super.init(backgroundIndex: backgroundIndex)
         
         setup()
         
@@ -186,7 +184,7 @@ private extension OnboardingPreviewController {
     }
     
     func setup() {
-        addBackground(4)
+        addBackground()
         addNavigationBar("Create Account")
         
         let botStack = UIStackView(axis: .vertical, [continueButton, progressView])
@@ -205,7 +203,6 @@ private extension OnboardingPreviewController {
         nameLabel.text = profile.displayname
         nameLabel.textColor = .white
         
-        let infoView = KeyKeychainInfoView()
         [avatarView, SpacerView(height: 12), nameLabel, SpacerView(height: 36), infoView].forEach { secondScreen.addArrangedSubview($0) }
         secondScreen.alignment = .center
         infoView.pinToSuperview(edges: .horizontal)
@@ -259,7 +256,13 @@ private extension OnboardingPreviewController {
                 createAccount()
             }
         case .created:
-            onboardingParent?.reset(OnboardingReviewController(profile: profile, session: session), animated: true)
+            let nVariants = session.newUserKeypair.nVariant
+            if infoView.onlineSwitch.isOn {
+                _ = ICloudKeychainManager.instance.onlineSaveNpub(nVariants.npub, nsec: nVariants.nsec)
+            } else {
+                ICloudKeychainManager.instance.toggleOnlineSyncForNpub(nVariants.npub, on: infoView.onlineSwitch.isOn)
+            }
+            onboardingParent?.reset(OnboardingReviewController(profile: profile, session: session, backgroundIndex: backgroundIndex + 1), animated: true)
         case .uploading:
             return
         }
@@ -267,21 +270,23 @@ private extension OnboardingPreviewController {
 }
 
 final class KeyKeychainInfoView: UIView {
+    let onlineSwitch = UISwitch()
+    
     init() {
         super.init(frame: .zero)
         setup()
     }
 
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
     func setup() {
-        let keyIcon = UIImageView(image: UIImage(named: "onboardingCheckTransparent"))
+        let keyIcon = UIImageView(image: .onboardingCheckTransparent)
         let titleLabel = UILabel()
         let vStack = UIStackView(axis: .vertical, [keyIcon, titleLabel])
 
-        addSubview(vStack)
+        let topContent = UIView().constrainToSize(height: 119)
+        
+        topContent.addSubview(vStack)
         vStack.centerToSuperview()
         vStack.alignment = .center
         vStack.spacing = 12
@@ -293,7 +298,26 @@ final class KeyKeychainInfoView: UIView {
 
         backgroundColor = .black.withAlphaComponent(0.25)
         layer.cornerRadius = 16
+        clipsToBounds = true
         
-        constrainToSize(height: 116)
+        let botContent = UIView()
+        botContent.backgroundColor = .black.withAlphaComponent(0.2)
+        
+        let descLabel = UILabel("Save account in iCloud Keychain", color: .white, font: .appFont(withSize: 16, weight: .regular))
+        descLabel.adjustsFontSizeToFitWidth = true
+        
+        let botStack = UIStackView([descLabel, onlineSwitch])
+        botStack.spacing = 10
+        
+        botContent.addSubview(botStack)
+        botStack.centerToSuperview(axis: .vertical).pinToSuperview(edges: .leading, padding: 18).pinToSuperview(edges: .trailing, padding: 14)
+        
+        let mainStack = UIStackView(axis: .vertical, [topContent, botContent])
+        addSubview(mainStack)
+        mainStack.pinToSuperview()
+        
+        constrainToSize(height: 119 + 47)
+        
+        onlineSwitch.isOn = true
     }
 }

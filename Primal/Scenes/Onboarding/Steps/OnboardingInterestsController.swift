@@ -9,10 +9,7 @@ import Combine
 import UIKit
 import Kingfisher
 
-final class OnboardingInterestsController: UIViewController, OnboardingViewController {
-    
-    let titleLabel: UILabel = .init()
-    let backButton: UIButton = .init()
+final class OnboardingInterestsController: OnboardingBaseViewController {
     lazy var collectionView = UIStackView(axis: .vertical, [])
     let countLabel = UILabel()
     lazy var continueButton = OnboardingMainButton("Next")
@@ -37,10 +34,10 @@ final class OnboardingInterestsController: UIViewController, OnboardingViewContr
     
     var cancellables: Set<AnyCancellable> = []
     
-    init(data: AccountCreationData, session: OnboardingSession) {
+    init(data: AccountCreationData, session: OnboardingSession, backgroundIndex: CGFloat) {
         oldData = data
         self.session = session
-        super.init(nibName: nil, bundle: nil)
+        super.init(backgroundIndex: backgroundIndex)
         
         setup()
     }
@@ -52,7 +49,7 @@ final class OnboardingInterestsController: UIViewController, OnboardingViewContr
 
 private extension OnboardingInterestsController {
     func setup() {
-        addBackground(2)
+        addBackground()
         addNavigationBar("Your Interests")
         
         let infoLabel = UILabel()
@@ -139,6 +136,6 @@ private extension OnboardingInterestsController {
         
         session.usersToFollow = Set(array)
         
-        onboardingParent?.pushViewController(OnboardingCheckInterestsController(data: oldData, session: session), animated: true)
+        onboardingParent?.pushViewController(OnboardingCheckInterestsController(data: oldData, session: session, backgroundIndex: backgroundIndex + 1), animated: true)
     }
 }

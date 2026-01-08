@@ -44,6 +44,19 @@ extension UserDefaults {
         get { string(forKey: .useNWCKey)?.decode() ?? [:] }
         set { setValue(newValue.encodeToString(), forKey: .useNWCKey) }
     }
+    
+    var btcToUsd: Double {
+        get {
+            let double = double(forKey: .btcExchangeRateKey)
+            
+            if double < 1 {
+                return 90000
+            }
+            
+            return double
+        }
+        set { set(newValue, forKey: .btcExchangeRateKey) }
+    }
 }
 
 private extension String {
@@ -54,6 +67,7 @@ private extension String {
     static let useUSDKey = "walletUseUSDKey"
     static let nwcSettingsKey = "nwcSettingsKey"
     static let useNWCKey = "useNWCKey"
+    static let btcExchangeRateKey = "btcExchangeRateKey"
 }
 
 struct CodableParsedTransaction: Codable {
@@ -119,7 +133,7 @@ protocol WalletImplementation {
     var isLoadingWalletPublisher: AnyPublisher<Bool, Never> { get }
     
     func sendLNInvoice(_ lninvoice: String, satsOverride: Int?, messageOverride: String?) async throws
-    func sendLNURL(lnurl: String, pubkey: String?, sats: Int, note: String, zap: NostrObject?) async throws
+    func sendLNURL(lnurl: String, pubkey: String?, sats: Int, note: String) async throws
     func sendLud16(_ lud: String, sats: Int, note: String, pubkey: String?, zap: NostrObject?) async throws
     func send(user: PrimalUser, sats: Int, note: String, zap: NostrObject?) async throws
     func sendOnchain(_ btcAddress: String, tier: String, sats: Int, note: String) async throws
@@ -148,7 +162,7 @@ final class WalletManager {
     
     @Published var premiumState: PremiumState?
     @Published var didJustCreateWallet = false
-    @Published var btcToUsd: Double = 44022
+    @Published var btcToUsd: Double = UserDefaults.standard.btcToUsd
     @Published var isBitcoinPrimary = !UserDefaults.standard.useUSD {
         didSet {
             if oldValue != isBitcoinPrimary {
@@ -290,6 +304,7 @@ final class WalletManager {
             .sink { [weak self] res in
                 guard let price = res.bitcoinPrice else { return }
                 self?.btcToUsd = price
+                UserDefaults.standard.btcToUsd = price
             }
             .store(in: &cancellables)
     }
@@ -298,8 +313,8 @@ final class WalletManager {
         try await impl.sendLNInvoice(lninvoice, satsOverride: satsOverride, messageOverride: messageOverride)
     }
     
-    func sendLNURL(lnurl: String, pubkey: String?, sats: Int, note: String, zap: NostrObject? = nil) async throws {
-        try await impl.sendLNURL(lnurl: lnurl, pubkey: pubkey, sats: sats, note: note, zap: zap)
+    func sendLNURL(lnurl: String, pubkey: String?, sats: Int, note: String) async throws {
+        try await impl.sendLNURL(lnurl: lnurl, pubkey: pubkey, sats: sats, note: note)
     }
     
     func sendLud16(_ lud: String, sats: Int, note: String, pubkey: String? = nil, zap: NostrObject? = nil) async throws {
@@ -386,7 +401,7 @@ class DummyWalletImplementation: WalletImplementation {
         throw WalletError.noWallet
     }
     
-    func sendLNURL(lnurl: String, pubkey: String?, sats: Int, note: String, zap: NostrObject?) async throws {
+    func sendLNURL(lnurl: String, pubkey: String?, sats: Int, note: String) async throws {
         throw WalletError.noWallet
     }
     

@@ -240,6 +240,9 @@
 		B9031D4E2AC2075600C7489F /* ChatTimeCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9031D4D2AC2075600C7489F /* ChatTimeCell.swift */; };
 		B9031D502AC2075E00C7489F /* ChatLoadingCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9031D4F2AC2075E00C7489F /* ChatLoadingCell.swift */; };
 		B9031D522ACDDD4200C7489F /* ReplyingToView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9031D512ACDDD4200C7489F /* ReplyingToView.swift */; };
+		B904E9A32F042BFD006D195C /* CloudPopupController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B904E9A22F042BDD006D195C /* CloudPopupController.swift */; };
+		B904EA0F2F0D3A3F006D195C /* PrimalShared.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = B904EA0D2F0D3A27006D195C /* PrimalShared.xcframework */; };
+		B904EA102F0D3A3F006D195C /* PrimalShared.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B904EA0D2F0D3A27006D195C /* PrimalShared.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B90585382C9DDFD600FC4108 /* SettingsDevModeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90585372C9DDFD600FC4108 /* SettingsDevModeController.swift */; };
 		B906AAE52C91C46D0089813F /* smallPillLoaderLight.json in Resources */ = {isa = PBXBuildFile; fileRef = B906AAD72C91C46D0089813F /* smallPillLoaderLight.json */; };
 		B906AAE72C91C46D0089813F /* smallPillLoader.json in Resources */ = {isa = PBXBuildFile; fileRef = B906AAD92C91C46D0089813F /* smallPillLoader.json */; };
@@ -258,6 +261,7 @@
 		B906AB162C9B52C10089813F /* DatabaseManager+Profile.swift in Sources */ = {isa = PBXBuildFile; fileRef = B906AB152C9B52C10089813F /* DatabaseManager+Profile.swift */; };
 		B907D3A02DBA5144002B86DA /* PopupReportContentController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B907D39F2DBA5144002B86DA /* PopupReportContentController.swift */; };
 		B907D3C12DBBF18B002B86DA /* LightningDevKit in Frameworks */ = {isa = PBXBuildFile; productRef = B907D3C02DBBF18B002B86DA /* LightningDevKit */; };
+		B90820272EE838A600E4422A /* RemoteSignerConnectionAutostartCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90820262EE8389600E4422A /* RemoteSignerConnectionAutostartCell.swift */; };
 		B90DB0672E58DDF500A67D4A /* VideoPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90DB0662E58DDF500A67D4A /* VideoPlayer.swift */; };
 		B90DB0692E5C71A200A67D4A /* videoLoadingScreenLight.json in Resources */ = {isa = PBXBuildFile; fileRef = B90DB0682E5C71A200A67D4A /* videoLoadingScreenLight.json */; };
 		B90DB06B2E5C753800A67D4A /* LiveVideoConfigController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90DB06A2E5C752700A67D4A /* LiveVideoConfigController.swift */; };
@@ -274,6 +278,14 @@
 		B914CD772AA62EFA00CD0BD1 /* VideoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B914CD762AA62EFA00CD0BD1 /* VideoCell.swift */; };
 		B914CD792AA62F4D00CD0BD1 /* YoutubeVideoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B914CD782AA62F4D00CD0BD1 /* YoutubeVideoCell.swift */; };
 		B914CD7B2AA8A23700CD0BD1 /* ChatManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B914CD7A2AA8A23700CD0BD1 /* ChatManager.swift */; };
+		B91797E92EDDCB8F00EF29EF /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = B91797E82EDDCB8F00EF29EF /* KeychainAccess */; };
+		B91797FE2EDDD21D00EF29EF /* NostrSDK in Frameworks */ = {isa = PBXBuildFile; productRef = B91797FD2EDDD21D00EF29EF /* NostrSDK */; };
+		B91798002EDDD23200EF29EF /* NostrSDK in Frameworks */ = {isa = PBXBuildFile; productRef = B91797FF2EDDD23200EF29EF /* NostrSDK */; };
+		B917982C2EE0690D00EF29EF /* RemoteSignerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91798292EE0690D00EF29EF /* RemoteSignerManager.swift */; };
+		B917982D2EE0690D00EF29EF /* SigningManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B917982A2EE0690D00EF29EF /* SigningManager.swift */; };
+		B91798332EE093B800EF29EF /* EncryptionServiceHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91798322EE093B800EF29EF /* EncryptionServiceHandler.swift */; };
+		B917983A2EE0E37600EF29EF /* GenericJSON in Frameworks */ = {isa = PBXBuildFile; productRef = B91798392EE0E37600EF29EF /* GenericJSON */; };
+		B91798752EE320AD00EF29EF /* RemoteSignerPillView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91798742EE320A000EF29EF /* RemoteSignerPillView.swift */; };
 		B918A35F2EA0F72C0003683D /* ImageGalleryVideoController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B918A35E2EA0F72C0003683D /* ImageGalleryVideoController.swift */; };
 		B918A3612EA0FA560003683D /* LiveChatDatasource.swift in Sources */ = {isa = PBXBuildFile; fileRef = B918A3602EA0FA420003683D /* LiveChatDatasource.swift */; };
 		B91B45B12BE9001D0073A539 /* WebSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91B45B02BE9001D0073A539 /* WebSocket.swift */; };
@@ -378,8 +390,6 @@
 		B944292E2BD81B6000746FBC /* ZapGallery.swift in Sources */ = {isa = PBXBuildFile; fileRef = B944292D2BD81B6000746FBC /* ZapGallery.swift */; };
 		B94429312BD8206200746FBC /* ZapPillView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94429302BD8206200746FBC /* ZapPillView.swift */; };
 		B94429332BD94C5A00746FBC /* zapGallerySkeletonLight.json in Resources */ = {isa = PBXBuildFile; fileRef = B94429322BD94C5A00746FBC /* zapGallerySkeletonLight.json */; };
-		B9454A612EA983180026387B /* PrimalShared.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9454A5F2EA982F90026387B /* PrimalShared.xcframework */; };
-		B9454A622EA983180026387B /* PrimalShared.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B9454A5F2EA982F90026387B /* PrimalShared.xcframework */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		B94A0E242AA8D18800DEBFE1 /* ProcessingMessages.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94A0E232AA8D18800DEBFE1 /* ProcessingMessages.swift */; };
 		B94A0E262AA8E42B00DEBFE1 /* ChatTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94A0E252AA8E42B00DEBFE1 /* ChatTableCell.swift */; };
 		B94A0E292AAB38D800DEBFE1 /* ChatSearchController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94A0E282AAB38D800DEBFE1 /* ChatSearchController.swift */; };
@@ -427,6 +437,14 @@
 		B94F2C062AF5184D0041181B /* RoundedInputField.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94F2C052AF5184D0041181B /* RoundedInputField.swift */; };
 		B94F2C082AF5501A0041181B /* TabSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94F2C072AF5501A0041181B /* TabSelectionView.swift */; };
 		B950FB102C3303560088F9E3 /* WebConnectInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B950FB0F2C3303560088F9E3 /* WebConnectInputView.swift */; };
+		B956775D2EFD76D500B8166C /* RemoteSignerEventDetailsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B956775C2EFD76CD00B8166C /* RemoteSignerEventDetailsController.swift */; };
+		B95677842F02E85400B8166C /* EventDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B95677832F02E85400B8166C /* EventDetailsView.swift */; };
+		B95677862F02FAAE00B8166C /* SettingsRemoteSessionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B95677852F02FAA500B8166C /* SettingsRemoteSessionController.swift */; };
+		B95677882F03095000B8166C /* RemoteSignerEventCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B95677872F03094700B8166C /* RemoteSignerEventCell.swift */; };
+		B956778A2F030DA500B8166C /* SettingsRemoteEventController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B95677892F030D8100B8166C /* SettingsRemoteEventController.swift */; };
+		B95677AE2F03EFF300B8166C /* ScanAnythingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B95677AD2F03EFED00B8166C /* ScanAnythingController.swift */; };
+		B95677B02F0400A700B8166C /* ScanAnythingQRController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B95677AF2F04009D00B8166C /* ScanAnythingQRController.swift */; };
+		B95677B22F04029D00B8166C /* ScanAnythingKeyboardController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B95677B12F04029500B8166C /* ScanAnythingKeyboardController.swift */; };
 		B9658AC32D9EADB60037E5DB /* SettingsMediaUploadsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9658AC22D9EADA60037E5DB /* SettingsMediaUploadsController.swift */; };
 		B9658AC72D9EB5750037E5DB /* SettingsEditMediaUploadsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9658AC62D9EB5750037E5DB /* SettingsEditMediaUploadsController.swift */; };
 		B9658AF32D9FF9460037E5DB /* PrimalNotifications.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = B9658AEC2D9FF9460037E5DB /* PrimalNotifications.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -436,6 +454,13 @@
 		B981E0A02D6F6EF3002B9729 /* DoubleImageGalleryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B981E09F2D6F6EF3002B9729 /* DoubleImageGalleryCell.swift */; };
 		B981E0A22D6F6F0C002B9729 /* TripleImageGalleryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B981E0A12D6F6F0C002B9729 /* TripleImageGalleryCell.swift */; };
 		B981E0A42D6F72F5002B9729 /* QuadrupleImageGalleryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B981E0A32D6F72F5002B9729 /* QuadrupleImageGalleryCell.swift */; };
+		B9856EA32ED8B56100B21500 /* RemoteSignerRootController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9856EA22ED8B24E00B21500 /* RemoteSignerRootController.swift */; };
+		B9856EA52ED9C92B00B21500 /* RemoteSignerSignInController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9856EA42ED9C92300B21500 /* RemoteSignerSignInController.swift */; };
+		B98B78732EC20844006134F9 /* OnboardingCloudSigninController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98B78722EC20824006134F9 /* OnboardingCloudSigninController.swift */; };
+		B98B78752EC209C7006134F9 /* OrSeparatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98B78742EC209BE006134F9 /* OrSeparatorView.swift */; };
+		B98B78772EC2176A006134F9 /* CloudLoginButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98B78762EC21730006134F9 /* CloudLoginButton.swift */; };
+		B98B78792EC21E96006134F9 /* OnboardingManageCloudController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98B78782EC21E8F006134F9 /* OnboardingManageCloudController.swift */; };
+		B98B787B2EC21F72006134F9 /* CloudRemoveLoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98B787A2EC21F6B006134F9 /* CloudRemoveLoginView.swift */; };
 		B98DD8A92C3F1F9600E8369A /* ArticleFeedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98DD8A82C3F1F9600E8369A /* ArticleFeedView.swift */; };
 		B98DD8AB2C458F4C00E8369A /* LoadArticleController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98DD8AA2C458F4C00E8369A /* LoadArticleController.swift */; };
 		B98DD8AD2C467DB900E8369A /* ArticleWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98DD8AC2C467DB900E8369A /* ArticleWebView.swift */; };
@@ -468,7 +493,6 @@
 		B991FA442E8D88CB009D313E /* PopupInfoBubbleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B991FA432E8D88B4009D313E /* PopupInfoBubbleView.swift */; };
 		B991FA462E8ED0A2009D313E /* LiveVideoSmallHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B991FA452E8ED0A2009D313E /* LiveVideoSmallHeaderView.swift */; };
 		B99315EF2C10ACB500EE09AB /* CommentZapPill.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99315EE2C10ACB500EE09AB /* CommentZapPill.swift */; };
-		B9982FD52EA678E900BEC881 /* NostrSDK in Frameworks */ = {isa = PBXBuildFile; productRef = B9982FD42EA678E900BEC881 /* NostrSDK */; };
 		B99E03812BF75FEE006CCECB /* PostCellNantesDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99E03802BF75FEE006CCECB /* PostCellNantesDelegate.swift */; };
 		B99E03832BF76064006CCECB /* PostCellEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99E03822BF76064006CCECB /* PostCellEvent.swift */; };
 		B99E03852BF76095006CCECB /* ParsedContent+PostInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99E03842BF76095006CCECB /* ParsedContent+PostInfo.swift */; };
@@ -575,6 +599,13 @@
 		B9CE4DDB2B8513410060A1B8 /* PopupUIPickerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9CE4DDA2B8513410060A1B8 /* PopupUIPickerController.swift */; };
 		B9CE4DDD2B8662BF0060A1B8 /* TermsAndConditionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9CE4DDC2B8662BF0060A1B8 /* TermsAndConditionsView.swift */; };
 		B9D308B82D244212003F53BB /* MainThreadElementImageGalleryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9D308B72D244212003F53BB /* MainThreadElementImageGalleryCell.swift */; };
+		B9D331F32EE84A970023D541 /* RemoteSignerConnectionTrustCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9D331F22EE84A970023D541 /* RemoteSignerConnectionTrustCell.swift */; };
+		B9D331F52EE84E050023D541 /* RemoteSignerConnectionSimpleAccentCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9D331F42EE84DD80023D541 /* RemoteSignerConnectionSimpleAccentCell.swift */; };
+		B9D331F72EE84F2A0023D541 /* RemoteSignerConnectionSessionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9D331F62EE84F1E0023D541 /* RemoteSignerConnectionSessionCell.swift */; };
+		B9D331F92EE85F300023D541 /* SettingsConnectedAppPermissionsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9D331F82EE85F270023D541 /* SettingsConnectedAppPermissionsController.swift */; };
+		B9D331FD2EE860E10023D541 /* RemoteSignerConnectionInfoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9D331FC2EE860E10023D541 /* RemoteSignerConnectionInfoCell.swift */; };
+		B9D331FF2EE862E30023D541 /* SettingsEditConnectionName.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9D331FE2EE862D90023D541 /* SettingsEditConnectionName.swift */; };
+		B9D332012EE865DF0023D541 /* RemoteSignerPermissionEditCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9D332002EE865CF0023D541 /* RemoteSignerPermissionEditCell.swift */; };
 		B9DAA4542D490AB800B00B82 /* SettingsNewNwcQRController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DAA4532D490AB800B00B82 /* SettingsNewNwcQRController.swift */; };
 		B9DAA4562D4949EA00B00B82 /* ProfilePremiumCardController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DAA4552D4949EA00B00B82 /* ProfilePremiumCardController.swift */; };
 		B9DAA4582D4A61D400B00B82 /* NWCScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DAA4572D4A61D400B00B82 /* NWCScheme.swift */; };
@@ -596,6 +627,27 @@
 		B9DFA0AD2D7EFBC9002C6F34 /* primalShare.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = B9DFA0A32D7EFBC9002C6F34 /* primalShare.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		B9E0BE422BCD621B00FFF2BC /* LightningInvoiceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E0BE412BCD621B00FFF2BC /* LightningInvoiceView.swift */; };
 		B9E0BE442BCD76B500FFF2BC /* ChatInvoiceCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E0BE432BCD76B500FFF2BC /* ChatInvoiceCell.swift */; };
+		B9E0E6232EE9EB2700F48B2A /* RemoteSignerPendingEventsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E0E6222EE9EB1400F48B2A /* RemoteSignerPendingEventsController.swift */; };
+		B9E0E6262EEAC89600F48B2A /* CheckboxRadioButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E0E6252EEAC86100F48B2A /* CheckboxRadioButton.swift */; };
+		B9E0E6282EEB188F00F48B2A /* RemoteSigningScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E0E6272EEB187D00F48B2A /* RemoteSigningScheme.swift */; };
+		B9E0E62A2EEB483A00F48B2A /* GenericPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E0E6292EEB483A00F48B2A /* GenericPlayer.swift */; };
+		B9E0E6382EF08D0600F48B2A /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9E0E6372EF08D0500F48B2A /* WidgetKit.framework */; };
+		B9E0E63A2EF08D0600F48B2A /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9E0E6392EF08D0600F48B2A /* SwiftUI.framework */; };
+		B9E0E64B2EF08D0800F48B2A /* RemoteSignerWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = B9E0E6362EF08D0500F48B2A /* RemoteSignerWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		B9E0E6502EF16DDF00F48B2A /* Date+Extra.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E79D3A22A01530B008404DB /* Date+Extra.swift */; };
+		B9E0E6572EF1F6B500F48B2A /* RemoteSignerActivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E0E6562EF1F6AC00F48B2A /* RemoteSignerActivityManager.swift */; };
+		B9E36BD82EE330AD00213CA0 /* RemoteSignerActiveSessionsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E36BD72EE330A400213CA0 /* RemoteSignerActiveSessionsController.swift */; };
+		B9E36BDB2EE714FE00213CA0 /* SettingsRemoteSignerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E36BDA2EE714F400213CA0 /* SettingsRemoteSignerController.swift */; };
+		B9E36BDD2EE76F9C00213CA0 /* SettingsConnectedAppController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E36BDC2EE76F8D00213CA0 /* SettingsConnectedAppController.swift */; };
+		B9E36BE22EE7786900213CA0 /* RemoteSignerConnectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E36BE12EE7786900213CA0 /* RemoteSignerConnectionCell.swift */; };
+		B9E36BE42EE778F800213CA0 /* RemoteSignerConnectionInfoActionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E36BE32EE778F800213CA0 /* RemoteSignerConnectionInfoActionCell.swift */; };
+		B9E67DD92EF47389002D7952 /* RemoteSignerDisclosureController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E67DD82EF4737D002D7952 /* RemoteSignerDisclosureController.swift */; };
+		B9E67DDA2EF4847C002D7952 /* Color.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9F2F8829F6AB8A00A9CDF3 /* Color.swift */; };
+		B9E67DDC2EF489D7002D7952 /* Fireplace.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = B9E67DDB2EF489D7002D7952 /* Fireplace.mp3 */; };
+		B9E67DDE2EF489DD002D7952 /* Soft Pulse.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = B9E67DDD2EF489DD002D7952 /* Soft Pulse.mp3 */; };
+		B9E67DE02EF48A00002D7952 /* White Noise.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = B9E67DDF2EF48A00002D7952 /* White Noise.mp3 */; };
+		B9E67DE22EF48B69002D7952 /* Gentle Rain.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = B9E67DE12EF48B69002D7952 /* Gentle Rain.mp3 */; };
+		B9E67E262EFC1106002D7952 /* PushNotificationsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E67E252EFC1100002D7952 /* PushNotificationsManager.swift */; };
 		B9E67E7D2D075E35006BB397 /* FeedElementUserCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E67E7C2D075E35006BB397 /* FeedElementUserCell.swift */; };
 		B9E67E7F2D0760B6006BB397 /* FeedElementTextCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E67E7E2D0760B6006BB397 /* FeedElementTextCell.swift */; };
 		B9E67E812D0762CD006BB397 /* FeedElementSmallZapGalleryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E67E802D0762CD006BB397 /* FeedElementSmallZapGalleryCell.swift */; };
@@ -663,7 +715,7 @@
 		B9FAC65B2D42C5FA00B57EF6 /* SettingsNewNWCController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9FAC65A2D42C5FA00B57EF6 /* SettingsNewNWCController.swift */; };
 		C1AF0077EAB9C68DF1F2B816 /* PrimalScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AF0E693616ED45B0E46466 /* PrimalScheme.swift */; };
 		C1AF0260998E17001EF1988C /* MuteManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AF0026036532D4652C7322 /* MuteManager.swift */; };
-		C1AF0E7F59461BB9839F1D44 /* NostrWalletConnectScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AF0C03B5BEAE4C6902AD25 /* NostrWalletConnectScheme.swift */; };
+		C1AF0E7F59461BB9839F1D44 /* NostrScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AF0C03B5BEAE4C6902AD25 /* NostrScheme.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -695,6 +747,13 @@
 			remoteGlobalIDString = B9DFA0A22D7EFBC9002C6F34;
 			remoteInfo = primalShare;
 		};
+		B9E0E6492EF08D0800F48B2A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 939330EA29A3E36F003954C2 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B9E0E6352EF08D0500F48B2A;
+			remoteInfo = RemoteSignerWidgetExtension;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -704,7 +763,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				B9454A622EA983180026387B /* PrimalShared.xcframework in Embed Frameworks */,
+				B904EA102F0D3A3F006D195C /* PrimalShared.xcframework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -716,6 +775,7 @@
 			dstSubfolderSpec = 13;
 			files = (
 				B9658AF32D9FF9460037E5DB /* PrimalNotifications.appex in Embed Foundation Extensions */,
+				B9E0E64B2EF08D0800F48B2A /* RemoteSignerWidgetExtension.appex in Embed Foundation Extensions */,
 				B9DFA0AD2D7EFBC9002C6F34 /* primalShare.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
@@ -989,6 +1049,8 @@
 		B9031D4D2AC2075600C7489F /* ChatTimeCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatTimeCell.swift; sourceTree = "<group>"; };
 		B9031D4F2AC2075E00C7489F /* ChatLoadingCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatLoadingCell.swift; sourceTree = "<group>"; };
 		B9031D512ACDDD4200C7489F /* ReplyingToView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReplyingToView.swift; sourceTree = "<group>"; };
+		B904E9A22F042BDD006D195C /* CloudPopupController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudPopupController.swift; sourceTree = "<group>"; };
+		B904EA0D2F0D3A27006D195C /* PrimalShared.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = PrimalShared.xcframework; sourceTree = "<group>"; };
 		B90585372C9DDFD600FC4108 /* SettingsDevModeController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsDevModeController.swift; sourceTree = "<group>"; };
 		B906AAD72C91C46D0089813F /* smallPillLoaderLight.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = smallPillLoaderLight.json; sourceTree = "<group>"; };
 		B906AAD92C91C46D0089813F /* smallPillLoader.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = smallPillLoader.json; sourceTree = "<group>"; };
@@ -1005,6 +1067,7 @@
 		B906AB112C9B47800089813F /* Thumbnail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Thumbnail.swift; sourceTree = "<group>"; };
 		B906AB152C9B52C10089813F /* DatabaseManager+Profile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DatabaseManager+Profile.swift"; sourceTree = "<group>"; };
 		B907D39F2DBA5144002B86DA /* PopupReportContentController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupReportContentController.swift; sourceTree = "<group>"; };
+		B90820262EE8389600E4422A /* RemoteSignerConnectionAutostartCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSignerConnectionAutostartCell.swift; sourceTree = "<group>"; };
 		B90DB0662E58DDF500A67D4A /* VideoPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPlayer.swift; sourceTree = "<group>"; };
 		B90DB0682E5C71A200A67D4A /* videoLoadingScreenLight.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = videoLoadingScreenLight.json; sourceTree = "<group>"; };
 		B90DB06A2E5C752700A67D4A /* LiveVideoConfigController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveVideoConfigController.swift; sourceTree = "<group>"; };
@@ -1021,6 +1084,10 @@
 		B914CD762AA62EFA00CD0BD1 /* VideoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoCell.swift; sourceTree = "<group>"; };
 		B914CD782AA62F4D00CD0BD1 /* YoutubeVideoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YoutubeVideoCell.swift; sourceTree = "<group>"; };
 		B914CD7A2AA8A23700CD0BD1 /* ChatManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatManager.swift; sourceTree = "<group>"; };
+		B91798292EE0690D00EF29EF /* RemoteSignerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSignerManager.swift; sourceTree = "<group>"; };
+		B917982A2EE0690D00EF29EF /* SigningManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SigningManager.swift; sourceTree = "<group>"; };
+		B91798322EE093B800EF29EF /* EncryptionServiceHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EncryptionServiceHandler.swift; sourceTree = "<group>"; };
+		B91798742EE320A000EF29EF /* RemoteSignerPillView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSignerPillView.swift; sourceTree = "<group>"; };
 		B918A35E2EA0F72C0003683D /* ImageGalleryVideoController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageGalleryVideoController.swift; sourceTree = "<group>"; };
 		B918A3602EA0FA420003683D /* LiveChatDatasource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveChatDatasource.swift; sourceTree = "<group>"; };
 		B91B45B02BE9001D0073A539 /* WebSocket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebSocket.swift; sourceTree = "<group>"; };
@@ -1125,7 +1192,6 @@
 		B944292D2BD81B6000746FBC /* ZapGallery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZapGallery.swift; sourceTree = "<group>"; };
 		B94429302BD8206200746FBC /* ZapPillView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZapPillView.swift; sourceTree = "<group>"; };
 		B94429322BD94C5A00746FBC /* zapGallerySkeletonLight.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = zapGallerySkeletonLight.json; sourceTree = "<group>"; };
-		B9454A5F2EA982F90026387B /* PrimalShared.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = PrimalShared.xcframework; sourceTree = "<group>"; };
 		B94A0E232AA8D18800DEBFE1 /* ProcessingMessages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessingMessages.swift; sourceTree = "<group>"; };
 		B94A0E252AA8E42B00DEBFE1 /* ChatTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatTableCell.swift; sourceTree = "<group>"; };
 		B94A0E282AAB38D800DEBFE1 /* ChatSearchController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatSearchController.swift; sourceTree = "<group>"; };
@@ -1174,6 +1240,14 @@
 		B94F2C072AF5501A0041181B /* TabSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabSelectionView.swift; sourceTree = "<group>"; };
 		B950FB0F2C3303560088F9E3 /* WebConnectInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebConnectInputView.swift; sourceTree = "<group>"; };
 		B950FB112C35DD260088F9E3 /* Primal.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Primal.entitlements; sourceTree = "<group>"; };
+		B956775C2EFD76CD00B8166C /* RemoteSignerEventDetailsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSignerEventDetailsController.swift; sourceTree = "<group>"; };
+		B95677832F02E85400B8166C /* EventDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventDetailsView.swift; sourceTree = "<group>"; };
+		B95677852F02FAA500B8166C /* SettingsRemoteSessionController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsRemoteSessionController.swift; sourceTree = "<group>"; };
+		B95677872F03094700B8166C /* RemoteSignerEventCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSignerEventCell.swift; sourceTree = "<group>"; };
+		B95677892F030D8100B8166C /* SettingsRemoteEventController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsRemoteEventController.swift; sourceTree = "<group>"; };
+		B95677AD2F03EFED00B8166C /* ScanAnythingController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanAnythingController.swift; sourceTree = "<group>"; };
+		B95677AF2F04009D00B8166C /* ScanAnythingQRController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanAnythingQRController.swift; sourceTree = "<group>"; };
+		B95677B12F04029500B8166C /* ScanAnythingKeyboardController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanAnythingKeyboardController.swift; sourceTree = "<group>"; };
 		B9658AC22D9EADA60037E5DB /* SettingsMediaUploadsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsMediaUploadsController.swift; sourceTree = "<group>"; };
 		B9658AC62D9EB5750037E5DB /* SettingsEditMediaUploadsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsEditMediaUploadsController.swift; sourceTree = "<group>"; };
 		B9658AEC2D9FF9460037E5DB /* PrimalNotifications.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = PrimalNotifications.appex; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1183,6 +1257,13 @@
 		B981E09F2D6F6EF3002B9729 /* DoubleImageGalleryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DoubleImageGalleryCell.swift; sourceTree = "<group>"; };
 		B981E0A12D6F6F0C002B9729 /* TripleImageGalleryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripleImageGalleryCell.swift; sourceTree = "<group>"; };
 		B981E0A32D6F72F5002B9729 /* QuadrupleImageGalleryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuadrupleImageGalleryCell.swift; sourceTree = "<group>"; };
+		B9856EA22ED8B24E00B21500 /* RemoteSignerRootController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSignerRootController.swift; sourceTree = "<group>"; };
+		B9856EA42ED9C92300B21500 /* RemoteSignerSignInController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSignerSignInController.swift; sourceTree = "<group>"; };
+		B98B78722EC20824006134F9 /* OnboardingCloudSigninController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingCloudSigninController.swift; sourceTree = "<group>"; };
+		B98B78742EC209BE006134F9 /* OrSeparatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrSeparatorView.swift; sourceTree = "<group>"; };
+		B98B78762EC21730006134F9 /* CloudLoginButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudLoginButton.swift; sourceTree = "<group>"; };
+		B98B78782EC21E8F006134F9 /* OnboardingManageCloudController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingManageCloudController.swift; sourceTree = "<group>"; };
+		B98B787A2EC21F6B006134F9 /* CloudRemoveLoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudRemoveLoginView.swift; sourceTree = "<group>"; };
 		B98DD8A82C3F1F9600E8369A /* ArticleFeedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArticleFeedView.swift; sourceTree = "<group>"; };
 		B98DD8AA2C458F4C00E8369A /* LoadArticleController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadArticleController.swift; sourceTree = "<group>"; };
 		B98DD8AC2C467DB900E8369A /* ArticleWebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArticleWebView.swift; sourceTree = "<group>"; };
@@ -1319,6 +1400,13 @@
 		B9CE4DDA2B8513410060A1B8 /* PopupUIPickerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupUIPickerController.swift; sourceTree = "<group>"; };
 		B9CE4DDC2B8662BF0060A1B8 /* TermsAndConditionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TermsAndConditionsView.swift; sourceTree = "<group>"; };
 		B9D308B72D244212003F53BB /* MainThreadElementImageGalleryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainThreadElementImageGalleryCell.swift; sourceTree = "<group>"; };
+		B9D331F22EE84A970023D541 /* RemoteSignerConnectionTrustCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSignerConnectionTrustCell.swift; sourceTree = "<group>"; };
+		B9D331F42EE84DD80023D541 /* RemoteSignerConnectionSimpleAccentCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSignerConnectionSimpleAccentCell.swift; sourceTree = "<group>"; };
+		B9D331F62EE84F1E0023D541 /* RemoteSignerConnectionSessionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSignerConnectionSessionCell.swift; sourceTree = "<group>"; };
+		B9D331F82EE85F270023D541 /* SettingsConnectedAppPermissionsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsConnectedAppPermissionsController.swift; sourceTree = "<group>"; };
+		B9D331FC2EE860E10023D541 /* RemoteSignerConnectionInfoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSignerConnectionInfoCell.swift; sourceTree = "<group>"; };
+		B9D331FE2EE862D90023D541 /* SettingsEditConnectionName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsEditConnectionName.swift; sourceTree = "<group>"; };
+		B9D332002EE865CF0023D541 /* RemoteSignerPermissionEditCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSignerPermissionEditCell.swift; sourceTree = "<group>"; };
 		B9DAA4532D490AB800B00B82 /* SettingsNewNwcQRController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsNewNwcQRController.swift; sourceTree = "<group>"; };
 		B9DAA4552D4949EA00B00B82 /* ProfilePremiumCardController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilePremiumCardController.swift; sourceTree = "<group>"; };
 		B9DAA4572D4A61D400B00B82 /* NWCScheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NWCScheme.swift; sourceTree = "<group>"; };
@@ -1340,6 +1428,25 @@
 		B9DFA0A32D7EFBC9002C6F34 /* primalShare.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = primalShare.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		B9E0BE412BCD621B00FFF2BC /* LightningInvoiceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LightningInvoiceView.swift; sourceTree = "<group>"; };
 		B9E0BE432BCD76B500FFF2BC /* ChatInvoiceCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatInvoiceCell.swift; sourceTree = "<group>"; };
+		B9E0E6222EE9EB1400F48B2A /* RemoteSignerPendingEventsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSignerPendingEventsController.swift; sourceTree = "<group>"; };
+		B9E0E6252EEAC86100F48B2A /* CheckboxRadioButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckboxRadioButton.swift; sourceTree = "<group>"; };
+		B9E0E6272EEB187D00F48B2A /* RemoteSigningScheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSigningScheme.swift; sourceTree = "<group>"; };
+		B9E0E6292EEB483A00F48B2A /* GenericPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericPlayer.swift; sourceTree = "<group>"; };
+		B9E0E6362EF08D0500F48B2A /* RemoteSignerWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = RemoteSignerWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		B9E0E6372EF08D0500F48B2A /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		B9E0E6392EF08D0600F48B2A /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		B9E0E6562EF1F6AC00F48B2A /* RemoteSignerActivityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSignerActivityManager.swift; sourceTree = "<group>"; };
+		B9E36BD72EE330A400213CA0 /* RemoteSignerActiveSessionsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSignerActiveSessionsController.swift; sourceTree = "<group>"; };
+		B9E36BDA2EE714F400213CA0 /* SettingsRemoteSignerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsRemoteSignerController.swift; sourceTree = "<group>"; };
+		B9E36BDC2EE76F8D00213CA0 /* SettingsConnectedAppController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsConnectedAppController.swift; sourceTree = "<group>"; };
+		B9E36BE12EE7786900213CA0 /* RemoteSignerConnectionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSignerConnectionCell.swift; sourceTree = "<group>"; };
+		B9E36BE32EE778F800213CA0 /* RemoteSignerConnectionInfoActionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSignerConnectionInfoActionCell.swift; sourceTree = "<group>"; };
+		B9E67DD82EF4737D002D7952 /* RemoteSignerDisclosureController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSignerDisclosureController.swift; sourceTree = "<group>"; };
+		B9E67DDB2EF489D7002D7952 /* Fireplace.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Fireplace.mp3; sourceTree = "<group>"; };
+		B9E67DDD2EF489DD002D7952 /* Soft Pulse.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "Soft Pulse.mp3"; sourceTree = "<group>"; };
+		B9E67DDF2EF48A00002D7952 /* White Noise.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "White Noise.mp3"; sourceTree = "<group>"; };
+		B9E67DE12EF48B69002D7952 /* Gentle Rain.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "Gentle Rain.mp3"; sourceTree = "<group>"; };
+		B9E67E252EFC1100002D7952 /* PushNotificationsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushNotificationsManager.swift; sourceTree = "<group>"; };
 		B9E67E7C2D075E35006BB397 /* FeedElementUserCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedElementUserCell.swift; sourceTree = "<group>"; };
 		B9E67E7E2D0760B6006BB397 /* FeedElementTextCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedElementTextCell.swift; sourceTree = "<group>"; };
 		B9E67E802D0762CD006BB397 /* FeedElementSmallZapGalleryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedElementSmallZapGalleryCell.swift; sourceTree = "<group>"; };
@@ -1405,7 +1512,7 @@
 		B9FAC6572D42B53A00B57EF6 /* SettingsWalletNWCController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsWalletNWCController.swift; sourceTree = "<group>"; };
 		B9FAC65A2D42C5FA00B57EF6 /* SettingsNewNWCController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsNewNWCController.swift; sourceTree = "<group>"; };
 		C1AF0026036532D4652C7322 /* MuteManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MuteManager.swift; sourceTree = "<group>"; };
-		C1AF0C03B5BEAE4C6902AD25 /* NostrWalletConnectScheme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NostrWalletConnectScheme.swift; sourceTree = "<group>"; };
+		C1AF0C03B5BEAE4C6902AD25 /* NostrScheme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NostrScheme.swift; sourceTree = "<group>"; };
 		C1AF0E693616ED45B0E46466 /* PrimalScheme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PrimalScheme.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -1424,11 +1531,30 @@
 			);
 			target = B9DFA0A22D7EFBC9002C6F34 /* primalShare */;
 		};
+		B9E0E64C2EF08D0800F48B2A /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+				WidgetMainAppBridge.swift,
+			);
+			target = B9E0E6352EF08D0500F48B2A /* RemoteSignerWidgetExtension */;
+		};
+		B9E0E6552EF1F58200F48B2A /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				AppIntent.swift,
+				RemoteSignerWidgetAttributes.swift,
+				WidgetMainAppBridge.swift,
+				WidgetMainAppBridgeNoOp.swift,
+			);
+			target = 939330F129A3E36F003954C2 /* Primal */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		B9658AED2D9FF9460037E5DB /* PrimalNotifications */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (B9658AF62D9FF9460037E5DB /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = PrimalNotifications; sourceTree = "<group>"; };
 		B9DFA0A42D7EFBC9002C6F34 /* primalShare */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (B9DFA0B12D7EFBC9002C6F34 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = primalShare; sourceTree = "<group>"; };
+		B9E0E63B2EF08D0600F48B2A /* RemoteSignerWidget */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (B9E0E6552EF1F58200F48B2A /* PBXFileSystemSynchronizedBuildFileExceptionSet */, B9E0E64C2EF08D0800F48B2A /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = RemoteSignerWidget; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1436,7 +1562,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B9982FD52EA678E900BEC881 /* NostrSDK in Frameworks */,
+				B91797FE2EDDD21D00EF29EF /* NostrSDK in Frameworks */,
 				9393312429A3E45E003954C2 /* Kingfisher in Frameworks */,
 				B9F933182B867D860064B495 /* QRCode in Frameworks */,
 				933B85752A9F6EC400C48FF6 /* CryptoSwift in Frameworks */,
@@ -1447,7 +1573,7 @@
 				9393312129A3E44D003954C2 /* GenericJSON in Frameworks */,
 				9393312729A3E475003954C2 /* NWWebSocket in Frameworks */,
 				B907D3C12DBBF18B002B86DA /* LightningDevKit in Frameworks */,
-				B9454A612EA983180026387B /* PrimalShared.xcframework in Frameworks */,
+				B904EA0F2F0D3A3F006D195C /* PrimalShared.xcframework in Frameworks */,
 				B94F2BDF2ADDCD710041181B /* StoreKit.framework in Frameworks */,
 				B99E039C2C07C059006CCECB /* Ink in Frameworks */,
 				9E0DEAED29FD2F6900145E08 /* Lottie in Frameworks */,
@@ -1474,6 +1600,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B91798002EDDD23200EF29EF /* NostrSDK in Frameworks */,
+				B91797E92EDDCB8F00EF29EF /* KeychainAccess in Frameworks */,
+				B917983A2EE0E37600EF29EF /* GenericJSON in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1481,6 +1610,15 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B9E0E6332EF08D0500F48B2A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B9E0E63A2EF08D0600F48B2A /* SwiftUI.framework in Frameworks */,
+				B9E0E6382EF08D0600F48B2A /* WidgetKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1508,6 +1646,8 @@
 			isa = PBXGroup;
 			children = (
 				B94F2BDE2ADDCD710041181B /* StoreKit.framework */,
+				B9E0E6372EF08D0500F48B2A /* WidgetKit.framework */,
+				B9E0E6392EF08D0600F48B2A /* SwiftUI.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -1551,6 +1691,7 @@
 				9393310F29A3E370003954C2 /* PrimalUITests */,
 				B9DFA0A42D7EFBC9002C6F34 /* primalShare */,
 				B9658AED2D9FF9460037E5DB /* PrimalNotifications */,
+				B9E0E63B2EF08D0600F48B2A /* RemoteSignerWidget */,
 				939330F329A3E36F003954C2 /* Products */,
 				933DBDB12A1126CE008DCF1F /* Frameworks */,
 			);
@@ -1564,6 +1705,7 @@
 				9393310C29A3E370003954C2 /* PrimalUITests.xctest */,
 				B9DFA0A32D7EFBC9002C6F34 /* primalShare.appex */,
 				B9658AEC2D9FF9460037E5DB /* PrimalNotifications.appex */,
+				B9E0E6362EF08D0500F48B2A /* RemoteSignerWidgetExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1579,7 +1721,7 @@
 				9393312829A3E4E0003954C2 /* Common */,
 				9E9F2F9929F6ABA800A9CDF3 /* AppDelegate.swift */,
 				9E9F2F9829F6ABA800A9CDF3 /* SceneDelegate.swift */,
-				B9454A5F2EA982F90026387B /* PrimalShared.xcframework */,
+				B904EA0D2F0D3A27006D195C /* PrimalShared.xcframework */,
 				9EB219EE2A06FD610037C3E5 /* MainLogo.png */,
 				939330F929A3E370003954C2 /* Assets.xcassets */,
 				939330FB29A3E370003954C2 /* Preview Content */,
@@ -1626,6 +1768,7 @@
 				933DBDA82A1124F7008DCF1F /* Notes */,
 				9E0DEAF029FD301D00145E08 /* Animations */,
 				9E6B38CC29F9488400144073 /* Networking */,
+				B9E0E62B2EEB4EA400F48B2A /* Audio */,
 				9393313829A3E5C2003954C2 /* Font */,
 				9393313529A3E59D003954C2 /* Extension */,
 				936DD9F82A3B6A2900A65F79 /* PrimalNotifications.swift */,
@@ -1818,6 +1961,7 @@
 				B906AB142C9B52A40089813F /* Database */,
 				B9009B6A2B1F458B002B0613 /* SmallManagers */,
 				B94A0E2E2ABA228700DEBFE1 /* TextViewManagers */,
+				B917982B2EE0690D00EF29EF /* RemoteSigning */,
 				B9370EE52DE5EDFC004A9760 /* WalletManager */,
 				93F27DA32A27EA04004ADA55 /* FollowManager.swift */,
 				93F27DA52A27EA6D004ADA55 /* IdentityManager.swift */,
@@ -1942,6 +2086,7 @@
 		9E55F28E2A1FB9B200D5D523 /* SubControllers */ = {
 			isa = PBXGroup;
 			children = (
+				B9E36BD92EE714EA00213CA0 /* RemoteSigning */,
 				B934ADA92DAFDD150044E5B5 /* Muted */,
 				B9FAC6592D42C41200B57EF6 /* NWC */,
 				B9318F632B62ADC20044B6AA /* InputControllers */,
@@ -2061,6 +2206,9 @@
 		9E83DF712A573E6900F2C379 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				B98B787A2EC21F6B006134F9 /* CloudRemoveLoginView.swift */,
+				B98B78762EC21730006134F9 /* CloudLoginButton.swift */,
+				B98B78742EC209BE006134F9 /* OrSeparatorView.swift */,
 				9E83DF722A573E7A00F2C379 /* FormHeaderView.swift */,
 				B9009B4B2B068652002B0613 /* OnboardingProfileImageView.swift */,
 				B9009B4F2B07B14B002B0613 /* SignInInputField.swift */,
@@ -2083,12 +2231,12 @@
 		9E88349A2A21150D005DB548 /* RootViewController */ = {
 			isa = PBXGroup;
 			children = (
+				B904E9A12F042BCA006D195C /* MainTabBar */,
+				B9A200952B55A0D7003B6C6B /* MainNavigationController */,
 				B9CE4DBA2B7154750060A1B8 /* Views */,
 				9E6B38CD29F954D500144073 /* RootViewController.swift */,
 				9E9F2F6A29F6AB6400A9CDF3 /* IntroVideoController.swift */,
-				9E6924A32A02925F00CAC54C /* MainTabBarController.swift */,
 				9E88349B2A211577005DB548 /* RootAnimatorToSignIn.swift */,
-				B9A335222E54B5DC000B2CA7 /* LivePlayerMoveGesture.swift */,
 			);
 			path = RootViewController;
 			sourceTree = "<group>";
@@ -2161,7 +2309,6 @@
 				B99E7BD12B238A6800756F40 /* ImageGallery */,
 				9E88349A2A21150D005DB548 /* RootViewController */,
 				B9C672D72E252D6A00243B45 /* LiveVideoPlayer */,
-				B9A200952B55A0D7003B6C6B /* MainNavigationController */,
 				9ED416102A4CAC2300892235 /* Notifications */,
 				9ECFD31E2A0138AB000D1B2F /* Feed */,
 				9E9C42152A1401F500F9D7ED /* Explore */,
@@ -2169,6 +2316,7 @@
 				B9F9331B2B88F6C40064B495 /* Premium */,
 				9E5BD93A2A1E310A008DFFBE /* Posting */,
 				B99E038A2C0567FA006CCECB /* Reads */,
+				B9856EA12ED8B23D00B21500 /* RemoteSigner */,
 				B9009B582B0FCF3B002B0613 /* QRCodes */,
 				B94F2BB72AD410FA0041181B /* Wallet */,
 				B94A0E222AA8C7C500DEBFE1 /* Messagges */,
@@ -2180,6 +2328,7 @@
 		9E9F2F6B29F6AB6400A9CDF3 /* Onboarding */ = {
 			isa = PBXGroup;
 			children = (
+				B98B78712EC20801006134F9 /* iCloud */,
 				9E83DF712A573E6900F2C379 /* Views */,
 				9E9F2F6C29F6AB6400A9CDF3 /* Steps */,
 				9E9F2F7129F6AB6400A9CDF3 /* OnboardingParentViewController.swift */,
@@ -2351,6 +2500,9 @@
 		B9009B582B0FCF3B002B0613 /* QRCodes */ = {
 			isa = PBXGroup;
 			children = (
+				B95677B12F04029500B8166C /* ScanAnythingKeyboardController.swift */,
+				B95677AF2F04009D00B8166C /* ScanAnythingQRController.swift */,
+				B95677AD2F03EFED00B8166C /* ScanAnythingController.swift */,
 				B9009B592B0FD28A002B0613 /* ProfileQRController.swift */,
 				B9009B5B2B0FD390002B0613 /* ProfileShowQRController.swift */,
 				B9009B5D2B0FDFE3002B0613 /* ProfileScanQRController.swift */,
@@ -2384,6 +2536,16 @@
 				B9FAC6472D31A95800B57EF6 /* LinkPreviewManager.swift */,
 			);
 			path = SmallManagers;
+			sourceTree = "<group>";
+		};
+		B904E9A12F042BCA006D195C /* MainTabBar */ = {
+			isa = PBXGroup;
+			children = (
+				B904E9A22F042BDD006D195C /* CloudPopupController.swift */,
+				9E6924A32A02925F00CAC54C /* MainTabBarController.swift */,
+				B9A335222E54B5DC000B2CA7 /* LivePlayerMoveGesture.swift */,
+			);
+			path = MainTabBar;
 			sourceTree = "<group>";
 		};
 		B906AB052C99F3F70089813F /* Database */ = {
@@ -2432,6 +2594,7 @@
 		B90DB0632E58DDDF00A67D4A /* Video */ = {
 			isa = PBXGroup;
 			children = (
+				B9E0E6292EEB483A00F48B2A /* GenericPlayer.swift */,
 				B914CD682A9E6B4A00CD0BD1 /* VideoPlaybackManager.swift */,
 				B90DB0662E58DDF500A67D4A /* VideoPlayer.swift */,
 			);
@@ -2450,6 +2613,18 @@
 				B981E0A32D6F72F5002B9729 /* QuadrupleImageGalleryCell.swift */,
 			);
 			path = ImageCollection;
+			sourceTree = "<group>";
+		};
+		B917982B2EE0690D00EF29EF /* RemoteSigning */ = {
+			isa = PBXGroup;
+			children = (
+				B9E67E252EFC1100002D7952 /* PushNotificationsManager.swift */,
+				B91798292EE0690D00EF29EF /* RemoteSignerManager.swift */,
+				B9E0E6562EF1F6AC00F48B2A /* RemoteSignerActivityManager.swift */,
+				B917982A2EE0690D00EF29EF /* SigningManager.swift */,
+				B91798322EE093B800EF29EF /* EncryptionServiceHandler.swift */,
+			);
+			path = RemoteSigning;
 			sourceTree = "<group>";
 		};
 		B91BB9622B3E1022003F6B2A /* TabbedSend */ = {
@@ -2618,6 +2793,7 @@
 				B9318F642B62AE2B0044B6AA /* SettingsEditMinTransactionController.swift */,
 				B9CE4DBF2B72B7C40060A1B8 /* SettingsEditMinNotificationController.swift */,
 				B9658AC62D9EB5750037E5DB /* SettingsEditMediaUploadsController.swift */,
+				B9D331FE2EE862D90023D541 /* SettingsEditConnectionName.swift */,
 			);
 			path = InputControllers;
 			sourceTree = "<group>";
@@ -2775,6 +2951,29 @@
 				B91BB95C2B3B3854003F6B2A /* ErrorMessageCell.swift */,
 			);
 			path = Cells;
+			sourceTree = "<group>";
+		};
+		B9856EA12ED8B23D00B21500 /* RemoteSigner */ = {
+			isa = PBXGroup;
+			children = (
+				B9E0E6242EEAC84A00F48B2A /* Views */,
+				B9E0E6222EE9EB1400F48B2A /* RemoteSignerPendingEventsController.swift */,
+				B956775C2EFD76CD00B8166C /* RemoteSignerEventDetailsController.swift */,
+				B9E36BD72EE330A400213CA0 /* RemoteSignerActiveSessionsController.swift */,
+				B9856EA22ED8B24E00B21500 /* RemoteSignerRootController.swift */,
+				B9856EA42ED9C92300B21500 /* RemoteSignerSignInController.swift */,
+				B9E67DD82EF4737D002D7952 /* RemoteSignerDisclosureController.swift */,
+			);
+			path = RemoteSigner;
+			sourceTree = "<group>";
+		};
+		B98B78712EC20801006134F9 /* iCloud */ = {
+			isa = PBXGroup;
+			children = (
+				B98B78782EC21E8F006134F9 /* OnboardingManageCloudController.swift */,
+				B98B78722EC20824006134F9 /* OnboardingCloudSigninController.swift */,
+			);
+			path = iCloud;
 			sourceTree = "<group>";
 		};
 		B98DD8B02C493D5A00E8369A /* Logic */ = {
@@ -3117,6 +3316,7 @@
 		B9CE4DBA2B7154750060A1B8 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				B91798742EE320A000EF29EF /* RemoteSignerPillView.swift */,
 				B9CE4DBB2B7154AE0060A1B8 /* TransactionNotificationView.swift */,
 				B93638152D80A3B2003F1EC3 /* NoConnectionView.swift */,
 			);
@@ -3130,6 +3330,27 @@
 				B9CE4DD82B8505C40060A1B8 /* WalletActivationCodeController.swift */,
 			);
 			path = Activation;
+			sourceTree = "<group>";
+		};
+		B9D331FA2EE860BD0023D541 /* AppController */ = {
+			isa = PBXGroup;
+			children = (
+				B9E36BE12EE7786900213CA0 /* RemoteSignerConnectionCell.swift */,
+				B9E36BE32EE778F800213CA0 /* RemoteSignerConnectionInfoActionCell.swift */,
+				B90820262EE8389600E4422A /* RemoteSignerConnectionAutostartCell.swift */,
+				B9D331F22EE84A970023D541 /* RemoteSignerConnectionTrustCell.swift */,
+				B9D331F62EE84F1E0023D541 /* RemoteSignerConnectionSessionCell.swift */,
+			);
+			path = AppController;
+			sourceTree = "<group>";
+		};
+		B9D331FB2EE860D90023D541 /* Permissions */ = {
+			isa = PBXGroup;
+			children = (
+				B9D331FC2EE860E10023D541 /* RemoteSignerConnectionInfoCell.swift */,
+				B9D332002EE865CF0023D541 /* RemoteSignerPermissionEditCell.swift */,
+			);
+			path = Permissions;
 			sourceTree = "<group>";
 		};
 		B9DAA45B2D5154E400B00B82 /* LegendList */ = {
@@ -3175,6 +3396,50 @@
 				B9DF0CA72C22163B009ADC7B /* EmbeddedPostController.swift */,
 			);
 			path = EmbeddedControllers;
+			sourceTree = "<group>";
+		};
+		B9E0E6242EEAC84A00F48B2A /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				B95677832F02E85400B8166C /* EventDetailsView.swift */,
+				B9E0E6252EEAC86100F48B2A /* CheckboxRadioButton.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		B9E0E62B2EEB4EA400F48B2A /* Audio */ = {
+			isa = PBXGroup;
+			children = (
+				B9E67DDB2EF489D7002D7952 /* Fireplace.mp3 */,
+				B9E67DDD2EF489DD002D7952 /* Soft Pulse.mp3 */,
+				B9E67DDF2EF48A00002D7952 /* White Noise.mp3 */,
+				B9E67DE12EF48B69002D7952 /* Gentle Rain.mp3 */,
+			);
+			path = Audio;
+			sourceTree = "<group>";
+		};
+		B9E36BD92EE714EA00213CA0 /* RemoteSigning */ = {
+			isa = PBXGroup;
+			children = (
+				B9E36BE02EE7784F00213CA0 /* Cells */,
+				B9E36BDA2EE714F400213CA0 /* SettingsRemoteSignerController.swift */,
+				B9E36BDC2EE76F8D00213CA0 /* SettingsConnectedAppController.swift */,
+				B9D331F82EE85F270023D541 /* SettingsConnectedAppPermissionsController.swift */,
+				B95677852F02FAA500B8166C /* SettingsRemoteSessionController.swift */,
+				B95677892F030D8100B8166C /* SettingsRemoteEventController.swift */,
+			);
+			path = RemoteSigning;
+			sourceTree = "<group>";
+		};
+		B9E36BE02EE7784F00213CA0 /* Cells */ = {
+			isa = PBXGroup;
+			children = (
+				B9D331FB2EE860D90023D541 /* Permissions */,
+				B9D331FA2EE860BD0023D541 /* AppController */,
+				B9D331F42EE84DD80023D541 /* RemoteSignerConnectionSimpleAccentCell.swift */,
+				B95677872F03094700B8166C /* RemoteSignerEventCell.swift */,
+			);
+			path = Cells;
 			sourceTree = "<group>";
 		};
 		B9E67E7B2D075D94006BB397 /* FeedElementCells */ = {
@@ -3322,7 +3587,8 @@
 		C1AF0C4AC3CFA5588D294EB0 /* Scheme */ = {
 			isa = PBXGroup;
 			children = (
-				C1AF0C03B5BEAE4C6902AD25 /* NostrWalletConnectScheme.swift */,
+				B9E0E6272EEB187D00F48B2A /* RemoteSigningScheme.swift */,
+				C1AF0C03B5BEAE4C6902AD25 /* NostrScheme.swift */,
 				C1AF0E693616ED45B0E46466 /* PrimalScheme.swift */,
 				B9DAA4572D4A61D400B00B82 /* NWCScheme.swift */,
 				B981E09D2D666137002B9729 /* PrimalWebsiteScheme.swift */,
@@ -3348,6 +3614,7 @@
 			dependencies = (
 				B9DFA0AC2D7EFBC9002C6F34 /* PBXTargetDependency */,
 				B9658AF22D9FF9460037E5DB /* PBXTargetDependency */,
+				B9E0E64A2EF08D0800F48B2A /* PBXTargetDependency */,
 			);
 			name = Primal;
 			packageProductDependencies = (
@@ -3364,7 +3631,7 @@
 				B906AB032C99F3E40089813F /* GRDB */,
 				B9B687A22D25A2AD00140927 /* Down */,
 				B907D3C02DBBF18B002B86DA /* LightningDevKit */,
-				B9982FD42EA678E900BEC881 /* NostrSDK */,
+				B91797FD2EDDD21D00EF29EF /* NostrSDK */,
 			);
 			productName = Primal;
 			productReference = 939330F229A3E36F003954C2 /* Primal.app */;
@@ -3426,6 +3693,9 @@
 			);
 			name = PrimalNotifications;
 			packageProductDependencies = (
+				B91797E82EDDCB8F00EF29EF /* KeychainAccess */,
+				B91797FF2EDDD23200EF29EF /* NostrSDK */,
+				B91798392EE0E37600EF29EF /* GenericJSON */,
 			);
 			productName = PrimalNotifications;
 			productReference = B9658AEC2D9FF9460037E5DB /* PrimalNotifications.appex */;
@@ -3453,6 +3723,28 @@
 			productReference = B9DFA0A32D7EFBC9002C6F34 /* primalShare.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
+		B9E0E6352EF08D0500F48B2A /* RemoteSignerWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B9E0E64D2EF08D0800F48B2A /* Build configuration list for PBXNativeTarget "RemoteSignerWidgetExtension" */;
+			buildPhases = (
+				B9E0E6322EF08D0500F48B2A /* Sources */,
+				B9E0E6332EF08D0500F48B2A /* Frameworks */,
+				B9E0E6342EF08D0500F48B2A /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				B9E0E63B2EF08D0600F48B2A /* RemoteSignerWidget */,
+			);
+			name = RemoteSignerWidgetExtension;
+			packageProductDependencies = (
+			);
+			productName = RemoteSignerWidgetExtension;
+			productReference = B9E0E6362EF08D0500F48B2A /* RemoteSignerWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -3460,7 +3752,7 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1630;
+				LastSwiftUpdateCheck = 2610;
 				LastUpgradeCheck = 1520;
 				TargetAttributes = {
 					939330F129A3E36F003954C2 = {
@@ -3480,6 +3772,9 @@
 					};
 					B9DFA0A22D7EFBC9002C6F34 = {
 						CreatedOnToolsVersion = 16.2;
+					};
+					B9E0E6352EF08D0500F48B2A = {
+						CreatedOnToolsVersion = 26.1.1;
 					};
 				};
 			};
@@ -3506,7 +3801,7 @@
 				B906AB022C99F3E40089813F /* XCRemoteSwiftPackageReference "GRDB.swift" */,
 				B9B687A12D25A2AD00140927 /* XCRemoteSwiftPackageReference "Down" */,
 				B907D3BF2DBBF18B002B86DA /* XCRemoteSwiftPackageReference "ldk-swift" */,
-				B9982FD32EA678E900BEC881 /* XCRemoteSwiftPackageReference "nostr-sdk-ios" */,
+				B91797FC2EDDD21D00EF29EF /* XCRemoteSwiftPackageReference "nostr-sdk-ios" */,
 			);
 			productRefGroup = 939330F329A3E36F003954C2 /* Products */;
 			projectDirPath = "";
@@ -3517,6 +3812,7 @@
 				9393310B29A3E370003954C2 /* PrimalUITests */,
 				B9DFA0A22D7EFBC9002C6F34 /* primalShare */,
 				B9658AEB2D9FF9460037E5DB /* PrimalNotifications */,
+				B9E0E6352EF08D0500F48B2A /* RemoteSignerWidgetExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -3526,6 +3822,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B9E67DDE2EF489DD002D7952 /* Soft Pulse.mp3 in Resources */,
 				9EB219E62A0676760037C3E5 /* RobotoFlex-All.ttf in Resources */,
 				B99E03972C061D67006CCECB /* longForm.html in Resources */,
 				9EF4BFCE2A93CE1B003396AA /* loadingSpinnerBlue.json in Resources */,
@@ -3537,6 +3834,7 @@
 				B94F2BFF2AE95D790041181B /* Nacelle-Black.otf in Resources */,
 				939330FD29A3E370003954C2 /* Preview Assets.xcassets in Resources */,
 				B9CE4DA92B682C840060A1B8 /* transferSuccess.json in Resources */,
+				B9E67DDC2EF489D7002D7952 /* Fireplace.mp3 in Resources */,
 				B94F2BFD2AE95D790041181B /* Nacelle-Heavy.otf in Resources */,
 				B94429332BD94C5A00746FBC /* zapGallerySkeletonLight.json in Resources */,
 				B906AAE72C91C46D0089813F /* smallPillLoader.json in Resources */,
@@ -3551,6 +3849,7 @@
 				B99E03A42C09D095006CCECB /* markdown.css in Resources */,
 				B94F2C002AE95D790041181B /* Nacelle-Light.otf in Resources */,
 				939330FA29A3E370003954C2 /* Assets.xcassets in Resources */,
+				B9E67DE22EF48B69002D7952 /* Gentle Rain.mp3 in Resources */,
 				B94F2BFA2AE95D790041181B /* Nacelle-Regular.otf in Resources */,
 				B94429202BD2836800746FBC /* zap-medium.json in Resources */,
 				B906AAE52C91C46D0089813F /* smallPillLoaderLight.json in Resources */,
@@ -3564,6 +3863,7 @@
 				B94429282BD592C400746FBC /* zapGallerySkeleton.json in Resources */,
 				B94F2BFC2AE95D790041181B /* Nacelle-SemiBold.otf in Resources */,
 				9310AB0729AAF06B0038B6F4 /* Launch Screen.storyboard in Resources */,
+				B9E67DE02EF48A00002D7952 /* White Noise.mp3 in Resources */,
 				B9CE4DB92B6D101A0060A1B8 /* walletLightning.json in Resources */,
 				B91E570F2CC82C7A00C14809 /* genericSkeletonLight.json in Resources */,
 				9393313B29A3E5D3003954C2 /* RobotoFlex-Regular.ttf in Resources */,
@@ -3599,6 +3899,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		B9E0E6342EF08D0500F48B2A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -3612,6 +3919,7 @@
 				9E9F2F8329F6AB6400A9CDF3 /* OnboardingStartViewController.swift in Sources */,
 				B9E67EA52D09D8F9006BB397 /* ThreadElementInfoCell.swift in Sources */,
 				B98DD8A92C3F1F9600E8369A /* ArticleFeedView.swift in Sources */,
+				B9D331F72EE84F2A0023D541 /* RemoteSignerConnectionSessionCell.swift in Sources */,
 				9E9F2F8229F6AB6400A9CDF3 /* OnboardingSigninController.swift in Sources */,
 				B9009B5A2B0FD28A002B0613 /* ProfileQRController.swift in Sources */,
 				9E9F2F8529F6AB6400A9CDF3 /* OnboardingParentViewController.swift in Sources */,
@@ -3638,6 +3946,7 @@
 				B94F2BB32AD056D10041181B /* WalletRequestResult.swift in Sources */,
 				B906AB102C9B472C0089813F /* MediaResource.swift in Sources */,
 				B9FAC64C2D3945BB00B57EF6 /* FeedElementYoutubePreviewCell.swift in Sources */,
+				B9E36BDB2EE714FE00213CA0 /* SettingsRemoteSignerController.swift in Sources */,
 				9EE07ABC2A1CFD4F00FB6C86 /* ThemedColors.swift in Sources */,
 				93CACB1329F7D136003BBCE5 /* Keys.swift in Sources */,
 				9E83DF622A545E3900F2C379 /* PopupZapSelectionViewController.swift in Sources */,
@@ -3650,10 +3959,13 @@
 				9E8834BA2A323CF2005DB548 /* ProfileStatDisplayView.swift in Sources */,
 				B99E038C2C05682B006CCECB /* ReadsViewController.swift in Sources */,
 				B90032852BD0183600ADD2E5 /* NoteZapsRequest.swift in Sources */,
+				B9E0E6262EEAC89600F48B2A /* CheckboxRadioButton.swift in Sources */,
 				B9C6D23B2CA5BDE300B2EEBE /* ExploreFeedPreviewParentController.swift in Sources */,
+				B9E0E6572EF1F6B500F48B2A /* RemoteSignerActivityManager.swift in Sources */,
 				B98DD8B22C493D7D00E8369A /* PostRequestResult+Article.swift in Sources */,
 				B94F2BAF2AD04FE40041181B /* WalletManager.swift in Sources */,
 				B94A0E262AA8E42B00DEBFE1 /* ChatTableCell.swift in Sources */,
+				B9E67E262EFC1106002D7952 /* PushNotificationsManager.swift in Sources */,
 				B98DD8B82C49540700E8369A /* HighlightUsersView.swift in Sources */,
 				B94F2BC42AD581B30041181B /* WalletInfoCell.swift in Sources */,
 				9ED415F72A40FE0100892235 /* SearchViewController.swift in Sources */,
@@ -3668,15 +3980,18 @@
 				B98DD8C02C52A59900E8369A /* HighlightCommentsController.swift in Sources */,
 				936DD9F92A3B6A2900A65F79 /* PrimalNotifications.swift in Sources */,
 				9E83DF832A717DC600F2C379 /* EditProfileViewController.swift in Sources */,
+				B90820272EE838A600E4422A /* RemoteSignerConnectionAutostartCell.swift in Sources */,
 				B9A335272E5612C9000B2CA7 /* ThreadElementLivePreviewCell.swift in Sources */,
 				B94A0E302ABA22A600DEBFE1 /* ChatTextViewManager.swift in Sources */,
 				B9009B502B07B14B002B0613 /* SignInInputField.swift in Sources */,
 				B9A36BE12B8F9A9C00D4465D /* PopupAccountSwitchingController.swift in Sources */,
 				9E9C42172A14020D00F9D7ED /* ExploreViewController.swift in Sources */,
 				B9CE4DA52B6815650060A1B8 /* CGRect+Extra.swift in Sources */,
+				B9D331F32EE84A970023D541 /* RemoteSignerConnectionTrustCell.swift in Sources */,
 				B91E56FE2CC1522A00C14809 /* SaveFeedController.swift in Sources */,
 				B9EDA58D2E4F5B15003262E4 /* UsersTableView.swift in Sources */,
 				B9FAC6462D31A15000B57EF6 /* RegularFeedDatasourceProtocol.swift in Sources */,
+				B9E36BDD2EE76F9C00213CA0 /* SettingsConnectedAppController.swift in Sources */,
 				B9B1AB9E2B33341B00837312 /* TransactionViewController.swift in Sources */,
 				B9E67EAD2D09D8FA006BB397 /* ThreadElementArticleCell.swift in Sources */,
 				93CACB0829F525B6003BBCE5 /* utf8.c in Sources */,
@@ -3693,6 +4008,8 @@
 				B9C6D23D2CA5CA8A00B2EEBE /* FeedPreviewCell.swift in Sources */,
 				9E83DF652A54CB3200F2C379 /* LargeGradientIconButton.swift in Sources */,
 				B934ADB02DB117450044E5B5 /* UnmuteWordCell.swift in Sources */,
+				B9D331FF2EE862E30023D541 /* SettingsEditConnectionName.swift in Sources */,
+				B9D331F92EE85F300023D541 /* SettingsConnectedAppPermissionsController.swift in Sources */,
 				B981E0A02D6F6EF3002B9729 /* DoubleImageGalleryCell.swift in Sources */,
 				B91E57162CD528A600C14809 /* UITableView+Extra.swift in Sources */,
 				B99E7BD32B238A7F00756F40 /* ImageGalleryController.swift in Sources */,
@@ -3741,6 +4058,7 @@
 				B9C672E92E2FF89C00243B45 /* LiveVideoChatZapCell.swift in Sources */,
 				B991FA442E8D88CB009D313E /* PopupInfoBubbleView.swift in Sources */,
 				B9C672D42E1FEF5000243B45 /* LiveEventManager.swift in Sources */,
+				B95677862F02FAAE00B8166C /* SettingsRemoteSessionController.swift in Sources */,
 				B918A35F2EA0F72C0003683D /* ImageGalleryVideoController.swift in Sources */,
 				9E55CC6D2A03CF33002D3DC4 /* SpacerView.swift in Sources */,
 				9EF4BFC62A8BEEA3003396AA /* SettingsAppearanceViewController.swift in Sources */,
@@ -3761,13 +4079,17 @@
 				B918A3612EA0FA560003683D /* LiveChatDatasource.swift in Sources */,
 				9E9D46FA2A0A7F9B00D4837B /* GradientView.swift in Sources */,
 				B9B9E5742CB57DCD0065DD7C /* ZapFeedManager.swift in Sources */,
+				B98B78772EC2176A006134F9 /* CloudLoginButton.swift in Sources */,
 				B99E038F2C05756F006CCECB /* ArticleCell.swift in Sources */,
 				B9B290532B45C77E0069C87F /* NumberKeyboardView.swift in Sources */,
 				B9CE4DB02B697FCE0060A1B8 /* SlideDownTransition.swift in Sources */,
+				B91798752EE320AD00EF29EF /* RemoteSignerPillView.swift in Sources */,
 				B91E57072CC7ECEF00C14809 /* BookmarkedNoteFeedController.swift in Sources */,
 				9E8834C02A328966005DB548 /* BrightSmallButton.swift in Sources */,
 				B9009B632B110AB6002B0613 /* PrimalEndpointsManager.swift in Sources */,
 				B9CE4DD62B7F675F0060A1B8 /* CircularProgressBar.swift in Sources */,
+				B9E36BD82EE330AD00213CA0 /* RemoteSignerActiveSessionsController.swift in Sources */,
+				B904E9A32F042BFD006D195C /* CloudPopupController.swift in Sources */,
 				B9E67ECD2D13021C006BB397 /* HighlightCommentsDatasource.swift in Sources */,
 				9309D2332A5EA82A00FD2127 /* Array+Extra.swift in Sources */,
 				B9F9331D2B88F72E0064B495 /* PremiumViewController.swift in Sources */,
@@ -3778,7 +4100,9 @@
 				B9E67E852D076327006BB397 /* FeedElementWebPreviewCell.swift in Sources */,
 				9E83DF672A54CEE200F2C379 /* ZapAmountSelectionButton.swift in Sources */,
 				93CACAFA29F525B6003BBCE5 /* bech32.c in Sources */,
+				B98B78792EC21E96006134F9 /* OnboardingManageCloudController.swift in Sources */,
 				93CACB0D29F7CAF8003BBCE5 /* NostrTools.swift in Sources */,
+				B98B78752EC209C7006134F9 /* OrSeparatorView.swift in Sources */,
 				B98DD8C82C5C108700E8369A /* Article.swift in Sources */,
 				B9E67EC82D10D8F5006BB397 /* ArticleCommentsDatasource.swift in Sources */,
 				B9CE4DDD2B8662BF0060A1B8 /* TermsAndConditionsView.swift in Sources */,
@@ -3791,6 +4115,7 @@
 				B9E67EA42D09D8F9006BB397 /* ThreadElementInvoiceCell.swift in Sources */,
 				B99E7BD52B238C7200756F40 /* ImageFullScreenViewController.swift in Sources */,
 				B9DD12FB2CB85F3400C435FD /* DatabaseManager+Nip05Check.swift in Sources */,
+				B956778A2F030DA500B8166C /* SettingsRemoteEventController.swift in Sources */,
 				B9B9E57B2CB6E2C00065DD7C /* SimpleInfoView.swift in Sources */,
 				B9C672DD2E2A570600243B45 /* SafeTableView.swift in Sources */,
 				B91EF0B42CE3D45100299ECF /* GenericSliderView.swift in Sources */,
@@ -3840,6 +4165,7 @@
 				939427142A436AF3001C1E10 /* RelayURL.swift in Sources */,
 				B9E67E812D0762CD006BB397 /* FeedElementSmallZapGalleryCell.swift in Sources */,
 				B901C3972BADF36100C3AA69 /* OnboardingWalletCodeController.swift in Sources */,
+				B95677B02F0400A700B8166C /* ScanAnythingQRController.swift in Sources */,
 				B99E03812BF75FEE006CCECB /* PostCellNantesDelegate.swift in Sources */,
 				B9E67EA82D09D8F9006BB397 /* ThreadElementPostPreviewCell.swift in Sources */,
 				B9CE4DA12B63C8D80060A1B8 /* WalletSendSpinnerAnimator.swift in Sources */,
@@ -3875,6 +4201,8 @@
 				9E83DF702A573E5100F2C379 /* UIStackView+Extra.swift in Sources */,
 				B9E67EAF2D09E576006BB397 /* DerivativeClasses.swift in Sources */,
 				B9DAA45D2D51550300B00B82 /* LegendListController.swift in Sources */,
+				B917982C2EE0690D00EF29EF /* RemoteSignerManager.swift in Sources */,
+				B917982D2EE0690D00EF29EF /* SigningManager.swift in Sources */,
 				9ED415FC2A41E02200892235 /* SearchHeaderView.swift in Sources */,
 				9E83DF812A6ED99500F2C379 /* PostingImageView.swift in Sources */,
 				B91EF0E62CED109F00299ECF /* SearchPremiumCell.swift in Sources */,
@@ -3888,6 +4216,7 @@
 				B91EF0D92CEBA10B00299ECF /* PremiumManageLegendController.swift in Sources */,
 				9ED416122A4CAC5A00892235 /* NotificationCell.swift in Sources */,
 				B9658AC72D9EB5750037E5DB /* SettingsEditMediaUploadsController.swift in Sources */,
+				B956775D2EFD76D500B8166C /* RemoteSignerEventDetailsController.swift in Sources */,
 				B98DD8E42C666D5D00E8369A /* FeedMarketplaceCell.swift in Sources */,
 				B9E67EA72D09D8F9006BB397 /* ThreadElementImageGalleryCell.swift in Sources */,
 				B90DB06F2E5E10CC00A67D4A /* LiveVideoZapsController.swift in Sources */,
@@ -3909,6 +4238,7 @@
 				9E55F2932A1FBC4200D5D523 /* ThemeableViews.swift in Sources */,
 				B9009B4E2B068D8B002B0613 /* UserRequest.swift in Sources */,
 				9E8DE4D829F7E1EB0028D3C3 /* LoadingSpinnerView.swift in Sources */,
+				B9E0E6282EEB188F00F48B2A /* RemoteSigningScheme.swift in Sources */,
 				B99E03992C07801A006CCECB /* WKWebView+Extra.swift in Sources */,
 				B9B1ABA52B3336B000837312 /* TransactionUserInfoCell.swift in Sources */,
 				93CACAFE29F525B6003BBCE5 /* nostr_bech32.c in Sources */,
@@ -3922,6 +4252,7 @@
 				9E0DEAFB29FD4B3300145E08 /* FollowProfileCell.swift in Sources */,
 				B98DD8EA2C80670200E8369A /* DropdownNavigationView.swift in Sources */,
 				B906AB162C9B52C10089813F /* DatabaseManager+Profile.swift in Sources */,
+				B95677882F03095000B8166C /* RemoteSignerEventCell.swift in Sources */,
 				B9CE4DAE2B695F320060A1B8 /* WalletOnchainTierPickController.swift in Sources */,
 				B9B290572B4DB2950069C87F /* SettingsWalletViewController.swift in Sources */,
 				B9B9E56B2CB44E710065DD7C /* ExplorePeopleCell.swift in Sources */,
@@ -3931,6 +4262,7 @@
 				B94F2BCF2AD995250041181B /* WalletNavView.swift in Sources */,
 				9EE07ABE2A1CFDB800FB6C86 /* Theme.swift in Sources */,
 				B98DD8E02C66634A00E8369A /* FeedPickerController.swift in Sources */,
+				B9E67DD92EF47389002D7952 /* RemoteSignerDisclosureController.swift in Sources */,
 				B91E57092CC7EE9C00C14809 /* BookmarkedArticleFeedController.swift in Sources */,
 				B9B290512B457EE10069C87F /* WalletSendAmountController.swift in Sources */,
 				B9F9331F2B8904570064B495 /* CheckNip05Manager.swift in Sources */,
@@ -3938,6 +4270,8 @@
 				B9DD12F72CB800A900C435FD /* PostPreviewPostPreviewView.swift in Sources */,
 				B944292E2BD81B6000746FBC /* ZapGallery.swift in Sources */,
 				9EF4BFD02A955FB5003396AA /* NewPostButton.swift in Sources */,
+				B95677B22F04029D00B8166C /* ScanAnythingKeyboardController.swift in Sources */,
+				B98B787B2EC21F72006134F9 /* CloudRemoveLoginView.swift in Sources */,
 				B94F2BC22AD57AD20041181B /* TransactionHeader.swift in Sources */,
 				9E6924A42A02925F00CAC54C /* MainTabBarController.swift in Sources */,
 				B9DAA4542D490AB800B00B82 /* SettingsNewNwcQRController.swift in Sources */,
@@ -3975,6 +4309,7 @@
 				B90585382C9DDFD600FC4108 /* SettingsDevModeController.swift in Sources */,
 				B9E0BE422BCD621B00FFF2BC /* LightningInvoiceView.swift in Sources */,
 				B9E67E942D076F6F006BB397 /* RegularFeedDatasource.swift in Sources */,
+				B95677842F02E85400B8166C /* EventDetailsView.swift in Sources */,
 				B91EF0D72CEB8D4200299ECF /* PremiumManageSubscriptionDataCell.swift in Sources */,
 				9E8834C82A378DA5005DB548 /* Publisher+Extra.swift in Sources */,
 				B91EF0BA2CE78D3E00299ECF /* PremiumManageMediaController.swift in Sources */,
@@ -4003,12 +4338,15 @@
 				B906AB0D2C9B2D830089813F /* ProfileLastVisit.swift in Sources */,
 				93906B942A55B5D000962A94 /* NostrObject.swift in Sources */,
 				B90EF0ED2AFC08E000A7CD65 /* ProfileTabSelectionView.swift in Sources */,
+				B9856EA52ED9C92B00B21500 /* RemoteSignerSignInController.swift in Sources */,
 				B9EDA5882E4CABE1003262E4 /* LivePopupDismissGesture.swift in Sources */,
 				9E8834A82A2775FF005DB548 /* RepostedIndicatorView.swift in Sources */,
 				B9E67EB22D0A17E0006BB397 /* MainThreadElementTextCell.swift in Sources */,
 				B98DD8DE2C6661B500E8369A /* FeedMarketplaceController.swift in Sources */,
 				B9FAC6442D319FDC00B57EF6 /* FeedElementSystemWebPreviewCell.swift in Sources */,
+				B9856EA32ED8B56100B21500 /* RemoteSignerRootController.swift in Sources */,
 				B94429242BD291C300746FBC /* RepostUserTableViewCell.swift in Sources */,
+				B9E0E62A2EEB483A00F48B2A /* GenericPlayer.swift in Sources */,
 				B9C6D2422CAD93ED00B2EEBE /* FeedMarketplaceCellController.swift in Sources */,
 				B9FAC6542D3A992E00B57EF6 /* ThreadElementYoutubePreviewCell.swift in Sources */,
 				939329462A66E82E00B96AAA /* LoginManager.swift in Sources */,
@@ -4025,6 +4363,8 @@
 				B906AAFB2C949D3A0089813F /* FollowedByView.swift in Sources */,
 				B9370EEB2DE88276004A9760 /* SettingsNWCQRScanController.swift in Sources */,
 				9309D2352A5EAFDF00FD2127 /* NostrKeypair.swift in Sources */,
+				B9E36BE42EE778F800213CA0 /* RemoteSignerConnectionInfoActionCell.swift in Sources */,
+				B91798332EE093B800EF29EF /* EncryptionServiceHandler.swift in Sources */,
 				B91EF0EF2CED236800299ECF /* PremiumLearnMoreFAQController.swift in Sources */,
 				B981E0A42D6F72F5002B9729 /* QuadrupleImageGalleryCell.swift in Sources */,
 				B91EF0B82CE777D500299ECF /* PremiumManageRelayController.swift in Sources */,
@@ -4035,6 +4375,7 @@
 				B91E56ED2CB9965200C14809 /* AdvancedSearchTimePickerController.swift in Sources */,
 				9E83DF6C2A573DF700F2C379 /* TextRepresenting.swift in Sources */,
 				B91EF0C72CEA106900299ECF /* PremiumManageContactsHeaderCell.swift in Sources */,
+				B95677AE2F03EFF300B8166C /* ScanAnythingController.swift in Sources */,
 				B9E67EA62D09D8F9006BB397 /* ThreadElementSmallZapGalleryCell.swift in Sources */,
 				B9DAA4612D53DC2C00B00B82 /* FeedElementTidalPreviewCell.swift in Sources */,
 				9E8834CA2A379672005DB548 /* NSRange+Extra.swift in Sources */,
@@ -4061,6 +4402,7 @@
 				9ED4160B2A45BE3100892235 /* UndoToastMessageView.swift in Sources */,
 				B91E571C2CDBC17E00C14809 /* PremiumSearchNameController.swift in Sources */,
 				B9E67EA32D09D8F9006BB397 /* ThreadElementZapPreviewCell.swift in Sources */,
+				B9D332012EE865DF0023D541 /* RemoteSignerPermissionEditCell.swift in Sources */,
 				B91E57022CC6B5D100C14809 /* KeyboardManager.swift in Sources */,
 				B9C672D62E1FF65F00243B45 /* JSON+Extra.swift in Sources */,
 				B91E56E12CB97D8800C14809 /* AdvancedSearchController.swift in Sources */,
@@ -4092,6 +4434,7 @@
 				B91E56F92CC1383300C14809 /* NoteFeedViewController.swift in Sources */,
 				B9C672EB2E315F5D00243B45 /* LiveVideoChatInputView.swift in Sources */,
 				B99E03892BF7B10C006CCECB /* PostFeedCell.swift in Sources */,
+				B9E36BE22EE7786900213CA0 /* RemoteSignerConnectionCell.swift in Sources */,
 				B9A2009A2B5AB1FE003B6C6B /* FadeTransition.swift in Sources */,
 				93E0A81F2A43AA0800C33A08 /* NWCRelayConnectionEvent.swift in Sources */,
 				B9DD12F92CB85CD600C435FD /* ProfileNip05Check.swift in Sources */,
@@ -4133,9 +4476,11 @@
 				B9E67E872D076354006BB397 /* FeedElementInfoCell.swift in Sources */,
 				B9009B672B1E2382002B0613 /* HomeFeedLocalLoadingManager.swift in Sources */,
 				B9E67E912D07682B006BB397 /* FeedElementArticleCell.swift in Sources */,
+				B9D331F52EE84E050023D541 /* RemoteSignerConnectionSimpleAccentCell.swift in Sources */,
 				9E8834AE2A2A33A3005DB548 /* LinkPreview.swift in Sources */,
 				B9A335252E54F3A1000B2CA7 /* FeedElementLivePreviewCell.swift in Sources */,
 				B99E03AB2C0DFB9F006CCECB /* PostTagsView.swift in Sources */,
+				B98B78732EC20844006134F9 /* OnboardingCloudSigninController.swift in Sources */,
 				B9C672E42E2FDDA900243B45 /* SimpleHelperViews.swift in Sources */,
 				B91B45B32BEE23310073A539 /* FollowUsersMutelistRequest.swift in Sources */,
 				B9E67EAC2D09D8FA006BB397 /* ThreadElementWebPreviewCell.swift in Sources */,
@@ -4175,6 +4520,7 @@
 				B91EF0CB2CEA1AA800299ECF /* PremiumManageContentController.swift in Sources */,
 				B94A0E2D2AAB577400DEBFE1 /* ChatMessageCell.swift in Sources */,
 				B98DD8AD2C467DB900E8369A /* ArticleWebView.swift in Sources */,
+				B9E0E6232EE9EB2700F48B2A /* RemoteSignerPendingEventsController.swift in Sources */,
 				9E83DF7F2A61E58E00F2C379 /* NewPostsButton.swift in Sources */,
 				B9E67E962D088720006BB397 /* ThreadFeedDatasource.swift in Sources */,
 				B9F9331A2B88EBE40064B495 /* CheckNip05Request.swift in Sources */,
@@ -4188,10 +4534,11 @@
 				B9009B612B1109AD002B0613 /* PrimalEndpointsRequest.swift in Sources */,
 				B9CC1AEE2DF767020020BFC2 /* UserListViewController.swift in Sources */,
 				C1AF0260998E17001EF1988C /* MuteManager.swift in Sources */,
+				B9D331FD2EE860E10023D541 /* RemoteSignerConnectionInfoCell.swift in Sources */,
 				B928F6642B51D52B00B2273E /* ViewAnimations.swift in Sources */,
 				B900328A2BD266FF00ADD2E5 /* NoteZapsViewController.swift in Sources */,
 				B9FAC6522D3A98EF00B57EF6 /* ThreadElementWebkitLinkPreviewCell.swift in Sources */,
-				C1AF0E7F59461BB9839F1D44 /* NostrWalletConnectScheme.swift in Sources */,
+				C1AF0E7F59461BB9839F1D44 /* NostrScheme.swift in Sources */,
 				C1AF0077EAB9C68DF1F2B816 /* PrimalScheme.swift in Sources */,
 				B9DF0CB22C25AD78009ADC7B /* LargeZapGalleryView.swift in Sources */,
 				B9318F602B6048FE0044B6AA /* SettingsEditZapController.swift in Sources */,
@@ -4232,6 +4579,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		B9E0E6322EF08D0500F48B2A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B9E67DDA2EF4847C002D7952 /* Color.swift in Sources */,
+				B9E0E6502EF16DDF00F48B2A /* Date+Extra.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -4254,6 +4610,11 @@
 			isa = PBXTargetDependency;
 			target = B9DFA0A22D7EFBC9002C6F34 /* primalShare */;
 			targetProxy = B9DFA0AB2D7EFBC9002C6F34 /* PBXContainerItemProxy */;
+		};
+		B9E0E64A2EF08D0800F48B2A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B9E0E6352EF08D0500F48B2A /* RemoteSignerWidgetExtension */;
+			targetProxy = B9E0E6492EF08D0800F48B2A /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -4412,7 +4773,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.5.65;
+				MARKETING_VERSION = 2.6.40;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -4461,7 +4822,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.5.65;
+				MARKETING_VERSION = 2.6.40;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -4565,7 +4926,7 @@
 				INFOPLIST_FILE = PrimalNotifications/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = PrimalNotifications;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -4596,7 +4957,7 @@
 				INFOPLIST_FILE = PrimalNotifications/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = PrimalNotifications;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -4626,7 +4987,7 @@
 				INFOPLIST_FILE = primalShare/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = primalShare;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -4657,7 +5018,7 @@
 				INFOPLIST_FILE = primalShare/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = primalShare;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -4669,6 +5030,75 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		B9E0E64E2EF08D0800F48B2A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 7B23MN6TDM;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = RemoteSignerWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = RemoteSignerWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal.RemoteSignerWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		B9E0E64F2EF08D0800F48B2A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 7B23MN6TDM;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = RemoteSignerWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = RemoteSignerWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal.RemoteSignerWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -4727,6 +5157,15 @@
 			buildConfigurations = (
 				B9DFA0AF2D7EFBC9002C6F34 /* Debug */,
 				B9DFA0B02D7EFBC9002C6F34 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B9E0E64D2EF08D0800F48B2A /* Build configuration list for PBXNativeTarget "RemoteSignerWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B9E0E64E2EF08D0800F48B2A /* Debug */,
+				B9E0E64F2EF08D0800F48B2A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -4814,7 +5253,7 @@
 				minimumVersion = 0.0.125;
 			};
 		};
-		B9982FD32EA678E900BEC881 /* XCRemoteSwiftPackageReference "nostr-sdk-ios" */ = {
+		B91797FC2EDDD21D00EF29EF /* XCRemoteSwiftPackageReference "nostr-sdk-ios" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/PrimalHQ/nostr-sdk-ios";
 			requirement = {
@@ -4904,10 +5343,25 @@
 			package = B907D3BF2DBBF18B002B86DA /* XCRemoteSwiftPackageReference "ldk-swift" */;
 			productName = LightningDevKit;
 		};
-		B9982FD42EA678E900BEC881 /* NostrSDK */ = {
+		B91797E82EDDCB8F00EF29EF /* KeychainAccess */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = B9982FD32EA678E900BEC881 /* XCRemoteSwiftPackageReference "nostr-sdk-ios" */;
+			package = 9309D22F2A5EA7EF00FD2127 /* XCRemoteSwiftPackageReference "KeychainAccess" */;
+			productName = KeychainAccess;
+		};
+		B91797FD2EDDD21D00EF29EF /* NostrSDK */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B91797FC2EDDD21D00EF29EF /* XCRemoteSwiftPackageReference "nostr-sdk-ios" */;
 			productName = NostrSDK;
+		};
+		B91797FF2EDDD23200EF29EF /* NostrSDK */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B91797FC2EDDD21D00EF29EF /* XCRemoteSwiftPackageReference "nostr-sdk-ios" */;
+			productName = NostrSDK;
+		};
+		B91798392EE0E37600EF29EF /* GenericJSON */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9393311F29A3E44D003954C2 /* XCRemoteSwiftPackageReference "generic-json-swift" */;
+			productName = GenericJSON;
 		};
 		B99E039B2C07C059006CCECB /* Ink */ = {
 			isa = XCSwiftPackageProductDependency;

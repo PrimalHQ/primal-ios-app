@@ -9,9 +9,11 @@ import Combine
 import UIKit
 import NostrSDK
 
-protocol WalletSearchController: UIViewController, MetadataCoding {
+protocol WalletSearchController: AnyObject, MetadataCoding {
     var textSearch: String? { get set }
     var cancellables: Set<AnyCancellable> { get set }
+    
+    var     navigationControllerForSearchResults: UINavigationController? { get }
 }
 
 extension WalletSearchController {
@@ -42,11 +44,11 @@ extension WalletSearchController {
                             .sink { [weak self] result in
                                 guard let self else { return }
                                 
-                                navigationController?.pushViewController(WalletSendAmountController(.address(text, nil, result.getSortedUsers().first)), animated: true)
+                                navigationControllerForSearchResults?.pushViewController(WalletSendAmountController(.address(text, nil, result.getSortedUsers().first)), animated: true)
                             }
                             .store(in: &cancellables)
                     } else {
-                        navigationController?.pushViewController(WalletSendAmountController(.address(text, nil, res.getSortedUsers().first)), animated: true)
+                        navigationControllerForSearchResults?.pushViewController(WalletSendAmountController(.address(text, nil, res.getSortedUsers().first)), animated: true)
                     }
                 }
                 .store(in: &cancellables)
@@ -59,9 +61,9 @@ extension WalletSearchController {
                 textSearch = nil
                 search(lightning)
             } else if let amount = parsedBitcoinAddress.1, amount > 0 {
-                navigationController?.pushViewController(WalletSendViewController(.address(text, nil, nil, startingAmount: amount)), animated: true)
+                navigationControllerForSearchResults?.pushViewController(WalletSendViewController(.address(text, nil, nil, startingAmount: amount)), animated: true)
             } else {
-                navigationController?.pushViewController(WalletSendAmountController(.address(text, nil, nil)), animated: true)
+                navigationControllerForSearchResults?.pushViewController(WalletSendAmountController(.address(text, nil, nil)), animated: true)
             }
             return
         }
@@ -73,7 +75,7 @@ extension WalletSearchController {
                         self?.textSearch = nil
                         return
                     }
-                    self?.navigationController?.pushViewController(WalletSendAmountController(.user(user)), animated: true)
+                    self?.navigationControllerForSearchResults?.pushViewController(WalletSendAmountController(.user(user)), animated: true)
                 }
             }
             return
@@ -85,7 +87,7 @@ extension WalletSearchController {
                     self?.textSearch = nil
                     return
                 }
-                self?.navigationController?.pushViewController(WalletSendAmountController(.user(user)), animated: true)
+                self?.navigationControllerForSearchResults?.pushViewController(WalletSendAmountController(.user(user)), animated: true)
             }
             return
         }
@@ -104,7 +106,7 @@ extension WalletSearchController {
                             self?.textSearch = nil
                             return
                         }
-                        self?.navigationController?.pushViewController(WalletSendAmountController(.user(user)), animated: true)
+                        self?.navigationControllerForSearchResults?.pushViewController(WalletSendAmountController(.user(user)), animated: true)
                     }
                     return
                 }
@@ -112,12 +114,12 @@ extension WalletSearchController {
                 guard let pubkey: String = result.parsedLNURL?.target_pubkey ?? result.parsedLNInvoice?.pubkey else {
                     if let invoice = result.parsedLNInvoice {
                         if invoice.lninvoice.amount_msat > 0 {
-                            navigationController?.pushViewController(WalletSendViewController(.address(text, invoice, nil)), animated: true)
+                            navigationControllerForSearchResults?.pushViewController(WalletSendViewController(.address(text, invoice, nil)), animated: true)
                         } else {
-                            navigationController?.pushViewController(WalletSendAmountController(.address(text, invoice, nil)), animated: true)
+                            navigationControllerForSearchResults?.pushViewController(WalletSendAmountController(.address(text, invoice, nil)), animated: true)
                         }
                     } else {
-                        navigationController?.pushViewController(WalletSendAmountController(.address(text, nil, nil)), animated: true)
+                        navigationControllerForSearchResults?.pushViewController(WalletSendAmountController(.address(text, nil, nil)), animated: true)
                     }
                     return
                 }
@@ -125,12 +127,12 @@ extension WalletSearchController {
                 searchForPubkey(pubkey) { [weak self] user in
                     if let invoice = result.parsedLNInvoice {
                         if invoice.lninvoice.amount_msat > 0 {
-                            self?.navigationController?.pushViewController(WalletSendViewController(.address(text, invoice, user)), animated: true)
+                            self?.navigationControllerForSearchResults?.pushViewController(WalletSendViewController(.address(text, invoice, user)), animated: true)
                         } else {
-                            self?.navigationController?.pushViewController(WalletSendAmountController(.address(text, invoice, user)), animated: true)
+                            self?.navigationControllerForSearchResults?.pushViewController(WalletSendAmountController(.address(text, invoice, user)), animated: true)
                         }
                     } else {
-                        self?.navigationController?.pushViewController(WalletSendAmountController(.address(text, nil, user)), animated: true)
+                        self?.navigationControllerForSearchResults?.pushViewController(WalletSendAmountController(.address(text, nil, user)), animated: true)
                     }
                 }
             }
@@ -169,6 +171,8 @@ final class WalletSendParentViewController: UIViewController, WalletSearchContro
     lazy var pickVC = WalletPickUserController()
     lazy var scanVC = WalletQRCodeViewController()
     lazy var keyboardVC = WalletKeyboardTabController()
+    
+    var navigationControllerForSearchResults: UINavigationController? { navigationController }
     
     private var activeButton: WalletSendTabButton? {
         didSet {

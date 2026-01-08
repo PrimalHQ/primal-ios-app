@@ -169,17 +169,12 @@ private extension MenuContainerController {
         let premium = MenuItemButton(title: "PREMIUM", image: .menuSidebarPremium)
         let messages = MenuItemButton(title: "MESSAGES", image: .menuSidebarMessages)
         let bookmarks = MenuItemButton(title: "BOOKMARKS", image: .menuSidebarBookmarks)
-        let redeemCode = MenuItemButton(title: "REDEEM CODE", image: .barcode.scalePreservingAspectRatio(size: 18))
+        let remoteLogin = MenuItemButton(title: "Remote Login", image: .remoteSessionIcon.scalePreservingAspectRatio(size: 18))
+        let redeemCode = MenuItemButton(title: "Scan Code", image: .barcode.scalePreservingAspectRatio(size: 18))
         let settings = MenuItemButton(title: "SETTINGS", image: .menuSidebarSettings)
         let signOut = MenuItemButton(title: "SIGN OUT", image: .menuSidebarSignout)
         
-        AppDelegate.shared.$contentSettings.receive(on: DispatchQueue.main)
-            .sink { settings in
-                redeemCode.isHidden = !(settings?.show_primal_support ?? true)
-            }
-            .store(in: &cancellables)
-        
-        let buttonsStack = UIStackView(arrangedSubviews: [profile, premium, messages, bookmarks, redeemCode, settings, signOut])
+        let buttonsStack = UIStackView(arrangedSubviews: [profile, premium, messages, bookmarks, remoteLogin, redeemCode, settings, signOut])
         [
             profileImageRow, titleStack, domainLabel, followStack,
             buttonsStack, UIView(), themeButton
@@ -304,7 +299,13 @@ private extension MenuContainerController {
         bookmarks.addAction(.init(handler: { [unowned self] _ in showViewController(PublicBookmarksViewController()) }), for: .touchUpInside)
         premium.addAction(.init(handler: { [unowned self] _ in showViewController(PremiumViewController()) }), for: .touchUpInside)
         redeemCode.addAction(.init(handler: { [unowned self] _ in
-            present(OnboardingParentViewController(.redeemCode()), animated: true)
+            present(ScanAnythingController(), animated: true)
+            animateClose()
+        }), for: .touchUpInside)
+        
+        remoteLogin.addAction(.init(handler: { [unowned self] _ in
+            present(ScanAnythingController(style: .remoteLogin), animated: true)
+            animateClose()
         }), for: .touchUpInside)
         
         profile.addTarget(self, action: #selector(profilePressed), for: .touchUpInside)
