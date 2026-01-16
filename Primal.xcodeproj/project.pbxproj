@@ -241,8 +241,8 @@
 		B9031D502AC2075E00C7489F /* ChatLoadingCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9031D4F2AC2075E00C7489F /* ChatLoadingCell.swift */; };
 		B9031D522ACDDD4200C7489F /* ReplyingToView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9031D512ACDDD4200C7489F /* ReplyingToView.swift */; };
 		B904E9A32F042BFD006D195C /* CloudPopupController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B904E9A22F042BDD006D195C /* CloudPopupController.swift */; };
-		B904EA0F2F0D3A3F006D195C /* PrimalShared.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = B904EA0D2F0D3A27006D195C /* PrimalShared.xcframework */; };
-		B904EA102F0D3A3F006D195C /* PrimalShared.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B904EA0D2F0D3A27006D195C /* PrimalShared.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		B904EA132F1A5FEE006D195C /* PrimalShared.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = B904EA112F1A5FE3006D195C /* PrimalShared.xcframework */; };
+		B904EA142F1A5FEE006D195C /* PrimalShared.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B904EA112F1A5FE3006D195C /* PrimalShared.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B90585382C9DDFD600FC4108 /* SettingsDevModeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90585372C9DDFD600FC4108 /* SettingsDevModeController.swift */; };
 		B906AAE52C91C46D0089813F /* smallPillLoaderLight.json in Resources */ = {isa = PBXBuildFile; fileRef = B906AAD72C91C46D0089813F /* smallPillLoaderLight.json */; };
 		B906AAE72C91C46D0089813F /* smallPillLoader.json in Resources */ = {isa = PBXBuildFile; fileRef = B906AAD92C91C46D0089813F /* smallPillLoader.json */; };
@@ -763,7 +763,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				B904EA102F0D3A3F006D195C /* PrimalShared.xcframework in Embed Frameworks */,
+				B904EA142F1A5FEE006D195C /* PrimalShared.xcframework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1050,7 +1050,7 @@
 		B9031D4F2AC2075E00C7489F /* ChatLoadingCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatLoadingCell.swift; sourceTree = "<group>"; };
 		B9031D512ACDDD4200C7489F /* ReplyingToView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReplyingToView.swift; sourceTree = "<group>"; };
 		B904E9A22F042BDD006D195C /* CloudPopupController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudPopupController.swift; sourceTree = "<group>"; };
-		B904EA0D2F0D3A27006D195C /* PrimalShared.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = PrimalShared.xcframework; sourceTree = "<group>"; };
+		B904EA112F1A5FE3006D195C /* PrimalShared.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = PrimalShared.xcframework; sourceTree = "<group>"; };
 		B90585372C9DDFD600FC4108 /* SettingsDevModeController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsDevModeController.swift; sourceTree = "<group>"; };
 		B906AAD72C91C46D0089813F /* smallPillLoaderLight.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = smallPillLoaderLight.json; sourceTree = "<group>"; };
 		B906AAD92C91C46D0089813F /* smallPillLoader.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = smallPillLoader.json; sourceTree = "<group>"; };
@@ -1573,7 +1573,7 @@
 				9393312129A3E44D003954C2 /* GenericJSON in Frameworks */,
 				9393312729A3E475003954C2 /* NWWebSocket in Frameworks */,
 				B907D3C12DBBF18B002B86DA /* LightningDevKit in Frameworks */,
-				B904EA0F2F0D3A3F006D195C /* PrimalShared.xcframework in Frameworks */,
+				B904EA132F1A5FEE006D195C /* PrimalShared.xcframework in Frameworks */,
 				B94F2BDF2ADDCD710041181B /* StoreKit.framework in Frameworks */,
 				B99E039C2C07C059006CCECB /* Ink in Frameworks */,
 				9E0DEAED29FD2F6900145E08 /* Lottie in Frameworks */,
@@ -1721,7 +1721,7 @@
 				9393312829A3E4E0003954C2 /* Common */,
 				9E9F2F9929F6ABA800A9CDF3 /* AppDelegate.swift */,
 				9E9F2F9829F6ABA800A9CDF3 /* SceneDelegate.swift */,
-				B904EA0D2F0D3A27006D195C /* PrimalShared.xcframework */,
+				B904EA112F1A5FE3006D195C /* PrimalShared.xcframework */,
 				9EB219EE2A06FD610037C3E5 /* MainLogo.png */,
 				939330F929A3E370003954C2 /* Assets.xcassets */,
 				939330FB29A3E370003954C2 /* Preview Content */,

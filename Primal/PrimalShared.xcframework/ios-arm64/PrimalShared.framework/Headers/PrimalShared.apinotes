@@ -1303,45 +1303,6 @@ Classes:
       Type: "NSString * _Nonnull"
     - Position: 2
       Type: "void (^ _Nonnull)(NSError * _Nullable)"
-- Name: "PrimalSharedTransactionFeeRepositoryImpl"
-  SwiftName: "TransactionFeeRepositoryImpl"
-  Methods:
-  - Selector: "initWithDispatcherProvider:primalWalletApi:"
-    MethodKind: "Instance"
-    SwiftName: "init(dispatcherProvider:primalWalletApi:)"
-    Parameters:
-    - Position: 0
-      Type: "id<PrimalSharedUtilsDispatcherProvider> _Nonnull"
-    - Position: 1
-      Type: "id<PrimalSharedRemote_primalPrimalWalletApi> _Nonnull"
-  - Selector: "fetchDefaultMiningFeeUserId:onChainAddress:amountInBtc:completionHandler:"
-    MethodKind: "Instance"
-    SwiftName: "__fetchDefaultMiningFee(userId:onChainAddress:amountInBtc:completionHandler:)"
-    SwiftPrivate: true
-    ResultType: "void"
-    Parameters:
-    - Position: 0
-      Type: "NSString * _Nonnull"
-    - Position: 1
-      Type: "NSString * _Nonnull"
-    - Position: 2
-      Type: "NSString * _Nonnull"
-    - Position: 3
-      Type: "void (^ _Nonnull)(PrimalSharedOnChainTransactionFeeTier * _Nullable_result, NSError * _Nullable)"
-  - Selector: "fetchMiningFeesUserId:onChainAddress:amountInBtc:completionHandler:"
-    MethodKind: "Instance"
-    SwiftName: "__fetchMiningFees(userId:onChainAddress:amountInBtc:completionHandler:)"
-    SwiftPrivate: true
-    ResultType: "void"
-    Parameters:
-    - Position: 0
-      Type: "NSString * _Nonnull"
-    - Position: 1
-      Type: "NSString * _Nonnull"
-    - Position: 2
-      Type: "NSString * _Nonnull"
-    - Position: 3
-      Type: "void (^ _Nonnull)(NSArray<PrimalSharedOnChainTransactionFeeTier *> * _Nullable, NSError * _Nullable)"
 - Name: "PrimalSharedTsunamiWalletAccountRepositoryImpl"
   SwiftName: "TsunamiWalletAccountRepositoryImpl"
   Methods:
@@ -1507,15 +1468,17 @@ Classes:
       Type: "id<PrimalSharedPrimalApiClient> _Nonnull"
     - Position: 1
       Type: "id<PrimalSharedNostrEventSignatureHandler> _Nonnull"
-  - Selector: "createTransactionFeeRepositoryPrimalWalletApiClient:nostrEventSignatureHandler:"
+  - Selector: "createTransactionFeeRepositoryPrimalWalletApiClient:nostrEventSignatureHandler:eventRepository:"
     MethodKind: "Instance"
-    SwiftName: "createTransactionFeeRepository(primalWalletApiClient:nostrEventSignatureHandler:)"
+    SwiftName: "createTransactionFeeRepository(primalWalletApiClient:nostrEventSignatureHandler:eventRepository:)"
     ResultType: "id<PrimalSharedTransactionFeeRepository> _Nonnull"
     Parameters:
     - Position: 0
       Type: "id<PrimalSharedPrimalApiClient> _Nonnull"
     - Position: 1
       Type: "id<PrimalSharedNostrEventSignatureHandler> _Nonnull"
+    - Position: 2
+      Type: "id<PrimalSharedEventRepository> _Nonnull"
   - Selector: "createTsunamiWalletAccountRepository"
     MethodKind: "Instance"
     SwiftName: "createTsunamiWalletAccountRepository()"
@@ -4112,11 +4075,11 @@ Classes:
   - Name: "confirmationEstimationInMin"
     PropertyKind: "Instance"
     SwiftName: "confirmationEstimationInMin"
-    Type: "int32_t"
+    Type: "PrimalSharedInt * _Nullable"
   - Name: "label"
     PropertyKind: "Instance"
     SwiftName: "label"
-    Type: "NSString * _Nonnull"
+    Type: "NSString * _Nullable"
   - Name: "minAmountInBtc"
     PropertyKind: "Instance"
     SwiftName: "minAmountInBtc"
@@ -4130,23 +4093,23 @@ Classes:
     SwiftName: "txFeeInBtc"
     Type: "NSString * _Nonnull"
   Methods:
-  - Selector: "initWithTierId:label:confirmationEstimationInMin:txFeeInBtc:minAmountInBtc:"
+  - Selector: "initWithTierId:txFeeInBtc:label:confirmationEstimationInMin:minAmountInBtc:"
     MethodKind: "Instance"
-    SwiftName: "init(tierId:label:confirmationEstimationInMin:txFeeInBtc:minAmountInBtc:)"
+    SwiftName: "init(tierId:txFeeInBtc:label:confirmationEstimationInMin:minAmountInBtc:)"
     Parameters:
     - Position: 0
       Type: "NSString * _Nonnull"
     - Position: 1
       Type: "NSString * _Nonnull"
     - Position: 2
-      Type: "int32_t"
+      Type: "NSString * _Nullable"
     - Position: 3
-      Type: "NSString * _Nonnull"
+      Type: "PrimalSharedInt * _Nullable"
     - Position: 4
       Type: "NSString * _Nullable"
-  - Selector: "doCopyTierId:label:confirmationEstimationInMin:txFeeInBtc:minAmountInBtc:"
+  - Selector: "doCopyTierId:txFeeInBtc:label:confirmationEstimationInMin:minAmountInBtc:"
     MethodKind: "Instance"
-    SwiftName: "doCopy(tierId:label:confirmationEstimationInMin:txFeeInBtc:minAmountInBtc:)"
+    SwiftName: "doCopy(tierId:txFeeInBtc:label:confirmationEstimationInMin:minAmountInBtc:)"
     ResultType: "PrimalSharedOnChainTransactionFeeTier * _Nonnull"
     Parameters:
     - Position: 0
@@ -4154,9 +4117,9 @@ Classes:
     - Position: 1
       Type: "NSString * _Nonnull"
     - Position: 2
-      Type: "int32_t"
+      Type: "NSString * _Nullable"
     - Position: 3
-      Type: "NSString * _Nonnull"
+      Type: "PrimalSharedInt * _Nullable"
     - Position: 4
       Type: "NSString * _Nullable"
   - Selector: "isEqual:"
@@ -10277,6 +10240,13 @@ Classes:
     Parameters:
     - Position: 0
       Type: "NSString * _Nonnull"
+  - Selector: "buildNeventFromReplyOrRootNoteTag:"
+    MethodKind: "Class"
+    SwiftName: "buildNeventFromReplyOrRootNoteTag(_:)"
+    ResultType: "PrimalSharedNevent * _Nullable"
+    Parameters:
+    - Position: 0
+      Type: "NSArray<PrimalSharedKotlinx_serialization_jsonJsonElement *> * _Nonnull"
   - Selector: "findAllHashtags:"
     MethodKind: "Class"
     SwiftName: "findAllHashtags(_:)"
@@ -10462,6 +10432,13 @@ Classes:
   - Selector: "getPubkeyFromReplyOrRootTag:"
     MethodKind: "Class"
     SwiftName: "getPubkeyFromReplyOrRootTag(_:)"
+    ResultType: "NSString * _Nullable"
+    Parameters:
+    - Position: 0
+      Type: "NSArray<PrimalSharedKotlinx_serialization_jsonJsonElement *> * _Nonnull"
+  - Selector: "getRelayFromReplyOrRootTag:"
+    MethodKind: "Class"
+    SwiftName: "getRelayFromReplyOrRootTag(_:)"
     ResultType: "NSString * _Nullable"
     Parameters:
     - Position: 0
@@ -29954,6 +29931,18 @@ Classes:
       Type: "PrimalSharedLocalPrimalDatabase * _Nonnull"
     - Position: 3
       Type: "void (^ _Nonnull)(NSError * _Nullable)"
+  - Selector: "persistToDatabaseUserId:database:completionHandler:"
+    MethodKind: "Instance"
+    SwiftName: "__persistToDatabase(userId:database:completionHandler:)"
+    SwiftPrivate: true
+    ResultType: "void"
+    Parameters:
+    - Position: 0
+      Type: "NSString * _Nonnull"
+    - Position: 1
+      Type: "PrimalSharedLocalPrimalDatabase * _Nonnull"
+    - Position: 2
+      Type: "void (^ _Nonnull)(NSError * _Nullable)"
   - Selector: "persistToDatabaseAsTransactionUserId:database:completionHandler:"
     MethodKind: "Instance"
     SwiftName: "__persistToDatabaseAsTransaction(userId:database:completionHandler:)"
@@ -33326,7 +33315,7 @@ Classes:
     - Position: 1
       Type: "NSString * _Nonnull"
     - Position: 2
-      Type: "void (^ _Nonnull)(PrimalSharedAppPermissionAction * _Nullable, NSError * _Nullable)"
+      Type: "void (^ _Nonnull)(PrimalSharedUtilsResult<PrimalSharedAppPermissionAction *> * _Nullable, NSError * _Nullable)"
   - Selector: "observeAllApps"
     MethodKind: "Instance"
     SwiftName: "observeAllApps()"
@@ -42532,41 +42521,9 @@ Classes:
       Type: "NSString * _Nonnull"
     - Position: 3
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__87__fetchDefaultMiningFeeDispatchReceiver:userId:onChainAddress:amountInBtc:suspendHandler:"
+  - Selector: "Skie_Suspend__87__computeWalletIdDispatchReceiver:nsecStr:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__87__fetchDefaultMiningFee(dispatchReceiver:userId:onChainAddress:amountInBtc:suspendHandler:)"
-    Availability: "nonswift"
-    ResultType: "void"
-    Parameters:
-    - Position: 0
-      Type: "id<PrimalSharedTransactionFeeRepository> _Nonnull"
-    - Position: 1
-      Type: "NSString * _Nonnull"
-    - Position: 2
-      Type: "NSString * _Nonnull"
-    - Position: 3
-      Type: "NSString * _Nonnull"
-    - Position: 4
-      Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__88__fetchMiningFeesDispatchReceiver:userId:onChainAddress:amountInBtc:suspendHandler:"
-    MethodKind: "Class"
-    SwiftName: "Skie_Suspend__88__fetchMiningFees(dispatchReceiver:userId:onChainAddress:amountInBtc:suspendHandler:)"
-    Availability: "nonswift"
-    ResultType: "void"
-    Parameters:
-    - Position: 0
-      Type: "id<PrimalSharedTransactionFeeRepository> _Nonnull"
-    - Position: 1
-      Type: "NSString * _Nonnull"
-    - Position: 2
-      Type: "NSString * _Nonnull"
-    - Position: 3
-      Type: "NSString * _Nonnull"
-    - Position: 4
-      Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__89__computeWalletIdDispatchReceiver:nsecStr:suspendHandler:"
-    MethodKind: "Class"
-    SwiftName: "Skie_Suspend__89__computeWalletId(dispatchReceiver:nsecStr:suspendHandler:)"
+    SwiftName: "Skie_Suspend__87__computeWalletId(dispatchReceiver:nsecStr:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -42576,9 +42533,9 @@ Classes:
       Type: "NSString * _Nonnull"
     - Position: 2
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__90__createInvoiceDispatchReceiver:walletId:amountSats:suspendHandler:"
+  - Selector: "Skie_Suspend__88__createInvoiceDispatchReceiver:walletId:amountSats:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__90__createInvoice(dispatchReceiver:walletId:amountSats:suspendHandler:)"
+    SwiftName: "Skie_Suspend__88__createInvoice(dispatchReceiver:walletId:amountSats:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -42590,9 +42547,9 @@ Classes:
       Type: "uint64_t"
     - Position: 3
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__91__createOnChainDepositAddressDispatchReceiver:walletId:suspendHandler:"
+  - Selector: "Skie_Suspend__89__createOnChainDepositAddressDispatchReceiver:walletId:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__91__createOnChainDepositAddress(dispatchReceiver:walletId:suspendHandler:)"
+    SwiftName: "Skie_Suspend__89__createOnChainDepositAddress(dispatchReceiver:walletId:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -42602,9 +42559,9 @@ Classes:
       Type: "NSString * _Nonnull"
     - Position: 2
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__92__createWalletDispatchReceiver:nsecStr:suspendHandler:"
+  - Selector: "Skie_Suspend__90__createWalletDispatchReceiver:nsecStr:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__92__createWallet(dispatchReceiver:nsecStr:suspendHandler:)"
+    SwiftName: "Skie_Suspend__90__createWallet(dispatchReceiver:nsecStr:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -42614,9 +42571,9 @@ Classes:
       Type: "NSString * _Nonnull"
     - Position: 2
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__93__destroyWalletDispatchReceiver:walletId:suspendHandler:"
+  - Selector: "Skie_Suspend__91__destroyWalletDispatchReceiver:walletId:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__93__destroyWallet(dispatchReceiver:walletId:suspendHandler:)"
+    SwiftName: "Skie_Suspend__91__destroyWallet(dispatchReceiver:walletId:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -42626,9 +42583,9 @@ Classes:
       Type: "NSString * _Nonnull"
     - Position: 2
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__94__estimateOnChainWithdrawalFeesDispatchReceiver:walletId:withdrawalAddress:amountSats:suspendHandler:"
+  - Selector: "Skie_Suspend__92__estimateOnChainWithdrawalFeesDispatchReceiver:walletId:withdrawalAddress:amountSats:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__94__estimateOnChainWithdrawalFees(dispatchReceiver:walletId:withdrawalAddress:amountSats:suspendHandler:)"
+    SwiftName: "Skie_Suspend__92__estimateOnChainWithdrawalFees(dispatchReceiver:walletId:withdrawalAddress:amountSats:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -42642,9 +42599,9 @@ Classes:
       Type: "PrimalSharedULong * _Nullable"
     - Position: 4
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__95__getBalanceDispatchReceiver:walletId:suspendHandler:"
+  - Selector: "Skie_Suspend__93__getBalanceDispatchReceiver:walletId:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__95__getBalance(dispatchReceiver:walletId:suspendHandler:)"
+    SwiftName: "Skie_Suspend__93__getBalance(dispatchReceiver:walletId:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -42654,9 +42611,9 @@ Classes:
       Type: "NSString * _Nonnull"
     - Position: 2
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__96__getTransfersDispatchReceiver:walletId:offset:limit:order:suspendHandler:"
+  - Selector: "Skie_Suspend__94__getTransfersDispatchReceiver:walletId:offset:limit:order:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__96__getTransfers(dispatchReceiver:walletId:offset:limit:order:suspendHandler:)"
+    SwiftName: "Skie_Suspend__94__getTransfers(dispatchReceiver:walletId:offset:limit:order:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -42672,9 +42629,9 @@ Classes:
       Type: "NSString * _Nonnull"
     - Position: 5
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__97__getWalletInfoDispatchReceiver:walletId:suspendHandler:"
+  - Selector: "Skie_Suspend__95__getWalletInfoDispatchReceiver:walletId:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__97__getWalletInfo(dispatchReceiver:walletId:suspendHandler:)"
+    SwiftName: "Skie_Suspend__95__getWalletInfo(dispatchReceiver:walletId:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -42684,9 +42641,9 @@ Classes:
       Type: "NSString * _Nonnull"
     - Position: 2
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__98__payLightningDispatchReceiver:walletId:invoice:suspendHandler:"
+  - Selector: "Skie_Suspend__96__payLightningDispatchReceiver:walletId:invoice:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__98__payLightning(dispatchReceiver:walletId:invoice:suspendHandler:)"
+    SwiftName: "Skie_Suspend__96__payLightning(dispatchReceiver:walletId:invoice:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -42698,9 +42655,9 @@ Classes:
       Type: "NSString * _Nonnull"
     - Position: 3
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__99__payOnChainDispatchReceiver:walletId:withdrawalAddress:feePriority:amountSats:suspendHandler:"
+  - Selector: "Skie_Suspend__97__payOnChainDispatchReceiver:walletId:withdrawalAddress:feePriority:amountSats:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__99__payOnChain(dispatchReceiver:walletId:withdrawalAddress:feePriority:amountSats:suspendHandler:)"
+    SwiftName: "Skie_Suspend__97__payOnChain(dispatchReceiver:walletId:withdrawalAddress:feePriority:amountSats:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -42716,9 +42673,9 @@ Classes:
       Type: "PrimalSharedULong * _Nullable"
     - Position: 5
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__100__safeWithdrawDispatchReceiver:walletId:feeRate:suspendHandler:"
+  - Selector: "Skie_Suspend__98__safeWithdrawDispatchReceiver:walletId:feeRate:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__100__safeWithdraw(dispatchReceiver:walletId:feeRate:suspendHandler:)"
+    SwiftName: "Skie_Suspend__98__safeWithdraw(dispatchReceiver:walletId:feeRate:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -42730,9 +42687,9 @@ Classes:
       Type: "uint64_t"
     - Position: 3
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__101__fetchWalletAccountInfoDispatchReceiver:userId:walletId:suspendHandler:"
+  - Selector: "Skie_Suspend__99__fetchWalletAccountInfoDispatchReceiver:userId:walletId:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__101__fetchWalletAccountInfo(dispatchReceiver:userId:walletId:suspendHandler:)"
+    SwiftName: "Skie_Suspend__99__fetchWalletAccountInfo(dispatchReceiver:userId:walletId:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -42744,9 +42701,9 @@ Classes:
       Type: "NSString * _Nonnull"
     - Position: 3
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__102__initializeWalletDispatchReceiver:userId:walletKey:suspendHandler:"
+  - Selector: "Skie_Suspend__100__initializeWalletDispatchReceiver:userId:walletKey:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__102__initializeWallet(dispatchReceiver:userId:walletKey:suspendHandler:)"
+    SwiftName: "Skie_Suspend__100__initializeWallet(dispatchReceiver:userId:walletKey:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -42758,9 +42715,9 @@ Classes:
       Type: "NSString * _Nonnull"
     - Position: 3
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__103__terminateWalletDispatchReceiver:walletId:suspendHandler:"
+  - Selector: "Skie_Suspend__101__terminateWalletDispatchReceiver:walletId:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__103__terminateWallet(dispatchReceiver:walletId:suspendHandler:)"
+    SwiftName: "Skie_Suspend__101__terminateWallet(dispatchReceiver:walletId:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -42770,9 +42727,9 @@ Classes:
       Type: "NSString * _Nonnull"
     - Position: 2
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__104__clearActiveWalletDispatchReceiver:userId:suspendHandler:"
+  - Selector: "Skie_Suspend__102__clearActiveWalletDispatchReceiver:userId:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__104__clearActiveWallet(dispatchReceiver:userId:suspendHandler:)"
+    SwiftName: "Skie_Suspend__102__clearActiveWallet(dispatchReceiver:userId:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -42782,9 +42739,9 @@ Classes:
       Type: "NSString * _Nonnull"
     - Position: 2
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__105__findLastUsedWalletDispatchReceiver:userId:type:suspendHandler:"
+  - Selector: "Skie_Suspend__103__findLastUsedWalletDispatchReceiver:userId:type:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__105__findLastUsedWallet(dispatchReceiver:userId:type:suspendHandler:)"
+    SwiftName: "Skie_Suspend__103__findLastUsedWallet(dispatchReceiver:userId:type:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -42796,9 +42753,9 @@ Classes:
       Type: "PrimalSharedWalletType * _Nonnull"
     - Position: 3
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__106__getActiveWalletDispatchReceiver:userId:suspendHandler:"
+  - Selector: "Skie_Suspend__104__getActiveWalletDispatchReceiver:userId:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__106__getActiveWallet(dispatchReceiver:userId:suspendHandler:)"
+    SwiftName: "Skie_Suspend__104__getActiveWallet(dispatchReceiver:userId:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -42808,9 +42765,9 @@ Classes:
       Type: "NSString * _Nonnull"
     - Position: 2
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__107__setActiveWalletDispatchReceiver:userId:walletId:suspendHandler:"
+  - Selector: "Skie_Suspend__105__setActiveWalletDispatchReceiver:userId:walletId:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__107__setActiveWallet(dispatchReceiver:userId:walletId:suspendHandler:)"
+    SwiftName: "Skie_Suspend__105__setActiveWallet(dispatchReceiver:userId:walletId:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -42822,9 +42779,9 @@ Classes:
       Type: "NSString * _Nonnull"
     - Position: 3
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__108__fetchEventActionsDispatchReceiver:eventId:kind:suspendHandler:"
+  - Selector: "Skie_Suspend__106__fetchEventActionsDispatchReceiver:eventId:kind:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__108__fetchEventActions(dispatchReceiver:eventId:kind:suspendHandler:)"
+    SwiftName: "Skie_Suspend__106__fetchEventActions(dispatchReceiver:eventId:kind:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -42836,9 +42793,9 @@ Classes:
       Type: "int32_t"
     - Position: 3
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__109__fetchEventZapsDispatchReceiver:userId:eventId:limit:suspendHandler:"
+  - Selector: "Skie_Suspend__107__fetchEventZapsDispatchReceiver:userId:eventId:limit:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__109__fetchEventZaps(dispatchReceiver:userId:eventId:limit:suspendHandler:)"
+    SwiftName: "Skie_Suspend__107__fetchEventZaps(dispatchReceiver:userId:eventId:limit:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -42852,9 +42809,9 @@ Classes:
       Type: "int32_t"
     - Position: 4
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__110__fetchReplaceableEventDispatchReceiver:naddr:suspendHandler:"
+  - Selector: "Skie_Suspend__108__fetchReplaceableEventDispatchReceiver:naddr:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__110__fetchReplaceableEvent(dispatchReceiver:naddr:suspendHandler:)"
+    SwiftName: "Skie_Suspend__108__fetchReplaceableEvent(dispatchReceiver:naddr:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -42864,9 +42821,9 @@ Classes:
       Type: "PrimalSharedNaddr * _Nonnull"
     - Position: 2
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__111__fetchReplaceableEventsDispatchReceiver:naddrs:suspendHandler:"
+  - Selector: "Skie_Suspend__109__fetchReplaceableEventsDispatchReceiver:naddrs:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__111__fetchReplaceableEvents(dispatchReceiver:naddrs:suspendHandler:)"
+    SwiftName: "Skie_Suspend__109__fetchReplaceableEvents(dispatchReceiver:naddrs:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -42876,9 +42833,9 @@ Classes:
       Type: "NSArray<PrimalSharedNaddr *> * _Nonnull"
     - Position: 2
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__112__getZapReceiptsDispatchReceiver:invoices:suspendHandler:"
+  - Selector: "Skie_Suspend__110__getZapReceiptsDispatchReceiver:invoices:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__112__getZapReceipts(dispatchReceiver:invoices:suspendHandler:)"
+    SwiftName: "Skie_Suspend__110__getZapReceipts(dispatchReceiver:invoices:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -42888,9 +42845,9 @@ Classes:
       Type: "NSArray<NSString *> * _Nonnull"
     - Position: 2
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__113__observeZapsByEventIdDispatchReceiver:eventId:suspendHandler:"
+  - Selector: "Skie_Suspend__111__observeZapsByEventIdDispatchReceiver:eventId:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__113__observeZapsByEventId(dispatchReceiver:eventId:suspendHandler:)"
+    SwiftName: "Skie_Suspend__111__observeZapsByEventId(dispatchReceiver:eventId:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -42900,9 +42857,9 @@ Classes:
       Type: "NSString * _Nonnull"
     - Position: 2
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__114__fetchFollowersDispatchReceiver:profileId:suspendHandler:"
+  - Selector: "Skie_Suspend__112__fetchFollowersDispatchReceiver:profileId:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__114__fetchFollowers(dispatchReceiver:profileId:suspendHandler:)"
+    SwiftName: "Skie_Suspend__112__fetchFollowers(dispatchReceiver:profileId:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -42912,9 +42869,9 @@ Classes:
       Type: "NSString * _Nonnull"
     - Position: 2
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__115__fetchFollowingDispatchReceiver:profileId:suspendHandler:"
+  - Selector: "Skie_Suspend__113__fetchFollowingDispatchReceiver:profileId:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__115__fetchFollowing(dispatchReceiver:profileId:suspendHandler:)"
+    SwiftName: "Skie_Suspend__113__fetchFollowing(dispatchReceiver:profileId:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -42924,9 +42881,9 @@ Classes:
       Type: "NSString * _Nonnull"
     - Position: 2
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__116__fetchMissingProfilesDispatchReceiver:profileIds:suspendHandler:"
+  - Selector: "Skie_Suspend__114__fetchMissingProfilesDispatchReceiver:profileIds:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__116__fetchMissingProfiles(dispatchReceiver:profileIds:suspendHandler:)"
+    SwiftName: "Skie_Suspend__114__fetchMissingProfiles(dispatchReceiver:profileIds:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -42936,9 +42893,9 @@ Classes:
       Type: "NSArray<NSString *> * _Nonnull"
     - Position: 2
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__117__fetchProfileDispatchReceiver:profileId:suspendHandler:"
+  - Selector: "Skie_Suspend__115__fetchProfileDispatchReceiver:profileId:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__117__fetchProfile(dispatchReceiver:profileId:suspendHandler:)"
+    SwiftName: "Skie_Suspend__115__fetchProfile(dispatchReceiver:profileId:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -42948,9 +42905,9 @@ Classes:
       Type: "NSString * _Nonnull"
     - Position: 2
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__118__fetchProfileIdDispatchReceiver:primalName:suspendHandler:"
+  - Selector: "Skie_Suspend__116__fetchProfileIdDispatchReceiver:primalName:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__118__fetchProfileId(dispatchReceiver:primalName:suspendHandler:)"
+    SwiftName: "Skie_Suspend__116__fetchProfileId(dispatchReceiver:primalName:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -42960,9 +42917,9 @@ Classes:
       Type: "NSString * _Nonnull"
     - Position: 2
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__119__fetchProfilesDispatchReceiver:profileIds:suspendHandler:"
+  - Selector: "Skie_Suspend__117__fetchProfilesDispatchReceiver:profileIds:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__119__fetchProfiles(dispatchReceiver:profileIds:suspendHandler:)"
+    SwiftName: "Skie_Suspend__117__fetchProfiles(dispatchReceiver:profileIds:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -42972,9 +42929,9 @@ Classes:
       Type: "NSArray<NSString *> * _Nonnull"
     - Position: 2
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__120__fetchUserProfileFollowedByDispatchReceiver:profileId:userId:limit:suspendHandler:"
+  - Selector: "Skie_Suspend__118__fetchUserProfileFollowedByDispatchReceiver:profileId:userId:limit:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__120__fetchUserProfileFollowedBy(dispatchReceiver:profileId:userId:limit:suspendHandler:)"
+    SwiftName: "Skie_Suspend__118__fetchUserProfileFollowedBy(dispatchReceiver:profileId:userId:limit:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -42988,9 +42945,9 @@ Classes:
       Type: "int32_t"
     - Position: 4
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__121__findProfileDataDispatchReceiver:profileIds:suspendHandler:"
+  - Selector: "Skie_Suspend__119__findProfileDataDispatchReceiver:profileIds:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__121__findProfileData(dispatchReceiver:profileIds:suspendHandler:)"
+    SwiftName: "Skie_Suspend__119__findProfileData(dispatchReceiver:profileIds:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -43000,9 +42957,9 @@ Classes:
       Type: "NSArray<NSString *> * _Nonnull"
     - Position: 2
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__122__findProfileDataOrNullDispatchReceiver:profileId:suspendHandler:"
+  - Selector: "Skie_Suspend__120__findProfileDataOrNullDispatchReceiver:profileId:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__122__findProfileDataOrNull(dispatchReceiver:profileId:suspendHandler:)"
+    SwiftName: "Skie_Suspend__120__findProfileDataOrNull(dispatchReceiver:profileId:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -43012,9 +42969,9 @@ Classes:
       Type: "NSString * _Nonnull"
     - Position: 2
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__123__findProfileStatsDispatchReceiver:profileIds:suspendHandler:"
+  - Selector: "Skie_Suspend__121__findProfileStatsDispatchReceiver:profileIds:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__123__findProfileStats(dispatchReceiver:profileIds:suspendHandler:)"
+    SwiftName: "Skie_Suspend__121__findProfileStats(dispatchReceiver:profileIds:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -43024,9 +42981,9 @@ Classes:
       Type: "NSArray<NSString *> * _Nonnull"
     - Position: 2
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__124__isUserFollowingDispatchReceiver:userId:targetUserId:suspendHandler:"
+  - Selector: "Skie_Suspend__122__isUserFollowingDispatchReceiver:userId:targetUserId:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__124__isUserFollowing(dispatchReceiver:userId:targetUserId:suspendHandler:)"
+    SwiftName: "Skie_Suspend__122__isUserFollowing(dispatchReceiver:userId:targetUserId:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -43038,9 +42995,9 @@ Classes:
       Type: "NSString * _Nonnull"
     - Position: 3
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__125__reportAbuseDispatchReceiver:userId:reportType:profileId:eventId:articleId:suspendHandler:"
+  - Selector: "Skie_Suspend__123__reportAbuseDispatchReceiver:userId:reportType:profileId:eventId:articleId:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__125__reportAbuse(dispatchReceiver:userId:reportType:profileId:eventId:articleId:suspendHandler:)"
+    SwiftName: "Skie_Suspend__123__reportAbuse(dispatchReceiver:userId:reportType:profileId:eventId:articleId:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -43058,9 +43015,9 @@ Classes:
       Type: "NSString * _Nullable"
     - Position: 6
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__126__closeSubscriptionDispatchReceiver:subscriptionId:suspendHandler:"
+  - Selector: "Skie_Suspend__124__closeSubscriptionDispatchReceiver:subscriptionId:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__126__closeSubscription(dispatchReceiver:subscriptionId:suspendHandler:)"
+    SwiftName: "Skie_Suspend__124__closeSubscription(dispatchReceiver:subscriptionId:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -43070,9 +43027,9 @@ Classes:
       Type: "NSString * _Nonnull"
     - Position: 2
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__127__queryDispatchReceiver:message:suspendHandler:"
+  - Selector: "Skie_Suspend__125__queryDispatchReceiver:message:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__127__query(dispatchReceiver:message:suspendHandler:)"
+    SwiftName: "Skie_Suspend__125__query(dispatchReceiver:message:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -43082,23 +43039,9 @@ Classes:
       Type: "PrimalSharedPrimalCacheFilter * _Nonnull"
     - Position: 2
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__128__subscribeDispatchReceiver:subscriptionId:message:suspendHandler:"
+  - Selector: "Skie_Suspend__126__subscribeDispatchReceiver:subscriptionId:message:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__128__subscribe(dispatchReceiver:subscriptionId:message:suspendHandler:)"
-    Availability: "nonswift"
-    ResultType: "void"
-    Parameters:
-    - Position: 0
-      Type: "id<PrimalSharedPrimalApiClient> _Nonnull"
-    - Position: 1
-      Type: "NSString * _Nonnull"
-    - Position: 2
-      Type: "PrimalSharedPrimalCacheFilter * _Nonnull"
-    - Position: 3
-      Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__129__subscribeBufferedDispatchReceiver:subscriptionId:message:suspendHandler:"
-    MethodKind: "Class"
-    SwiftName: "Skie_Suspend__129__subscribeBuffered(dispatchReceiver:subscriptionId:message:suspendHandler:)"
+    SwiftName: "Skie_Suspend__126__subscribe(dispatchReceiver:subscriptionId:message:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -43110,9 +43053,23 @@ Classes:
       Type: "PrimalSharedPrimalCacheFilter * _Nonnull"
     - Position: 3
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__130__subscribeBufferedOnInactivityDispatchReceiver:subscriptionId:message:inactivityTimeout:suspendHandler:"
+  - Selector: "Skie_Suspend__127__subscribeBufferedDispatchReceiver:subscriptionId:message:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__130__subscribeBufferedOnInactivity(dispatchReceiver:subscriptionId:message:inactivityTimeout:suspendHandler:)"
+    SwiftName: "Skie_Suspend__127__subscribeBuffered(dispatchReceiver:subscriptionId:message:suspendHandler:)"
+    Availability: "nonswift"
+    ResultType: "void"
+    Parameters:
+    - Position: 0
+      Type: "id<PrimalSharedPrimalApiClient> _Nonnull"
+    - Position: 1
+      Type: "NSString * _Nonnull"
+    - Position: 2
+      Type: "PrimalSharedPrimalCacheFilter * _Nonnull"
+    - Position: 3
+      Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
+  - Selector: "Skie_Suspend__128__subscribeBufferedOnInactivityDispatchReceiver:subscriptionId:message:inactivityTimeout:suspendHandler:"
+    MethodKind: "Class"
+    SwiftName: "Skie_Suspend__128__subscribeBufferedOnInactivity(dispatchReceiver:subscriptionId:message:inactivityTimeout:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -43125,6 +43082,42 @@ Classes:
     - Position: 3
       Type: "int64_t"
     - Position: 4
+      Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
+  - Selector: "Skie_Suspend__129__fetchDefaultMiningFeeDispatchReceiver:userId:walletId:onChainAddress:amountInBtc:suspendHandler:"
+    MethodKind: "Class"
+    SwiftName: "Skie_Suspend__129__fetchDefaultMiningFee(dispatchReceiver:userId:walletId:onChainAddress:amountInBtc:suspendHandler:)"
+    Availability: "nonswift"
+    ResultType: "void"
+    Parameters:
+    - Position: 0
+      Type: "id<PrimalSharedTransactionFeeRepository> _Nonnull"
+    - Position: 1
+      Type: "NSString * _Nonnull"
+    - Position: 2
+      Type: "NSString * _Nonnull"
+    - Position: 3
+      Type: "NSString * _Nonnull"
+    - Position: 4
+      Type: "NSString * _Nonnull"
+    - Position: 5
+      Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
+  - Selector: "Skie_Suspend__130__fetchMiningFeesDispatchReceiver:userId:walletId:onChainAddress:amountInBtc:suspendHandler:"
+    MethodKind: "Class"
+    SwiftName: "Skie_Suspend__130__fetchMiningFees(dispatchReceiver:userId:walletId:onChainAddress:amountInBtc:suspendHandler:)"
+    Availability: "nonswift"
+    ResultType: "void"
+    Parameters:
+    - Position: 0
+      Type: "id<PrimalSharedTransactionFeeRepository> _Nonnull"
+    - Position: 1
+      Type: "NSString * _Nonnull"
+    - Position: 2
+      Type: "NSString * _Nonnull"
+    - Position: 3
+      Type: "NSString * _Nonnull"
+    - Position: 4
+      Type: "NSString * _Nonnull"
+    - Position: 5
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
   - Selector: "Skie_Suspend__131__initializeDispatchReceiver:suspendHandler:"
     MethodKind: "Class"
@@ -48004,9 +47997,9 @@ Classes:
       Type: "PrimalSharedLocalPrimalDatabase * _Nonnull"
     - Position: 4
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__509__persistToDatabaseAsTransactionExtensionReceiver:userId:database:suspendHandler:"
+  - Selector: "Skie_Suspend__509__persistToDatabaseExtensionReceiver:userId:database:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__509__persistToDatabaseAsTransaction(extensionReceiver:userId:database:suspendHandler:)"
+    SwiftName: "Skie_Suspend__509__persistToDatabase(extensionReceiver:userId:database:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -48018,9 +48011,23 @@ Classes:
       Type: "PrimalSharedLocalPrimalDatabase * _Nonnull"
     - Position: 3
       Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
-  - Selector: "Skie_Suspend__510__persistToDatabaseAsTransactionExtensionReceiver:database:suspendHandler:"
+  - Selector: "Skie_Suspend__510__persistToDatabaseAsTransactionExtensionReceiver:userId:database:suspendHandler:"
     MethodKind: "Class"
-    SwiftName: "Skie_Suspend__510__persistToDatabaseAsTransaction(extensionReceiver:database:suspendHandler:)"
+    SwiftName: "Skie_Suspend__510__persistToDatabaseAsTransaction(extensionReceiver:userId:database:suspendHandler:)"
+    Availability: "nonswift"
+    ResultType: "void"
+    Parameters:
+    - Position: 0
+      Type: "PrimalSharedRemoteArticleResponse * _Nonnull"
+    - Position: 1
+      Type: "NSString * _Nonnull"
+    - Position: 2
+      Type: "PrimalSharedLocalPrimalDatabase * _Nonnull"
+    - Position: 3
+      Type: "PrimalSharedSkie_SuspendHandler * _Nonnull"
+  - Selector: "Skie_Suspend__511__persistToDatabaseAsTransactionExtensionReceiver:database:suspendHandler:"
+    MethodKind: "Class"
+    SwiftName: "Skie_Suspend__511__persistToDatabaseAsTransaction(extensionReceiver:database:suspendHandler:)"
     Availability: "nonswift"
     ResultType: "void"
     Parameters:
@@ -48718,37 +48725,6 @@ Protocols:
       Type: "NSString * _Nonnull"
     - Position: 2
       Type: "void (^ _Nonnull)(NSError * _Nullable)"
-- Name: "PrimalSharedTransactionFeeRepository"
-  SwiftName: "TransactionFeeRepository"
-  Methods:
-  - Selector: "fetchDefaultMiningFeeUserId:onChainAddress:amountInBtc:completionHandler:"
-    MethodKind: "Instance"
-    SwiftName: "__fetchDefaultMiningFee(userId:onChainAddress:amountInBtc:completionHandler:)"
-    SwiftPrivate: true
-    ResultType: "void"
-    Parameters:
-    - Position: 0
-      Type: "NSString * _Nonnull"
-    - Position: 1
-      Type: "NSString * _Nonnull"
-    - Position: 2
-      Type: "NSString * _Nonnull"
-    - Position: 3
-      Type: "void (^ _Nonnull)(PrimalSharedOnChainTransactionFeeTier * _Nullable_result, NSError * _Nullable)"
-  - Selector: "fetchMiningFeesUserId:onChainAddress:amountInBtc:completionHandler:"
-    MethodKind: "Instance"
-    SwiftName: "__fetchMiningFees(userId:onChainAddress:amountInBtc:completionHandler:)"
-    SwiftPrivate: true
-    ResultType: "void"
-    Parameters:
-    - Position: 0
-      Type: "NSString * _Nonnull"
-    - Position: 1
-      Type: "NSString * _Nonnull"
-    - Position: 2
-      Type: "NSString * _Nonnull"
-    - Position: 3
-      Type: "void (^ _Nonnull)(NSArray<PrimalSharedOnChainTransactionFeeTier *> * _Nullable, NSError * _Nullable)"
 - Name: "PrimalSharedTsunamiWalletAccountRepository"
   SwiftName: "TsunamiWalletAccountRepository"
   Methods:
@@ -48854,6 +48830,41 @@ Protocols:
       Type: "NSString * _Nonnull"
     - Position: 2
       Type: "void (^ _Nonnull)(NSError * _Nullable)"
+- Name: "PrimalSharedTransactionFeeRepository"
+  SwiftName: "TransactionFeeRepository"
+  Methods:
+  - Selector: "fetchDefaultMiningFeeUserId:walletId:onChainAddress:amountInBtc:completionHandler:"
+    MethodKind: "Instance"
+    SwiftName: "__fetchDefaultMiningFee(userId:walletId:onChainAddress:amountInBtc:completionHandler:)"
+    SwiftPrivate: true
+    ResultType: "void"
+    Parameters:
+    - Position: 0
+      Type: "NSString * _Nonnull"
+    - Position: 1
+      Type: "NSString * _Nonnull"
+    - Position: 2
+      Type: "NSString * _Nonnull"
+    - Position: 3
+      Type: "NSString * _Nonnull"
+    - Position: 4
+      Type: "void (^ _Nonnull)(PrimalSharedOnChainTransactionFeeTier * _Nullable_result, NSError * _Nullable)"
+  - Selector: "fetchMiningFeesUserId:walletId:onChainAddress:amountInBtc:completionHandler:"
+    MethodKind: "Instance"
+    SwiftName: "__fetchMiningFees(userId:walletId:onChainAddress:amountInBtc:completionHandler:)"
+    SwiftPrivate: true
+    ResultType: "void"
+    Parameters:
+    - Position: 0
+      Type: "NSString * _Nonnull"
+    - Position: 1
+      Type: "NSString * _Nonnull"
+    - Position: 2
+      Type: "NSString * _Nonnull"
+    - Position: 3
+      Type: "NSString * _Nonnull"
+    - Position: 4
+      Type: "void (^ _Nonnull)(NSArray<PrimalSharedOnChainTransactionFeeTier *> * _Nullable, NSError * _Nullable)"
 - Name: "PrimalSharedActiveWalletBalanceSyncer"
   SwiftName: "ActiveWalletBalanceSyncer"
   Methods:
@@ -56200,7 +56211,7 @@ Protocols:
     - Position: 1
       Type: "NSString * _Nonnull"
     - Position: 2
-      Type: "void (^ _Nonnull)(PrimalSharedAppPermissionAction * _Nullable, NSError * _Nullable)"
+      Type: "void (^ _Nonnull)(PrimalSharedUtilsResult<PrimalSharedAppPermissionAction *> * _Nullable, NSError * _Nullable)"
   - Selector: "observeAllApps"
     MethodKind: "Instance"
     SwiftName: "observeAllApps()"

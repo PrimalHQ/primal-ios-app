@@ -816,14 +816,6 @@ extension PrimalShared.PrimalWalletNwcRepository {
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
   public func revokeConnection(userId: Swift.String, nwcPubkey: Swift.String) async throws
 }
-extension PrimalShared.TransactionFeeRepository {
-  #if compiler(>=5.3) && $NonescapableTypes
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func fetchDefaultMiningFee(userId: Swift.String, onChainAddress: Swift.String, amountInBtc: Swift.String) async throws -> PrimalShared.OnChainTransactionFeeTier?
-  #endif
-  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func fetchMiningFees(userId: Swift.String, onChainAddress: Swift.String, amountInBtc: Swift.String) async throws -> [PrimalShared.OnChainTransactionFeeTier]
-}
 extension PrimalShared.SdkTsunamiWalletSdk {
   #if compiler(>=5.3) && $NonescapableTypes
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
@@ -955,6 +947,14 @@ extension PrimalShared.PrimalApiClient {
   public func subscribeBuffered(subscriptionId: Swift.String, message: PrimalShared.PrimalCacheFilter) async throws -> any PrimalShared.Kotlinx_coroutines_coreFlow
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
   public func subscribeBufferedOnInactivity(subscriptionId: Swift.String, message: PrimalShared.PrimalCacheFilter, inactivityTimeout: Swift.Int64) async throws -> any PrimalShared.Kotlinx_coroutines_coreFlow
+}
+extension PrimalShared.TransactionFeeRepository {
+  #if compiler(>=5.3) && $NonescapableTypes
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func fetchDefaultMiningFee(userId: Swift.String, walletId: Swift.String, onChainAddress: Swift.String, amountInBtc: Swift.String) async throws -> PrimalShared.OnChainTransactionFeeTier?
+  #endif
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func fetchMiningFees(userId: Swift.String, walletId: Swift.String, onChainAddress: Swift.String, amountInBtc: Swift.String) async throws -> [PrimalShared.OnChainTransactionFeeTier]
 }
 extension PrimalShared.Skie.PagingCommon.RemoteMediator {
   public struct __Suspend<Key, Value> where Key : AnyObject, Value : AnyObject {
@@ -1894,7 +1894,7 @@ extension PrimalShared.LocalAppRepository {
   public func getApp(identifier: Swift.String) async throws -> PrimalShared.LocalApp?
   #endif
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
-  public func getPermissionActionForMethod(appIdentifier: Swift.String, permissionId: Swift.String) async throws -> PrimalShared.AppPermissionAction
+  public func getPermissionActionForMethod(appIdentifier: Swift.String, permissionId: Swift.String) async throws -> PrimalShared.UtilsResult<PrimalShared.__AppPermissionAction>
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
   public func updateTrustLevel(identifier: Swift.String, trustLevel: PrimalShared.TrustLevel) async throws -> PrimalShared.UtilsResult<PrimalShared.KotlinUnit>
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
@@ -2069,6 +2069,8 @@ extension PrimalShared.RemoteArticleHighlightsResponse {
 extension PrimalShared.RemoteArticleResponse {
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
   public func persistArticleCommentsToDatabase(articleId: Swift.String, articleAuthorId: Swift.String, database: PrimalShared.LocalPrimalDatabase) async throws
+  @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
+  public func persistToDatabase(userId: Swift.String, database: PrimalShared.LocalPrimalDatabase) async throws
   @available(iOS 13, macOS 10.15, watchOS 6, tvOS 13, *)
   public func persistToDatabaseAsTransaction(userId: Swift.String, database: PrimalShared.LocalPrimalDatabase) async throws
 }
