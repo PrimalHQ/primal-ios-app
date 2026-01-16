@@ -136,7 +136,7 @@ class NWCWalletManager {
             
             guard let walletID = try await walletAccountRepo.getActiveWallet(userId: pubkey)?.walletId else { return }
             
-            let balance = try await walletRepo.fetchWalletBalance(walletId: walletID).getOrThrow()
+            let balance = try await walletRepo.fetchWalletBalance(walletId: walletID).getOrNull()
             
             
 //            walletRepo.latestTransactions(walletId: walletID, walletType: .nwc).toPublisher()
@@ -238,7 +238,7 @@ extension NWCWalletManager: WalletImplementation {
         
         Task { @MainActor in
             do {
-                _ = try await walletRepo.fetchWalletBalance(walletId: walletID).getOrThrow()
+                _ = try await walletRepo.fetchWalletBalance(walletId: walletID).getOrNull()
             } catch {
                 print(error)
             }

@@ -488,7 +488,7 @@ extension ProfileViewController: MediaTripleCellDelegate {
 }
 
 extension ProfileViewController: LivePreviewFeedCellDelegate {
-    func didSelectLive(_ live: ProcessedLiveEvent, user: ParsedUser) {
-        present(LiveVideoPlayerController(live: .init(event: live, user: user)), animated: true)
+    func didSelectLive(_ live: ParsedLiveEvent) {
+        present(LiveVideoPlayerController(live: live), animated: true)
     }
 }

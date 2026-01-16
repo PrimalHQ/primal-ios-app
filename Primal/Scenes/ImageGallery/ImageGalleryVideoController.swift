@@ -47,6 +47,21 @@ class ImageGalleryVideoController: UIViewController, ImageGalleryMediaController
         background.backgroundColor = .black
     }
     
+    var wasMuted = true
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+    
+        // TODO: add VideoPlaybackManager.fullScreenMuteOverride if this turns out buggy
+        wasMuted = VideoPlaybackManager.instance.isMuted
+        VideoPlaybackManager.instance.isMuted = false
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+        VideoPlaybackManager.instance.isMuted = wasMuted
+    }
+    
     @objc func didPan(_ sender: UIPanGestureRecognizer) {
         let trans = sender.translation(in: view)
         

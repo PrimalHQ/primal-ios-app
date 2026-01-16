@@ -132,6 +132,7 @@ final class WalletHomeViewController: UIViewController, Themeable {
     }
     
     func updateBuySatsButton() {
+        return // Hide the button
         guard WalletManager.instance.primal?.userHasWallet == true else {
             navigationItem.rightBarButtonItem = nil
             return
@@ -339,8 +340,8 @@ private extension WalletHomeViewController {
         }
         .store(in: &cancellables)
         
-        let isPoorPublisher = WalletManager.instance.$balance.map { $0 < 1000 }.removeDuplicates()
-        let shouldShowBuySatsPublisher = Publishers.CombineLatest(isPoorPublisher, WalletManager.instance.$didJustCreateWallet).map { $0 && $1 }
+//        let isPoorPublisher = WalletManager.instance.$balance.map { $0 < 1000 }.removeDuplicates()
+        let shouldShowBuySatsPublisher = Just(false)//Publishers.CombineLatest(isPoorPublisher, WalletManager.instance.$didJustCreateWallet).map { $0 && $1 }
         
         Publishers.CombineLatest4(
             WalletManager.instance.$userHasWallet,

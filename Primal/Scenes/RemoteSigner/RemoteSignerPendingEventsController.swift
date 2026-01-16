@@ -29,7 +29,7 @@ class RemoteSignerPendingEventsController: UIViewController {
         alwaysSwitch.isOn = true
         super.init(nibName: nil, bundle: nil)
         
-        preferredContentSize = .init(width: 400, height: 290)
+        preferredContentSize = .init(width: 400, height: 414)
     }
     
     required init?(coder: NSCoder) {
@@ -106,13 +106,13 @@ class RemoteSignerPendingEventsController: UIViewController {
             }
             .store(in: &cancellables)
         
-        $allEvents.map({ $0.map(\.sessionId) }).withPrevious()
+        $allEvents.map({ $0.map(\.eventId) }).withPrevious()
             .sink { [weak self] oldEventsIds, eventIds in
                 guard let self else { return }
                 
                 selectedEvents = selectedEvents
                     .filter { eventIds.contains($0) } // Remove events that are no longer in the list
-                    .union(eventIds.filter { oldEventsIds.contains($0) }) // Add events that weren't previously on the list
+                    .union(eventIds.filter { !oldEventsIds.contains($0) }) // Add events that weren't previously on the list
                 
                 let prefSize = CGSize(width: 400, height: 350 + 64 * eventIds.count)
                 preferredContentSize = prefSize

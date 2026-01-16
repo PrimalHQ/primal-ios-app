@@ -9,6 +9,7 @@ import Combine
 import UIKit
 import GenericJSON
 import PrimalShared
+import Kingfisher
 
 enum AppSignTrustLevel {
     case full, medium, low
@@ -98,7 +99,7 @@ class RemoteSignerSignInController: UIViewController {
         let iconView = UIImageView(image: .create(letter: String(titleLabel.text?.first ?? "A"), size: 48)).constrainToSize(48)
         
         if let image = valueForItem("image") {
-            iconView.kf.setImage(with: URL(string: image))
+            iconView.kf.setImage(with: URL(string: image), options: [.processor(RoundCornerImageProcessor(radius: .widthFraction(0.5)))])
         }
         
         let topStack = UIStackView(axis: .vertical, [SpacerView(height: 32), iconView, titleLabel, urlLabel])

@@ -34,7 +34,7 @@ class ImageGalleryController: UIViewController {
         pageViewController.didMove(toParent: self)
         
         pageViewController.setViewControllers([controllerForMedia(current)], direction: .forward, animated: false)
-        pageViewController.dataSource = self
+        pageViewController.dataSource = all.count > 1 ? self : nil // Disable horizontal scroll on single media galleries
         pageViewController.delegate = self
         
         if all.count > 1 {

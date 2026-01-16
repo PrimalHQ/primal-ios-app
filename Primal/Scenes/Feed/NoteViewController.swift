@@ -749,11 +749,17 @@ extension NoteViewController: PostCellDelegate {
         
         let allImages = post.mediaResources
         
+        if resource.url.isVideoURL {
+            handleVideoUrlTapped(resource, in: cell, allImages: allImages)
+            return
+        }
+        
         let current = cell.mainImages.currentImageCell()
         if let imageCell = current as? ImageCell {
             ImageGalleryController(current: resource, all: allImages).present(from: self, imageView: imageCell.imageView)
             return
-        } else if let multiCell = current as? MultipleImageGalleryCell,
+        }
+        if let multiCell = current as? MultipleImageGalleryCell,
                   let index = post.mediaResources.firstIndex(where: { $0.url == resource.url }),
                   let imageView = multiCell.imageViews[safe: index]?.display
         {
@@ -765,12 +771,12 @@ extension NoteViewController: PostCellDelegate {
     }
     
     func postCellDidTapEmbeddedImages(_ cell: ElementPostPreviewCell, embeddedPost: ParsedContent, resource: MediaMetadata.Resource) {
+        let allImages = embeddedPost.mediaResources
+        
         if resource.url.isVideoURL {
-            handleVideoUrlTapped(resource.url, in: cell)
+            handleVideoUrlTapped(resource, in: cell, allImages: allImages)
             return
         }
-        
-        let allImages = embeddedPost.mediaResources
         
         let current = cell.postPreview.mainImages.currentImageCell()
         if let imageCell = current as? ImageCell {
@@ -787,7 +793,9 @@ extension NoteViewController: PostCellDelegate {
         present(ImageGalleryController(current: resource, all: allImages), animated: true)
     }
     
-    func handleVideoUrlTapped(_ url: String, in cell: FeedElementVideoCell) {
+    func handleVideoUrlTapped(_ resource: MediaMetadata.Resource, in cell: FeedElementVideoCell, allImages: [MediaMetadata.Resource]) {
+        let url = resource.url
+        
         guard url.isVideoURL else {
             if let url = URL(string: url) {
                 let safari = SFSafariViewController(url: url)
@@ -806,9 +814,7 @@ extension NoteViewController: PostCellDelegate {
             VideoPlayer(url: url, originalURL: url, userPubkey: "").play()
         }
         
-        guard let player = VideoPlaybackManager.instance.currentlyPlayingVideo else { return }
-        
-        present(FullScreenVideoPlayerController(player), animated: true)
+        present(ImageGalleryController(current: resource, all: allImages), animated: true)
     }
     
     func menuConfigurationForZap(_ zap: ParsedZap) -> UIContextMenuConfiguration? {

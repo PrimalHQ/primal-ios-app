@@ -32,7 +32,7 @@ struct ProcessedLiveEvent: Hashable {
     var creatorPubkey: String
     var dTag: String
     
-    var title: String
+    fileprivate var title: String
     var summary: String
     var image: String
     

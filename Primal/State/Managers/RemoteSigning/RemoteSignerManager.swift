@@ -115,7 +115,7 @@ class RemoteSignerManager {
             .store(in: &cancellables)
         
         Task { @MainActor in
-            guard let permissionsMap = try await permissionRepo.getNamingMap().getOrThrow() else { return }
+            guard let permissionsMap = try await permissionRepo.getNamingMap().getOrNull() else { return }
             
             var newDic: [String: String] = [:]
             for (key, value) in permissionsMap {
@@ -168,7 +168,7 @@ class RemoteSignerManager {
             connectionUrl: url,
             trustLevel: trustLevel,
             nwcConnectionString: nil,
-        ).getOrThrow()
+        ).getOrNull()
     }
     
     func endAllSessions() {
