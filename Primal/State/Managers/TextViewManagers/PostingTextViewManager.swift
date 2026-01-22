@@ -9,6 +9,7 @@ import Combine
 import UIKit
 import GenericJSON
 import NostrSDK
+import AVFoundation
 
 struct EditingToken {
     var range: NSRange
@@ -36,6 +37,7 @@ final class PostingTextViewManager: TextViewManager, MetadataCoding {
     @Published var oldDraft: NoteDraft?
     
     var extractReferences = true
+    private var currentSearchPublisher: AnyCancellable?
     
     let defaultPostButtonTitle: String
     
@@ -316,28 +318,151 @@ final class PostingTextViewManager: TextViewManager, MetadataCoding {
         embeddedElements = []
     }
     
-    func post(callback: @escaping (Bool, NostrObject?) -> Void) {
+    func post() async -> NostrObject? {
         var draft = currentDraft
         
-        guard let ev = NostrObject.post(draft, postingText: postingText, replyingToObject: replyingTo, embeddedElements: embeddedElements) else {
-            callback(false, nil)
-            return
-        }
-        
         isPosting = true
+        
+        guard let ev = await postingNostrObject() else { return nil }
+        
         draft.preparedEvent = ev
         oldDraft = draft
         DatabaseManager.instance.saveDraft(draft)
         
-        PostingManager.instance.sendEvent(ev) { success in
-            callback(success, ev)
-            if success {
-                DatabaseManager.instance.deleteDraft(draft)
-            }
-        }
+        guard await PostingManager.instance.sendEvent(ev) else { return nil }
+        
+        DatabaseManager.instance.deleteDraft(draft)
+        return ev
     }
     
-    var currentSearchPublisher: AnyCancellable?
+    func postingNostrObject() async -> NostrObject? {
+        let draft = currentDraft
+        
+        var allTags: [[String]] = []
+
+        /// The `e` tags are ordered at best effort to support the deprecated method of positional tags to maximize backwards compatibility
+        /// with clients that support replies but have not been updated to understand tag markers.
+        ///
+        /// https://github.com/nostr-protocol/nips/blob/master/10.md
+        ///
+        /// The tag to the root of the reply chain goes first.
+        /// The tag to the reply event being responded to goes last.
+        
+        var pubkeysToTag = Set<String>(draft.taggedUsers.map { $0.userPubkey })
+        
+        if let post = replyingTo {
+            if let root = post.tags.last(where: { tag in tag[safe: 3] == "root" }) {
+                allTags.append(root)
+                allTags.append([post.referenceTagLetter, post.universalID, RelayHintManager.instance.getRelayHint(post.universalID), "reply"])
+            } else {
+                // For top level replies (those replying directly to the root event), only the "root" marker should be used.
+                allTags.append([post.referenceTagLetter, post.universalID, RelayHintManager.instance.getRelayHint(post.universalID), "root"])
+            }
+            
+            pubkeysToTag.insert(post.pubkey)
+            pubkeysToTag.formUnion(post.tags.filter({ $0.first == "p" }).compactMap { $0[safe: 1] })
+        }
+        
+        for include in embeddedElements {
+            switch include {
+            case .highlight(let article, let highlight):
+                let articleID = article.asParsedContent.post.universalID
+                allTags.append(["e", highlight.event.id, "", "mention"])
+                allTags.append(["a", articleID, RelayHintManager.instance.getRelayHint(articleID), "mention"])
+
+                pubkeysToTag.insert(article.event.pubkey)
+            case .post(let post):
+                allTags.append(["e", post.post.id, RelayHintManager.instance.getRelayHint(post.post.id), "mention"])
+                
+                pubkeysToTag.insert(post.user.data.pubkey)
+                pubkeysToTag.formUnion(post.post.tags.filter({ $0.first == "p" }).compactMap { $0[safe: 1] })
+            case .article(let article):
+                let quotingObject = article.asParsedContent.post
+                allTags.append([article.referenceTagLetter, quotingObject.universalID, RelayHintManager.instance.getRelayHint(quotingObject.universalID), "mention"])
+                
+                pubkeysToTag.insert(article.user.data.pubkey)
+                pubkeysToTag.formUnion(quotingObject.tags.filter({ $0.first == "p" }).compactMap { $0[safe: 1] })
+            case .live(let live):
+                pubkeysToTag.insert(live.event.pubkey)
+                
+                allTags.append(["a", live.event.universalID, RelayHintManager.instance.getRelayHint(live.event.universalID), "mention"])
+            case .invoice(_):
+                break
+            }
+        }
+
+        pubkeysToTag.remove(IdentityManager.instance.userHexPubkey) // Don't tag yourself
+        
+        allTags += pubkeysToTag.map { ["p", $0, RelayHintManager.instance.userRelays[$0]?.first ?? "", "mention"] }
+        allTags += draft.text.extractHashtags().map({ ["t", $0.dropFirst().string] })
+        
+        var mediaTags: [[String]] = []
+        
+        for media in media {
+            guard let resource = media.resource, let uploadedUrl = media.state.url else { continue }
+
+            switch resource {
+            case let .image((image, type)):
+                let tagString = {
+                    switch type {
+                    case .jpeg:
+                        return "image/jpeg"
+                    case .png:
+                        return "image/png"
+                    case .gif:
+                        return "image/gif"
+                    }
+                }
+                mediaTags.append([
+                    "imeta",
+                    "url \(uploadedUrl)",
+                    "m \(type)",
+                    "dim \(image.size.width)x\(image.size.height)",
+                ])
+            case .video(let video):
+                var info = [
+                    "imeta",
+                    "url \(uploadedUrl)"
+                ]
+                
+                if let mimeType = mimeType(for: video.url) {
+                    info.append("m \(mimeType)")
+                }
+
+                if let dimensions = try? await getVideoDimensions(from: video.url) {
+                    info.append("dim \(dimensions.width)x\(dimensions.height)")
+                }
+                
+                mediaTags.append(info)
+            }
+        }
+        
+        allTags += mediaTags
+        
+        return NostrObject.create(content: postingText, kind: 1, tags: allTags)
+    }
+    
+    func mimeType(for url: URL) -> String? {
+        guard let utType = UTType(filenameExtension: url.pathExtension) else { return nil }
+        return utType.preferredMIMEType
+    }
+
+    func getVideoDimensions(from url: URL) async throws -> CGSize {
+        let asset = AVURLAsset(url: url)
+        
+        // Load the tracks asynchronously
+        let tracks = try await asset.loadTracks(withMediaType: .video)
+        guard let track = tracks.first else {
+            throw NSError(domain: "VideoError", code: -1, userInfo: [NSLocalizedDescriptionKey: "No video track found"])
+        }
+        
+        // Load the natural size and preferred transform
+        let (naturalSize, preferredTransform) = try await track.load(.naturalSize, .preferredTransform)
+        
+        // Apply transform to handle rotated videos (e.g., portrait recordings)
+        let transformedSize = naturalSize.applying(preferredTransform)
+        return CGSize(width: abs(transformedSize.width), height: abs(transformedSize.height))
+    }
 }
 
 private extension PostingTextViewManager {

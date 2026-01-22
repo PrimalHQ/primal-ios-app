@@ -155,7 +155,14 @@ private extension MessagesViewController {
         }), for: .touchUpInside)
         
         markAllRead.addAction(.init(handler: { [weak self] _ in
-            self?.manager.markAllChatsAsRead()
+            self?.manager.markAllChatsAsRead {
+                switch self?.selectedType ?? .follows {
+                case .follows:
+                    self?.followsVC.reload()
+                case .other:
+                    self?.othersVC.reload()
+                }
+            }
         }), for: .touchUpInside)
         
         manager.updateChatCount()

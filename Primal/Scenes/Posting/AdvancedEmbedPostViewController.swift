@@ -84,10 +84,9 @@ private extension AdvancedEmbedPostViewController {
         }
         
         let onPost = self.onPost
-        manager.post { success, _ in
-            if success {
-                onPost?()
-            }
+        Task { @MainActor in
+            guard let ev = await manager.post() else { return }
+            onPost?()
         }
         dismiss(animated: true)
     }

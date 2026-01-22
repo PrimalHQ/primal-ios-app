@@ -207,13 +207,25 @@ final class PostingManager {
         
         RelaysPostbox.instance.request(ev, successHandler: { _ in
             callback(true)
-            
-            Connection.regular.requestCache(name: "import_events", payload: .object(["events": .array([ev.toJSON()])])) { _ in }
         }, errorHandler: {
             callback(false)
         })
         
         return ev
+    }
+    
+    func sendEvent(_ ev: NostrObject) async -> Bool {
+        guard LoginManager.instance.method() == .nsec else { return false }
+        
+        return await withCheckedContinuation { [weak self] continuation in
+            guard let self else {
+                continuation.resume(returning: false)
+                return
+            }
+            self.sendEvent(ev) { result in
+                continuation.resume(returning: result)
+            }
+        }
     }
     
     func sendEvent(_ ev: NostrObject, _ callback: @escaping (Bool) -> Void) {
@@ -223,8 +235,6 @@ final class PostingManager {
             callback(true)
             
             self?.postedEvent.send(ev)
-            
-            Connection.regular.requestCache(name: "import_events", payload: .object(["events": .array([ev.toJSON()])])) { _ in }
         }, errorHandler: {
             callback(false)
         })
@@ -240,8 +250,6 @@ final class PostingManager {
         
         RelaysPostbox.instance.request(ev, successHandler: { _ in
             callback(true)
-            
-            Connection.regular.requestCache(name: "import_events", payload: .object(["events": .array([ev.toJSON()])])) { _ in }
         }, errorHandler: {
             callback(false)
         })

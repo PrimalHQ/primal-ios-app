@@ -99,7 +99,7 @@ extension PostRequestResult {
         
         let parsedUsers = getSortedUsers()
         
-        return longFormPosts.sorted(by: { $0.event.created_at > $1.event.created_at }).compactMap { post -> Article? in
+        return longFormPosts.sorted(by: { $0.event.originalDate > $1.event.originalDate }).compactMap { post -> Article? in
             guard let id = post.event.tags.first(where: { $0.first == "d" })?[safe: 1] else { return nil }
             
             let aTag = "\(NostrKind.longForm.rawValue):\(post.event.pubkey):\(id)"

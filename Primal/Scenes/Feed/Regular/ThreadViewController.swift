@@ -294,9 +294,9 @@ private extension ThreadViewController {
             return
         }
         
-        inputManager.post { [weak self] success, event in
-            guard success, let event, let self else {
-                self?.feed.requestThread(postId: self?.id ?? "", includeParent: false)
+        Task { @MainActor [self] in
+            guard let event = await inputManager.post() else {
+                feed.requestThread(postId: self.id, includeParent: false)
                 return
             }
             
@@ -330,7 +330,6 @@ private extension ThreadViewController {
                     }
                 }
                 .store(in: &cancellables)
-
         }
     }
     

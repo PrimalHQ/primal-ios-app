@@ -28,9 +28,9 @@ class UserImageView: UIView, Themeable {
         height + {
             if height >= 100 { return 8 }
             if height >= 75 { return 6 }
-            if height >= 62 { return 5 }
+            if height >= 62 { return 6 }
             if height >= 44 { return 4 }
-            return 3
+            return 4
         }()
     }
     

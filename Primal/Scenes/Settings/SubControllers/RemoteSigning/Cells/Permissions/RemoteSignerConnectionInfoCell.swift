@@ -16,7 +16,7 @@ final class RemoteSignerConnectionInfoCell: UITableViewCell {
 
     private let iconView = UIImageView().constrainToSize(48)
     private let titleLabel = UILabel("", color: .foreground, font: .appFont(withSize: 18, weight: .bold))
-    private let lastSessionLabel = UILabel("", color: .foreground3, font: .appFont(withSize: 15, weight: .bold))
+    private let lastSessionLabel = UILabel("", color: .foreground3, font: .appFont(withSize: 15, weight: .regular))
 
     private let formatter = DateFormatter()
     

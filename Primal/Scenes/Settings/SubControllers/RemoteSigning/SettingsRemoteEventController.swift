@@ -30,7 +30,7 @@ class SettingsRemoteEventController: UIViewController {
         
         let date = Date(timeIntervalSince1970: Double(event.requestedAt))
         let dateFormatter = DateFormatter()
-        dateFormatter.setLocalizedDateFormatFromTemplate("MMM d, yyyy h:mm a")
+        dateFormatter.setLocalizedDateFormatFromTemplate("MMM d, yyyy h:mm:ss a")
         let subtitleLabel = UILabel(dateFormatter.string(from: date), color: .foreground3, font: .appFont(withSize: 14, weight: .regular))
         
         switch event.requestState {

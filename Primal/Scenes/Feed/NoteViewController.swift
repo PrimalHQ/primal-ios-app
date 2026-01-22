@@ -710,6 +710,8 @@ extension NoteViewController: PostCellDelegate {
         
         let popup = PopupMenuViewController()
         
+        var repostTitle = "Repost"
+        
         if PostingManager.instance.hasReposted(parsedPost.post.universalID) {
             popup.addAction(.init(title: "Delete Repost", image: .menuTrash, attributes: .destructive, handler: { [weak self] _ in
                 let alert = UIAlertController(title: "Delete Repost?", message: "This will issue a \"request delete\" command to the relays where the repost was published", preferredStyle: .alert)
@@ -721,12 +723,14 @@ extension NoteViewController: PostCellDelegate {
                 alert.addAction(.init(title: "Cancel", style: .cancel))
                 self?.present(alert, animated: true)
             }))
-        } else {
-            popup.addAction(.init(title: "Repost", image: .repostIconLarge, handler: { _ in
-                PostingManager.instance.sendRepostEvent(post: post)
-                cell.repostButton.animateTo(post.reposts + 1, filled: true)
-            }))
+            
+            repostTitle = "Repost Again"
         }
+        
+        popup.addAction(.init(title: repostTitle, image: .repostIconLarge, handler: { _ in
+            PostingManager.instance.sendRepostEvent(post: post)
+            cell.repostButton.animateTo(post.reposts + 1, filled: true)
+        }))
         
         popup.addAction(.init(title: "Quote", image: .init(named: "quoteIconLarge"), handler: { [weak self] _ in
             guard let self else { return }
