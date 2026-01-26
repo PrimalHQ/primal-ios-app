@@ -243,6 +243,8 @@
 		B904E9A32F042BFD006D195C /* CloudPopupController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B904E9A22F042BDD006D195C /* CloudPopupController.swift */; };
 		B904EA132F1A5FEE006D195C /* PrimalShared.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = B904EA112F1A5FE3006D195C /* PrimalShared.xcframework */; };
 		B904EA142F1A5FEE006D195C /* PrimalShared.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B904EA112F1A5FE3006D195C /* PrimalShared.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		B904EA1A2F23B559006D195C /* HTMLGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B904EA192F23B559006D195C /* HTMLGenerator.swift */; };
+		B904EA1D2F23B895006D195C /* Markdown in Frameworks */ = {isa = PBXBuildFile; productRef = B904EA1C2F23B895006D195C /* Markdown */; };
 		B90585382C9DDFD600FC4108 /* SettingsDevModeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90585372C9DDFD600FC4108 /* SettingsDevModeController.swift */; };
 		B906AAE52C91C46D0089813F /* smallPillLoaderLight.json in Resources */ = {isa = PBXBuildFile; fileRef = B906AAD72C91C46D0089813F /* smallPillLoaderLight.json */; };
 		B906AAE72C91C46D0089813F /* smallPillLoader.json in Resources */ = {isa = PBXBuildFile; fileRef = B906AAD92C91C46D0089813F /* smallPillLoader.json */; };
@@ -503,7 +505,6 @@
 		B99E03922C060BD0006CCECB /* ArticleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99E03912C060BD0006CCECB /* ArticleViewController.swift */; };
 		B99E03972C061D67006CCECB /* longForm.html in Resources */ = {isa = PBXBuildFile; fileRef = B99E03962C061D67006CCECB /* longForm.html */; };
 		B99E03992C07801A006CCECB /* WKWebView+Extra.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99E03982C07801A006CCECB /* WKWebView+Extra.swift */; };
-		B99E039C2C07C059006CCECB /* Ink in Frameworks */ = {isa = PBXBuildFile; productRef = B99E039B2C07C059006CCECB /* Ink */; };
 		B99E039E2C07C714006CCECB /* LongFormNavExtensionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99E039D2C07C714006CCECB /* LongFormNavExtensionView.swift */; };
 		B99E03A02C07C75E006CCECB /* LongFormQuoteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99E039F2C07C75E006CCECB /* LongFormQuoteView.swift */; };
 		B99E03A22C08E8F3006CCECB /* LongFormCommentsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99E03A12C08E8F3006CCECB /* LongFormCommentsController.swift */; };
@@ -538,7 +539,6 @@
 		B9B290532B45C77E0069C87F /* NumberKeyboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9B290522B45C77E0069C87F /* NumberKeyboardView.swift */; };
 		B9B290552B4C46890069C87F /* SmartContactsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9B290542B4C46890069C87F /* SmartContactsManager.swift */; };
 		B9B290572B4DB2950069C87F /* SettingsWalletViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9B290562B4DB2950069C87F /* SettingsWalletViewController.swift */; };
-		B9B687A32D25A2AD00140927 /* Down in Frameworks */ = {isa = PBXBuildFile; productRef = B9B687A22D25A2AD00140927 /* Down */; };
 		B9B9E5672CB442180065DD7C /* BaseFeedManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9B9E5662CB442180065DD7C /* BaseFeedManager.swift */; };
 		B9B9E5692CB449A20065DD7C /* UserFeedManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9B9E5682CB449A20065DD7C /* UserFeedManager.swift */; };
 		B9B9E56B2CB44E710065DD7C /* ExplorePeopleCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9B9E56A2CB44E710065DD7C /* ExplorePeopleCell.swift */; };
@@ -1051,6 +1051,7 @@
 		B9031D512ACDDD4200C7489F /* ReplyingToView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReplyingToView.swift; sourceTree = "<group>"; };
 		B904E9A22F042BDD006D195C /* CloudPopupController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudPopupController.swift; sourceTree = "<group>"; };
 		B904EA112F1A5FE3006D195C /* PrimalShared.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = PrimalShared.xcframework; sourceTree = "<group>"; };
+		B904EA192F23B559006D195C /* HTMLGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTMLGenerator.swift; sourceTree = "<group>"; };
 		B90585372C9DDFD600FC4108 /* SettingsDevModeController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsDevModeController.swift; sourceTree = "<group>"; };
 		B906AAD72C91C46D0089813F /* smallPillLoaderLight.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = smallPillLoaderLight.json; sourceTree = "<group>"; };
 		B906AAD92C91C46D0089813F /* smallPillLoader.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = smallPillLoader.json; sourceTree = "<group>"; };
@@ -1565,17 +1566,16 @@
 				B91797FE2EDDD21D00EF29EF /* NostrSDK in Frameworks */,
 				9393312429A3E45E003954C2 /* Kingfisher in Frameworks */,
 				B9F933182B867D860064B495 /* QRCode in Frameworks */,
+				B904EA1D2F23B895006D195C /* Markdown in Frameworks */,
 				933B85752A9F6EC400C48FF6 /* CryptoSwift in Frameworks */,
 				9E83DF5F2A53308200F2C379 /* FLAnimatedImage in Frameworks */,
 				B906AB042C99F3E40089813F /* GRDB in Frameworks */,
 				9309D2312A5EA7EF00FD2127 /* KeychainAccess in Frameworks */,
-				B9B687A32D25A2AD00140927 /* Down in Frameworks */,
 				9393312129A3E44D003954C2 /* GenericJSON in Frameworks */,
 				9393312729A3E475003954C2 /* NWWebSocket in Frameworks */,
 				B907D3C12DBBF18B002B86DA /* LightningDevKit in Frameworks */,
 				B904EA132F1A5FEE006D195C /* PrimalShared.xcframework in Frameworks */,
 				B94F2BDF2ADDCD710041181B /* StoreKit.framework in Frameworks */,
-				B99E039C2C07C059006CCECB /* Ink in Frameworks */,
 				9E0DEAED29FD2F6900145E08 /* Lottie in Frameworks */,
 				9EF4BFC02A8A633B003396AA /* Nantes in Frameworks */,
 			);
@@ -1759,6 +1759,7 @@
 		9393312829A3E4E0003954C2 /* Common */ = {
 			isa = PBXGroup;
 			children = (
+				B904EA152F23B4F7006D195C /* Markdown */,
 				B9EDA58B2E4F5AEA003262E4 /* UserSearch */,
 				9E9F2F7229F6AB6400A9CDF3 /* Views */,
 				9E83DF752A573F1C00F2C379 /* Helpers */,
@@ -2546,6 +2547,14 @@
 				B9A335222E54B5DC000B2CA7 /* LivePlayerMoveGesture.swift */,
 			);
 			path = MainTabBar;
+			sourceTree = "<group>";
+		};
+		B904EA152F23B4F7006D195C /* Markdown */ = {
+			isa = PBXGroup;
+			children = (
+				B904EA192F23B559006D195C /* HTMLGenerator.swift */,
+			);
+			path = Markdown;
 			sourceTree = "<group>";
 		};
 		B906AB052C99F3F70089813F /* Database */ = {
@@ -3627,11 +3636,10 @@
 				9EF4BFBF2A8A633B003396AA /* Nantes */,
 				933B85742A9F6EC400C48FF6 /* CryptoSwift */,
 				B9F933172B867D860064B495 /* QRCode */,
-				B99E039B2C07C059006CCECB /* Ink */,
 				B906AB032C99F3E40089813F /* GRDB */,
-				B9B687A22D25A2AD00140927 /* Down */,
 				B907D3C02DBBF18B002B86DA /* LightningDevKit */,
 				B91797FD2EDDD21D00EF29EF /* NostrSDK */,
+				B904EA1C2F23B895006D195C /* Markdown */,
 			);
 			productName = Primal;
 			productReference = 939330F229A3E36F003954C2 /* Primal.app */;
@@ -3797,11 +3805,10 @@
 				9EF4BFBE2A8A633B003396AA /* XCRemoteSwiftPackageReference "Nantes" */,
 				933B85732A9F6EC400C48FF6 /* XCRemoteSwiftPackageReference "CryptoSwift" */,
 				B9F933162B867D860064B495 /* XCRemoteSwiftPackageReference "qrcode" */,
-				B99E039A2C07C059006CCECB /* XCRemoteSwiftPackageReference "ink" */,
 				B906AB022C99F3E40089813F /* XCRemoteSwiftPackageReference "GRDB.swift" */,
-				B9B687A12D25A2AD00140927 /* XCRemoteSwiftPackageReference "Down" */,
 				B907D3BF2DBBF18B002B86DA /* XCRemoteSwiftPackageReference "ldk-swift" */,
 				B91797FC2EDDD21D00EF29EF /* XCRemoteSwiftPackageReference "nostr-sdk-ios" */,
+				B904EA1B2F23B895006D195C /* XCRemoteSwiftPackageReference "swift-markdown" */,
 			);
 			productRefGroup = 939330F329A3E36F003954C2 /* Products */;
 			projectDirPath = "";
@@ -4463,6 +4470,7 @@
 				B9C6D2392CA482AA00B2EEBE /* MessagesViewController.swift in Sources */,
 				B9B9E5702CB5621B0065DD7C /* NoteFeedManager.swift in Sources */,
 				B99E03872BF76554006CCECB /* FLAnimatedImage+User.swift in Sources */,
+				B904EA1A2F23B559006D195C /* HTMLGenerator.swift in Sources */,
 				93F27DAF2A280F4C004ADA55 /* PostRequestResult.swift in Sources */,
 				9E83DF772A573F2E00F2C379 /* ImagePickerManager.swift in Sources */,
 				B98DD8CC2C5D0BD200E8369A /* ArticleTopInfoView.swift in Sources */,
@@ -4773,7 +4781,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.6.43;
+				MARKETING_VERSION = 2.6.44;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -4822,7 +4830,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.6.43;
+				MARKETING_VERSION = 2.6.44;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -5237,6 +5245,14 @@
 				minimumVersion = 0.1.2;
 			};
 		};
+		B904EA1B2F23B895006D195C /* XCRemoteSwiftPackageReference "swift-markdown" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-markdown.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.7.3;
+			};
+		};
 		B906AB022C99F3E40089813F /* XCRemoteSwiftPackageReference "GRDB.swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/groue/GRDB.swift.git";
@@ -5258,22 +5274,6 @@
 			repositoryURL = "https://github.com/PrimalHQ/nostr-sdk-ios";
 			requirement = {
 				branch = main;
-				kind = branch;
-			};
-		};
-		B99E039A2C07C059006CCECB /* XCRemoteSwiftPackageReference "ink" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/johnsundell/ink.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.6.0;
-			};
-		};
-		B9B687A12D25A2AD00140927 /* XCRemoteSwiftPackageReference "Down" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/johnxnguyen/Down";
-			requirement = {
-				branch = master;
 				kind = branch;
 			};
 		};
@@ -5333,6 +5333,11 @@
 			package = 9EF4BFBE2A8A633B003396AA /* XCRemoteSwiftPackageReference "Nantes" */;
 			productName = Nantes;
 		};
+		B904EA1C2F23B895006D195C /* Markdown */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B904EA1B2F23B895006D195C /* XCRemoteSwiftPackageReference "swift-markdown" */;
+			productName = Markdown;
+		};
 		B906AB032C99F3E40089813F /* GRDB */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = B906AB022C99F3E40089813F /* XCRemoteSwiftPackageReference "GRDB.swift" */;
@@ -5362,16 +5367,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 9393311F29A3E44D003954C2 /* XCRemoteSwiftPackageReference "generic-json-swift" */;
 			productName = GenericJSON;
-		};
-		B99E039B2C07C059006CCECB /* Ink */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = B99E039A2C07C059006CCECB /* XCRemoteSwiftPackageReference "ink" */;
-			productName = Ink;
-		};
-		B9B687A22D25A2AD00140927 /* Down */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = B9B687A12D25A2AD00140927 /* XCRemoteSwiftPackageReference "Down" */;
-			productName = Down;
 		};
 		B9F933172B867D860064B495 /* QRCode */ = {
 			isa = XCSwiftPackageProductDependency;

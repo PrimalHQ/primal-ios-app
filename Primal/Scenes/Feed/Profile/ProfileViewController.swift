@@ -60,7 +60,7 @@ final class ProfileViewController: PostFeedViewController, ArticleCellController
     var articles: [Article] = [] {
         didSet {
             guard profileTab == .reads else { return }
-            profileDataSource?.setArticles(articles.uniqueByFilter({ $0.identifier }))
+            profileDataSource?.setArticles(articles)
             profileDataSource?.isLoading = isLoading
         }
     }
@@ -234,7 +234,7 @@ private extension ProfileViewController {
         .map { $0.getArticles() }
         .receive(on: DispatchQueue.main)
         .sink(receiveValue: { [weak self] articles in
-            self?.articles = articles
+            self?.articles = articles.uniqueByFilter({ $0.identifier })
             self?.isLoadingArticles = false
         })
         .store(in: &cancellables)
