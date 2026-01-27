@@ -133,15 +133,15 @@ final class WalletHomeViewController: UIViewController, Themeable {
     
     func updateBuySatsButton() {
         return // Hide the button
-        guard WalletManager.instance.primal?.userHasWallet == true else {
-            navigationItem.rightBarButtonItem = nil
-            return
-        }
-        let button = UIButton()
-        button.setImage(UIImage(named: "buySats"), for: .normal)
-        button.tintColor = .foreground3
-        button.addAction(.init(handler: { [weak self] _ in self?.buySatsPressed() }), for: .touchUpInside)
-        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: button)
+//        guard WalletManager.instance.primal?.userHasWallet == true else {
+//            navigationItem.rightBarButtonItem = nil
+//            return
+//        }
+//        let button = UIButton()
+//        button.setImage(UIImage(named: "buySats"), for: .normal)
+//        button.tintColor = .foreground3
+//        button.addAction(.init(handler: { [weak self] _ in self?.buySatsPressed() }), for: .touchUpInside)
+//        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: button)
     }
 }
 
@@ -183,9 +183,9 @@ extension WalletHomeViewController: UITableViewDataSource {
                 cell.delegate = self
             }
             
-            if indexPath.section >= tableData.count - 1 {
-                WalletManager.instance.impl.loadMoreTransactions()
-            }
+//            if indexPath.section >= tableData.count - 1 {
+//                WalletManager.instance.impl.loadMoreTransactions()
+//            }
             
             return cell
         }
@@ -271,11 +271,11 @@ extension WalletHomeViewController: UITableViewDelegate {
 
 extension WalletHomeViewController: BuySatsCellDelegate, ActivateWalletCellDelegate {
     func activateWalletPressed() {
-        if WalletManager.instance.primal == nil {
-            WalletManager.instance.setUsePrimalWallet()
-        } else {
-            show(WalletActivateViewController(), sender: nil)
-        }
+//        if WalletManager.instance.primal == nil {
+//            WalletManager.instance.setUsePrimalWallet()
+//        } else {
+//            show(WalletActivateViewController(), sender: nil)
+//        }
     }
     
     func buySatsPressed() {
@@ -321,12 +321,7 @@ private extension WalletHomeViewController {
         table.contentInset = .init(top: 0, left: 0, bottom: 186, right: 0)
         
         let refresh = UIRefreshControl()
-        refresh.addAction(.init(handler: { _ in
-            if WalletManager.instance.userHasWallet != true {
-                WalletManager.instance.primal?.refreshHasWallet()
-                return
-            }
-            
+        refresh.addAction(.init(handler: { _ in            
             WalletManager.instance.refresh()
         }), for: .valueChanged)
         table.refreshControl = refresh

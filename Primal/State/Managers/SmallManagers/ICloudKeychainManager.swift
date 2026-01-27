@@ -57,7 +57,9 @@ final class ICloudKeychainManager {
     private let onlineKeychain: Keychain = Keychain(service: "net.primal.iosappOnline.Primal").synchronizable(true)
     private var cancellables = Set<AnyCancellable>()
     
-    private init() {}
+    private init() {
+        _ = getLoginInfo()
+    }
     
     static let instance: ICloudKeychainManager = ICloudKeychainManager()
     

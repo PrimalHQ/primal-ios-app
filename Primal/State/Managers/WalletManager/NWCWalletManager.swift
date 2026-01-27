@@ -94,7 +94,7 @@ class NWCWalletManager {
         // WalletRepo wallet info by id (balance, transactions, etc.)
         walletRepo = WalletRepositoryFactory.shared.createWalletRepository(
             primalWalletApiClient: walletConnection,
-            nostrEventSignatureHandler: SigningManager(),
+            nostrEventSignatureHandler: SigningManager.instance,
             profileRepository: repo,
             eventRepository: eventRepo
         )
@@ -105,6 +105,8 @@ class NWCWalletManager {
         
         // WalletAccountRepo
         let walletAccountRepo = WalletRepositoryFactory.shared.createWalletAccountRepository()
+        
+        let primalWallet = WalletRepositoryFactory.shared.createPrimalWalletAccountRepository(primalWalletApiClient: walletConnection, nostrEventSignatureHandler: SigningManager.instance)
         
         // Za reaktivno apdejtovanje
         walletAccountRepo.observeActiveWalletId(userId: pubkey)

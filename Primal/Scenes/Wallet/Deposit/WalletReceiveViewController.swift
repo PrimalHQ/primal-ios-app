@@ -364,8 +364,6 @@ private extension WalletReceiveViewController {
             self?.showErrorMessage("NFC is coming soon")
         }), for: .touchUpInside)
         
-        guard WalletManager.instance.primal == nil else { return }
-        
         selectionStackParent.isHidden = true
         detailsButton.isHidden = true
     }

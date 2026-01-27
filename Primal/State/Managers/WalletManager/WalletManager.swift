@@ -8,6 +8,7 @@
 import Combine
 import GenericJSON
 import Foundation
+import PrimalShared
 
 extension UserDefaults {
     var howManyZaps: Int { // Tracks how many zaps happened
@@ -28,11 +29,6 @@ extension UserDefaults {
     var oldWalletAmount: [String: Int] {
         get { string(forKey: .oldWalletAmountKey)?.decode() ?? [:] }
         set { setValue(newValue.encodeToString(), forKey: .oldWalletAmountKey) }
-    }
-    
-    var oldTransactions: [String: [CodableParsedTransaction]] {
-        get { string(forKey: .oldTransactionsKey)?.decode() ?? [:] }
-        set { setValue(newValue.encodeToString(), forKey: .oldTransactionsKey) }
     }
     
     var nwcSettings: [String: String] {
@@ -59,7 +55,7 @@ extension UserDefaults {
     }
 }
 
-private extension String {
+extension String {
     static let howManyZapsKey = "howManyZapsKey"
     static let oldWalletAmountKey = "oldWalletAmountKey"
     static let oldTransactionsKey = "oldTransactionsKey"
@@ -152,13 +148,15 @@ extension PrimalWalletManager: WalletImplementation {
 final class WalletManager {
     static let instance = WalletManager()
     
-    private(set) var impl: WalletImplementation
+//    private(set) var impl: WalletImplementation
     
-    var primal: PrimalWalletManager? { impl as? PrimalWalletManager }
-    var nwc: NWCWalletManager? { impl as? NWCWalletManager }
+//    var primal: PrimalWalletManager? { impl as? PrimalWalletManager }
+//    var nwc: NWCWalletManager? { impl as? NWCWalletManager }
     
     var cancellables = Set<AnyCancellable>()
     var updateCancellables = Set<AnyCancellable>()
+    
+    var isPrimalWalletActive: Bool { (activeWallet as? Wallet.Primal)?.kycLevel == .email }
     
     @Published var premiumState: PremiumState?
     @Published var didJustCreateWallet = false
@@ -175,7 +173,7 @@ final class WalletManager {
     @Published var isLoadingWallet = true
     @Published var balance: Int = 0
     
-    var maxBalance: Int { impl.maxBalance }
+    var maxBalance: Int { Int((activeWallet?.maxBalanceInBtc?.doubleValue ?? 0.00001) * .BTC_TO_SAT) }
     
     var hasPremium: Bool { premiumState?.isExpired == false }
     var hasLegend: Bool { premiumState?.isLegend == true }
@@ -191,8 +189,30 @@ final class WalletManager {
     @Published var parsedTransactions: [ParsedTransaction] = []
     @Published private var userZapped: [String: Int] = [:]
     
+    let zapFactory: any NostrZapperFactory
+    let walletRepo: any WalletRepository
+    
+    var walletID: String? { activeWallet?.walletId }
+    var activeWallet: Wallet?
+    
     private init() {
-        impl = DummyWalletImplementation()
+//        impl = DummyWalletImplementation()
+        let regConnection = PrimalApiClientFactory.shared.create(serverType: .caching)
+        let walletConnection = PrimalApiClientFactory.shared.create(serverType: .wallet)
+        
+        let repo = PrimalRepositoryFactory.shared.createProfileRepository(cachingPrimalApiClient: regConnection, primalPublisher: SigningManager.instance, mediaCacher: MediaCacher.instance)
+        let eventRepo = PrimalRepositoryFactory.shared.createEventRepository(cachingPrimalApiClient: regConnection, mediaCacher: MediaCacher.instance)
+        
+        // WalletRepo wallet info by id (balance, transactions, etc.)
+        walletRepo = WalletRepositoryFactory.shared.createWalletRepository(
+            primalWalletApiClient: walletConnection,
+            nostrEventSignatureHandler: SigningManager.instance,
+            profileRepository: repo,
+            eventRepository: eventRepo
+        )
+        
+        zapFactory = NostrZapperFactoryProvider.shared.createNostrZapperFactory(walletRepository: walletRepo, nostrEventSignatureHandler: SigningManager.instance, primalWalletApiClient: walletConnection)
+        
         
         setupPublishers()
         
@@ -202,28 +222,24 @@ final class WalletManager {
     }
     
     func reset(_ pubkey: String) {
-        if UserDefaults.standard.useNwcWallet[pubkey] == true {
-            if let nwcString = UserDefaults.standard.nwcSettings[pubkey] {
-                impl = NWCWalletManager(url: nwcString) ?? DummyWalletImplementation()
-            } else {
-                impl = DummyWalletImplementation()
-            }
-            parsedTransactions = []
-        } else {
-            impl = PrimalWalletManager()
-            let oldTransactions = (UserDefaults.standard.oldTransactions[pubkey] ?? []).map { $0.toTuple() }
-            parsedTransactions = oldTransactions
-        }
-
-        updateCancellables = [
-            impl.balancePublisher.assign(to: \.balance, onWeak: self),
-            impl.userHasWalletPublisher.assign(to: \.userHasWallet, onWeak: self),
-            impl.isLoadingWalletPublisher.assign(to: \.isLoadingWallet, onWeak: self)
-        ]
-        
         userZapped = [:]
         premiumState = nil
-                
+        activeWallet = nil
+        updateCancellables = []
+        
+        let walletAccountRepo = WalletRepositoryFactory.shared.createWalletAccountRepository()
+        walletAccountRepo.observeActiveWallet(userId: pubkey)
+            .toPublisher()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] wallet in
+                guard let self, let wallet else { return }
+                activeWallet = wallet
+                balance = Int((wallet.balanceInBtc?.doubleValue ?? 0) * Double(SAT_PER_BTC))
+                isLoadingWallet = false
+                userHasWallet = (wallet as? Wallet.Primal)?.kycLevel ?? .email == .email
+            }
+            .store(in: &updateCancellables)
+        
         DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
             self.refreshPremiumState()
         }
@@ -249,15 +265,63 @@ final class WalletManager {
     }
     
     func refresh() {
+        guard let walletID else { return }
         // TODO: resolve refresh
-        impl.refreshBalance()
-        primal?.refreshTransactions()
+//        impl.refreshBalance()
+//        primal?.refreshTransactions()
+        
+        self.walletRepo.latestTransactions(walletId: walletID, walletType: .primal).toPublisher()
+            .sink { transactions in
+                print(transactions)
+            }
+            .store(in: &cancellables)
+        
+        Task { @MainActor in
+            _ = try await self.walletRepo.fetchWalletBalance(walletId: walletID)
+        
+            let transactions = try await self.walletRepo.latestTransactions(walletId: walletID, limit: 100)
+            
+            var userIds: Set<String> = []
+            for trans in transactions {
+                userIds.insert(trans.userId)
+                
+                if let zap = trans as? Transaction.Zap {
+                    if let id = zap.otherUserId {
+                        userIds.insert(id)
+                    }
+                    if let user = zap.otherUserProfile {
+                        print(user)
+                        
+                    }
+                }
+            }
+            
+            
+            self.parsedTransactions = transactions.map({ trans in
+                var isZap = false
+                if let zap = trans as? Transaction.Zap {
+                    isZap = true
+                    zap.otherUserId
+                }
+                
+                return (WalletTransaction(
+                    type: trans.type.name,
+                    id: trans.transactionId,
+                    state: trans.state.name,
+                    created_at: Int(trans.createdAt),
+                    is_zap: isZap,
+                    amount_btc: String(trans.amountInBtc),
+                    pubkey_1: trans.userId,
+                    subindex_1: ""
+                ), ParsedUser(data: .init(pubkey: trans.userId)))
+            })
+        }
     }
     
     func recheck() {
         // TODO: resolve recheck
-        primal?.refreshBalance()
-        primal?.recheckTransactions()
+//        primal?.refreshBalance()
+//        primal?.recheckTransactions()
     }
     
     func hasZapped(_ eventId: String) -> Bool { userZapped[eventId, default: 0] > 0 }
@@ -309,24 +373,73 @@ final class WalletManager {
             .store(in: &cancellables)
     }
     
+    
+    // COPIED FROM NWC
+    func sendInvoice(_ address: String, satsOverride: Int?, messageOverride: String?) async throws {
+        throw WalletError.notSupported
+    }
+    
+    func zapUser(_ user: PrimalUser, sats: Int, note: String, zap: NostrObject) async throws {
+        guard let address = user.decodedLNURL else { throw WalletError.noLud }
+        guard let walletID else { throw WalletError.noWallet }
+        
+        let data = ZapRequestData(
+            zapperUserId: IdentityManager.instance.userHexPubkey,
+            recipientUserId: user.pubkey,
+            recipientLnUrlDecoded: address,
+            zapAmountInSats: UInt64(sats),
+            zapComment: note,
+            userZapRequestEvent: .init(id: zap.id, pubKey: zap.pubkey, createdAt: zap.created_at, kind: Int32(zap.kind), tags: NostrExtensions.shared.mapAsListOfJsonArray(tags: zap.tags), content: zap.content, sig: zap.sig)
+        )
+
+        let zapper = try await zapFactory.createOrNull(walletId: walletID)
+        let res = try await zapper?.zap(walletId: walletID, data: data)
+        
+        if let error = res as? ZapResult.Failure {
+            print(error.description())
+        }
+    }
+    
     func sendLNInvoice(_ lninvoice: String, satsOverride: Int?, messageOverride: String?) async throws {
-        try await impl.sendLNInvoice(lninvoice, satsOverride: satsOverride, messageOverride: messageOverride)
+        guard let walletID else { throw WalletError.noWallet }
+        let res = try await walletRepo.pay(walletId: walletID, request: .LightningLnInvoice(amountSats: String(satsOverride ?? 0), noteRecipient: messageOverride, noteSelf: messageOverride, lnInvoice: lninvoice))
+        print(res)
     }
     
     func sendLNURL(lnurl: String, pubkey: String?, sats: Int, note: String) async throws {
-        try await impl.sendLNURL(lnurl: lnurl, pubkey: pubkey, sats: sats, note: note)
+        guard let walletID else { throw WalletError.noWallet }
+        let res = try await walletRepo.pay(walletId: walletID, request: .LightningLnUrl(amountSats: String(sats), noteRecipient: note, noteSelf: note, lnUrl: lnurl, lud16: nil))
+        print(res)
     }
     
     func sendLud16(_ lud: String, sats: Int, note: String, pubkey: String? = nil, zap: NostrObject? = nil) async throws {
-        try await impl.sendLud16(lud, sats: sats, note: note, pubkey: pubkey, zap: zap)
+        guard let walletID else { throw WalletError.noWallet }
+        guard let decoded = lud.lud16ToDecodedLNURL else { throw WalletError.noLud }
+        
+        let res = try await walletRepo.pay(walletId: walletID, request: .LightningLnUrl(amountSats: String(sats), noteRecipient: note, noteSelf: note, lnUrl: decoded, lud16: lud))
+        print(res)
     }
     
     func send(user: PrimalUser, sats: Int, note: String, zap: NostrObject? = nil) async throws {
-        try await impl.send(user: user, sats: sats, note: note, zap: zap)
+        if let zap {
+            return try await zapUser(user, sats: sats, note: note, zap: zap)
+        }
+        
+        var relays = Array((IdentityManager.instance.userRelays ?? [:]).keys)
+        if relays.isEmpty {
+            relays = bootstrap_relays
+        }
+        
+        guard let zap = NostrObject.zap(target: .profile(user.pubkey), relays: relays) else { throw WalletError.signingError }
+        
+        try await zapUser(user, sats: sats, note: note, zap: zap)
     }
     
     func sendOnchain(_ btcAddress: String, tier: String, sats: Int, note: String) async throws {
-        try await impl.sendOnchain(btcAddress, tier: tier, sats: sats, note: note)
+        guard let walletID else { throw WalletError.noWallet }
+
+        let res = try await walletRepo.pay(walletId: walletID, request: .BitcoinOnChain(amountSats: String(sats), noteRecipient: note, noteSelf: note, onChainAddress: btcAddress, onChainTier: tier))
+        print(res)
     }
     
     func zap(post: ParsedContent, sats: Int, note: String) async throws {
@@ -353,8 +466,6 @@ final class WalletManager {
 
 private extension WalletManager {
     func setupPublishers() {
-        // Necessary to getLoginInfo so that userPubkey is properly set
-        _ = ICloudKeychainManager.instance.getLoginInfo()
         let pubkeyPublisher = ICloudKeychainManager.instance.$userPubkey.removeDuplicates()
         let onlyPubkey = pubkeyPublisher.filter({ !$0.isEmpty })
         

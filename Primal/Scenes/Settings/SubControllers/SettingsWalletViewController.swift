@@ -60,7 +60,7 @@ private extension SettingsWalletViewController {
         
         //nostr+walletconnect://1291af9c119879ef7a59636432c6e06a7a058c0cae80db27c0f20f61f3734e52?relay=wss%3A%2F%2Fnwc.primal.net%2Fx0yn66fe7i6ljbfsypyzme9wwr5o48&secret=7ab8341dbf75e0bc3d053bd9503c2a9d5d608fa54b3e42d0b942c9a1089f1857
         
-        if let nwc = WalletManager.instance.nwc {
+        if false { //let nwc = WalletManager.instance.nwc {
             let disconnectButton = LargeRoundedButton(title: "Disconnect Wallet")
             let info = NWCInfoView()
             
@@ -71,8 +71,8 @@ private extension SettingsWalletViewController {
                 SettingsTitleView(title: "YOUR NOSTR LIGHTNING ADDRESS:"),  SpacerView(height: 10),
             ].forEach { nwcStack.addArrangedSubview($0) }
             
-            info.relayLabel.text = nwc.relay
-            info.addressLabel.text = nwc.address ?? "Unknown address"
+//            info.relayLabel.text = nwc.relay
+//            info.addressLabel.text = nwc.address ?? "Unknown address"
             
             disconnectButton.addAction(.init(handler: { [weak self] _ in
                 WalletManager.instance.disconnectNWCWallet()
@@ -176,7 +176,7 @@ private extension SettingsWalletViewController {
         
         walletStart.switchView.isOn = WalletSettings.startInWallet
         
-        usePrimalWallet = WalletManager.instance.primal != nil
+        usePrimalWallet = WalletManager.instance.isPrimalWalletActive
         
         $usePrimalWallet.removeDuplicates().receive(on: DispatchQueue.main).sink { [weak self] usePrimalWallet in
             primalWallet.switchView.isOn = usePrimalWallet

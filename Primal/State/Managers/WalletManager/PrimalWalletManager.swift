@@ -8,6 +8,7 @@
 import Combine
 import Foundation
 import GenericJSON
+import PrimalShared
 
 class PrimalWalletManager {
     @Published var userHasWallet: Bool?
@@ -21,8 +22,12 @@ class PrimalWalletManager {
     private var update: ContinuousConnection?
     private var cancellables: Set<AnyCancellable> = []
     
+    let zapFactory: any NostrZapperFactory
+    let walletRepo: any WalletRepository
+    
+    var walletID: String?
+    
     init() {
-        setupPublishers()
         
         let pubkey = IdentityManager.instance.userHexPubkey
         
@@ -32,50 +37,90 @@ class PrimalWalletManager {
             userHasWallet = true
         }
 
-        let oldTransactions = (UserDefaults.standard.oldTransactions[pubkey] ?? []).map { $0.toTuple() }
-        isLoadingWallet = oldTransactions.isEmpty
         
+        let regConnection = PrimalApiClientFactory.shared.create(serverType: .caching)
+        let walletConnection = PrimalApiClientFactory.shared.create(serverType: .wallet)
+        
+        let repo = PrimalRepositoryFactory.shared.createProfileRepository(cachingPrimalApiClient: regConnection, primalPublisher: SigningManager.instance, mediaCacher: MediaCacher.instance)
+        let eventRepo = PrimalRepositoryFactory.shared.createEventRepository(cachingPrimalApiClient: regConnection, mediaCacher: MediaCacher.instance)
+        
+        // WalletRepo wallet info by id (balance, transactions, etc.)
+        walletRepo = WalletRepositoryFactory.shared.createWalletRepository(
+            primalWalletApiClient: walletConnection,
+            nostrEventSignatureHandler: SigningManager.instance,
+            profileRepository: repo,
+            eventRepository: eventRepo
+        )
+        
+        zapFactory = NostrZapperFactoryProvider.shared.createNostrZapperFactory(walletRepository: walletRepo, nostrEventSignatureHandler: SigningManager.instance, primalWalletApiClient: walletConnection)
+        
+        
+        // WalletAccountRepo
+        let walletAccountRepo = WalletRepositoryFactory.shared.createWalletAccountRepository()
+        
+        let primalWallet = WalletRepositoryFactory.shared.createPrimalWalletAccountRepository(primalWalletApiClient: walletConnection, nostrEventSignatureHandler: SigningManager.instance)
+        
+        Task {
+            guard let info = try await primalWallet.fetchWalletAccountInfo(userId: pubkey).getOrNull() else {
+                return
+            }
+            
+            self.walletID = info as String
+            
+            try await walletAccountRepo.setActiveWallet(userId: pubkey, walletId: info as String)
+            
+            guard let wallet = try await walletAccountRepo.getActiveWallet(userId: pubkey) else { return }
+            
+            print(wallet.isActivePrimalWallet())
+            print(wallet.balanceInBtc)
+            
+            print((wallet as? Wallet.Primal)?.kycLevel)
+            
+        }
+        
+        
+        setupPublishers()
         refreshHasWallet()
     }
     
     func refreshTransactions() {
-        isLoadingTransactions = true
-        
-        PrimalWalletRequest(type: .transactions()).publisher()
-            .receive(on: DispatchQueue.main)
-            .sink(receiveValue: { [weak self] val in
-                guard let self else { return }
-                self.transactions = val.transactions
-                self.isLoadingTransactions = false
-            })
-            .store(in: &cancellables)
+//        isLoadingTransactions = true
+//        
+//        PrimalWalletRequest(type: .transactions()).publisher()
+//            .receive(on: DispatchQueue.main)
+//            .sink(receiveValue: { [weak self] val in
+//                guard let self else { return }
+//                self.transactions = val.transactions
+//                self.isLoadingTransactions = false
+//            })
+//            .store(in: &cancellables)
     }
     
     func recheckTransactions() {
-        isLoadingTransactions = true
-        
-        PrimalWalletRequest(type: .transactions()).publisher()
-            .receive(on: DispatchQueue.main)
-            .sink(receiveValue: { [weak self] val in
-                guard let self else { return }
-                var transactions = self.transactions
-                
-                let old = val.transactions.filter { new in transactions.contains(where: { $0.id == new.id }) }
-                let new = val.transactions.filter { new in
-                    !transactions.contains(where: { $0.id == new.id }) && new.created_at > transactions.first?.created_at ?? 0
-                }
-                
-                for transaction in old {
-                    guard let index = transactions.firstIndex(where: { $0.id == transaction.id }) else { continue }
-                    transactions[index] = transaction
-                }
-                
-                transactions.insert(contentsOf: new, at: 0)
-                
-                self.transactions = transactions
-                self.isLoadingTransactions = false
-            })
-            .store(in: &cancellables)
+//        isLoadingTransactions = true
+//        
+//        PrimalWalletRequest(type: .transactions()).publisher()
+//            .receive(on: DispatchQueue.main)
+//            .sink(receiveValue: { [weak self] val in
+//                guard let self else { return }
+//                var transactions = self.transactions
+//                
+//                let old = val.transactions.filter { new in transactions.contains(where: { $0.id == new.id }) }
+//                let new = val.transactions.filter { new in
+//                    !transactions.contains(where: { $0.id == new.id }) && new.created_at > transactions.first?.created_at ?? 0
+//                }
+//                
+//                for transaction in old {
+//                    guard let index = transactions.firstIndex(where: { $0.id == transaction.id }) else { continue }
+//                    transactions[index] = transaction
+//                }
+//                
+//                transactions.insert(contentsOf: new, at: 0)
+//                
+//                self.transactions = transactions
+//                self.isLoadingTransactions = false
+//            })
+//            .store(in: &cancellables)
     }
     
     func refreshHasWallet() {
@@ -147,30 +192,92 @@ class PrimalWalletManager {
         })
     }
     
+    // COPIED FROM NWC
+    func sendInvoice(_ address: String, satsOverride: Int?, messageOverride: String?) async throws {
+        throw WalletError.notSupported
+    }
+    
+    func zapUser(_ user: PrimalUser, sats: Int, note: String, zap: NostrObject) async throws {
+        guard let address = user.decodedLNURL else { throw WalletError.noLud }
+        guard let walletID else { throw WalletError.noWallet }
+        
+        let data = ZapRequestData(
+            zapperUserId: IdentityManager.instance.userHexPubkey,
+            recipientUserId: user.pubkey,
+            recipientLnUrlDecoded: address,
+            zapAmountInSats: UInt64(sats),
+            zapComment: note,
+            userZapRequestEvent: .init(id: zap.id, pubKey: zap.pubkey, createdAt: zap.created_at, kind: Int32(zap.kind), tags: NostrExtensions.shared.mapAsListOfJsonArray(tags: zap.tags), content: zap.content, sig: zap.sig)
+        )
+
+        let zapper = try await zapFactory.createOrNull(walletId: walletID)
+        let res = try await zapper?.zap(walletId: walletID, data: data)
+        
+        if let error = res as? ZapResult.Failure {
+            print(error.description())
+        }
+    }
+    
     func sendLNInvoice(_ lninvoice: String, satsOverride: Int?, messageOverride: String?) async throws {
-        try await requestAsync(.payInvoice(lnInvoice: lninvoice, amountOverride: satsOverride?.satsToBitcoinString(), noteOverride: messageOverride))
+        guard let walletID else { throw WalletError.noWallet }
+        let res = try await walletRepo.pay(walletId: walletID, request: .LightningLnInvoice(amountSats: String(satsOverride ?? 0), noteRecipient: messageOverride, noteSelf: messageOverride, lnInvoice: lninvoice))
+        print(res)
     }
     
     func sendLNURL(lnurl: String, pubkey: String?, sats: Int, note: String) async throws {
-        try await requestAsync(.send(.lnurl, target: lnurl, pubkey: pubkey, amount: sats.satsToBitcoinString(), note: note, zap: nil))
+        guard let walletID else { throw WalletError.noWallet }
+        let res = try await walletRepo.pay(walletId: walletID, request: .LightningLnUrl(amountSats: String(sats), noteRecipient: note, noteSelf: note, lnUrl: lnurl, lud16: nil))
+        print(res)
     }
     
-    func sendLud16(_ lud: String, sats: Int, note: String, pubkey: String? = nil, zap: NostrObject?) async throws {
-        try await requestAsync(.send(.lud16, target: lud, pubkey: pubkey, amount: sats.satsToBitcoinString(), note: note, zap: zap))
+    func sendLud16(_ lud: String, sats: Int, note: String, pubkey: String?, zap: NostrObject?) async throws {
+        guard let walletID else { throw WalletError.noWallet }
+        guard let decoded = lud.lud16ToDecodedLNURL else { throw WalletError.noLud }
+        
+        let res = try await walletRepo.pay(walletId: walletID, request: .LightningLnUrl(amountSats: String(sats), noteRecipient: note, noteSelf: note, lnUrl: decoded, lud16: lud))
+        print(res)
     }
     
-    func send(user: PrimalUser, sats: Int, note: String, zap: NostrObject? = nil) async throws {
-        let lud16 = user.lud16
-        if lud16.isEmpty {
-            let lud06 = user.lud06
-            
-            if lud06.isEmpty { throw WalletError.noLud }
-            
-            return try await requestAsync(.send(.lud06, target: lud06, pubkey: user.pubkey, amount: sats.satsToBitcoinString(), note: note, zap: zap))
+    func send(user: PrimalUser, sats: Int, note: String, zap: NostrObject?) async throws {
+        if let zap {
+            return try await zapUser(user, sats: sats, note: note, zap: zap)
         }
-            
-        try await sendLud16(lud16, sats: sats, note: note, pubkey: user.pubkey, zap: zap)
+        
+        var relays = Array((IdentityManager.instance.userRelays ?? [:]).keys)
+        if relays.isEmpty {
+            relays = bootstrap_relays
+        }
+        
+        guard let zap = NostrObject.zap(target: .profile(user.pubkey), relays: relays) else { throw WalletError.signingError }
+        
+        try await zapUser(user, sats: sats, note: note, zap: zap)
     }
+    // END OF COPIED
+    
+//    func sendLNInvoice(_ lninvoice: String, satsOverride: Int?, messageOverride: String?) async throws {
+//        try await requestAsync(.payInvoice(lnInvoice: lninvoice, amountOverride: satsOverride?.satsToBitcoinString(), noteOverride: messageOverride))
+//    }
+//    
+//    func sendLNURL(lnurl: String, pubkey: String?, sats: Int, note: String) async throws {
+//        try await requestAsync(.send(.lnurl, target: lnurl, pubkey: pubkey, amount: sats.satsToBitcoinString(), note: note, zap: nil))
+//    }
+//    
+//    func sendLud16(_ lud: String, sats: Int, note: String, pubkey: String? = nil, zap: NostrObject?) async throws {
+//        try await requestAsync(.send(.lud16, target: lud, pubkey: pubkey, amount: sats.satsToBitcoinString(), note: note, zap: zap))
+//    }
+//    
+//    func send(user: PrimalUser, sats: Int, note: String, zap: NostrObject? = nil) async throws {
+//        let lud16 = user.lud16
+//        if lud16.isEmpty {
+//            let lud06 = user.lud06
+//            
+//            if lud06.isEmpty { throw WalletError.noLud }
+//            
+//            return try await requestAsync(.send(.lud06, target: lud06, pubkey: user.pubkey, amount: sats.satsToBitcoinString(), note: note, zap: zap))
+//        }
+//            
+//        try await sendLud16(lud16, sats: sats, note: note, pubkey: user.pubkey, zap: zap)
+//    }
     
     func sendOnchain(_ btcAddress: String, tier: String, sats: Int, note: String) async throws {
         try await requestAsync(.send(.onchain(tier: tier), target: btcAddress, pubkey: nil, amount: sats.satsToBitcoinString(), note: note, zap: nil))
@@ -243,10 +350,6 @@ private extension PrimalWalletManager {
                 ) }
                 
                 WalletManager.instance.parsedTransactions = parsed
-                
-                if !parsed.isEmpty {
-                    UserDefaults.standard.oldTransactions[IdentityManager.instance.userHexPubkey] = parsed.prefix(10).map { .init(transaction: $0.0, user: .init($0.1)) }
-                }
             }
             .store(in: &cancellables)
 

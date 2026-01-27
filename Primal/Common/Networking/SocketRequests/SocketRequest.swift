@@ -86,6 +86,28 @@ struct SocketRequest {
     }
 }
 
+class SocketRequestAsyncExecutor {
+    let name: String
+    let payload: JSON?
+    let connection: Connection
+    
+    var cancellable: AnyCancellable?
+    
+    init(name: String, payload: JSON?, connection: Connection = Connection.regular) {
+        self.name = name
+        self.payload = payload
+        self.connection = connection
+    }
+    
+    func execute() async -> PostRequestResult {
+        await withCheckedContinuation { continuation in
+            cancellable = SocketRequest(name: name, payload: payload).publisher().sink { res in
+                continuation.resume(returning: res)
+            }
+        }
+    }
+}
+
 extension PostRequestResult {
     func handlePostEvent(_ payload: [String: JSON]) {
         guard let kind = NostrKind(rawValue: Int(payload["kind"]?.doubleValue ?? -1337)) else {

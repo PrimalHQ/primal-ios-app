@@ -67,7 +67,9 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             .hugeFontKey:           true,
         ])
         
+        // Delete in 2027
         UserDefaults.standard.removeObject(forKey: .didVisitPremiumAfterProUpdateKey)
+        UserDefaults.standard.removeObject(forKey: .oldTransactionsKey)
         
         UITableView.appearance().sectionHeaderTopPadding = 0
         
