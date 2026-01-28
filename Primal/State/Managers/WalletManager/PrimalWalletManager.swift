@@ -71,7 +71,7 @@ class PrimalWalletManager {
             
             guard let wallet = try await walletAccountRepo.getActiveWallet(userId: pubkey) else { return }
             
-            print(wallet.isActivePrimalWallet())
+//            print(wallet.isActivePrimalWallet())
             print(wallet.balanceInBtc)
             
             print((wallet as? Wallet.Primal)?.kycLevel)
@@ -220,13 +220,13 @@ class PrimalWalletManager {
     
     func sendLNInvoice(_ lninvoice: String, satsOverride: Int?, messageOverride: String?) async throws {
         guard let walletID else { throw WalletError.noWallet }
-        let res = try await walletRepo.pay(walletId: walletID, request: .LightningLnInvoice(amountSats: String(satsOverride ?? 0), noteRecipient: messageOverride, noteSelf: messageOverride, lnInvoice: lninvoice))
+        let res = try await walletRepo.pay(walletId: walletID, request: .LightningLnInvoice(amountSats: String(satsOverride ?? 0), noteRecipient: messageOverride, noteSelf: messageOverride, idempotencyKey: UUID().uuidString, lnInvoice: lninvoice))
         print(res)
     }
     
     func sendLNURL(lnurl: String, pubkey: String?, sats: Int, note: String) async throws {
         guard let walletID else { throw WalletError.noWallet }
-        let res = try await walletRepo.pay(walletId: walletID, request: .LightningLnUrl(amountSats: String(sats), noteRecipient: note, noteSelf: note, lnUrl: lnurl, lud16: nil))
+        let res = try await walletRepo.pay(walletId: walletID, request: .LightningLnUrl(amountSats: String(sats), noteRecipient: note, noteSelf: note, idempotencyKey: UUID().uuidString, lnUrl: lnurl, lud16: nil))
         print(res)
     }
     
@@ -234,7 +234,7 @@ class PrimalWalletManager {
         guard let walletID else { throw WalletError.noWallet }
         guard let decoded = lud.lud16ToDecodedLNURL else { throw WalletError.noLud }
         
-        let res = try await walletRepo.pay(walletId: walletID, request: .LightningLnUrl(amountSats: String(sats), noteRecipient: note, noteSelf: note, lnUrl: decoded, lud16: lud))
+        let res = try await walletRepo.pay(walletId: walletID, request: .LightningLnUrl(amountSats: String(sats), noteRecipient: note, noteSelf: note, idempotencyKey: UUID().uuidString, lnUrl: decoded, lud16: lud))
         print(res)
     }
     
