@@ -270,9 +270,10 @@ final class WalletManager {
 //        impl.refreshBalance()
 //        primal?.refreshTransactions()
         
-        self.walletRepo.latestTransactions(walletId: walletID, walletType: .primal).toPublisher()
+        self.walletRepo.latestTransactions(walletId: walletID).toPublisher()
             .sink { transactions in
                 print(transactions)
+//                IosPagingFactory.shared.createPresenter(pagingFlow: transactions)
             }
             .store(in: &cancellables)
         
@@ -402,13 +403,13 @@ final class WalletManager {
     
     func sendLNInvoice(_ lninvoice: String, satsOverride: Int?, messageOverride: String?) async throws {
         guard let walletID else { throw WalletError.noWallet }
-        let res = try await walletRepo.pay(walletId: walletID, request: .LightningLnInvoice(amountSats: String(satsOverride ?? 0), noteRecipient: messageOverride, noteSelf: messageOverride, lnInvoice: lninvoice))
+        let res = try await walletRepo.pay(walletId: walletID, request: .LightningLnInvoice(amountSats: String(satsOverride ?? 0), noteRecipient: messageOverride, noteSelf: messageOverride, idempotencyKey: UUID().uuidString, lnInvoice: lninvoice))
         print(res)
     }
     
     func sendLNURL(lnurl: String, pubkey: String?, sats: Int, note: String) async throws {
         guard let walletID else { throw WalletError.noWallet }
-        let res = try await walletRepo.pay(walletId: walletID, request: .LightningLnUrl(amountSats: String(sats), noteRecipient: note, noteSelf: note, lnUrl: lnurl, lud16: nil))
+        let res = try await walletRepo.pay(walletId: walletID, request: .LightningLnUrl(amountSats: String(sats), noteRecipient: note, noteSelf: note, idempotencyKey: UUID().uuidString, lnUrl: lnurl, lud16: nil))
         print(res)
     }
     
@@ -416,7 +417,7 @@ final class WalletManager {
         guard let walletID else { throw WalletError.noWallet }
         guard let decoded = lud.lud16ToDecodedLNURL else { throw WalletError.noLud }
         
-        let res = try await walletRepo.pay(walletId: walletID, request: .LightningLnUrl(amountSats: String(sats), noteRecipient: note, noteSelf: note, lnUrl: decoded, lud16: lud))
+        let res = try await walletRepo.pay(walletId: walletID, request: .LightningLnUrl(amountSats: String(sats), noteRecipient: note, noteSelf: note, idempotencyKey: UUID().uuidString, lnUrl: decoded, lud16: lud))
         print(res)
     }
     
@@ -438,7 +439,7 @@ final class WalletManager {
     func sendOnchain(_ btcAddress: String, tier: String, sats: Int, note: String) async throws {
         guard let walletID else { throw WalletError.noWallet }
 
-        let res = try await walletRepo.pay(walletId: walletID, request: .BitcoinOnChain(amountSats: String(sats), noteRecipient: note, noteSelf: note, onChainAddress: btcAddress, onChainTier: tier))
+        let res = try await walletRepo.pay(walletId: walletID, request: .BitcoinOnChain(amountSats: String(sats), noteRecipient: note, noteSelf: note, idempotencyKey: UUID().uuidString, onChainAddress: btcAddress, onChainTierId: tier))
         print(res)
     }
     
