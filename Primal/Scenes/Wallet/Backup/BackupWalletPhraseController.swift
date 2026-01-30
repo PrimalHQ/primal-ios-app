@@ -58,7 +58,7 @@ class BackupWalletPhraseController: UIViewController {
         firstLabel.constrainToSize(width: 313)
         
         nextButton.addAction(.init(handler: { [weak self] _ in
-            self?.show(BackupWalletPhraseController(), sender: nil)
+            self?.show(BackupWalletInputPhraseController(), sender: nil)
         }), for: .touchUpInside)
         
         cancelButton.addAction(.init(handler: { [weak self] _ in
@@ -87,7 +87,5 @@ class WalletPhrasePreviewView: UIView {
         
         addSubview(indexLabel)
         indexLabel.pinToSuperview(edges: .top, padding: 3).pinToSuperview(edges: .trailing, padding: 5)
-    }
-    
-    
+    }    
 }
