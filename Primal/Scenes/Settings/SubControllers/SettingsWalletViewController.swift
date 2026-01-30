@@ -134,12 +134,9 @@ private extension SettingsWalletViewController {
         }), for: .touchUpInside)
         
         let primalStack = UIStackView(axis: .vertical, [
-            walletStart,                                                                                                        SpacerView(height: 10),
-            descLabel("Open the wallet when Primal starts"),                                                                    SpacerView(height: 24),
             showNotifications,                                                                                                  SpacerView(height: 10),
             descLabel("Get notified with push notifications when you receive a payment above a certain size"),                  SpacerView(height: 24),
-            minTransaction,                                                                                                     SpacerView(height: 10),
-            descLabel("You can choose to hide small transactions to avoid spam in your transaction list"),                      SpacerView(height: 24),
+            
 //            SettingsInfoView(name: "Fiat currency", desc: "USD", showArrow: true),                                              SpacerView(height: 10),
 //            descLabel("You can choose to hide small transactions to avoid spam in your transaction list"),                      SpacerView(height: 24),
             SettingsInfoView(name: "Max wallet balance", desc: "\(WalletManager.instance.maxBalance.localized()) sats", showArrow: false), SpacerView(height: 10),
@@ -148,12 +145,16 @@ private extension SettingsWalletViewController {
         ])
         
         let mainStack = UIStackView(axis: .vertical, [
-            primalWallet,                                                                                                       SpacerView(height: 10),
-            descLabel("Alternatively you can connect to an external lightning wallet via Nostr Wallet Connect"),                SpacerView(height: 24),
-            nwcStack,
             SettingsInfoView(name: "LN Address", desc: IdentityManager.instance.user?.lud16 ?? "Not set...", showArrow: false), SpacerView(height: 10),
             addressDesc,                                                                                                        SpacerView(height: 24),
-            primalStack
+            walletStart,                                                                                                        SpacerView(height: 10),
+            descLabel("Open the wallet when Primal starts"),                                                                    SpacerView(height: 24),
+            primalWallet,                                                                                                       SpacerView(height: 10),
+            minTransaction,                                                                                                     SpacerView(height: 10),
+            descLabel("You can choose to hide small transactions to avoid spam in your transaction list"),                      SpacerView(height: 24),
+            primalStack,
+            descLabel("Alternatively you can connect to an external lightning wallet via Nostr Wallet Connect"),                SpacerView(height: 24),
+            nwcStack,
         ])
         
         nwcVC.willMove(toParent: self)

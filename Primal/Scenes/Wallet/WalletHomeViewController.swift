@@ -27,6 +27,8 @@ final class WalletHomeViewController: UIViewController, Themeable {
     enum Cell {
         case loading
         case activateWallet
+        case upgradeWallet
+        case backupWallet
         case buySats
         case error(String)
         case transaction((WalletTransaction, ParsedUser))
@@ -160,6 +162,20 @@ extension WalletHomeViewController: UITableViewDataSource {
                 cell.delegate = self
             }
             return cell
+        case .upgradeWallet:
+            let cell = tableView.dequeueReusableCell(withIdentifier: "upgradeWallet", for: indexPath)
+            if let cell = cell as? UpgradeWalletCell {
+                cell.updateTheme()
+                cell.delegate = self
+            }
+            return cell
+        case .backupWallet:
+            let cell = tableView.dequeueReusableCell(withIdentifier: "backupWallet", for: indexPath)
+            if let cell = cell as? BackupWalletCell {
+                cell.updateTheme()
+                cell.delegate = self
+            }
+            return cell
         case .buySats:
             let cell = tableView.dequeueReusableCell(withIdentifier: "buySats", for: indexPath)
             if let cell = cell as? BuySatsCell {
@@ -265,17 +281,29 @@ extension WalletHomeViewController: UITableViewDelegate {
             show(TransactionViewController(transaction: transaction, user: user), sender: nil)
         case .activateWallet:
             activateWalletPressed()
+        case .upgradeWallet:
+            upgradeWalletPressed()
+        case .backupWallet:
+            backupWalletPressed()
         }
     }
 }
 
-extension WalletHomeViewController: BuySatsCellDelegate, ActivateWalletCellDelegate {
+extension WalletHomeViewController: BuySatsCellDelegate, ActivateWalletCellDelegate, UpgradeWalletCellDelegate, BackupWalletCellDelegate {
     func activateWalletPressed() {
 //        if WalletManager.instance.primal == nil {
 //            WalletManager.instance.setUsePrimalWallet()
 //        } else {
 //            show(WalletActivateViewController(), sender: nil)
 //        }
+    }
+    
+    func upgradeWalletPressed() {
+        
+    }
+    
+    func backupWalletPressed() {
+        present(BackupWalletController(), animated: true)
     }
     
     func buySatsPressed() {
@@ -316,6 +344,8 @@ private extension WalletHomeViewController {
         table.register(WalletInfoCell.self, forCellReuseIdentifier: "info")
         table.register(BuySatsCell.self, forCellReuseIdentifier: "buySats")
         table.register(ActivateWalletCell.self, forCellReuseIdentifier: "activateWallet")
+        table.register(UpgradeWalletCell.self, forCellReuseIdentifier: "upgradeWallet")
+        table.register(BackupWalletCell.self, forCellReuseIdentifier: "backupWallet")
         table.register(ChatLoadingCell.self, forCellReuseIdentifier: "loading")
         table.register(ErrorMessageCell.self, forCellReuseIdentifier: "error")
         table.contentInset = .init(top: 0, left: 0, bottom: 186, right: 0)
@@ -367,6 +397,8 @@ private extension WalletHomeViewController {
                 firstSection.cells += [.loading]
             } else if shouldShowBuySats {
                 firstSection.cells += [.buySats]
+            } else {
+                firstSection.cells += [.backupWallet]
             }
             
             var tableData = [Section]()

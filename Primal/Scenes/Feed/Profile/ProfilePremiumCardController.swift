@@ -56,10 +56,10 @@ extension LegendTheme {
 }
 
 extension UIButton.Configuration {
-    static func coloredButton(_ title: String, color: UIColor) -> UIButton.Configuration {
+    static func coloredButton(_ title: String, color: UIColor, font: UIFont = .appFont(withSize: 16, weight: .regular)) -> UIButton.Configuration {
         var config = UIButton.Configuration.plain()
         config.attributedTitle = .init(title, attributes: .init([
-            .font: UIFont.appFont(withSize: 16, weight: .regular),
+            .font: font,
             .foregroundColor: color
         ]))
         return config
