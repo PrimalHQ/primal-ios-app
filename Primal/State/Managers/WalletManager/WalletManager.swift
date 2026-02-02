@@ -306,7 +306,22 @@ final class WalletManager {
         let flow = walletRepo.latestTransactions(walletId: "abc")
         let snapshot = IosPagingUtils.shared.createTransactionSnapshot(pagingFlow: flow)
         
+        let presenter = IosPagingUtils.shared.createTransactionPresenter(pagingFlow: flow)
+        
         Task {
+             presenter.refresh()
+              for await _ in presenter.invalidations {
+                  print("Got \(presenter.itemCount()) transactions")
+                  for i in 0..<presenter.itemCount() {
+                      if let tx = presenter.item(index: Int32(i)) {
+                          print("  - \(tx.transactionId): \(tx.amountInBtc) BTC")
+                      }
+                  }
+              }
+          }
+        
+        Task {
+            snapshot.refresh()
             for await items in snapshot.items {
                 print("Got \(items.count) transactions")
                 for tx in items.prefix(3) {
