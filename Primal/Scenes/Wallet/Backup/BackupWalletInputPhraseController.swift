@@ -44,10 +44,6 @@ class BackupWalletInputPhraseController: UIViewController {
         keyboardView.topAnchor.constraint(lessThanOrEqualTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -8).isActive = true
         wordStack.widthAnchor.constraint(equalTo: scrollView.widthAnchor).isActive = true
         
-        nextButton.addAction(.init(handler: { [weak self] _ in
-            self?.show(BackupWalletPhraseController(), sender: nil)
-        }), for: .touchUpInside)
-        
         zip(wordViews, wordViews.dropFirst()).forEach { (current, next) in
             current.nextView = next
         }
@@ -59,7 +55,7 @@ class BackupWalletInputPhraseController: UIViewController {
             .store(in: &cancellables)
         }
         
-        $correctCount.map { $0 == 12 }
+        $correctCount.map { $0 >= 12 }
             .sink { isAllCorrect in
                 nextButton.configuration = isAllCorrect ?
                     .accentPill(text: "Verify", font: .appFont(withSize: 18, weight: .semibold)) :
@@ -69,6 +65,10 @@ class BackupWalletInputPhraseController: UIViewController {
             .store(in: &cancellables)
         
         keyboardView.updateHeightCancellable().store(in: &cancellables)
+        
+        nextButton.addAction(.init(handler: { [weak self] _ in
+            self?.show(BackupWalletConfirmController(), sender: nil)
+        }), for: .touchUpInside)
     }
 }
 
