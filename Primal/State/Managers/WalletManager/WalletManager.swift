@@ -226,6 +226,8 @@ final class WalletManager {
         premiumState = nil
         activeWallet = nil
         updateCancellables = []
+        isLoadingWallet = false
+        userHasWallet = true
         
         let walletAccountRepo = WalletRepositoryFactory.shared.createWalletAccountRepository()
         walletAccountRepo.observeActiveWallet(userId: pubkey)
