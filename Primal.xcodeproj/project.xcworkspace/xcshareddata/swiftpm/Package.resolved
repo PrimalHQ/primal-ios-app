@@ -1,6 +1,15 @@
 {
-  "originHash" : "885f0babfbc21801c6991904384d157470f7abaaa4e3b65d3c209f3786dec098",
+  "originHash" : "990cefb19c5a745aa2a79d2bb137c0f6fdd63e8b767a8c781e3c8ab03251979e",
   "pins" : [
+    {
+      "identity" : "breez-sdk-spark-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/breez/breez-sdk-spark-swift.git",
+      "state" : {
+        "revision" : "c7e75f192a9dd8e3c7c6a163a8f931b768ee49ef",
+        "version" : "0.7.13-dev2"
+      }
+    },
     {
       "identity" : "cryptoswift",
       "kind" : "remoteSourceControl",
@@ -101,6 +110,15 @@
       }
     },
     {
+      "identity" : "primal-shared-ios",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/PrimalHQ/primal-shared-ios",
+      "state" : {
+        "revision" : "3433329a330afbee1361ed745595351e16a3f2b7",
+        "version" : "0.1.3"
+      }
+    },
+    {
       "identity" : "qrcode",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/dagronf/qrcode.git",
@@ -116,6 +134,15 @@
       "state" : {
         "revision" : "1a14e189def5eaa92f839afdd2faad8e43b61a6e",
         "version" : "0.12.2"
+      }
+    },
+    {
+      "identity" : "swift-bigint",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/mkrd/Swift-BigInt.git",
+      "state" : {
+        "revision" : "b07e961f4c999671cf8c2dc80e740899e8946013",
+        "version" : "2.3.0"
       }
     },
     {

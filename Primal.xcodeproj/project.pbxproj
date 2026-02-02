@@ -243,7 +243,7 @@
 		B904E9A32F042BFD006D195C /* CloudPopupController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B904E9A22F042BDD006D195C /* CloudPopupController.swift */; };
 		B904EA1A2F23B559006D195C /* HTMLGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B904EA192F23B559006D195C /* HTMLGenerator.swift */; };
 		B904EA1D2F23B895006D195C /* Markdown in Frameworks */ = {isa = PBXBuildFile; productRef = B904EA1C2F23B895006D195C /* Markdown */; };
-		B904EA442F2A339E006D195C /* PrimalShared.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = B904EA432F2A339E006D195C /* PrimalShared.xcframework */; };
+		B904EAA42F2D2E42006D195C /* BreezSdkSpark in Frameworks */ = {isa = PBXBuildFile; productRef = B904EAA32F2D2E42006D195C /* BreezSdkSpark */; };
 		B90585382C9DDFD600FC4108 /* SettingsDevModeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90585372C9DDFD600FC4108 /* SettingsDevModeController.swift */; };
 		B906AAE52C91C46D0089813F /* smallPillLoaderLight.json in Resources */ = {isa = PBXBuildFile; fileRef = B906AAD72C91C46D0089813F /* smallPillLoaderLight.json */; };
 		B906AAE72C91C46D0089813F /* smallPillLoader.json in Resources */ = {isa = PBXBuildFile; fileRef = B906AAD92C91C46D0089813F /* smallPillLoader.json */; };
@@ -493,6 +493,7 @@
 		B98DD8EC2C89B1BC00E8369A /* HomeFeedChildController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98DD8EB2C89B1BC00E8369A /* HomeFeedChildController.swift */; };
 		B991FA442E8D88CB009D313E /* PopupInfoBubbleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B991FA432E8D88B4009D313E /* PopupInfoBubbleView.swift */; };
 		B991FA462E8ED0A2009D313E /* LiveVideoSmallHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B991FA452E8ED0A2009D313E /* LiveVideoSmallHeaderView.swift */; };
+		B992F8462F2E148F004C2638 /* PrimalShared in Frameworks */ = {isa = PBXBuildFile; productRef = B992F8452F2E148F004C2638 /* PrimalShared */; };
 		B99315EF2C10ACB500EE09AB /* CommentZapPill.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99315EE2C10ACB500EE09AB /* CommentZapPill.swift */; };
 		B99E03812BF75FEE006CCECB /* PostCellNantesDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99E03802BF75FEE006CCECB /* PostCellNantesDelegate.swift */; };
 		B99E03832BF76064006CCECB /* PostCellEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99E03822BF76064006CCECB /* PostCellEvent.swift */; };
@@ -1049,7 +1050,6 @@
 		B9031D512ACDDD4200C7489F /* ReplyingToView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReplyingToView.swift; sourceTree = "<group>"; };
 		B904E9A22F042BDD006D195C /* CloudPopupController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudPopupController.swift; sourceTree = "<group>"; };
 		B904EA192F23B559006D195C /* HTMLGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTMLGenerator.swift; sourceTree = "<group>"; };
-		B904EA432F2A339E006D195C /* PrimalShared.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = PrimalShared.xcframework; sourceTree = "<group>"; };
 		B90585372C9DDFD600FC4108 /* SettingsDevModeController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsDevModeController.swift; sourceTree = "<group>"; };
 		B906AAD72C91C46D0089813F /* smallPillLoaderLight.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = smallPillLoaderLight.json; sourceTree = "<group>"; };
 		B906AAD92C91C46D0089813F /* smallPillLoader.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = smallPillLoader.json; sourceTree = "<group>"; };
@@ -1564,8 +1564,10 @@
 				B91797FE2EDDD21D00EF29EF /* NostrSDK in Frameworks */,
 				9393312429A3E45E003954C2 /* Kingfisher in Frameworks */,
 				B9F933182B867D860064B495 /* QRCode in Frameworks */,
+				B904EAA42F2D2E42006D195C /* BreezSdkSpark in Frameworks */,
 				B904EA1D2F23B895006D195C /* Markdown in Frameworks */,
 				933B85752A9F6EC400C48FF6 /* CryptoSwift in Frameworks */,
+				B992F8462F2E148F004C2638 /* PrimalShared in Frameworks */,
 				9E83DF5F2A53308200F2C379 /* FLAnimatedImage in Frameworks */,
 				B906AB042C99F3E40089813F /* GRDB in Frameworks */,
 				9309D2312A5EA7EF00FD2127 /* KeychainAccess in Frameworks */,
@@ -1574,7 +1576,6 @@
 				B907D3C12DBBF18B002B86DA /* LightningDevKit in Frameworks */,
 				B94F2BDF2ADDCD710041181B /* StoreKit.framework in Frameworks */,
 				9E0DEAED29FD2F6900145E08 /* Lottie in Frameworks */,
-				B904EA442F2A339E006D195C /* PrimalShared.xcframework in Frameworks */,
 				9EF4BFC02A8A633B003396AA /* Nantes in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1719,7 +1720,6 @@
 				9393312829A3E4E0003954C2 /* Common */,
 				9E9F2F9929F6ABA800A9CDF3 /* AppDelegate.swift */,
 				9E9F2F9829F6ABA800A9CDF3 /* SceneDelegate.swift */,
-				B904EA432F2A339E006D195C /* PrimalShared.xcframework */,
 				9EB219EE2A06FD610037C3E5 /* MainLogo.png */,
 				939330F929A3E370003954C2 /* Assets.xcassets */,
 				939330FB29A3E370003954C2 /* Preview Content */,
@@ -3638,6 +3638,8 @@
 				B907D3C02DBBF18B002B86DA /* LightningDevKit */,
 				B91797FD2EDDD21D00EF29EF /* NostrSDK */,
 				B904EA1C2F23B895006D195C /* Markdown */,
+				B904EAA32F2D2E42006D195C /* BreezSdkSpark */,
+				B992F8452F2E148F004C2638 /* PrimalShared */,
 			);
 			productName = Primal;
 			productReference = 939330F229A3E36F003954C2 /* Primal.app */;
@@ -3807,6 +3809,8 @@
 				B907D3BF2DBBF18B002B86DA /* XCRemoteSwiftPackageReference "ldk-swift" */,
 				B91797FC2EDDD21D00EF29EF /* XCRemoteSwiftPackageReference "nostr-sdk-ios" */,
 				B904EA1B2F23B895006D195C /* XCRemoteSwiftPackageReference "swift-markdown" */,
+				B904EAA22F2D2E42006D195C /* XCRemoteSwiftPackageReference "breez-sdk-spark-swift" */,
+				B992F8442F2E148F004C2638 /* XCRemoteSwiftPackageReference "primal-shared-ios" */,
 			);
 			productRefGroup = 939330F329A3E36F003954C2 /* Products */;
 			projectDirPath = "";
@@ -5251,6 +5255,14 @@
 				minimumVersion = 0.7.3;
 			};
 		};
+		B904EAA22F2D2E42006D195C /* XCRemoteSwiftPackageReference "breez-sdk-spark-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/breez/breez-sdk-spark-swift.git";
+			requirement = {
+				kind = exactVersion;
+				version = "0.7.13-dev2";
+			};
+		};
 		B906AB022C99F3E40089813F /* XCRemoteSwiftPackageReference "GRDB.swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/groue/GRDB.swift.git";
@@ -5273,6 +5285,14 @@
 			requirement = {
 				branch = main;
 				kind = branch;
+			};
+		};
+		B992F8442F2E148F004C2638 /* XCRemoteSwiftPackageReference "primal-shared-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/PrimalHQ/primal-shared-ios";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.1.3;
 			};
 		};
 		B9F933162B867D860064B495 /* XCRemoteSwiftPackageReference "qrcode" */ = {
@@ -5336,6 +5356,11 @@
 			package = B904EA1B2F23B895006D195C /* XCRemoteSwiftPackageReference "swift-markdown" */;
 			productName = Markdown;
 		};
+		B904EAA32F2D2E42006D195C /* BreezSdkSpark */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B904EAA22F2D2E42006D195C /* XCRemoteSwiftPackageReference "breez-sdk-spark-swift" */;
+			productName = BreezSdkSpark;
+		};
 		B906AB032C99F3E40089813F /* GRDB */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = B906AB022C99F3E40089813F /* XCRemoteSwiftPackageReference "GRDB.swift" */;
@@ -5365,6 +5390,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 9393311F29A3E44D003954C2 /* XCRemoteSwiftPackageReference "generic-json-swift" */;
 			productName = GenericJSON;
+		};
+		B992F8452F2E148F004C2638 /* PrimalShared */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B992F8442F2E148F004C2638 /* XCRemoteSwiftPackageReference "primal-shared-ios" */;
+			productName = PrimalShared;
 		};
 		B9F933172B867D860064B495 /* QRCode */ = {
 			isa = XCSwiftPackageProductDependency;
