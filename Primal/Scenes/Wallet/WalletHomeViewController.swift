@@ -9,6 +9,7 @@ import AudioToolbox
 import Combine
 import UIKit
 import GenericJSON
+import PrimalShared
 
 protocol WalletHomeTransitionButton: UIControl {
     var imageView: UIImageView? { get }
@@ -31,11 +32,9 @@ final class WalletHomeViewController: UIViewController, Themeable {
         case backupWallet
         case buySats
         case error(String)
-        case transaction((WalletTransaction, ParsedUser))
+        case transaction(PrimalShared.Transaction)
         
-        var transaction: WalletTransaction? { parsedTransaction?.0 }
-        
-        var parsedTransaction: (WalletTransaction, ParsedUser)? {
+        var transaction: PrimalShared.Transaction? {
             if case let .transaction(trans) = self {
                 return trans
             }
@@ -47,7 +46,7 @@ final class WalletHomeViewController: UIViewController, Themeable {
         var title: String?
         var cells: [Cell] = []
         
-        var parsedTransactions: [(WalletTransaction, ParsedUser)] { cells.compactMap { $0.parsedTransaction } }
+        var transactions: [PrimalShared.Transaction] { cells.compactMap { $0.transaction } }
     }
     
     private let navBar = WalletNavView()
@@ -66,14 +65,11 @@ final class WalletHomeViewController: UIViewController, Themeable {
     
     var selectedIndexPath: IndexPath?
     
-    var animationsOn = false
-    
     private var tableData: [Section] = [] {
         didSet {
             guard navigationController?.topViewController == parent, view.window != nil else { return }
             
             table.reloadData()
-            animateCellsAppear(howManyCellsToAppear(oldValue, tableData))
         }
     }
     
@@ -81,10 +77,6 @@ final class WalletHomeViewController: UIViewController, Themeable {
         super.viewDidLoad()
         
         setup()
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) {
-            self.animationsOn = true
-        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -199,10 +191,6 @@ extension WalletHomeViewController: UITableViewDataSource {
                 cell.delegate = self
             }
             
-//            if indexPath.section >= tableData.count - 1 {
-//                WalletManager.instance.impl.loadMoreTransactions()
-//            }
-            
             return cell
         }
     }
@@ -213,11 +201,13 @@ extension WalletHomeViewController: TransactionCellDelegate {
     func transactionCellDidTapAvatar(_ cell: TransactionCell) {
         guard
             let indexPath = table.indexPath(for: cell),
-            case let .transaction((_, user)) = tableData[indexPath.section].cells[indexPath.row],
-            user.data.pubkey != IdentityManager.instance.userHexPubkey
+            case let .transaction(trans) = tableData[indexPath.section].cells[indexPath.row],
+            let zapTrans = trans as? Transaction.Zap,
+            let pubkey = zapTrans.otherUserId,
+            pubkey != IdentityManager.instance.userHexPubkey
         else { return }
         
-        show(ProfileViewController(profile: user), sender: nil)
+        show(ProfileViewController(profile: .init(data: .init(pubkey: pubkey))), sender: nil)
     }
 }
 
@@ -276,9 +266,9 @@ extension WalletHomeViewController: UITableViewDelegate {
             break
         case .buySats:
             buySatsPressed()
-        case .transaction((let transaction, let user)):
+        case .transaction(let transaction):
             selectedIndexPath = indexPath
-            show(TransactionViewController(transaction: transaction, user: user), sender: nil)
+            show(TransactionViewController(transaction: transaction), sender: nil)
         case .activateWallet:
             activateWalletPressed()
         case .upgradeWallet:
@@ -365,22 +355,16 @@ private extension WalletHomeViewController {
         }
         .store(in: &cancellables)
         
-//        let isPoorPublisher = WalletManager.instance.$balance.map { $0 < 1000 }.removeDuplicates()
-        let shouldShowBuySatsPublisher = Just(false)//Publishers.CombineLatest(isPoorPublisher, WalletManager.instance.$didJustCreateWallet).map { $0 && $1 }
-        
-        Publishers.CombineLatest4(
-            WalletManager.instance.$userHasWallet,
-            WalletManager.instance.$isLoadingWallet,
+        Publishers.CombineLatest(
+            WalletManager.instance.$activeWallet,
             WalletManager.instance.$parsedTransactions,
-            shouldShowBuySatsPublisher.removeDuplicates()
         )
-        .debounce(for: .seconds(0.1), scheduler: RunLoop.main)
         .receive(on: DispatchQueue.main)
-        .sink { [weak self] hasWallet, isLoading, transactions, shouldShowBuySats in
+        .sink { [weak self] wallet, transactions in
             guard let self else { return }
             
             let grouping = Dictionary(grouping: transactions) {
-                Calendar.current.dateComponents([.day, .year, .month], from: Date(timeIntervalSince1970: TimeInterval($0.0.created_at)))
+                Calendar.current.dateComponents([.day, .year, .month], from: Date(timeIntervalSince1970: TimeInterval($0.createdAt)))
             }
             
             table.refreshControl?.endRefreshing()
@@ -391,37 +375,26 @@ private extension WalletHomeViewController {
                 return
             }
             
-            if hasWallet == false {
-                firstSection.cells += [.activateWallet]
-            } else if isLoading && transactions.isEmpty {
-                firstSection.cells += [.loading]
-            } else if shouldShowBuySats {
-                firstSection.cells += [.buySats]
-            } else {
-                firstSection.cells += [.backupWallet]
+            if wallet == nil {
+                firstSection.cells += [.upgradeWallet, .loading]
+            } else if let primal = wallet as? Wallet.Primal {
+                firstSection.cells += [.upgradeWallet]
+            } else if let spark = wallet as? Wallet.Spark {
+                if !spark.isBackedUp {
+                    firstSection.cells += [.backupWallet]
+                }
             }
             
             var tableData = [Section]()
             if !firstSection.cells.isEmpty {
                 tableData.append(firstSection)
             }
-            tableData.append(contentsOf: grouping.sorted(by: { $0.1.first?.0.created_at ?? 0 > $1.1.first?.0.created_at ?? 0 }).map {
-                let date = Date(timeIntervalSince1970: TimeInterval($0.value.first?.0.created_at ?? 0))
+            tableData.append(contentsOf: grouping.sorted(by: { $0.1.first?.createdAt ?? 0 > $1.1.first?.createdAt ?? 0 }).map {
+                let date = Date(timeIntervalSince1970: TimeInterval($0.value.first?.createdAt ?? 0))
                 return .init(title: date.daysAgoDisplay(), cells: $0.value.map { .transaction($0) })
             })
             
-            let allowAnimation = animationsOn || transactions.count == 1
-            
-            if allowAnimation, howManyCellsToAppear(self.tableData, tableData) > 0, tableData.first?.cells.map({ $0.transaction }).first??.type == "DEPOSIT" {
-                mainTabBarController?.playThunderAnimation()
-                AudioServicesPlayAlertSound(SystemSoundID(kSystemSoundID_Vibrate))
-                
-                DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(500)) {
-                    self.tableData = tableData
-                }
-            } else {
-                self.tableData = tableData
-            }
+            self.tableData = tableData
         }
         .store(in: &cancellables)
         
@@ -484,26 +457,6 @@ private extension WalletHomeViewController {
         table.contentOffset.y = max(5, contentOffsetStart.y - translation)
     }
     
-    func howManyCellsToAppear(_ oldValue: [Section], _ newValue: [Section]) -> Int {
-        guard table.window != nil, let indexPaths = table.indexPathsForVisibleRows else { return 0 }
-        
-        let oldIds = Set(oldValue.flatMap { $0.cells.compactMap({ cell in cell.transaction?.id }) })
-        let newIds = Set(newValue.flatMap { $0.cells.compactMap({ cell in cell.transaction?.id }) })
-        
-        if oldIds.isEmpty { return 0 }
-        
-        let deltaIds = newIds.subtracting(oldIds)
-        var animateCount = 0
-        for indexPath in indexPaths {
-            if let transaction = newValue[safe: indexPath.section]?.cells[safe: indexPath.row]?.transaction, deltaIds.contains(transaction.id) {
-                animateCount += 1
-            } else {
-                break
-            }
-        }
-        
-        return animateCount
-    }
     
     func animateCellsAppear(_ count: Int) {
         guard count > 0 else { return }

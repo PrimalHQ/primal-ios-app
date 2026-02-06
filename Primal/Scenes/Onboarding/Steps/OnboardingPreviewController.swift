@@ -262,7 +262,9 @@ private extension OnboardingPreviewController {
             } else {
                 ICloudKeychainManager.instance.toggleOnlineSyncForNpub(nVariants.npub, on: infoView.onlineSwitch.isOn)
             }
-            onboardingParent?.reset(OnboardingReviewController(profile: profile, session: session, backgroundIndex: backgroundIndex + 1), animated: true)
+            
+            WalletManager.instance.newWalletSpark(session.newUserKeypair.hexVariant.pubkey)
+            RootViewController.instance.reset()
         case .uploading:
             return
         }

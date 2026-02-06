@@ -70,6 +70,8 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         // Delete in 2027
         UserDefaults.standard.removeObject(forKey: .didVisitPremiumAfterProUpdateKey)
         UserDefaults.standard.removeObject(forKey: .oldTransactionsKey)
+        UserDefaults.standard.removeObject(forKey: .icloudRemindUsersKey)
+        UserDefaults.standard.removeObject(forKey: "icloud_setup_done1")
         
         UITableView.appearance().sectionHeaderTopPadding = 0
         
@@ -79,8 +81,6 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         
         _ = SmartContactsManager.instance
         ArticleWebViewCache.setup()
-        
-        ICloudKeychainManager.instance.setupForIcloudNewUsers()
         
         WalletRepositoryFactory.shared.doInit(enableDbEncryption: true, enableLogs: true, breezApiKey: "MIIBYTCCAROgAwIBAgIHPnX9JxKAWzAFBgMrZXAwEDEOMAwGA1UEAxMFQnJlZXowHhcNMjUwOTE3MTQwNDI5WhcNMzUwOTE1MTQwNDI5WjAgMQ8wDQYDVQQKEwZQcmltYWwxDTALBgNVBAMTBEFsZXgwKjAFBgMrZXADIQDQg/XL3yA8HKIgyimHU/Qbpxy0tvzris1fDUtEs6ldd6N8MHowDgYDVR0PAQH/BAQDAgWgMAwGA1UdEwEB/wQCMAAwHQYDVR0OBBYEFNo5o+5ea0sNMlW/75VgGJCv2AcJMB8GA1UdIwQYMBaAFN6q1pJW843ndJIW/Ey2ILJrKJhrMBoGA1UdEQQTMBGBD2FsZXhAcHJpbWFsLm5ldDAFBgMrZXADQQAKWsFj6okB56idn4UfbljLkIv3Yx52pOw3SB5f8G6vRfB0nNH6TRPf2C2GjhCRmvZRXrJs3CM0O4rAEzDlU2UP")
         AccountRepositoryFactory.shared.doInit(enableDbEncryption: true, enableLogs: true)

@@ -7,8 +7,25 @@
 
 import UIKit
 import FLAnimatedImage
+import PrimalShared
 import Nantes
 import SafariServices
+
+extension ProfileData {
+    var firstIdentifier: String {
+        if let displayName, !displayName.isEmpty {
+            return displayName
+        }
+        if let handle, !handle.isEmpty {
+            return handle
+        }
+        return profileId
+    }
+    
+    var address: String? {
+        return lightningAddress ?? lnUrlDecoded
+    }
+}
 
 class TransactionUserInfoCell: UITableViewCell {
     let background = UIView()
@@ -32,7 +49,7 @@ class TransactionUserInfoCell: UITableViewCell {
 
 extension TransactionUserInfoCell: TransactionPartialCell {
     func setupWithCellInfo(_ info: TransactionCellType) {
-        let user: ParsedUser?
+        let user: ProfileData?
         let message: String?
         let onchain: Bool
         switch info {
@@ -54,11 +71,11 @@ extension TransactionUserInfoCell: TransactionPartialCell {
             subtitleLabel.isHidden = true
             checkbox.isHidden = true
         } else if let user {
-            avatar.setUserImage(user)
-            mainLabel.text = user.data.firstIdentifier
-            subtitleLabel.text = user.data.address
+            avatar.setSharedUserImage(user)
+            mainLabel.text = user.firstIdentifier
+            subtitleLabel.text = user.address
             subtitleLabel.isHidden = subtitleLabel.text?.isEmpty != false
-            checkbox.user = user.data
+//            checkbox.user = user.data
         } else {
             avatar.image = .nonZapPaymentOld
             mainLabel.text = "Lightning payment"

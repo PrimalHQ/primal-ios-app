@@ -11,6 +11,7 @@ import Lottie
 import SafariServices
 import GenericJSON
 import AVFoundation
+import PrimalShared
 
 extension UIViewController {
     var mainTabBarController: MainTabBarController? {
@@ -140,15 +141,21 @@ final class MainTabBarController: UIViewController, Themeable {
         continousConnection?.end()
     }
     
+    var runOnce = true
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        guard let npub = IdentityManager.instance.userHexPubkey.hexToNpub(), var usersToRemind = UserDefaults.standard.object(forKey: .icloudRemindUsersKey) as? [String], usersToRemind.contains(npub) else { return }
-        
-        smartPresent(CloudPopupController())
-        
-        usersToRemind.remove(object: npub)
-        UserDefaults.standard.set(usersToRemind, forKey: .icloudRemindUsersKey)
+        guard runOnce else { return }
+        runOnce = false
+        let pubkey = IdentityManager.instance.userHexPubkey
+        Task { @MainActor in
+            guard
+                let wallet = try await WalletManager.instance.walletAccountRepo.getActiveWallet(userId: pubkey),
+                wallet is Wallet.Primal
+            else { return }
+            
+            smartPresent(MigrateWalletPopupController())
+        }
     }
 
     func hideForMenu() {

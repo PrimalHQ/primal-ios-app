@@ -8,6 +8,7 @@
 import UIKit
 import FLAnimatedImage
 import Kingfisher
+import PrimalShared
 
 class UserImageView: UIView, Themeable {
     let legendaryGradient = GradientView(colors: [])
@@ -117,6 +118,25 @@ class UserImageView: UIView, Themeable {
             legendaryBackgroundCircleView.isHidden = true
             cachedLegendTheme = nil
         }
+    }
+    
+    func setSharedUserImage(_ user: PrimalShared.ProfileData) {
+        tag = tag + 1
+        
+        if showLegendGlow, let legend = user.primalPremiumInfo?.legendProfile, legend.avatarGlow, let styleId = legend.styleId?.lowercased(), let theme = LegendTheme(rawValue: styleId) {
+            legendaryGradient.isHidden = false
+            legendaryBackgroundCircleView.isHidden = false
+            legendaryGradient.setLegendGradient(theme)
+            cachedLegendTheme = theme
+        }
+
+        guard let image = user.avatarCdnImage, let url = URL(string: image.variants.first?.mediaUrl ?? image.sourceUrl) else {
+            animatedImageView.kf.cancelDownloadTask()
+            animatedImageView.image = UIImage(named: "Profile")
+            return
+        }
+        
+        loadImage(url: url, originalURL: image.sourceUrl, userPubkey: user.profileId)
     }
     
     func setUserImage(_ user: ParsedUser, feed: Bool = true, disableAnimated: Bool = false) {

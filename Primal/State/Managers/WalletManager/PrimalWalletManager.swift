@@ -315,43 +315,43 @@ private extension PrimalWalletManager {
                 self?.recheckTransactions()
             }
             .store(in: &cancellables)
-        
-        $transactions
-            .receive(on: DispatchQueue.main)
-            .flatMap { transactions in
-                let flatPubkeys: [String] = transactions.flatMap { [$0.pubkey_1] + ($0.pubkey_2 == nil ? [] : [$0.pubkey_2!]) }
-                
-                var set = Set<String>()
-                
-                for pubkey in flatPubkeys {
-                    if WalletManager.instance.userData[pubkey] == nil {
-                        set.insert(pubkey)
-                    }
-                }
-                
-                if set.isEmpty {
-                    return Just(PostRequestResult()).eraseToAnyPublisher()
-                }
-                
-                return SocketRequest(name: "user_infos", payload: .object([
-                    "pubkeys": .array(set.map { .string($0) })
-                ])).publisher().eraseToAnyPublisher()
-            }
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] result in
-                guard let self else { return }
-                for (key, value) in result.users {
-                    WalletManager.instance.userData[key] = result.createParsedUser(value)
-                }
-                
-                let parsed = self.transactions.map { (
-                    $0,
-                    WalletManager.instance.userData[$0.pubkey_2 ?? $0.pubkey_1] ?? result.createParsedUser(.init(pubkey: $0.pubkey_2 ?? $0.pubkey_1))
-                ) }
-                
-                WalletManager.instance.parsedTransactions = parsed
-            }
-            .store(in: &cancellables)
+//        
+//        $transactions
+//            .receive(on: DispatchQueue.main)
+//            .flatMap { transactions in
+//                let flatPubkeys: [String] = transactions.flatMap { [$0.pubkey_1] + ($0.pubkey_2 == nil ? [] : [$0.pubkey_2!]) }
+//                
+//                var set = Set<String>()
+//                
+//                for pubkey in flatPubkeys {
+//                    if WalletManager.instance.userData[pubkey] == nil {
+//                        set.insert(pubkey)
+//                    }
+//                }
+//                
+//                if set.isEmpty {
+//                    return Just(PostRequestResult()).eraseToAnyPublisher()
+//                }
+//                
+//                return SocketRequest(name: "user_infos", payload: .object([
+//                    "pubkeys": .array(set.map { .string($0) })
+//                ])).publisher().eraseToAnyPublisher()
+//            }
+//            .receive(on: DispatchQueue.main)
+//            .sink { [weak self] result in
+//                guard let self else { return }
+//                for (key, value) in result.users {
+//                    WalletManager.instance.userData[key] = result.createParsedUser(value)
+//                }
+//                
+//                let parsed = self.transactions.map { (
+//                    $0,
+//                    WalletManager.instance.userData[$0.pubkey_2 ?? $0.pubkey_1] ?? result.createParsedUser(.init(pubkey: $0.pubkey_2 ?? $0.pubkey_1))
+//                ) }
+//                
+//                WalletManager.instance.parsedTransactions = parsed
+//            }
+//            .store(in: &cancellables)
 
         Connection.wallet.isConnectedPublisher.filter { $0 }
             .sink { [weak self] _ in

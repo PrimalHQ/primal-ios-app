@@ -26,7 +26,7 @@ extension SettingsController {
             ])
             mutable.append(.init(string: link, attributes: [
                 .font: UIFont.appFont(withSize: 14, weight: .regular),
-                .foregroundColor: UIColor.accent,
+                .foregroundColor: UIColor.accent2,
                 .paragraphStyle: paragraph
             ]))
             $0.attributedText = mutable

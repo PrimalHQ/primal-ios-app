@@ -195,19 +195,4 @@ final class ICloudKeychainManager {
         
         return true
     }
-    
-    func setupForIcloudNewUsers() {
-        let ud = UserDefaults.standard
-        
-        guard !ud.bool(forKey: "icloud_setup_done1") else {
-            return
-        }
-        
-        let npubsToRemind = localNpubs.filter { hasNsec($0) }
-        
-        if !npubsToRemind.isEmpty {
-            ud.set(npubsToRemind, forKey: .icloudRemindUsersKey)
-        }
-        ud.set(true, forKey: "icloud_setup_done1")
-    }
 }

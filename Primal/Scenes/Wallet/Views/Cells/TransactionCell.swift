@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import PrimalShared
 import FLAnimatedImage
 
 extension UIColor {
@@ -49,17 +50,19 @@ final class TransactionCell: UITableViewCell, Themeable {
     }
  
     var oldWasBtc: Bool? = nil
-    func setup(with transaction: (WalletTransaction, ParsedUser), showBTC: Bool) {
-        let isDeposit = transaction.0.type == "DEPOSIT"
+    func setup(with transaction: PrimalShared.Transaction, showBTC: Bool) {
+        let isDeposit = transaction.type == .deposit
+        var isZap = false
         
-        if transaction.1.data.pubkey != IdentityManager.instance.userHexPubkey {
-            if oldProfileId != transaction.1.data.pubkey {
-                profileImage.setUserImage(transaction.1, disableAnimated: true)
-                oldProfileId = transaction.1.data.pubkey
+        if let zapTrans = transaction as? Transaction.Zap, let user = zapTrans.otherUserProfile {
+            if oldProfileId != user.profileId {
+                profileImage.setSharedUserImage(user)
+                oldProfileId = user.profileId
             }
             profileImage.contentMode = .scaleAspectFill
-            nameLabel.text = (transaction.1).data.firstIdentifier
-        } else if transaction.0.onchainAddress != nil {
+            nameLabel.text = user.displayName
+            isZap = true
+        } else if let onchain = transaction as? Transaction.OnChain {
             oldProfileId = ""
             profileImage.image = UIImage(named: "onchainPayment")
             profileImage.contentMode = .scaleAspectFit
@@ -70,10 +73,10 @@ final class TransactionCell: UITableViewCell, Themeable {
             profileImage.contentMode = .scaleAspectFit
             nameLabel.text = isDeposit ? "Received" : "Sent"
         }
-        
-        if let completedAt = transaction.0.completed_at {
+
+        if let completedAt = transaction.completedAt {
             timeIcon.isHidden = true
-            timeLabel.text = Date(timeIntervalSince1970: TimeInterval(completedAt)).timeAgoDisplay()
+            timeLabel.text = Date(timeIntervalSince1970: TimeInterval(truncating: completedAt)).timeAgoDisplay()
             coverView.alpha = 0
             
             wasPulsing = false
@@ -96,21 +99,21 @@ final class TransactionCell: UITableViewCell, Themeable {
                 }
             }
         }
-        
+
         arrowIcon.transform = isDeposit ? .identity : .init(rotationAngle: .pi)
         arrowIcon.tintColor = isDeposit ? .receiveMoney : .sendMoney
         
-        let isEmpty = !(transaction.0.note?.isEmpty == false)
-        switch (isEmpty, transaction.0.is_zap) {
+        let isEmpty = !(transaction.note?.isEmpty == false)
+        switch (isEmpty, isZap) {
         case (false, _):
-            messageLabel.text = transaction.0.note
+            messageLabel.text = transaction.note
         case (true, true):
             messageLabel.text = isDeposit ? "Zap received" : "Zap sent"
         case (true, false):
             messageLabel.text = isDeposit ? "Payment received" : "Payment sent"
         }
         
-        let btcAmount = (Double(transaction.0.amount_btc) ?? 0)
+        let btcAmount = transaction.amountInBtc
         
         if showBTC {
             amountLabel.text = abs(btcAmount * .BTC_TO_SAT).localized()

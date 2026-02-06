@@ -156,7 +156,7 @@ final class WalletManager {
     var cancellables = Set<AnyCancellable>()
     var updateCancellables = Set<AnyCancellable>()
     
-    var isPrimalWalletActive: Bool { (activeWallet as? Wallet.Primal)?.kycLevel == .email }
+    var isNWCWalletActive: Bool { activeWallet is Wallet.NWC }
     
     @Published var premiumState: PremiumState?
     @Published var didJustCreateWallet = false
@@ -186,7 +186,7 @@ final class WalletManager {
     
     var userData: [String: ParsedUser] = [:]
     
-    @Published var parsedTransactions: [ParsedTransaction] = []
+    @Published var parsedTransactions: [PrimalShared.Transaction] = []
     @Published private var userZapped: [String: Int] = [:]
     
     let zapFactory: any NostrZapperFactory
@@ -194,9 +194,10 @@ final class WalletManager {
     
     let regConnection = PrimalApiClientFactory.shared.create(serverType: .caching)
     let walletConnection = PrimalApiClientFactory.shared.create(serverType: .wallet)
+    let walletAccountRepo = WalletRepositoryFactory.shared.createWalletAccountRepository()
     
     var walletID: String? { activeWallet?.walletId }
-    var activeWallet: Wallet?
+    @Published var activeWallet: Wallet?
     
     private init() {
 //        impl = DummyWalletImplementation()
@@ -215,6 +216,7 @@ final class WalletManager {
         zapFactory = NostrZapperFactoryProvider.shared.createNostrZapperFactory(walletRepository: walletRepo, nostrEventSignatureHandler: SigningManager.instance, primalWalletApiClient: walletConnection)
         
         
+        
         setupPublishers()
         
         DispatchQueue.main.async {
@@ -230,7 +232,6 @@ final class WalletManager {
         isLoadingWallet = false
         userHasWallet = true
         
-        let walletAccountRepo = WalletRepositoryFactory.shared.createWalletAccountRepository()
         walletAccountRepo.observeActiveWallet(userId: pubkey)
             .toPublisher()
             .receive(on: DispatchQueue.main)
@@ -249,8 +250,17 @@ final class WalletManager {
             
             let primalWalletRepo = WalletRepositoryFactory.shared.createPrimalWalletAccountRepository(primalWalletApiClient: walletConnection, nostrEventSignatureHandler: SigningManager.instance)
             
-            guard let walletId = try await primalWalletRepo.fetchWalletAccountInfo(userId: pubkey).getOrNull() else { return }
-            try await walletAccountRepo.setActiveWallet(userId: pubkey, walletId: walletId as String)
+            let result = try await EnsurePrimalWalletExistsUseCase(primalWalletAccountRepository: primalWalletRepo, walletAccountRepository: walletAccountRepo)
+                .invoke(userId: pubkey, setAsActive: true).getOrNull()
+            
+            if result == nil {
+                
+            }
+            
+            
+            
+//            guard let walletId = try await primalWalletRepo.fetchWalletAccountInfo(userId: pubkey).getOrNull() else { return }
+//            try await walletAccountRepo.setActiveWallet(userId: pubkey, walletId: walletId as String)
         }
         
         DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
@@ -259,120 +269,65 @@ final class WalletManager {
         }
     }
     
-    func setUsePrimalWallet(_ usePrimal: Bool = true) {
-        let pubkey = IdentityManager.instance.userHexPubkey
-        UserDefaults.standard.useNwcWallet[pubkey] = !usePrimal
-        reset(pubkey)
+    func newWalletSpark(_ pubkey: String) {
+        let sparkWalletManager = WalletRepositoryFactory.shared.createSparkWalletManager()
+        let sparkWalletAccountRepository = WalletRepositoryFactory.shared.createSparkWalletAccountRepository(primalWalletApiClient: regConnection, nostrEventSignatureHandler: SigningManager.instance)
+        
+        let ensureSpark = EnsureSparkWalletExistsUseCase(sparkWalletManager: sparkWalletManager, sparkWalletAccountRepository: sparkWalletAccountRepository, walletAccountRepository: walletAccountRepo, seedPhraseGenerator: RecoveryPhraseGenerator())
+        
+        Task {
+            let invokeSpark = try await ensureSpark.invoke(userId: pubkey, register: true)
+        }
     }
     
-    func setNWCWallet(nwcString: String) {
-        let pubkey = IdentityManager.instance.userHexPubkey
-        UserDefaults.standard.useNwcWallet[pubkey] = true
-        UserDefaults.standard.nwcSettings[pubkey] = nwcString
-        reset(pubkey)
+    func setUsePrimalWallet(_ usePrimal: Bool = true) async throws {
+        let userPubkey = IdentityManager.instance.userHexPubkey
+        if usePrimal {
+            let primal = try await walletAccountRepo.findLastUsedWallet(userId: userPubkey, type: [WalletType.primal, WalletType.spark])
+            if let primal {
+                try await walletAccountRepo.setActiveWallet(userId: userPubkey, walletId: primal.walletId)
+            }
+        } else if let nwc = try await walletAccountRepo.findLastUsedWallet(userId: userPubkey, type: .nwc) {
+            try await walletAccountRepo.setActiveWallet(userId: userPubkey, walletId: nwc.walletId)
+        }
     }
     
-    func disconnectNWCWallet() {
+    func setNWCWallet(nwcString: String) async throws {
         let pubkey = IdentityManager.instance.userHexPubkey
-        UserDefaults.standard.nwcSettings[pubkey] = nil
-        reset(pubkey)
+        
+        let res = try await ConnectNwcUseCase(walletRepository: walletRepo, walletAccountRepository: walletAccountRepo).invoke(userId: pubkey, nwcUrl: nwcString, autoSetAsDefaultWallet: true)
+    }
+    
+    func disconnectNWCWallet() async throws {
+        let pubkey = IdentityManager.instance.userHexPubkey
+        
+        guard let nwc = try await walletAccountRepo.findLastUsedWallet(userId: pubkey, type: .nwc) else { return }
+        
+        try await walletRepo.deleteWalletById(walletId: nwc.walletId)
+        
+        try await setUsePrimalWallet()
     }
     
     func refresh() {
         guard let walletID else { return }
-        // TODO: resolve refresh
-//        impl.refreshBalance()
-//        primal?.refreshTransactions()
         
-        
-        
-//
-//        self.walletRepo.latestTransactions(walletId: walletID).toPublisher()
-//            .sink { paging in
-//                print(paging)
-//                
-//                paging as? Paging_commonPagingData<AnyObject>
-//            }
-//
-        
-//        self.walletRepo.latestTransactions(walletId: walletID).toPublisher()
-//            .sink { transactions in
-//                print(transactions)
-//                guard let casted = transactions as? Paging_commonPagingData<AnyObject> else { return }
-//                IosPagingFactory.shared.createPresenter(pagingFlow: casted)
-//            }
-//            .store(in: &cancellables)
-        
-        let flow = walletRepo.latestTransactions(walletId: "abc")
+        let flow = walletRepo.latestTransactions(walletId: walletID)
         let snapshot = IosPagingUtils.shared.createTransactionSnapshot(pagingFlow: flow)
         
-        let presenter = IosPagingUtils.shared.createTransactionPresenter(pagingFlow: flow)
         
-        Task {
-             presenter.refresh()
-              for await _ in presenter.invalidations {
-                  print("Got \(presenter.itemCount()) transactions")
-                  for i in 0..<presenter.itemCount() {
-                      if let tx = presenter.item(index: Int32(i)) {
-                          print("  - \(tx.transactionId): \(tx.amountInBtc) BTC")
-                      }
-                  }
-              }
-          }
         
-        Task {
-            snapshot.refresh()
-            for await items in snapshot.items {
-                print("Got \(items.count) transactions")
-                for tx in items.prefix(3) {
-                    print("  - \(tx.transactionId): \(tx.amountInBtc) BTC")
-                }
-            }
-        }
-
         Task { @MainActor in
             _ = try await self.walletRepo.fetchWalletBalance(walletId: walletID)
-        
-            let transactions = try await self.walletRepo.latestTransactions(walletId: walletID, limit: 100)
             
-            
-            
-            var userIds: Set<String> = []
-            for trans in transactions {
+            for await items in snapshot.items where !items.isEmpty{
+                print("Got \(items.count) transactions")
                 
-                let new: Transaction?
-                userIds.insert(trans.userId)
+                self.parsedTransactions = items
                 
-                if let zap = trans as? Transaction.Zap {
-                    if let id = zap.otherUserId {
-                        userIds.insert(id)
-                    }
-                    if let user = zap.otherUserProfile {
-                        print(user)
-                        
-                    }
-                }
+                snapshot.dispose()
+                // Dismiss this snapshot so that it is not constantly updating forever
+                break
             }
-            
-            
-            self.parsedTransactions = transactions.map({ trans in
-                var isZap = false
-                if let zap = trans as? Transaction.Zap {
-                    isZap = true
-                    zap.otherUserId
-                }
-                
-                return (WalletTransaction(
-                    type: trans.type.name,
-                    id: trans.transactionId,
-                    state: trans.state.name,
-                    created_at: Int(trans.createdAt),
-                    is_zap: isZap,
-                    amount_btc: String(trans.amountInBtc),
-                    pubkey_1: trans.userId,
-                    subindex_1: ""
-                ), ParsedUser(data: .init(pubkey: trans.userId)))
-            })
         }
     }
     

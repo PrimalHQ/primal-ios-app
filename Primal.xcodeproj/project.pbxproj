@@ -235,12 +235,10 @@
 		B901C38F2BAB2C5E00C3AA69 /* OnboardingInterestsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B901C38E2BAB2C5E00C3AA69 /* OnboardingInterestsController.swift */; };
 		B901C3912BAB307900C3AA69 /* InterestSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B901C3902BAB307900C3AA69 /* InterestSelectionView.swift */; };
 		B901C3932BAB5A0C00C3AA69 /* OnboardingPreviewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B901C3922BAB5A0C00C3AA69 /* OnboardingPreviewController.swift */; };
-		B901C3952BADBA6F00C3AA69 /* OnboardingWalletController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B901C3942BADBA6F00C3AA69 /* OnboardingWalletController.swift */; };
-		B901C3972BADF36100C3AA69 /* OnboardingWalletCodeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B901C3962BADF36100C3AA69 /* OnboardingWalletCodeController.swift */; };
 		B9031D4E2AC2075600C7489F /* ChatTimeCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9031D4D2AC2075600C7489F /* ChatTimeCell.swift */; };
 		B9031D502AC2075E00C7489F /* ChatLoadingCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9031D4F2AC2075E00C7489F /* ChatLoadingCell.swift */; };
 		B9031D522ACDDD4200C7489F /* ReplyingToView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9031D512ACDDD4200C7489F /* ReplyingToView.swift */; };
-		B904E9A32F042BFD006D195C /* CloudPopupController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B904E9A22F042BDD006D195C /* CloudPopupController.swift */; };
+		B904E9A32F042BFD006D195C /* MigrateWalletPopupController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B904E9A22F042BDD006D195C /* MigrateWalletPopupController.swift */; };
 		B904EA1A2F23B559006D195C /* HTMLGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B904EA192F23B559006D195C /* HTMLGenerator.swift */; };
 		B904EA1D2F23B895006D195C /* Markdown in Frameworks */ = {isa = PBXBuildFile; productRef = B904EA1C2F23B895006D195C /* Markdown */; };
 		B904EAA42F2D2E42006D195C /* BreezSdkSpark in Frameworks */ = {isa = PBXBuildFile; productRef = B904EAA32F2D2E42006D195C /* BreezSdkSpark */; };
@@ -363,7 +361,6 @@
 		B91EF0EF2CED236800299ECF /* PremiumLearnMoreFAQController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91EF0EE2CED236800299ECF /* PremiumLearnMoreFAQController.swift */; };
 		B91EF0F32CF0F00300299ECF /* PremiumManageContentFooterCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91EF0F22CF0F00300299ECF /* PremiumManageContentFooterCell.swift */; };
 		B91EF0F52CF4D83E00299ECF /* OnboardingCheckInterestsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91EF0F42CF4D83E00299ECF /* OnboardingCheckInterestsController.swift */; };
-		B91EF0F82CF5224200299ECF /* OnboardingReviewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91EF0F72CF5224200299ECF /* OnboardingReviewController.swift */; };
 		B928F6642B51D52B00B2273E /* ViewAnimations.swift in Sources */ = {isa = PBXBuildFile; fileRef = B928F6632B51D52B00B2273E /* ViewAnimations.swift */; };
 		B928F8682F30BF7500DBD9D0 /* UpgradeWalletController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B928F8662F30BF7500DBD9D0 /* UpgradeWalletController.swift */; };
 		B928F86A2F30BF9A00DBD9D0 /* UpgradeWalletCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B928F8692F30BF9A00DBD9D0 /* UpgradeWalletCell.swift */; };
@@ -501,7 +498,6 @@
 		B98DD8EC2C89B1BC00E8369A /* HomeFeedChildController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98DD8EB2C89B1BC00E8369A /* HomeFeedChildController.swift */; };
 		B991FA442E8D88CB009D313E /* PopupInfoBubbleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B991FA432E8D88B4009D313E /* PopupInfoBubbleView.swift */; };
 		B991FA462E8ED0A2009D313E /* LiveVideoSmallHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B991FA452E8ED0A2009D313E /* LiveVideoSmallHeaderView.swift */; };
-		B992F8462F2E148F004C2638 /* PrimalShared in Frameworks */ = {isa = PBXBuildFile; productRef = B992F8452F2E148F004C2638 /* PrimalShared */; };
 		B99315EF2C10ACB500EE09AB /* CommentZapPill.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99315EE2C10ACB500EE09AB /* CommentZapPill.swift */; };
 		B99E03812BF75FEE006CCECB /* PostCellNantesDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99E03802BF75FEE006CCECB /* PostCellNantesDelegate.swift */; };
 		B99E03832BF76064006CCECB /* PostCellEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99E03822BF76064006CCECB /* PostCellEvent.swift */; };
@@ -559,6 +555,8 @@
 		B9B9E57B2CB6E2C00065DD7C /* SimpleInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9B9E57A2CB6E2C00065DD7C /* SimpleInfoView.swift */; };
 		B9BCF3C02CDD7F340032BD0D /* PremiumOnboardingHomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9BCF3BF2CDD7F340032BD0D /* PremiumOnboardingHomeViewController.swift */; };
 		B9BCF3C32CDD80020032BD0D /* PremiumHomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9BCF3C22CDD80020032BD0D /* PremiumHomeViewController.swift */; };
+		B9C5A07D2F36258E007CB5D3 /* UgradeWalletFaqController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C5A07C2F362586007CB5D3 /* UgradeWalletFaqController.swift */; };
+		B9C5A07F2F362B12007CB5D3 /* UpgradeWalletStartController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C5A07E2F362B0B007CB5D3 /* UpgradeWalletStartController.swift */; };
 		B9C672D42E1FEF5000243B45 /* LiveEventManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C672D32E1FEF5000243B45 /* LiveEventManager.swift */; };
 		B9C672D62E1FF65F00243B45 /* JSON+Extra.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C672D52E1FF65900243B45 /* JSON+Extra.swift */; };
 		B9C672D92E252D8600243B45 /* LiveVideoPlayerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C672D82E252D7E00243B45 /* LiveVideoPlayerController.swift */; };
@@ -1051,12 +1049,10 @@
 		B901C38E2BAB2C5E00C3AA69 /* OnboardingInterestsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingInterestsController.swift; sourceTree = "<group>"; };
 		B901C3902BAB307900C3AA69 /* InterestSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterestSelectionView.swift; sourceTree = "<group>"; };
 		B901C3922BAB5A0C00C3AA69 /* OnboardingPreviewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingPreviewController.swift; sourceTree = "<group>"; };
-		B901C3942BADBA6F00C3AA69 /* OnboardingWalletController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingWalletController.swift; sourceTree = "<group>"; };
-		B901C3962BADF36100C3AA69 /* OnboardingWalletCodeController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingWalletCodeController.swift; sourceTree = "<group>"; };
 		B9031D4D2AC2075600C7489F /* ChatTimeCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatTimeCell.swift; sourceTree = "<group>"; };
 		B9031D4F2AC2075E00C7489F /* ChatLoadingCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatLoadingCell.swift; sourceTree = "<group>"; };
 		B9031D512ACDDD4200C7489F /* ReplyingToView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReplyingToView.swift; sourceTree = "<group>"; };
-		B904E9A22F042BDD006D195C /* CloudPopupController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudPopupController.swift; sourceTree = "<group>"; };
+		B904E9A22F042BDD006D195C /* MigrateWalletPopupController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigrateWalletPopupController.swift; sourceTree = "<group>"; };
 		B904EA192F23B559006D195C /* HTMLGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTMLGenerator.swift; sourceTree = "<group>"; };
 		B90585372C9DDFD600FC4108 /* SettingsDevModeController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsDevModeController.swift; sourceTree = "<group>"; };
 		B906AAD72C91C46D0089813F /* smallPillLoaderLight.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = smallPillLoaderLight.json; sourceTree = "<group>"; };
@@ -1171,7 +1167,6 @@
 		B91EF0EE2CED236800299ECF /* PremiumLearnMoreFAQController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumLearnMoreFAQController.swift; sourceTree = "<group>"; };
 		B91EF0F22CF0F00300299ECF /* PremiumManageContentFooterCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumManageContentFooterCell.swift; sourceTree = "<group>"; };
 		B91EF0F42CF4D83E00299ECF /* OnboardingCheckInterestsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingCheckInterestsController.swift; sourceTree = "<group>"; };
-		B91EF0F72CF5224200299ECF /* OnboardingReviewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingReviewController.swift; sourceTree = "<group>"; };
 		B928F6632B51D52B00B2273E /* ViewAnimations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewAnimations.swift; sourceTree = "<group>"; };
 		B928F8662F30BF7500DBD9D0 /* UpgradeWalletController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpgradeWalletController.swift; sourceTree = "<group>"; };
 		B928F8692F30BF9A00DBD9D0 /* UpgradeWalletCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpgradeWalletCell.swift; sourceTree = "<group>"; };
@@ -1367,6 +1362,8 @@
 		B9B9E57A2CB6E2C00065DD7C /* SimpleInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleInfoView.swift; sourceTree = "<group>"; };
 		B9BCF3BF2CDD7F340032BD0D /* PremiumOnboardingHomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumOnboardingHomeViewController.swift; sourceTree = "<group>"; };
 		B9BCF3C22CDD80020032BD0D /* PremiumHomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumHomeViewController.swift; sourceTree = "<group>"; };
+		B9C5A07C2F362586007CB5D3 /* UgradeWalletFaqController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UgradeWalletFaqController.swift; sourceTree = "<group>"; };
+		B9C5A07E2F362B0B007CB5D3 /* UpgradeWalletStartController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpgradeWalletStartController.swift; sourceTree = "<group>"; };
 		B9C672D32E1FEF5000243B45 /* LiveEventManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveEventManager.swift; sourceTree = "<group>"; };
 		B9C672D52E1FF65900243B45 /* JSON+Extra.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "JSON+Extra.swift"; sourceTree = "<group>"; };
 		B9C672D82E252D7E00243B45 /* LiveVideoPlayerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveVideoPlayerController.swift; sourceTree = "<group>"; };
@@ -1583,7 +1580,6 @@
 				B904EAA42F2D2E42006D195C /* BreezSdkSpark in Frameworks */,
 				B904EA1D2F23B895006D195C /* Markdown in Frameworks */,
 				933B85752A9F6EC400C48FF6 /* CryptoSwift in Frameworks */,
-				B992F8462F2E148F004C2638 /* PrimalShared in Frameworks */,
 				9E83DF5F2A53308200F2C379 /* FLAnimatedImage in Frameworks */,
 				B906AB042C99F3E40089813F /* GRDB in Frameworks */,
 				9309D2312A5EA7EF00FD2127 /* KeychainAccess in Frameworks */,
@@ -2363,9 +2359,6 @@
 				B91EF0F42CF4D83E00299ECF /* OnboardingCheckInterestsController.swift */,
 				9E0DEAF529FD437300145E08 /* OnboardingFollowSuggestionsController.swift */,
 				B901C3922BAB5A0C00C3AA69 /* OnboardingPreviewController.swift */,
-				B91EF0F72CF5224200299ECF /* OnboardingReviewController.swift */,
-				B901C3942BADBA6F00C3AA69 /* OnboardingWalletController.swift */,
-				B901C3962BADF36100C3AA69 /* OnboardingWalletCodeController.swift */,
 			);
 			path = Steps;
 			sourceTree = "<group>";
@@ -2556,7 +2549,7 @@
 		B904E9A12F042BCA006D195C /* MainTabBar */ = {
 			isa = PBXGroup;
 			children = (
-				B904E9A22F042BDD006D195C /* CloudPopupController.swift */,
+				B904E9A22F042BDD006D195C /* MigrateWalletPopupController.swift */,
 				9E6924A32A02925F00CAC54C /* MainTabBarController.swift */,
 				B9A335222E54B5DC000B2CA7 /* LivePlayerMoveGesture.swift */,
 			);
@@ -2811,7 +2804,9 @@
 		B928F8672F30BF7500DBD9D0 /* Upgrade */ = {
 			isa = PBXGroup;
 			children = (
+				B9C5A07E2F362B0B007CB5D3 /* UpgradeWalletStartController.swift */,
 				B928F8662F30BF7500DBD9D0 /* UpgradeWalletController.swift */,
+				B9C5A07C2F362586007CB5D3 /* UgradeWalletFaqController.swift */,
 			);
 			path = Upgrade;
 			sourceTree = "<group>";
@@ -2819,8 +2814,8 @@
 		B928F8712F30BFB400DBD9D0 /* Backup */ = {
 			isa = PBXGroup;
 			children = (
-				B928F8762F30C0E800DBD9D0 /* BackupWalletConfirmController.swift */,
 				B928F86D2F30BFB400DBD9D0 /* BackupWalletController.swift */,
+				B928F8762F30C0E800DBD9D0 /* BackupWalletConfirmController.swift */,
 				B928F86E2F30BFB400DBD9D0 /* BackupWalletInputPhraseController.swift */,
 				B928F86F2F30BFB400DBD9D0 /* BackupWalletIntroController.swift */,
 				B928F8702F30BFB400DBD9D0 /* BackupWalletPhraseController.swift */,
@@ -3679,7 +3674,6 @@
 				B91797FD2EDDD21D00EF29EF /* NostrSDK */,
 				B904EA1C2F23B895006D195C /* Markdown */,
 				B904EAA32F2D2E42006D195C /* BreezSdkSpark */,
-				B992F8452F2E148F004C2638 /* PrimalShared */,
 			);
 			productName = Primal;
 			productReference = 939330F229A3E36F003954C2 /* Primal.app */;
@@ -3850,7 +3844,6 @@
 				B91797FC2EDDD21D00EF29EF /* XCRemoteSwiftPackageReference "nostr-sdk-ios" */,
 				B904EA1B2F23B895006D195C /* XCRemoteSwiftPackageReference "swift-markdown" */,
 				B904EAA22F2D2E42006D195C /* XCRemoteSwiftPackageReference "breez-sdk-spark-swift" */,
-				B992F8442F2E148F004C2638 /* XCRemoteSwiftPackageReference "primal-shared-ios" */,
 			);
 			productRefGroup = 939330F329A3E36F003954C2 /* Products */;
 			projectDirPath = "";
@@ -4120,6 +4113,7 @@
 				9EB219E92A067B990037C3E5 /* MenuContainerController.swift in Sources */,
 				B98DD8C62C59118E00E8369A /* ArticleSelectionMenuView.swift in Sources */,
 				9ED4160F2A4B7A8500892235 /* Notification.swift in Sources */,
+				B9C5A07F2F362B12007CB5D3 /* UpgradeWalletStartController.swift in Sources */,
 				B9C6D2322CA31B4E00B2EEBE /* ExploreTopicsViewController.swift in Sources */,
 				B9318F692B62C1B50044B6AA /* WalletSendAmountSendAnimator.swift in Sources */,
 				B914CD6D2AA2487100CD0BD1 /* SettingsMutedUsersController.swift in Sources */,
@@ -4140,7 +4134,7 @@
 				B9009B632B110AB6002B0613 /* PrimalEndpointsManager.swift in Sources */,
 				B9CE4DD62B7F675F0060A1B8 /* CircularProgressBar.swift in Sources */,
 				B9E36BD82EE330AD00213CA0 /* RemoteSignerActiveSessionsController.swift in Sources */,
-				B904E9A32F042BFD006D195C /* CloudPopupController.swift in Sources */,
+				B904E9A32F042BFD006D195C /* MigrateWalletPopupController.swift in Sources */,
 				B9E67ECD2D13021C006BB397 /* HighlightCommentsDatasource.swift in Sources */,
 				9309D2332A5EA82A00FD2127 /* Array+Extra.swift in Sources */,
 				B9F9331D2B88F72E0064B495 /* PremiumViewController.swift in Sources */,
@@ -4174,7 +4168,6 @@
 				B9370EB62DD64DBF004A9760 /* OnboardingScanCodeController.swift in Sources */,
 				B9CE4DC02B72B7C40060A1B8 /* SettingsEditMinNotificationController.swift in Sources */,
 				B98DD8B52C4949E900E8369A /* HighlightViewController.swift in Sources */,
-				B91EF0F82CF5224200299ECF /* OnboardingReviewController.swift in Sources */,
 				B9C672DB2E2535BA00243B45 /* LivePlayerView.swift in Sources */,
 				B9CE4DD92B8505C40060A1B8 /* WalletActivationCodeController.swift in Sources */,
 				9EF4BFCC2A8E57EF003396AA /* VerifiedView.swift in Sources */,
@@ -4215,7 +4208,6 @@
 				9E5BD93F2A1E6567008DFFBE /* SmallPostButton.swift in Sources */,
 				939427142A436AF3001C1E10 /* RelayURL.swift in Sources */,
 				B9E67E812D0762CD006BB397 /* FeedElementSmallZapGalleryCell.swift in Sources */,
-				B901C3972BADF36100C3AA69 /* OnboardingWalletCodeController.swift in Sources */,
 				B95677B02F0400A700B8166C /* ScanAnythingQRController.swift in Sources */,
 				B99E03812BF75FEE006CCECB /* PostCellNantesDelegate.swift in Sources */,
 				B9E67EA82D09D8F9006BB397 /* ThreadElementPostPreviewCell.swift in Sources */,
@@ -4232,6 +4224,7 @@
 				B91EF0D52CEB8C5B00299ECF /* PremiumManageSubscriptionHeaderCell.swift in Sources */,
 				B9CE4DB52B6AC7750060A1B8 /* WalletReceiveTransitionAnimator.swift in Sources */,
 				9E83DF6E2A573E2300F2C379 /* UIButtons.swift in Sources */,
+				B9C5A07D2F36258E007CB5D3 /* UgradeWalletFaqController.swift in Sources */,
 				B9009B692B1F4577002B0613 /* CachingManager.swift in Sources */,
 				9E83DF792A57FDEC00F2C379 /* UploadAssetRequest.swift in Sources */,
 				B91E56F32CBD9B1E00C14809 /* UserPickerCollectionViewCell.swift in Sources */,
@@ -4276,7 +4269,6 @@
 				B9E67EA72D09D8F9006BB397 /* ThreadElementImageGalleryCell.swift in Sources */,
 				B90DB06F2E5E10CC00A67D4A /* LiveVideoZapsController.swift in Sources */,
 				9E83DF732A573E7A00F2C379 /* FormHeaderView.swift in Sources */,
-				B901C3952BADBA6F00C3AA69 /* OnboardingWalletController.swift in Sources */,
 				B906AB122C9B47800089813F /* Thumbnail.swift in Sources */,
 				B9B1ABA32B33368A00837312 /* TransactionTitleCell.swift in Sources */,
 				B94F2BE42AE2EFDD0041181B /* PlaceholderTextView.swift in Sources */,
@@ -5335,14 +5327,6 @@
 				kind = branch;
 			};
 		};
-		B992F8442F2E148F004C2638 /* XCRemoteSwiftPackageReference "primal-shared-ios" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/PrimalHQ/primal-shared-ios";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.1.4;
-			};
-		};
 		B9F933162B867D860064B495 /* XCRemoteSwiftPackageReference "qrcode" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/dagronf/qrcode.git";
@@ -5438,11 +5422,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 9393311F29A3E44D003954C2 /* XCRemoteSwiftPackageReference "generic-json-swift" */;
 			productName = GenericJSON;
-		};
-		B992F8452F2E148F004C2638 /* PrimalShared */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = B992F8442F2E148F004C2638 /* XCRemoteSwiftPackageReference "primal-shared-ios" */;
-			productName = PrimalShared;
 		};
 		B9F933172B867D860064B495 /* QRCode */ = {
 			isa = XCSwiftPackageProductDependency;

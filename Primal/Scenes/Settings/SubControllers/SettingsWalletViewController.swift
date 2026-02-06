@@ -7,6 +7,7 @@
 
 import UIKit
 import Combine
+import PrimalShared
 
 private extension String {
     static let startInWalletKey = "startInWalletKey"
@@ -22,12 +23,13 @@ struct WalletSettings {
 final class SettingsWalletViewController: UIViewController, SettingsController, Themeable {
     let minTransaction = SettingsInfoView(name: "Hide transactions below", desc: "1 sats", showArrow: true)
     let showNotifications = SettingsInfoView(name: "Show notifications above", desc: "1 sats", showArrow: true)
+    let restoreWallet = SettingsInfoView(name: "Restore existing wallet", desc: "", showArrow: true)
     
     let nwcVC = SettingsWalletNWCController()
     
     let nwcStack = UIStackView(axis: .vertical, [])
     
-    @Published var usePrimalWallet = true
+    @Published var useNWCWallet = true
     
     var cancellables: Set<AnyCancellable> = []
     
@@ -55,33 +57,34 @@ final class SettingsWalletViewController: UIViewController, SettingsController, 
 }
 
 private extension SettingsWalletViewController {
-    func updateNWCStack() {
+    func updateNWCStack() async throws {
         nwcStack.subviews.forEach{ $0.removeFromSuperview() }
         
         //nostr+walletconnect://1291af9c119879ef7a59636432c6e06a7a058c0cae80db27c0f20f61f3734e52?relay=wss%3A%2F%2Fnwc.primal.net%2Fx0yn66fe7i6ljbfsypyzme9wwr5o48&secret=7ab8341dbf75e0bc3d053bd9503c2a9d5d608fa54b3e42d0b942c9a1089f1857
         
-        if false { //let nwc = WalletManager.instance.nwc {
+        let activeWallet = try await WalletManager.instance.walletAccountRepo.getActiveWallet(userId: IdentityManager.instance.userHexPubkey)
+        
+        if let nwc = activeWallet as? Wallet.NWC {
             let disconnectButton = LargeRoundedButton(title: "Disconnect Wallet")
             let info = NWCInfoView()
             
             [
                 SettingsTitleView(title: "WALLET CONNECTED"),               SpacerView(height: 10),
                 info,                                                       SpacerView(height: 16),
-                disconnectButton,                                           SpacerView(height: 24),
-                SettingsTitleView(title: "YOUR NOSTR LIGHTNING ADDRESS:"),  SpacerView(height: 10),
+                disconnectButton,                                           SpacerView(height: 24)
             ].forEach { nwcStack.addArrangedSubview($0) }
             
-//            info.relayLabel.text = nwc.relay
-//            info.addressLabel.text = nwc.address ?? "Unknown address"
+            info.relayLabel.text = nwc.relays.first
+            info.addressLabel.text = nwc.lightningAddress ?? "Unknown address"
             
             disconnectButton.addAction(.init(handler: { [weak self] _ in
-                WalletManager.instance.disconnectNWCWallet()
-                
-                self?.updateNWCStack()
+                Task { @MainActor in
+                    try await WalletManager.instance.disconnectNWCWallet()
+                    
+                    try await self?.updateNWCStack()
+                }
             }), for: .touchUpInside)
-            
         } else {
-            
             let pasteButton = ThemeableButton().setTheme({ $0.configuration = .pill(text: "Paste NWC String", foregroundColor: .foreground, backgroundColor: .background3, font: .appFont(withSize: 16, weight: .regular)) }).constrainToSize(height: 48)
             let scanButton = ThemeableButton().setTheme({ $0.configuration = .pill(text: "Scan NWC QR Code", foregroundColor: .foreground, backgroundColor: .background3, font: .appFont(withSize: 16, weight: .regular)) }).constrainToSize(height: 48)
             
@@ -90,22 +93,26 @@ private extension SettingsWalletViewController {
                 descLabel("Connect an external wallet by scanning or pasting its Nostr Wallet Connect (NWC) connection string:"),   SpacerView(height: 24),
                 pasteButton,                                                                                                        SpacerView(height: 12),
                 scanButton,                                                                                                         SpacerView(height: 24),
-                SettingsTitleView(title: "YOUR NOSTR LIGHTNING ADDRESS:"),                                                          SpacerView(height: 10),
+                SpacerView(height: 10),
             ].forEach { nwcStack.addArrangedSubview($0) }
             
             pasteButton.addAction(.init(handler: { [weak self] _ in
                 guard let paste = UIPasteboard.general.string else { return }
-                WalletManager.instance.setNWCWallet(nwcString: paste)
-                
-                self?.updateNWCStack()
-                self?.view.showToast("Pasted!")
+                Task { @MainActor in
+                    self?.view.showToast("Pasted!")
+                    
+                    try await WalletManager.instance.setNWCWallet(nwcString: paste)
+                    
+                    try await self?.updateNWCStack()
+                }
             }), for: .touchUpInside)
             
             scanButton.addAction(.init(handler: { [weak self] _ in
                 self?.navigationController?.pushViewController(SettingsNWCQRScanController(callback: { code in
-                    WalletManager.instance.setNWCWallet(nwcString: code)
-                    
-                    self?.updateNWCStack()
+                    Task { @MainActor in
+                        try await WalletManager.instance.setNWCWallet(nwcString: code)
+                        try await self?.updateNWCStack()
+                    }
                 }), animated: true)
             }), for: .touchUpInside)
         }
@@ -114,7 +121,7 @@ private extension SettingsWalletViewController {
     func setup() {
         title = "Wallet Settings"
         
-        let primalWallet = SettingsSwitchView("Use Primal wallet")
+        let externalWallet = SettingsSwitchView("Use external wallet")
         
         let walletStart = SettingsSwitchView("Start in wallet")
         
@@ -124,14 +131,7 @@ private extension SettingsWalletViewController {
         }
         
         let maxBalanceDesc = descLabel("Primal is a transactional wallet, designed for handling small amounts. We recommend self custody for larger amounts.")
-        
-        minTransaction.addAction(.init(handler: { [weak self] _ in
-            self?.show(SettingsEditMinTransactionController(), sender: nil)
-        }), for: .touchUpInside)
-        
-        showNotifications.addAction(.init(handler: { [weak self] _ in
-            self?.show(SettingsEditMinNotificationController(), sender: nil)
-        }), for: .touchUpInside)
+        let restoreDesc = descLabel("If you have an existing wallet that you wish to use with your Nostr account, you can restore it here using your 12-24 wallet recovery phrase.")
         
         let primalStack = UIStackView(axis: .vertical, [
             showNotifications,                                                                                                  SpacerView(height: 10),
@@ -149,12 +149,14 @@ private extension SettingsWalletViewController {
             addressDesc,                                                                                                        SpacerView(height: 24),
             walletStart,                                                                                                        SpacerView(height: 10),
             descLabel("Open the wallet when Primal starts"),                                                                    SpacerView(height: 24),
-            primalWallet,                                                                                                       SpacerView(height: 10),
             minTransaction,                                                                                                     SpacerView(height: 10),
             descLabel("You can choose to hide small transactions to avoid spam in your transaction list"),                      SpacerView(height: 24),
-            primalStack,
+            restoreWallet,                                                                                                      SpacerView(height: 10),
+            restoreDesc,                                                                                                        SpacerView(height: 24),
+            externalWallet,                                                                                                     SpacerView(height: 10),
             descLabel("Alternatively you can connect to an external lightning wallet via Nostr Wallet Connect"),                SpacerView(height: 24),
             nwcStack,
+            primalStack,
         ])
         
         nwcVC.willMove(toParent: self)
@@ -173,31 +175,49 @@ private extension SettingsWalletViewController {
         mainStack.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -40).isActive = true
         
         updateTheme()
-        updateNWCStack()
         
         walletStart.switchView.isOn = WalletSettings.startInWallet
         
-        usePrimalWallet = WalletManager.instance.isPrimalWalletActive
+        useNWCWallet = WalletManager.instance.isNWCWalletActive
         
-        $usePrimalWallet.removeDuplicates().receive(on: DispatchQueue.main).sink { [weak self] usePrimalWallet in
-            primalWallet.switchView.isOn = usePrimalWallet
-            primalStack.isHidden = !usePrimalWallet
-            self?.nwcStack.isHidden = usePrimalWallet
+        $useNWCWallet.removeDuplicates().receive(on: DispatchQueue.main).sink { [weak self] useNWC in
+            externalWallet.switchView.isOn = useNWC
+            primalStack.isHidden = useNWC
+            self?.nwcStack.isHidden = !useNWC
         }
         .store(in: &cancellables)
         
-        primalWallet.switchView.addAction(.init(handler: { [weak self, weak primalWallet] _ in
-            guard let primalWallet else { return }
-            let usePrimalWallet = primalWallet.switchView.isOn
-            WalletManager.instance.setUsePrimalWallet(usePrimalWallet)
-            self?.updateNWCStack()
-            self?.usePrimalWallet = usePrimalWallet
+        externalWallet.switchView.addAction(.init(handler: { [weak self, weak externalWallet] _ in
+            guard let externalWallet else { return }
+            let usePrimalWallet = externalWallet.switchView.isOn
+            
+            Task { @MainActor in
+                try await WalletManager.instance.setUsePrimalWallet(usePrimalWallet)
+                try await self?.updateNWCStack()
+                self?.useNWCWallet = usePrimalWallet
+            }
         }), for: .valueChanged)
         
         walletStart.switchView.addAction(.init(handler: { [weak walletStart] _ in
             guard let value = walletStart?.switchView.isOn else { return }
             WalletSettings.startInWallet = value
         }), for: .valueChanged)
+        
+        minTransaction.addAction(.init(handler: { [weak self] _ in
+            self?.show(SettingsEditMinTransactionController(), sender: nil)
+        }), for: .touchUpInside)
+        
+        showNotifications.addAction(.init(handler: { [weak self] _ in
+            self?.show(SettingsEditMinNotificationController(), sender: nil)
+        }), for: .touchUpInside)
+        
+        restoreWallet.addAction(.init(handler: { [weak self] _ in
+            
+        }), for: .touchUpInside)
+        
+        Task {
+            try await updateNWCStack()
+        }
     }
 }
 
