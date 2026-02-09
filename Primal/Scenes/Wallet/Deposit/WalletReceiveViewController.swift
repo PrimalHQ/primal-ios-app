@@ -35,9 +35,6 @@ final class WalletReceiveViewController: UIViewController, Themeable {
         didSet {
             oldValue?.isActive = false
             activeButton?.isActive = true
-            if activeButton == lightningButton {
-                onchainAddress = nil
-            }
             requestInfo()
         }
     }
@@ -48,40 +45,7 @@ final class WalletReceiveViewController: UIViewController, Themeable {
     
     private var cancellables: Set<AnyCancellable> = []
     
-    private var lnInvoice: String? {
-        didSet {
-            updateInfo()
-        }
-    }
-    private var onchainAddress: String? {
-        didSet {
-            if onchainAddress != nil {
-                updateInfo()
-            }
-        }
-    }
-    
-    var onchainAddressWithDetails: String? {
-        guard var onchainAddress, let additionalInfo else { return onchainAddress }
-        
-        var hasSatoshi = additionalInfo.satoshi > 0
-        if hasSatoshi {
-            onchainAddress += "?amount=\(additionalInfo.satoshi.satsToBitcoinString())"
-        }
-        
-        if !additionalInfo.description.isEmpty {
-            onchainAddress += hasSatoshi ? "&" : "?"
-            onchainAddress += "label=\(additionalInfo.description.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? additionalInfo.description)"
-        }
-        
-        return onchainAddress
-    }
-    
-    var invoice: String {
-        onchainAddressWithDetails ?? lnInvoice ?? depositInfo?.lnurl ?? ""
-    }
-    
-    var depositInfo: DepositInfo? {
+    var invoice: String? {
         didSet {
             updateInfo()
         }
@@ -133,25 +97,39 @@ extension WalletReceiveViewController: WalletReceiveDetailsControllerDelegate {
 private extension WalletReceiveViewController {
     func requestInfo() {
         let network = activeButton == lightningButton ? WalletTransactionNetwork.lightning : .onchain
-        PrimalWalletRequest(type: .deposit(network, additionalInfo)).publisher().receive(on: DispatchQueue.main).sink { [weak self] res in
-            if let data = res.depositInfo {
-                self?.depositInfo = data
-            } else if let data = res.invoiceInfo {
-                self?.lnInvoice = data.lnInvoice
-            } else if let onchain = res.onchainAddress {
-                self?.onchainAddress = onchain
-            } else {
-                if let message = res.message {
-                    self?.showErrorMessage(message)
+        
+        let btcString = additionalInfo?.satoshi.satsToBitcoinString()
+        let desc = additionalInfo?.description
+    
+        Task { @MainActor in
+            if network == .lightning {
+                if let res = try await WalletManager.instance.createLightningInvoice(amountInBtc: btcString, comment: desc) {
+                    invoice = res
                 }
-                self?.additionalInfo = nil
+            } else {
+                
             }
         }
-        .store(in: &cancellables)
+        
+//        PrimalWalletRequest(type: .deposit(network, additionalInfo)).publisher().receive(on: DispatchQueue.main).sink { [weak self] res in
+//            if let data = res.depositInfo {
+//                self?.depositInfo = data
+//            } else if let data = res.invoiceInfo {
+//                self?.lnInvoice = data.lnInvoice
+//            } else if let onchain = res.onchainAddress {
+//                self?.onchainAddress = onchain
+//            } else {
+//                if let message = res.message {
+//                    self?.showErrorMessage(message)
+//                }
+//                self?.additionalInfo = nil
+//            }
+//        }
+//        .store(in: &cancellables)
     }
     
     func updateInfo() {
-        guard let depositInfo else {
+        guard let invoice else {
             mainStack.isHidden = true
             loadingIndicator.isHidden = false
             loadingIndicator.play()
@@ -166,20 +144,22 @@ private extension WalletReceiveViewController {
         
         ludHeightC?.isActive = !hasExtraInfo
         
-        let protocolType = onchainAddress == nil ? "lightning" : "bitcoin"
+        let isOnchain = activeButton == onchainButton
+        
+        let protocolType = isOnchain ? "bitcoin" : "lightning"
         let newQRCode = "\(protocolType):\(invoice)"
         
         if qrCodeImageView.image == nil {
-            if let onchainAddress {
+            if isOnchain {
                 ludDescLabel.text = "Bitcoin Address:"
-                ludLabel.text = onchainAddress
+                ludLabel.text = invoice
                 ludLabel.font = .appFont(withSize: 18, weight: .bold)
                 ludLabel.adjustsFontSizeToFitWidth = false
                 
                 qrCodeImageView.image = .createQRCode(newQRCode, dimension: 231, logo: bitcoinImage)
             } else {
                 ludDescLabel.text = "Lightning Address:"
-                ludLabel.text = depositInfo.lud16
+                ludLabel.text = invoice
                 
                 if hasExtraInfo {
                     ludLabel.font = .appFont(withSize: 18, weight: .bold)
@@ -194,16 +174,12 @@ private extension WalletReceiveViewController {
         } else {
             if newQRCode != oldQRCode {
                 UIView.transition(with: qrCodeImageView.superview ?? qrCodeImageView, duration: 0.4, options: .transitionFlipFromLeft) { [self] in
-                    if onchainAddress != nil {
-                        qrCodeImageView.image = .createQRCode(newQRCode, dimension: 231, logo: bitcoinImage)
-                    } else {
-                        qrCodeImageView.image = .createQRCode(newQRCode, dimension: 231, logo: lightningImage)
-                    }
+                    qrCodeImageView.image = .createQRCode(newQRCode, dimension: 231, logo: isOnchain ? bitcoinImage : lightningImage)
                 }
             }
             
             UIView.transition(with: infoStack, duration: 0.4, options: .transitionCrossDissolve) { [self] in
-                if hasExtraInfo || onchainAddress != nil {
+                if hasExtraInfo || isOnchain {
                     ludLabel.font = .appFont(withSize: 18, weight: .bold)
                     ludLabel.adjustsFontSizeToFitWidth = false
                 } else {
@@ -211,8 +187,8 @@ private extension WalletReceiveViewController {
                     ludLabel.adjustsFontSizeToFitWidth = true
                 }
                 
-                ludLabel.text = onchainAddress ?? depositInfo.lud16
-                ludDescLabel.text = onchainAddress != nil ? "Bitcoin Address:" : "Lightning Address:"
+                ludLabel.text = isOnchain ? invoice : WalletManager.instance.activeWallet?.lightningAddress ?? invoice
+                ludDescLabel.text = isOnchain ? "Bitcoin Address:" : "Lightning Address:"
             }
         }
         
@@ -365,7 +341,6 @@ private extension WalletReceiveViewController {
         }), for: .touchUpInside)
         
         selectionStackParent.isHidden = true
-        detailsButton.isHidden = true
     }
     
     func descLabel(_ text: String) -> UILabel {

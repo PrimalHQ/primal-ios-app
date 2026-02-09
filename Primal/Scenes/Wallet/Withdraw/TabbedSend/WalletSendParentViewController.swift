@@ -13,7 +13,7 @@ protocol WalletSearchController: AnyObject, MetadataCoding {
     var textSearch: String? { get set }
     var cancellables: Set<AnyCancellable> { get set }
     
-    var     navigationControllerForSearchResults: UINavigationController? { get }
+    var navigationControllerForSearchResults: UINavigationController? { get }
 }
 
 extension WalletSearchController {

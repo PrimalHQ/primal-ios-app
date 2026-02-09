@@ -30,7 +30,6 @@ enum DeeplinkNavigation {
     case legends
     case newPost(text: String, files: [URL])
     case live(ParsedLiveEvent)
-    case promoCode(String)
     case url(URL)
 }
 

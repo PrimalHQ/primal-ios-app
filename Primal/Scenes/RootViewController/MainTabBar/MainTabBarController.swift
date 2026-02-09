@@ -147,15 +147,13 @@ final class MainTabBarController: UIViewController, Themeable {
         
         guard runOnce else { return }
         runOnce = false
-        let pubkey = IdentityManager.instance.userHexPubkey
-        Task { @MainActor in
-            guard
-                let wallet = try await WalletManager.instance.walletAccountRepo.getActiveWallet(userId: pubkey),
-                wallet is Wallet.Primal
-            else { return }
-            
-            smartPresent(MigrateWalletPopupController())
-        }
+        WalletManager.instance.$activeWallet.filter({ $0 is Wallet.Primal })
+            .first()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.smartPresent(MigrateWalletPopupController())
+            }
+            .store(in: &cancellables)
     }
 
     func hideForMenu() {
@@ -482,8 +480,6 @@ private extension MainTabBarController {
                             newPost.manager.textView.text = text
                             newPost.manager.addMedia(files)
                             return (newPost, nil)
-                        case .promoCode(let code):
-                            return (OnboardingParentViewController(.redeemCode(code)), nil)
                         case .live(let live):
                             return (LiveVideoPlayerController(live: live), nil)
                         case .url(let url):

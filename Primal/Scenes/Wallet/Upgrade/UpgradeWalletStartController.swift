@@ -26,6 +26,7 @@ class UpgradeWalletStartController: UIViewController {
             ])),
             BulletPointStack(view: bulletLabel(textArray: [("We will copy your entire transaction history to the new wallet", false)])),
             BulletPointStack(view: bulletLabel(textArray: [("You will keep your existing lighting address ", false)])),
+            UILabel("Please keep Primal open\nuntil the upgrade process is done.", color: .foreground, font: .appFont(withSize: 16, weight: .regular), multiline: true),
         ])
         
         let questionsLabel = NantesLabel()
@@ -33,20 +34,29 @@ class UpgradeWalletStartController: UIViewController {
         
         let mainStack = UIStackView(axis: .vertical, [
             UIImageView(image: .walletFilledLarge.withTintColor(.foreground3, renderingMode: .alwaysOriginal)),
+            SpacerView(height: 65),
             itemStack,
-            UILabel("Please keep Primal open\nuntil the upgrade process is done.", color: .foreground, font: .appFont(withSize: 16, weight: .regular), multiline: true),
+            SpacerView(height: 44),
             questionsLabel,
+            SpacerView(height: 40),
             upgradeButton
         ])
-        mainStack.distribution = .equalSpacing
         mainStack.alignment = .center
         
         upgradeButton.pinToSuperview(edges: .horizontal)
         itemStack.pinToSuperview(edges: .horizontal, padding: 22)
         
-        view.addSubview(mainStack)
-        mainStack.pinToSuperview(edges: .horizontal, padding: 28).pinToSuperview(edges: .top, padding: 70, safeArea: true).pinToSuperview(edges: .bottom, padding: 10, safeArea: true)
+        let contentView = UIView().constrainToSize(width: 375)
+        contentView.addSubview(mainStack)
+        mainStack.pinToSuperview(edges: .horizontal, padding: 28).pinToSuperview(edges: .vertical)
         
+        let aspect = RootViewController.instance.view.frame.width / 375
+        contentView.anchorPoint = .init(x: 0.5, y: 1)
+        contentView.transform = .init(scaleX: aspect, y: aspect)
+        
+        view.addSubview(contentView)
+        contentView.centerToSuperview(axis: .horizontal)
+        contentView.centerYAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -10).isActive = true
         
         let text = NSMutableAttributedString(string:"Questions? Check out our ", attributes: [
             .foregroundColor: UIColor.foreground3,

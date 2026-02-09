@@ -215,8 +215,6 @@ final class WalletManager {
         
         zapFactory = NostrZapperFactoryProvider.shared.createNostrZapperFactory(walletRepository: walletRepo, nostrEventSignatureHandler: SigningManager.instance, primalWalletApiClient: walletConnection)
         
-        
-        
         setupPublishers()
         
         DispatchQueue.main.async {
@@ -253,14 +251,18 @@ final class WalletManager {
             let result = try await EnsurePrimalWalletExistsUseCase(primalWalletAccountRepository: primalWalletRepo, walletAccountRepository: walletAccountRepo)
                 .invoke(userId: pubkey, setAsActive: true).getOrNull()
             
-            if result == nil {
-                
-            }
+            let newWallet = try await walletAccountRepo.getActiveWallet(userId: pubkey)
             
+            guard newWallet == nil else { return }
             
+            let sparkWalletManager = WalletRepositoryFactory.shared.createSparkWalletManager()
+            let sparkWalletAccountRepository = WalletRepositoryFactory.shared.createSparkWalletAccountRepository(primalWalletApiClient: walletConnection, nostrEventSignatureHandler: SigningManager.instance)
             
-//            guard let walletId = try await primalWalletRepo.fetchWalletAccountInfo(userId: pubkey).getOrNull() else { return }
-//            try await walletAccountRepo.setActiveWallet(userId: pubkey, walletId: walletId as String)
+            let newResult = try await EnsureSparkWalletExistsUseCase(sparkWalletManager: sparkWalletManager, sparkWalletAccountRepository: sparkWalletAccountRepository, walletAccountRepository: walletAccountRepo, seedPhraseGenerator: RecoveryPhraseGenerator())
+                .invoke(userId: pubkey)
+            
+//            guard let sparkWallet = try await walletAccountRepo.findLastUsedWallet(userId: pubkey, type: .spark) else { return }
+//            try await walletAccountRepo.setActiveWallet(userId: pubkey, walletId: sparkWallet.walletId)
         }
         
         DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
@@ -271,12 +273,12 @@ final class WalletManager {
     
     func newWalletSpark(_ pubkey: String) {
         let sparkWalletManager = WalletRepositoryFactory.shared.createSparkWalletManager()
-        let sparkWalletAccountRepository = WalletRepositoryFactory.shared.createSparkWalletAccountRepository(primalWalletApiClient: regConnection, nostrEventSignatureHandler: SigningManager.instance)
+        let sparkWalletAccountRepository = WalletRepositoryFactory.shared.createSparkWalletAccountRepository(primalWalletApiClient: walletConnection, nostrEventSignatureHandler: SigningManager.instance)
         
         let ensureSpark = EnsureSparkWalletExistsUseCase(sparkWalletManager: sparkWalletManager, sparkWalletAccountRepository: sparkWalletAccountRepository, walletAccountRepository: walletAccountRepo, seedPhraseGenerator: RecoveryPhraseGenerator())
         
         Task {
-            let invokeSpark = try await ensureSpark.invoke(userId: pubkey, register: true)
+            let invokeSpark = try await ensureSpark.invoke(userId: pubkey)
         }
     }
     
@@ -308,13 +310,19 @@ final class WalletManager {
         try await setUsePrimalWallet()
     }
     
+    func createLightningInvoice(amountInBtc: String?, comment: String?) async throws -> String? {
+        guard let walletID else { return activeWallet?.lightningAddress }
+        
+        let invoiceResult = try await WalletManager.instance.walletRepo.createLightningInvoice(walletId: walletID, amountInBtc: amountInBtc, comment: comment).getOrNull()
+        
+        return invoiceResult?.invoice ?? activeWallet?.lightningAddress
+    }
+    
     func refresh() {
         guard let walletID else { return }
         
         let flow = walletRepo.latestTransactions(walletId: walletID)
         let snapshot = IosPagingUtils.shared.createTransactionSnapshot(pagingFlow: flow)
-        
-        
         
         Task { @MainActor in
             _ = try await self.walletRepo.fetchWalletBalance(walletId: walletID)

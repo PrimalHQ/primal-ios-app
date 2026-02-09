@@ -27,7 +27,6 @@ extension LargeWalletButton: WalletHomeTransitionButton {
 final class WalletHomeViewController: UIViewController, Themeable {
     enum Cell {
         case loading
-        case activateWallet
         case upgradeWallet
         case backupWallet
         case buySats
@@ -147,13 +146,6 @@ extension WalletHomeViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         switch tableData[indexPath.section].cells[indexPath.row] {
-        case .activateWallet:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "activateWallet", for: indexPath)
-            if let cell = cell as? ActivateWalletCell {
-                cell.updateTheme()
-                cell.delegate = self
-            }
-            return cell
         case .upgradeWallet:
             let cell = tableView.dequeueReusableCell(withIdentifier: "upgradeWallet", for: indexPath)
             if let cell = cell as? UpgradeWalletCell {
@@ -269,8 +261,6 @@ extension WalletHomeViewController: UITableViewDelegate {
         case .transaction(let transaction):
             selectedIndexPath = indexPath
             show(TransactionViewController(transaction: transaction), sender: nil)
-        case .activateWallet:
-            activateWalletPressed()
         case .upgradeWallet:
             upgradeWalletPressed()
         case .backupWallet:
@@ -279,17 +269,9 @@ extension WalletHomeViewController: UITableViewDelegate {
     }
 }
 
-extension WalletHomeViewController: BuySatsCellDelegate, ActivateWalletCellDelegate, UpgradeWalletCellDelegate, BackupWalletCellDelegate {
-    func activateWalletPressed() {
-//        if WalletManager.instance.primal == nil {
-//            WalletManager.instance.setUsePrimalWallet()
-//        } else {
-//            show(WalletActivateViewController(), sender: nil)
-//        }
-    }
-    
+extension WalletHomeViewController: BuySatsCellDelegate, UpgradeWalletCellDelegate, BackupWalletCellDelegate {
     func upgradeWalletPressed() {
-        
+        present(UpgradeWalletController(), animated: true)
     }
     
     func backupWalletPressed() {
@@ -333,7 +315,6 @@ private extension WalletHomeViewController {
         table.register(TransactionCell.self, forCellReuseIdentifier: "cell")
         table.register(WalletInfoCell.self, forCellReuseIdentifier: "info")
         table.register(BuySatsCell.self, forCellReuseIdentifier: "buySats")
-        table.register(ActivateWalletCell.self, forCellReuseIdentifier: "activateWallet")
         table.register(UpgradeWalletCell.self, forCellReuseIdentifier: "upgradeWallet")
         table.register(BackupWalletCell.self, forCellReuseIdentifier: "backupWallet")
         table.register(ChatLoadingCell.self, forCellReuseIdentifier: "loading")

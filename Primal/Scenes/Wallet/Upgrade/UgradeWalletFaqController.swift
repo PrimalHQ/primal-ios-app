@@ -47,6 +47,7 @@ class UgradeWalletFaqController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .background
         title = "Wallet Update FAQ"
+        navigationItem.leftBarButtonItem = customBackButtonWithDismiss
         
         let scrollView = UIScrollView()
         
@@ -66,7 +67,7 @@ class UgradeWalletFaqController: UIViewController {
         
         let mainStack = UIStackView(axis: .vertical, spacing: 24, [scrollView, closeButton])
         view.addSubview(mainStack)
-        mainStack.pinToSuperview(edges: .vertical, safeArea: true).pinToSuperview(edges: .horizontal)
+        mainStack.pinToSuperview(edges: .top, safeArea: true).pinToSuperview(edges: .bottom, padding: 20, safeArea: true).pinToSuperview(edges: .horizontal)
         mainStack.alignment = .center
         
         scrollView.pinToSuperview(edges: .horizontal)
@@ -74,7 +75,11 @@ class UgradeWalletFaqController: UIViewController {
         stackView.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -50).isActive = true
         
         closeButton.addAction(.init(handler: { [weak self] _ in
-            self?.dismiss(animated: true)
+            guard let nav = self?.navigationController, nav.viewControllers.count > 1 else {
+                self?.dismiss(animated: true)
+                return
+            }
+            nav.popViewController(animated: true)
         }), for: .touchUpInside)
     }
     
