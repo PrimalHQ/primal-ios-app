@@ -21,6 +21,13 @@ class BackupWalletInputPhraseController: UIViewController {
         title = "Verify Recovery Phrase"
         navigationItem.leftBarButtonItem = customBackButton
         
+        Task { @MainActor in
+            let seedPhrase = try await WalletManager.instance.seedPhrase()
+            self.setup(seedPhrase)
+        }
+    }
+    
+    func setup(_ seedPhrase: [String]) {
         let wordViews = seedPhrase.enumerated().map({ ($0.0 + 1, $0.1) }).map { WalletInputPhraseView(word: $0.1, index: $0.0) }
         let wordStack = UIStackView(axis: .vertical, spacing: 24, wordViews)
         

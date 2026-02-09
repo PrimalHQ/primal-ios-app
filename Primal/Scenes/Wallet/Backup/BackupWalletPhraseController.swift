@@ -7,21 +7,6 @@
 
 import UIKit
 
-let seedPhrase = [
-    "ocean",
-    "hidden",
-    "mystery",
-    "puzzle",
-    "element",
-    "supply",
-    "window",
-    "bamboo",
-    "silver",
-    "royal",
-    "nephew",
-    "planet"
-]
-
 class BackupWalletPhraseController: UIViewController {
     
     override func viewDidLoad() {
@@ -31,6 +16,13 @@ class BackupWalletPhraseController: UIViewController {
         title = "Backup Wallet"
         navigationItem.leftBarButtonItem = customBackButton
         
+        Task { @MainActor in
+            let seedPhrase = try await WalletManager.instance.seedPhrase()
+            self.setup(seedPhrase)
+        }
+    }
+    
+    func setup(_ seedPhrase: [String]) {
         var wordStack = Array(seedPhrase.enumerated().map { ($0.0 + 1, $0.1) }.reversed())
         let rectStack = UIStackView(axis: .vertical, spacing: 4, (0...3).map { _ in
             UIStackView(axis: .horizontal, spacing: 4, (0...2).map { _ in
