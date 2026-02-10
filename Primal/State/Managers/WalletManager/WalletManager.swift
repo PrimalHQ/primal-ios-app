@@ -196,6 +196,9 @@ final class WalletManager {
     let walletConnection = PrimalApiClientFactory.shared.create(serverType: .wallet)
     let walletAccountRepo = WalletRepositoryFactory.shared.createWalletAccountRepository()
     
+    lazy var sparkWalletManager = WalletRepositoryFactory.shared.createSparkWalletManager()
+    lazy var sparkWalletAccountRepository = WalletRepositoryFactory.shared.createSparkWalletAccountRepository(primalWalletApiClient: walletConnection, nostrEventSignatureHandler: SigningManager.instance)
+    
     var walletID: String? { activeWallet?.walletId }
     @Published var activeWallet: Wallet?
     
@@ -221,6 +224,8 @@ final class WalletManager {
     }
     
     func reset(_ pubkey: String) {
+        // TODO: sparkWalletManager.disconnectWallet(walletId: ) stari wallet
+        
         userZapped = [:]
         premiumState = nil
         activeWallet = nil
@@ -242,7 +247,13 @@ final class WalletManager {
         
         Task {
             let wallet = try await walletAccountRepo.getActiveWallet(userId: pubkey)
-            guard wallet == nil else { return }
+            guard wallet == nil else {
+                if wallet is Wallet.Spark {
+                    let newResult = try await EnsureSparkWalletExistsUseCase(sparkWalletManager: sparkWalletManager, sparkWalletAccountRepository: sparkWalletAccountRepository, walletAccountRepository: walletAccountRepo, seedPhraseGenerator: RecoveryPhraseGenerator())
+                        .invoke(userId: pubkey, register: false)
+                }
+                return
+            }
             
             let primalWalletRepo = WalletRepositoryFactory.shared.createPrimalWalletAccountRepository(primalWalletApiClient: walletConnection, nostrEventSignatureHandler: SigningManager.instance)
             
@@ -252,9 +263,6 @@ final class WalletManager {
             let newWallet = try await walletAccountRepo.getActiveWallet(userId: pubkey)
             
             guard newWallet == nil else { return }
-            
-            let sparkWalletManager = WalletRepositoryFactory.shared.createSparkWalletManager()
-            let sparkWalletAccountRepository = WalletRepositoryFactory.shared.createSparkWalletAccountRepository(primalWalletApiClient: walletConnection, nostrEventSignatureHandler: SigningManager.instance)
             
             let newResult = try await EnsureSparkWalletExistsUseCase(sparkWalletManager: sparkWalletManager, sparkWalletAccountRepository: sparkWalletAccountRepository, walletAccountRepository: walletAccountRepo, seedPhraseGenerator: RecoveryPhraseGenerator())
                 .invoke(userId: pubkey, register: true)
@@ -270,9 +278,6 @@ final class WalletManager {
     }
     
     func newWalletSpark(_ pubkey: String) {
-        let sparkWalletManager = WalletRepositoryFactory.shared.createSparkWalletManager()
-        let sparkWalletAccountRepository = WalletRepositoryFactory.shared.createSparkWalletAccountRepository(primalWalletApiClient: walletConnection, nostrEventSignatureHandler: SigningManager.instance)
-        
         let ensureSpark = EnsureSparkWalletExistsUseCase(sparkWalletManager: sparkWalletManager, sparkWalletAccountRepository: sparkWalletAccountRepository, walletAccountRepository: walletAccountRepo, seedPhraseGenerator: RecoveryPhraseGenerator())
         
         Task {
@@ -281,14 +286,30 @@ final class WalletManager {
     }
     
     func seedPhrase() async throws -> [String] {
-        guard let spark = activeWallet as? Wallet.Spark else { return [] }
-        
-        let sparkWalletManager = WalletRepositoryFactory.shared.createSparkWalletManager()
-        let sparkWalletAccountRepository = WalletRepositoryFactory.shared.createSparkWalletAccountRepository(primalWalletApiClient: walletConnection, nostrEventSignatureHandler: SigningManager.instance)
+        guard let walletID else { return [] }
 
-        let seed = try await sparkWalletAccountRepository.getPersistedSeedWords(walletId: spark.walletId).getOrNull()
+        let seed = try await sparkWalletAccountRepository.getPersistedSeedWords(walletId: walletID).getOrNull()
         
         return seed?.compactMap { $0 as? String } ?? []
+    }
+    
+    func restoreWalletFromSeed(_ phrase: String) {
+        Task {
+            try await RestoreSparkWalletUseCase(
+                sparkWalletManager: sparkWalletManager,
+                walletAccountRepository: walletAccountRepo,
+                sparkWalletAccountRepository: sparkWalletAccountRepository
+            )
+            .invoke(seedWords: phrase, userId: IdentityManager.instance.userHexPubkey)
+        }
+    }
+    
+    func markWalletAsBackedUp() {
+        guard let walletID else { return }
+
+        Task {
+            try await sparkWalletAccountRepository.markWalletAsBackedUp(walletId: walletID)
+        }
     }
     
     func setUsePrimalWallet(_ usePrimal: Bool = true) async throws {
@@ -322,9 +343,9 @@ final class WalletManager {
     func createLightningInvoice(amountInBtc: String?, comment: String?) async throws -> String? {
         guard let walletID else { return activeWallet?.lightningAddress }
         
-        let invoiceResult = try await WalletManager.instance.walletRepo.createLightningInvoice(walletId: walletID, amountInBtc: amountInBtc, comment: comment, expiry: nil).getOrNull()
+        let invoiceResult = try await WalletManager.instance.walletRepo.createLightningInvoice(walletId: walletID, amountInBtc: amountInBtc, comment: comment, expiry: nil)
         
-        return invoiceResult?.invoice ?? activeWallet?.lightningAddress
+        return invoiceResult.getOrNull()?.invoice ?? activeWallet?.lightningAddress
     }
     
     func refresh() {

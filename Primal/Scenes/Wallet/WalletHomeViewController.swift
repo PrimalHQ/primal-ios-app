@@ -81,7 +81,7 @@ final class WalletHomeViewController: UIViewController, Themeable {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        WalletManager.instance.recheck()
+        WalletManager.instance.refresh()
         WalletManager.instance.loadNewExchangeRate()
         
         ICloudKeychainManager.instance.$userPubkey
@@ -360,10 +360,8 @@ private extension WalletHomeViewController {
                 firstSection.cells += [.upgradeWallet, .loading]
             } else if let primal = wallet as? Wallet.Primal {
                 firstSection.cells += [.upgradeWallet]
-            } else if let spark = wallet as? Wallet.Spark {
-                if !spark.isBackedUp {
-                    firstSection.cells += [.backupWallet]
-                }
+            } else if let spark = wallet as? Wallet.Spark, let balance = spark.balanceInBtc?.doubleValue, balance > 0, !spark.isBackedUp {
+                firstSection.cells += [.backupWallet]
             }
             
             var tableData = [Section]()

@@ -553,6 +553,7 @@
 		B9C5A07D2F36258E007CB5D3 /* UgradeWalletFaqController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C5A07C2F362586007CB5D3 /* UgradeWalletFaqController.swift */; };
 		B9C5A07F2F362B12007CB5D3 /* UpgradeWalletStartController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C5A07E2F362B0B007CB5D3 /* UpgradeWalletStartController.swift */; };
 		B9C5A0A72F3A3748007CB5D3 /* PrimalShared in Frameworks */ = {isa = PBXBuildFile; productRef = B9C5A0A62F3A3748007CB5D3 /* PrimalShared */; };
+		B9C5A0AA2F3A68FE007CB5D3 /* RestoreWalletController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C5A0A92F3A68F8007CB5D3 /* RestoreWalletController.swift */; };
 		B9C672D42E1FEF5000243B45 /* LiveEventManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C672D32E1FEF5000243B45 /* LiveEventManager.swift */; };
 		B9C672D62E1FF65F00243B45 /* JSON+Extra.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C672D52E1FF65900243B45 /* JSON+Extra.swift */; };
 		B9C672D92E252D8600243B45 /* LiveVideoPlayerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C672D82E252D7E00243B45 /* LiveVideoPlayerController.swift */; };
@@ -1354,6 +1355,7 @@
 		B9BCF3C22CDD80020032BD0D /* PremiumHomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumHomeViewController.swift; sourceTree = "<group>"; };
 		B9C5A07C2F362586007CB5D3 /* UgradeWalletFaqController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UgradeWalletFaqController.swift; sourceTree = "<group>"; };
 		B9C5A07E2F362B0B007CB5D3 /* UpgradeWalletStartController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpgradeWalletStartController.swift; sourceTree = "<group>"; };
+		B9C5A0A92F3A68F8007CB5D3 /* RestoreWalletController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestoreWalletController.swift; sourceTree = "<group>"; };
 		B9C672D32E1FEF5000243B45 /* LiveEventManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveEventManager.swift; sourceTree = "<group>"; };
 		B9C672D52E1FF65900243B45 /* JSON+Extra.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "JSON+Extra.swift"; sourceTree = "<group>"; };
 		B9C672D82E252D7E00243B45 /* LiveVideoPlayerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveVideoPlayerController.swift; sourceTree = "<group>"; };
@@ -2904,6 +2906,7 @@
 				B9B1AB972B2C72F200837312 /* jsonData */,
 				B928F8712F30BFB400DBD9D0 /* Backup */,
 				B94F2BD02ADC2E9C0041181B /* Deposit */,
+				B9C5A0A82F3A68EE007CB5D3 /* Restore */,
 				B9B1AB9C2B3333C800837312 /* Transaction */,
 				B94F2BC52AD6AF910041181B /* Withdraw */,
 				B928F8672F30BF7500DBD9D0 /* Upgrade */,
@@ -3212,6 +3215,14 @@
 				B9BCF3BF2CDD7F340032BD0D /* PremiumOnboardingHomeViewController.swift */,
 			);
 			path = Onboarding;
+			sourceTree = "<group>";
+		};
+		B9C5A0A82F3A68EE007CB5D3 /* Restore */ = {
+			isa = PBXGroup;
+			children = (
+				B9C5A0A92F3A68F8007CB5D3 /* RestoreWalletController.swift */,
+			);
+			path = Restore;
 			sourceTree = "<group>";
 		};
 		B9C672D72E252D6A00243B45 /* LiveVideoPlayer */ = {
@@ -4233,6 +4244,7 @@
 				B9658AC72D9EB5750037E5DB /* SettingsEditMediaUploadsController.swift in Sources */,
 				B956775D2EFD76D500B8166C /* RemoteSignerEventDetailsController.swift in Sources */,
 				B98DD8E42C666D5D00E8369A /* FeedMarketplaceCell.swift in Sources */,
+				B9C5A0AA2F3A68FE007CB5D3 /* RestoreWalletController.swift in Sources */,
 				B9E67EA72D09D8F9006BB397 /* ThreadElementImageGalleryCell.swift in Sources */,
 				B90DB06F2E5E10CC00A67D4A /* LiveVideoZapsController.swift in Sources */,
 				9E83DF732A573E7A00F2C379 /* FormHeaderView.swift in Sources */,
@@ -4787,7 +4799,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.7.3;
+				MARKETING_VERSION = 2.7.4;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -4836,7 +4848,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.7.3;
+				MARKETING_VERSION = 2.7.4;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

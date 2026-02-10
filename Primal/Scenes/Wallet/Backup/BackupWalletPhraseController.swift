@@ -8,7 +8,6 @@
 import UIKit
 
 class BackupWalletPhraseController: UIViewController {
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -24,7 +23,9 @@ class BackupWalletPhraseController: UIViewController {
     
     func setup(_ seedPhrase: [String]) {
         var wordStack = Array(seedPhrase.enumerated().map { ($0.0 + 1, $0.1) }.reversed())
-        let rectStack = UIStackView(axis: .vertical, spacing: 4, (0...3).map { _ in
+        
+        let rows = wordStack.count / 3 + (wordStack.count % 3 > 0 ? 1 : 0)
+        let rectStack = UIStackView(axis: .vertical, spacing: 4, (0..<rows).map { _ in
             UIStackView(axis: .horizontal, spacing: 4, (0...2).map { _ in
                 guard let (index, word) = wordStack.popLast() else { return UIView() }
                 return WalletPhrasePreviewView(word: word, index: index)
@@ -37,7 +38,8 @@ class BackupWalletPhraseController: UIViewController {
         let cancelButton = UIButton(configuration: .coloredButton("Cancel, I’ll do this later", color: .foreground4, font: .appFont(withSize: 18, weight: .semibold)))
         let buttonStack = UIStackView(axis: .vertical, spacing: 24, [nextButton, cancelButton])
         
-        let mainStack = UIStackView(axis: .vertical, [SpacerView(height: 40), rectStack, firstLabel, buttonStack])
+        let mainStackViews: [UIView] = rows > 12 ? [rectStack, firstLabel, buttonStack] : [SpacerView(height: 40), rectStack, firstLabel, buttonStack]
+        let mainStack = UIStackView(axis: .vertical, mainStackViews)
         mainStack.distribution = .equalSpacing
         mainStack.alignment = .center
         

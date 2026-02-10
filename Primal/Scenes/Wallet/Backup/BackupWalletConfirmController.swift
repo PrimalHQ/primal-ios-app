@@ -65,6 +65,8 @@ class BackupWalletConfirmController: UIViewController {
 
         
         finishButton.addAction(.init(handler: { [weak self] _ in
+            WalletManager.instance.markWalletAsBackedUp()
+            
             self?.dismiss(animated: true)
         }), for: .touchUpInside)
     }

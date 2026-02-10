@@ -144,6 +144,8 @@ private extension SettingsWalletViewController {
             nwcVC.view
         ])
         
+        let restoreStack = UIStackView(axis: .vertical, [restoreWallet, SpacerView(height: 10), restoreDesc, SpacerView(height: 24)])
+        
         let mainStack = UIStackView(axis: .vertical, [
             SettingsInfoView(name: "LN Address", desc: IdentityManager.instance.user?.lud16 ?? "Not set...", showArrow: false), SpacerView(height: 10),
             addressDesc,                                                                                                        SpacerView(height: 24),
@@ -151,8 +153,7 @@ private extension SettingsWalletViewController {
             descLabel("Open the wallet when Primal starts"),                                                                    SpacerView(height: 24),
             minTransaction,                                                                                                     SpacerView(height: 10),
             descLabel("You can choose to hide small transactions to avoid spam in your transaction list"),                      SpacerView(height: 24),
-            restoreWallet,                                                                                                      SpacerView(height: 10),
-            restoreDesc,                                                                                                        SpacerView(height: 24),
+            restoreStack,
             externalWallet,                                                                                                     SpacerView(height: 10),
             descLabel("Alternatively you can connect to an external lightning wallet via Nostr Wallet Connect"),                SpacerView(height: 24),
             nwcStack,
@@ -187,6 +188,13 @@ private extension SettingsWalletViewController {
         }
         .store(in: &cancellables)
         
+        // Hide restore button if the current wallet isn't spark
+        Publishers.CombineLatest($useNWCWallet.removeDuplicates(), WalletManager.instance.$activeWallet)
+            .map { $0 || !($1 is Wallet.Spark) }
+            .receive(on: DispatchQueue.main)
+            .assign(to: \.isHidden, on: restoreStack)
+            .store(in: &cancellables)
+        
         externalWallet.switchView.addAction(.init(handler: { [weak self, weak externalWallet] _ in
             guard let externalWallet else { return }
             let usePrimalWallet = externalWallet.switchView.isOn
@@ -212,7 +220,7 @@ private extension SettingsWalletViewController {
         }), for: .touchUpInside)
         
         restoreWallet.addAction(.init(handler: { [weak self] _ in
-            
+            self?.show(RestoreWalletController(), sender: nil)
         }), for: .touchUpInside)
         
         Task {
