@@ -79,7 +79,7 @@ private extension WalletReceiveDetailsController {
         let applyButton = WalletActionButton(text: "APPLY") { [weak self] in
             guard let self else { return }
             
-            self.delegate?.detailsChanged(.init(satoshi: self.input.balance, description: self.textInput.text))
+            self.delegate?.detailsChanged(.init(satoshi: self.input.balance ?? 0, description: self.textInput.text))
             self.navigationController?.popViewController(animated: true)
         }
         

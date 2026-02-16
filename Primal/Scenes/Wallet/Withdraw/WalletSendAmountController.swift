@@ -179,7 +179,7 @@ private extension WalletSendAmountController {
         
         keyboard.delegate = self
         
-        input.$balance.map({ $0 > 0 }).assign(to: \.isEnabled, onWeak: sendButton).store(in: &cancellables)
+        input.$balance.map({ $0 ?? 0 > 0 }).assign(to: \.isEnabled, onWeak: sendButton).store(in: &cancellables)
         
         cancelButton.addAction(.init(handler: { [weak self] _ in
             self?.navigationController?.viewControllers.removeAll(where: { $0 as? WalletSendParentViewController != nil })
@@ -191,9 +191,9 @@ private extension WalletSendAmountController {
             
             switch destination {
             case .user(let user):
-                navigationController?.pushViewController(WalletSendViewController(.user(user, startingAmount: input.balance)), animated: true)
+                navigationController?.pushViewController(WalletSendViewController(.user(user, startingAmount: input.balance ?? 0)), animated: true)
             case let .address(address, invoice, user):
-                if address.isBitcoinAddress, input.balance < 21000 {
+                if address.isBitcoinAddress, input.balance ?? 0 < 21000 {
                     showErrorMessage("Amount too small for an on-chain transaction")
                     return
                 }
@@ -229,12 +229,12 @@ extension KeyboardInputConnector {
     
     func numberKeyboardNumberPressed(_ number: Int) {
         if input.isBitcoinPrimary {
-            if input.balance > maxInputAmountSats / 10 {
+            if input.balance ?? 0 > maxInputAmountSats / 10 {
                 RootViewController.instance.view.showToast("Over maximum amount", extraPadding: 0)
                 return
             }
             
-            input.balance = input.balance * 10 + number
+            input.balance = (input.balance ?? 0) * 10 + number
             triggerHapticFeedback()
             return
         }
@@ -273,7 +273,7 @@ extension KeyboardInputConnector {
         triggerHapticFeedback()
         
         if input.isBitcoinPrimary {
-            input.balance = input.balance / 10
+            input.balance = (input.balance ?? 0) / 10
             return
         }
         

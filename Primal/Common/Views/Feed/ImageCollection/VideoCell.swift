@@ -174,7 +174,7 @@ extension VideoCell: UIContextMenuInteractionDelegate {
     }
 }
 
-final class PlayerView: UIView {
+class PlayerView: UIView {
     override class var layerClass: AnyClass { AVPlayerLayer.self }
     
     var playerLayer: AVPlayerLayer { layer as! AVPlayerLayer }

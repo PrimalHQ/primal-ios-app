@@ -29,50 +29,66 @@ final class WalletSendSpinnerAnimator: NSObject, UIViewControllerAnimatedTransit
         toView.layoutIfNeeded()
         toView.alpha = 0
         
-        let fixParent = UIView()
-        let imageView = UIImageView(image: UIImage(named: "transitionSpinner"))
+        let backgroundParent = UIView()
+        container.addSubview(backgroundParent)
+        backgroundParent.pinToSuperview()
         
-        switch Theme.current.kind {
-        case .sunriseWave, .sunsetWave: break
-        case .midnightWave, .iceWave:
-            imageView.image = UIImage(named: "transitionSpinner")?.withRenderingMode(.alwaysTemplate)
-            imageView.tintColor = UIColor(rgb: 0x2554ED)
+        let backgroundColor = Theme.current.isDarkTheme ? UIColor.black : .white
+        
+        let top = UIView().constrainToSize(1000)
+        let bottom = UIView().constrainToSize(1000)
+        [top, bottom].forEach {
+            backgroundParent.addSubview($0)
+            $0.centerToSuperview(axis: .horizontal)
+            $0.backgroundColor = backgroundColor
         }
         
-        imageView.frame = sendController.profilePictureView.convert(sendController.profilePictureView.bounds, to: container).enlarge(60)
-        fixParent.addSubview(imageView)
-        
-        container.addSubview(fixParent)
-        sendController.profilePictureView.animateTransitionTo(spinner.spinner, duration: 12 / 30, in: fixParent, fade: true)
-        
-        CATransaction.begin()
-        CATransaction.setAnimationTimingFunction(.easeInOutQuart)
-        
-        UIView.animate(withDuration: 12 / 30) { [self] in
-            imageView.frame = spinner.spinner.convert(spinner.spinner.bounds, to: container).enlarge(150)
-            fixParent.transform = .init(translationX: 0, y: 20)
+        let right = UIView().constrainToSize(width: 600)
+        let left = UIView().constrainToSize(width: 600)
+        [right, left].forEach {
+            backgroundParent.addSubview($0)
+            $0.pinToSuperview(edges: .vertical)
+            $0.backgroundColor = backgroundColor
         }
         
-        CATransaction.commit()
+        NSLayoutConstraint.activate([
+            top.bottomAnchor.constraint(equalTo: backgroundParent.topAnchor),
+            bottom.topAnchor.constraint(equalTo: backgroundParent.bottomAnchor),
+            left.trailingAnchor.constraint(equalTo: backgroundParent.leadingAnchor),
+            right.leadingAnchor.constraint(equalTo: backgroundParent.trailingAnchor)
+        ])
+        backgroundParent.layoutIfNeeded()
         
-        spinner.titleLabel.alpha = 0.01
+        sendController.input.largeAmountLabel.animateTransitionTo(spinner.amountView.largeAmountLabel, duration: 0.5, in: container)
+        sendController.input.largeCurrencyLabel.animateTransitionTo(spinner.amountView.largeCurrencyLabel, duration: 0.5, in: container)
         
-        UIView.animate(withDuration: 8 / 30) {
-            fromView.alpha = 0
+        if sendController.input.large$Label.alpha > 0.1 && sendController.input.large$Label.superview?.isHidden == false {
+            sendController.input.large$Label.animateTransitionTo(spinner.amountView.large$Label, duration: 0.5, in: container)
         }
         
-        UIView.animate(withDuration: 8 / 30, delay: 4 / 30) {
-            self.spinner.titleLabel.alpha = 1
-            imageView.alpha = 0
+        spinner.navTitle.alpha = 0.01
+        
+        backgroundParent.alpha = 0
+        toView.transform = .init(scaleX: 0.3, y: 0.3).translatedBy(x: 0, y: 200)
+        backgroundParent.transform = toView.transform
+        
+        spinner.spinner.startPlayback()
+        
+        UIView.animate(withDuration: 2 / 30, delay: 10 / 30) {
+            self.spinner.navTitle.alpha = 1
+        }
+        
+        UIView.animate(withDuration: 12 / 30, delay: 0) {
+            toView.transform = .identity
             toView.alpha = 1
+            backgroundParent.alpha = 1
+            backgroundParent.transform = .identity
         } completion: { [self] _ in
-            toView.backgroundColor = .background
-            sendController.profilePictureView.alpha = 1
+            toView.backgroundColor = Theme.current.isDarkTheme ? .black : .white
             sendController.input.largeAmountLabel.alpha = 1
-            sendController.nameLabel.alpha = 1
-            fromView.alpha = 1
-            
-            fixParent.removeFromSuperview()
+            sendController.input.largeCurrencyLabel.alpha = 1
+            sendController.input.large$Label.alpha = 1
+            backgroundParent.removeFromSuperview()
             
             let success = !transitionContext.transitionWasCancelled
             if !success {

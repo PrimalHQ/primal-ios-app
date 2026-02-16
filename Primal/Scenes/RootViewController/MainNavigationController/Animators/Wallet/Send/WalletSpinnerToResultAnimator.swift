@@ -15,7 +15,7 @@ final class WalletSpinnerToResultAnimator: NSObject, UIViewControllerAnimatedTra
         self.result = result
     }
     
-    func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval { 8 / 30 }
+    func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval { 16 / 30 }
 
     func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
         guard
@@ -63,16 +63,19 @@ final class WalletSpinnerToResultAnimator: NSObject, UIViewControllerAnimatedTra
         
         CATransaction.commit()
         
-        spinner.titleLabel.alpha = 0.01
+        spinner.navTitle.alpha = 0.01
         
         UIView.animate(withDuration: 8 / 30) {
             fromView.alpha = 0
+            self.spinner.spinner.transform = .init(translationX: 0, y: -200)
         }
         
         UIView.animate(withDuration: 4 / 30, delay: 4 / 30) {
             toView.alpha = 1
         } completion: { [self] _ in
             fromView.alpha = 1
+            
+            self.spinner.spinner.transform = .identity
             
             result.animationView.play()
             
@@ -81,6 +84,18 @@ final class WalletSpinnerToResultAnimator: NSObject, UIViewControllerAnimatedTra
                 toView.removeFromSuperview()
             }
             transitionContext.completeTransition(success)
+        }
+        
+        let staggeredViews: [UIView] = [result.titleLabel] + result.subtitleStack.arrangedSubviews
+        
+        staggeredViews.enumerated().forEach { (index, view) in
+            view.transform = .init(translationX: 50, y: 0)
+            view.alpha = 0.01
+            
+            UIView.animate(withDuration: 4 / 30, delay: 6 / 30 + TimeInterval(2 * index) / 30) {
+                view.transform = .identity
+                view.alpha = 1
+            }
         }
     }
 }

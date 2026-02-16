@@ -137,6 +137,8 @@ final class WalletSendViewController: UIViewController, Themeable {
         
         navigationController?.setNavigationBarHidden(false, animated: animated)
         mainTabBarController?.setTabBarHidden(true, animated: animated)
+        
+        _ = WalletSpinnerView.reusable // Init the view so that it plays instantly
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -332,17 +334,19 @@ private extension WalletSendViewController {
     func send(sender: UIButton) {
         Task { @MainActor in
             
-            let amount = input.balance
+            let amount = input.balance ?? 0
             let note = messageInput.text ?? ""
             
             if amount < 1 {
                 return
             }
             
-            let spinnerVC = WalletSpinnerViewController(sats: amount, address: destination.address)
+            let spinnerVC = WalletSpinnerViewController(sats: amount, showBitcoin: input.isBitcoinPrimary)
             navigationController?.pushViewController(spinnerVC, animated: true)
             
             do {
+                let startTime = Date()
+                
                 switch self.destination {
                 case .user(let user, _):
                     try await WalletManager.instance.send(
@@ -370,13 +374,18 @@ private extension WalletSendViewController {
                         }
                     }
                 }
+
+//                if startTime.timeIntervalSinceNow > -1 {
+//                    print("WAIT: \(startTime.timeIntervalSinceNow)")
+//                    try await Task.sleep(for: .seconds(1))
+//                }
                 
                 // Have to use this callback as sometimes the result would come too soon
                 spinnerVC.onAppearCallback = { [weak self] in
                     guard let self else { return }
                     
-                    let summary = WalletTransferSummaryController(.paymentSuccess(amount: amount, address: destination.address))
-                    navigationController?.pushViewController(summary, animated: true)
+                    let summary = WalletTransferSummaryController(.paymentSuccess(amount: amount, address: self.destination.address))
+                    self.navigationController?.pushViewController(summary, animated: true)
                     
                     summary.view.isUserInteractionEnabled = false
                     DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {

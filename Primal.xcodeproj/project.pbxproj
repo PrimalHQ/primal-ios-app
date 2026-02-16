@@ -564,6 +564,7 @@
 		B9C5A0BF2F43373D007CB5D3 /* walletSendAnimation1.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = B9C5A0B62F43373D007CB5D3 /* walletSendAnimation1.mp4 */; };
 		B9C5A0C02F43373D007CB5D3 /* walletSendAnimation3.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = B9C5A0B82F43373D007CB5D3 /* walletSendAnimation3.mp4 */; };
 		B9C5A0C12F43373D007CB5D3 /* walletSendAnimationDark2.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = B9C5A0BA2F43373D007CB5D3 /* walletSendAnimationDark2.mp4 */; };
+		B9C5A0E62F437E53007CB5D3 /* WalletSpinnerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C5A0E52F437E53007CB5D3 /* WalletSpinnerView.swift */; };
 		B9C672D42E1FEF5000243B45 /* LiveEventManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C672D32E1FEF5000243B45 /* LiveEventManager.swift */; };
 		B9C672D62E1FF65F00243B45 /* JSON+Extra.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C672D52E1FF65900243B45 /* JSON+Extra.swift */; };
 		B9C672D92E252D8600243B45 /* LiveVideoPlayerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C672D82E252D7E00243B45 /* LiveVideoPlayerController.swift */; };
@@ -1376,6 +1377,7 @@
 		B9C5A0B92F43373D007CB5D3 /* walletSendAnimationDark1.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = walletSendAnimationDark1.mp4; sourceTree = "<group>"; };
 		B9C5A0BA2F43373D007CB5D3 /* walletSendAnimationDark2.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = walletSendAnimationDark2.mp4; sourceTree = "<group>"; };
 		B9C5A0BB2F43373D007CB5D3 /* walletSendAnimationDark3.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = walletSendAnimationDark3.mp4; sourceTree = "<group>"; };
+		B9C5A0E52F437E53007CB5D3 /* WalletSpinnerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletSpinnerView.swift; sourceTree = "<group>"; };
 		B9C672D32E1FEF5000243B45 /* LiveEventManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveEventManager.swift; sourceTree = "<group>"; };
 		B9C672D52E1FF65900243B45 /* JSON+Extra.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "JSON+Extra.swift"; sourceTree = "<group>"; };
 		B9C672D82E252D7E00243B45 /* LiveVideoPlayerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveVideoPlayerController.swift; sourceTree = "<group>"; };
@@ -2951,6 +2953,7 @@
 				B94F2BC12AD57AD20041181B /* TransactionHeader.swift */,
 				B94F2BCE2AD995250041181B /* WalletNavView.swift */,
 				B94F2BEA2AE6C2DE0041181B /* LargeRoundedButton.swift */,
+				B9C5A0E52F437E53007CB5D3 /* WalletSpinnerView.swift */,
 				B9B290522B45C77E0069C87F /* NumberKeyboardView.swift */,
 			);
 			path = Views;
@@ -4363,6 +4366,7 @@
 				9EE07AB72A1CF61600FB6C86 /* SunsetWave.swift in Sources */,
 				93CACAFD29F525B6003BBCE5 /* bolt11.c in Sources */,
 				B94F2BD62ADD5CE10041181B /* WalletQRCodeViewController.swift in Sources */,
+				B9C5A0E62F437E53007CB5D3 /* WalletSpinnerView.swift in Sources */,
 				9E55F2972A1FBE8600D5D523 /* SettingsTitleView.swift in Sources */,
 				9E55CC682A03C2D7002D3DC4 /* ColorAnimatingLabel.swift in Sources */,
 				B9031D522ACDDD4200C7489F /* ReplyingToView.swift in Sources */,
@@ -4847,7 +4851,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.7.9;
+				MARKETING_VERSION = 2.7.11;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -4896,7 +4900,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.7.9;
+				MARKETING_VERSION = 2.7.11;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

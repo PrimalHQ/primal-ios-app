@@ -8,46 +8,30 @@
 import UIKit
 
 final class WalletSpinnerViewController: UIViewController {
-    let spinner = PlayerView().constrainToSize(640 / 3)
+    let spinner = WalletSpinnerView.reusable
     
-    let titleLabel = UILabel()
-    let message = UILabel()
+    let navTitle = UILabel("Sending...", color: .foreground, font: .appFont(withSize: 20, weight: .bold))
     
-    init(sats: Int, address: String) {
+    let amountView = LargeBalanceConversionView(showWalletBalance: false, showSecondaryRow: false)
+    
+    init(sats: Int, showBitcoin: Bool) {
         super.init(nibName: nil, bundle: nil)
         
         modalPresentationStyle = .overFullScreen
         modalTransitionStyle = .crossDissolve
+        
+        amountView.balance = sats
+        amountView.isBitcoinPrimary = showBitcoin
+        amountView.isUserInteractionEnabled = false
     
         view.addGestureRecognizer(UIScreenEdgePanGestureRecognizer())
-        
-        view.backgroundColor = .background
-        
-        let navTitle = UILabel()
-        navTitle.font = .appFont(withSize: 20, weight: .semibold)
-        navTitle.textColor = .foreground
-        navTitle.text = "Sending..."
-        
-        titleLabel.font = .appFont(withSize: 24, weight: .semibold)
-        titleLabel.textColor = .foreground
-        titleLabel.text = "Sending"
-        
-        message.font = .appFont(withSize: 18, weight: .regular)
-        message.numberOfLines = 0
-        message.textAlignment = .center
-        
-        if address.count > 30 {
-            message.text = "\(sats.localized()) sats"
-        } else {
-            message.text = "\(sats.localized()) sats to \(address)."
-        }
+
+        view.backgroundColor = Theme.current.isDarkTheme ? .black : .white
         
         let stack = UIStackView(axis: .vertical, [
-            navTitle, SpacerView(height: 160),
-            spinner, SpacerView(height: 60),
-            titleLabel, SpacerView(height: 28),
-            message,
-            UIView()
+            navTitle,   SpacerView(height: 120),
+            amountView, SpacerView(height: 80),
+            spinner,    UIView()
         ])
         stack.alignment = .center
         view.addSubview(stack)
@@ -56,10 +40,10 @@ final class WalletSpinnerViewController: UIViewController {
             .pinToSuperview(edges: .top, safeArea: true)
             .pinToSuperview(edges: .bottom, padding: 40, safeArea: true)
         
+        amountView.largeAmountLabel.centerToView(view, axis: .horizontal)
+        
         view.addSubview(navTitle)
         navTitle.pinToSuperview(edges: .top, padding: 10, safeArea: true).centerToSuperview(axis: .horizontal)
-        
-        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -72,6 +56,7 @@ final class WalletSpinnerViewController: UIViewController {
     private var didAppear = false
     var onAppearCallback: () -> () = { } {
         didSet {
+            spinner.stopLooping()
             if didAppear {
                 onAppearCallback()
             }
@@ -89,6 +74,8 @@ final class WalletSpinnerViewController: UIViewController {
         
         navigationController?.interactivePopGestureRecognizer?.delegate = navigationController as? MainNavigationController
         navigationController?.viewControllers.remove(object: self)
+        
+        spinner.player?.pause()
     }
     
     required init?(coder: NSCoder) {

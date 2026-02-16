@@ -72,7 +72,7 @@ class PremiumLegendPayController: UIViewController {
                                 
                                 WalletManager.instance.refreshPremiumState()
                                 
-                                self?.present(WalletTransferSummaryController(.success(title: "Success, payment received!", description: "You are now a Primal Legend")), animated: true) {
+                                self?.present(WalletTransferSummaryController(.success(title: "Success, payment received!", description: ["You are now a Primal Legend"])), animated: true) {
                                     guard let navigationController = self?.navigationController else { return }
                                     
                                     guard let rootVC = navigationController.viewControllers.first(where: { $0 as? PremiumViewController != nil }) else {

@@ -70,8 +70,7 @@ class PremiumLegendAmountController: UIViewController {
         }), for: .valueChanged)
         
         action.addAction(.init(handler: { [unowned self] _ in
-            let balance = balanceView.balance
-
+            let balance = balanceView.balance ?? 0
             show(PremiumLegendPayController(name: state.name, amount: balance), sender: nil)
         }), for: .touchUpInside)
         
