@@ -8,7 +8,7 @@
 import UIKit
 
 final class WalletSpinnerViewController: UIViewController {
-    let spinner = LoadingSpinnerView().constrainToSize(160)
+    let spinner = PlayerView().constrainToSize(640 / 3)
     
     let titleLabel = UILabel()
     let message = UILabel()
@@ -59,7 +59,7 @@ final class WalletSpinnerViewController: UIViewController {
         view.addSubview(navTitle)
         navTitle.pinToSuperview(edges: .top, padding: 10, safeArea: true).centerToSuperview(axis: .horizontal)
         
-        spinner.play()
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
