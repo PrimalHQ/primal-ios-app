@@ -5,6 +5,7 @@
 //  Created by Pavle Stevanović on 16. 12. 2025..
 //
 
+import Combine
 import Foundation
 import ActivityKit
 import AVFAudio
@@ -48,6 +49,23 @@ class RemoteSignerActivityManager {
     }
     
     var activity: Activity<RemoteSignerWidgetAttributes>?
+    
+    var cancellables: Set<AnyCancellable> = []
+    
+    private init() {
+        Publishers.CombineLatest(RemoteSignerManager.instance.isActivePublisher, NwcServiceManager.shared.isServiceActivePublisher)
+            .map { $0 || $1 }
+            .removeDuplicates()
+            .sink { isActive in
+                if isActive {
+                    RemoteSignerActivityManager.instance.startSignerActivity()
+                    RemoteSignerActivityManager.instance.playSong()
+                } else {
+                    RemoteSignerActivityManager.instance.endSignerActivity()
+                }
+            }
+            .store(in: &cancellables)
+    }
     
     func startSignerActivity() {
         guard ActivityAuthorizationInfo().areActivitiesEnabled else { return }

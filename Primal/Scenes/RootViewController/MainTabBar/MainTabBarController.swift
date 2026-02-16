@@ -404,15 +404,6 @@ private extension MainTabBarController {
             remoteSignerButton.isHidden = !isActive
             
             UIApplication.shared.isIdleTimerDisabled = isActive
-            
-            if #available(iOS 16.1, *) {
-                if isActive {
-                    RemoteSignerActivityManager.instance.startSignerActivity()
-                    RemoteSignerActivityManager.instance.playSong()
-                } else {
-                    RemoteSignerActivityManager.instance.endSignerActivity()
-                }
-            }
         }
         .store(in: &cancellables)
         

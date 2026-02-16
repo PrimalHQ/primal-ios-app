@@ -196,21 +196,26 @@ final class WalletManager {
     let walletConnection = PrimalApiClientFactory.shared.create(serverType: .wallet)
     let walletAccountRepo = WalletRepositoryFactory.shared.createWalletAccountRepository()
     
+    let profileRepo: ProfileRepository
+    lazy var primalWalletRepo = WalletRepositoryFactory.shared.createPrimalWalletAccountRepository(primalWalletApiClient: walletConnection, nostrEventSignatureHandler: SigningManager.instance)
     lazy var sparkWalletManager = WalletRepositoryFactory.shared.createSparkWalletManager()
     lazy var sparkWalletAccountRepository = WalletRepositoryFactory.shared.createSparkWalletAccountRepository(primalWalletApiClient: walletConnection, nostrEventSignatureHandler: SigningManager.instance)
+    
+    lazy var nwcRepo = WalletRepositoryFactory.shared.createNwcRepository(nip47EventsHandler: self)
     
     var walletID: String? { activeWallet?.walletId }
     @Published var activeWallet: Wallet?
     
     private init() {
-        let repo = PrimalRepositoryFactory.shared.createProfileRepository(cachingPrimalApiClient: regConnection, primalPublisher: SigningManager.instance, mediaCacher: MediaCacher.instance)
         let eventRepo = PrimalRepositoryFactory.shared.createEventRepository(cachingPrimalApiClient: regConnection, mediaCacher: MediaCacher.instance)
+        
+        profileRepo = PrimalRepositoryFactory.shared.createProfileRepository(cachingPrimalApiClient: regConnection, primalPublisher: SigningManager.instance, mediaCacher: MediaCacher.instance)
         
         // WalletRepo wallet info by id (balance, transactions, etc.)
         walletRepo = WalletRepositoryFactory.shared.createWalletRepository(
             primalWalletApiClient: walletConnection,
             nostrEventSignatureHandler: SigningManager.instance,
-            profileRepository: repo,
+            profileRepository: profileRepo,
             eventRepository: eventRepo
         )
         
@@ -245,6 +250,9 @@ final class WalletManager {
             }
             .store(in: &updateCancellables)
         
+        let nwcService = WalletRepositoryFactory.shared.createNwcService(walletRepository: walletRepo, nostrEncryptionService: EncryptionServiceHandler.instance, nwcRepository: nwcRepo)
+        
+        
         Task {
             let wallet = try await walletAccountRepo.getActiveWallet(userId: pubkey)
             guard wallet == nil else {
@@ -255,7 +263,6 @@ final class WalletManager {
                 return
             }
             
-            let primalWalletRepo = WalletRepositoryFactory.shared.createPrimalWalletAccountRepository(primalWalletApiClient: walletConnection, nostrEventSignatureHandler: SigningManager.instance)
             
             let result = try await EnsurePrimalWalletExistsUseCase(primalWalletAccountRepository: primalWalletRepo, walletAccountRepository: walletAccountRepo)
                 .invoke(userId: pubkey, setAsActive: true).getOrNull()
@@ -291,17 +298,6 @@ final class WalletManager {
         let seed = try await sparkWalletAccountRepository.getPersistedSeedWords(walletId: walletID).getOrNull()
         
         return seed?.compactMap { $0 as? String } ?? []
-    }
-    
-    func restoreWalletFromSeed(_ phrase: String) {
-        Task {
-            try await RestoreSparkWalletUseCase(
-                sparkWalletManager: sparkWalletManager,
-                walletAccountRepository: walletAccountRepo,
-                sparkWalletAccountRepository: sparkWalletAccountRepository
-            )
-            .invoke(seedWords: phrase, userId: IdentityManager.instance.userHexPubkey)
-        }
     }
     
     func markWalletAsBackedUp() {
@@ -346,6 +342,12 @@ final class WalletManager {
         let invoiceResult = try await WalletManager.instance.walletRepo.createLightningInvoice(walletId: walletID, amountInBtc: amountInBtc, comment: comment, expiry: nil)
         
         return invoiceResult.getOrNull()?.invoice ?? activeWallet?.lightningAddress
+    }
+    
+    func createOnchainInvoice() async throws -> String? {
+        guard let walletID else { return nil }
+        
+        return try await WalletManager.instance.walletRepo.createOnChainAddress(walletId: walletID).getOrNull()?.address
     }
     
     func refresh() {
@@ -515,6 +517,91 @@ final class WalletManager {
     }
 }
 
+extension WalletManager {
+    
+    
+    func restoreWalletFromSeed(_ phrase: String) {
+        Task {
+            try await RestoreSparkWalletUseCase(
+                sparkWalletManager: sparkWalletManager,
+                walletAccountRepository: walletAccountRepo,
+                sparkWalletAccountRepository: sparkWalletAccountRepository
+            )
+            .invoke(seedWords: phrase, userId: IdentityManager.instance.userHexPubkey)
+        }
+    }
+    
+    func migrateToSpark(_ callback: @escaping (WalletMigrationStep) -> Void) {
+        let pubkey = IdentityManager.instance.userHexPubkey
+        let migrationHandler = WalletRepositoryFactory.shared.createMigratePrimalToSparkWalletHandler(
+            primalWalletApiClient: walletConnection,
+            nostrEventSignatureHandler: SigningManager.instance,
+            ensureSparkWalletExistsUseCase: EnsureSparkWalletExistsUseCase(
+                sparkWalletManager: sparkWalletManager,
+                sparkWalletAccountRepository: sparkWalletAccountRepository,
+                walletAccountRepository: walletAccountRepo,
+                seedPhraseGenerator: RecoveryPhraseGenerator()
+            ),
+            walletRepository: walletRepo,
+            profileRepository: profileRepo
+        )
+        
+        Task {
+            try await migrationHandler.invoke(userId: IdentityManager.instance.userHexPubkey, onProgress: { prog in
+                let step: WalletMigrationStep = {
+                    if let inProgress = prog as? MigrationProgress.InProgress {
+                        return .inProgress(MigrationStepName(rawValue: inProgress.step.name)?.userFriendlyDescription ?? inProgress.step.name)
+                    }
+                    if let failed = prog as? MigrationProgress.Failed {
+                        return .failed(failed.logs.joined(separator: "\n"))
+                    }
+                    if let completed = prog as? MigrationProgress.Completed {
+                        return .completed
+                    }
+                    return .inProgress("Starting migration...")
+                }()
+                
+                DispatchQueue.main.async {
+                    callback(step)
+                }
+            })
+        }
+    }
+}
+
+enum MigrationStepName: String {
+      case creatingWallet = "CREATING_WALLET"
+      case registeringWallet = "REGISTERING_WALLET"
+      case checkingBalance = "CHECKING_BALANCE"
+      case creatingInvoice = "CREATING_INVOICE"
+      case transferringFunds = "TRANSFERRING_FUNDS"
+      case awaitingConfirmation = "AWAITING_CONFIRMATION"
+      case configuringWallet = "CONFIGURING_WALLET"
+      case importingHistory = "IMPORTING_HISTORY"
+      case activatingWallet = "ACTIVATING_WALLET"
+
+      var userFriendlyDescription: String {
+          switch self {
+          case .creatingWallet:       return "Creating your new wallet…"
+          case .registeringWallet:    return "Registering wallet…"
+          case .checkingBalance:      return "Checking your balance…"
+          case .creatingInvoice:      return "Preparing transfer…"
+          case .transferringFunds:    return "Transferring your funds…"
+          case .awaitingConfirmation: return "Awaiting confirmation…"
+          case .configuringWallet:    return "Configuring wallet…"
+          case .importingHistory:     return "Importing transaction history…"
+          case .activatingWallet:     return "Activating wallet…"
+          }
+      }
+  }
+
+
+enum WalletMigrationStep {
+    case inProgress(String)
+    case failed(String)
+    case completed
+}
+
 private extension WalletManager {
     func setupPublishers() {
         let pubkeyPublisher = ICloudKeychainManager.instance.$userPubkey.removeDuplicates()
@@ -585,5 +672,12 @@ class DummyWalletImplementation: WalletImplementation {
     
     func refreshBalance() {
         
+    }
+}
+
+extension WalletManager: Nip47EventsHandler {
+    func __fetchNip47Events(eventIds: [String], completionHandler: @escaping @Sendable (UtilsResult<NSArray>?, (any Error)?) -> Void) {
+        // TODO: fetch
+        completionHandler(nil, nil)
     }
 }

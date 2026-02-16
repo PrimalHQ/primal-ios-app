@@ -554,6 +554,10 @@
 		B9C5A07F2F362B12007CB5D3 /* UpgradeWalletStartController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C5A07E2F362B0B007CB5D3 /* UpgradeWalletStartController.swift */; };
 		B9C5A0A72F3A3748007CB5D3 /* PrimalShared in Frameworks */ = {isa = PBXBuildFile; productRef = B9C5A0A62F3A3748007CB5D3 /* PrimalShared */; };
 		B9C5A0AA2F3A68FE007CB5D3 /* RestoreWalletController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C5A0A92F3A68F8007CB5D3 /* RestoreWalletController.swift */; };
+		B9C5A0AC2F3C958F007CB5D3 /* UpgradeWalletProcessController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C5A0AB2F3C9586007CB5D3 /* UpgradeWalletProcessController.swift */; };
+		B9C5A0AE2F3C98FA007CB5D3 /* UpgradeWalletFailedController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C5A0AD2F3C98F8007CB5D3 /* UpgradeWalletFailedController.swift */; };
+		B9C5A0B02F3C9912007CB5D3 /* UpgradeWalletCompleteController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C5A0AF2F3C9910007CB5D3 /* UpgradeWalletCompleteController.swift */; };
+		B9C5A0B42F3E5DB6007CB5D3 /* NwcServiceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C5A0B32F3E5DAC007CB5D3 /* NwcServiceManager.swift */; };
 		B9C672D42E1FEF5000243B45 /* LiveEventManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C672D32E1FEF5000243B45 /* LiveEventManager.swift */; };
 		B9C672D62E1FF65F00243B45 /* JSON+Extra.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C672D52E1FF65900243B45 /* JSON+Extra.swift */; };
 		B9C672D92E252D8600243B45 /* LiveVideoPlayerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C672D82E252D7E00243B45 /* LiveVideoPlayerController.swift */; };
@@ -1356,6 +1360,10 @@
 		B9C5A07C2F362586007CB5D3 /* UgradeWalletFaqController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UgradeWalletFaqController.swift; sourceTree = "<group>"; };
 		B9C5A07E2F362B0B007CB5D3 /* UpgradeWalletStartController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpgradeWalletStartController.swift; sourceTree = "<group>"; };
 		B9C5A0A92F3A68F8007CB5D3 /* RestoreWalletController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestoreWalletController.swift; sourceTree = "<group>"; };
+		B9C5A0AB2F3C9586007CB5D3 /* UpgradeWalletProcessController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpgradeWalletProcessController.swift; sourceTree = "<group>"; };
+		B9C5A0AD2F3C98F8007CB5D3 /* UpgradeWalletFailedController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpgradeWalletFailedController.swift; sourceTree = "<group>"; };
+		B9C5A0AF2F3C9910007CB5D3 /* UpgradeWalletCompleteController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpgradeWalletCompleteController.swift; sourceTree = "<group>"; };
+		B9C5A0B32F3E5DAC007CB5D3 /* NwcServiceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NwcServiceManager.swift; sourceTree = "<group>"; };
 		B9C672D32E1FEF5000243B45 /* LiveEventManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveEventManager.swift; sourceTree = "<group>"; };
 		B9C672D52E1FF65900243B45 /* JSON+Extra.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "JSON+Extra.swift"; sourceTree = "<group>"; };
 		B9C672D82E252D7E00243B45 /* LiveVideoPlayerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveVideoPlayerController.swift; sourceTree = "<group>"; };
@@ -2625,6 +2633,7 @@
 		B917982B2EE0690D00EF29EF /* RemoteSigning */ = {
 			isa = PBXGroup;
 			children = (
+				B9C5A0B32F3E5DAC007CB5D3 /* NwcServiceManager.swift */,
 				B9E67E252EFC1100002D7952 /* PushNotificationsManager.swift */,
 				B91798292EE0690D00EF29EF /* RemoteSignerManager.swift */,
 				B9E0E6562EF1F6AC00F48B2A /* RemoteSignerActivityManager.swift */,
@@ -2795,6 +2804,9 @@
 		B928F8672F30BF7500DBD9D0 /* Upgrade */ = {
 			isa = PBXGroup;
 			children = (
+				B9C5A0AF2F3C9910007CB5D3 /* UpgradeWalletCompleteController.swift */,
+				B9C5A0AD2F3C98F8007CB5D3 /* UpgradeWalletFailedController.swift */,
+				B9C5A0AB2F3C9586007CB5D3 /* UpgradeWalletProcessController.swift */,
 				B9C5A07E2F362B0B007CB5D3 /* UpgradeWalletStartController.swift */,
 				B928F8662F30BF7500DBD9D0 /* UpgradeWalletController.swift */,
 				B9C5A07C2F362586007CB5D3 /* UgradeWalletFaqController.swift */,
@@ -4014,6 +4026,7 @@
 				B9D331F32EE84A970023D541 /* RemoteSignerConnectionTrustCell.swift in Sources */,
 				B91E56FE2CC1522A00C14809 /* SaveFeedController.swift in Sources */,
 				B9EDA58D2E4F5B15003262E4 /* UsersTableView.swift in Sources */,
+				B9C5A0B02F3C9912007CB5D3 /* UpgradeWalletCompleteController.swift in Sources */,
 				B9FAC6462D31A15000B57EF6 /* RegularFeedDatasourceProtocol.swift in Sources */,
 				B9E36BDD2EE76F9C00213CA0 /* SettingsConnectedAppController.swift in Sources */,
 				B9B1AB9E2B33341B00837312 /* TransactionViewController.swift in Sources */,
@@ -4366,6 +4379,7 @@
 				93906B942A55B5D000962A94 /* NostrObject.swift in Sources */,
 				B90EF0ED2AFC08E000A7CD65 /* ProfileTabSelectionView.swift in Sources */,
 				B9856EA52ED9C92B00B21500 /* RemoteSignerSignInController.swift in Sources */,
+				B9C5A0B42F3E5DB6007CB5D3 /* NwcServiceManager.swift in Sources */,
 				B9EDA5882E4CABE1003262E4 /* LivePopupDismissGesture.swift in Sources */,
 				9E8834A82A2775FF005DB548 /* RepostedIndicatorView.swift in Sources */,
 				B9E67EB22D0A17E0006BB397 /* MainThreadElementTextCell.swift in Sources */,
@@ -4457,6 +4471,7 @@
 				9393D8322A423D1600F0C55A /* RelayPool.swift in Sources */,
 				B9B9E5672CB442180065DD7C /* BaseFeedManager.swift in Sources */,
 				B99E03A62C0A09CF006CCECB /* AppChromeManager.swift in Sources */,
+				B9C5A0AC2F3C958F007CB5D3 /* UpgradeWalletProcessController.swift in Sources */,
 				B91BB95F2B3CC2C7003F6B2A /* ImageCell.swift in Sources */,
 				B99E03922C060BD0006CCECB /* ArticleViewController.swift in Sources */,
 				B91E56F92CC1383300C14809 /* NoteFeedViewController.swift in Sources */,
@@ -4502,6 +4517,7 @@
 				B906AB072C99F4300089813F /* DatabaseManager.swift in Sources */,
 				B9E67E872D076354006BB397 /* FeedElementInfoCell.swift in Sources */,
 				B9009B672B1E2382002B0613 /* HomeFeedLocalLoadingManager.swift in Sources */,
+				B9C5A0AE2F3C98FA007CB5D3 /* UpgradeWalletFailedController.swift in Sources */,
 				B9E67E912D07682B006BB397 /* FeedElementArticleCell.swift in Sources */,
 				B9D331F52EE84E050023D541 /* RemoteSignerConnectionSimpleAccentCell.swift in Sources */,
 				9E8834AE2A2A33A3005DB548 /* LinkPreview.swift in Sources */,
@@ -4799,7 +4815,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.7.4;
+				MARKETING_VERSION = 2.7.9;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -4848,7 +4864,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.7.4;
+				MARKETING_VERSION = 2.7.9;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -5308,7 +5324,7 @@
 			repositoryURL = "https://github.com/PrimalHQ/primal-shared-ios";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 0.1.5;
+				minimumVersion = 0.1.7;
 			};
 		};
 		B9F933162B867D860064B495 /* XCRemoteSwiftPackageReference "qrcode" */ = {

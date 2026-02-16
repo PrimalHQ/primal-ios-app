@@ -17,11 +17,13 @@ class UpgradeWalletStartController: UIViewController {
         navigationItem.leftBarButtonItem = customBackButtonWithDismiss
         view.backgroundColor = .background
         
+        let satAmount = WalletManager.instance.balance.localized()
+        
         let itemStack = UIStackView(axis: .vertical, spacing: 16, [
             BulletPointStack(view: bulletLabel(textArray: [("The upgrade process should take less than a minute", false)])),
             BulletPointStack(view: bulletLabel(textArray: [
                 ("We will transfer your wallet balance of ", false),
-                ("103,222 sats", true),
+                ("\(satAmount) sats", true),
                 (" to the new wallet", false),
             ])),
             BulletPointStack(view: bulletLabel(textArray: [("We will copy your entire transaction history to the new wallet", false)])),
@@ -71,6 +73,10 @@ class UpgradeWalletStartController: UIViewController {
         
         questionsLabel.attributedText = text
         questionsLabel.delegate = self
+        
+        upgradeButton.addAction(.init(handler: { [weak self] _ in
+            self?.navigationController?.setViewControllers([UpgradeWalletProcessController()], animated: true)
+        }), for: .touchUpInside)
     }
     
     func bulletLabel(textArray: [(String, isBold: Bool)]) -> UILabel {

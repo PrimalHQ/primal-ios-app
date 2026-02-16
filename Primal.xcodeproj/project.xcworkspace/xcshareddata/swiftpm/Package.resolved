@@ -1,5 +1,5 @@
 {
-  "originHash" : "990cefb19c5a745aa2a79d2bb137c0f6fdd63e8b767a8c781e3c8ab03251979e",
+  "originHash" : "336124c142402b1dd07a92745b560e4b54b2e7e79c31560044409b8e88653738",
   "pins" : [
     {
       "identity" : "breez-sdk-spark-swift",
@@ -114,8 +114,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/PrimalHQ/primal-shared-ios",
       "state" : {
-        "revision" : "e86613d8dcedcbc9463110663c066be294cbefed",
-        "version" : "0.1.5"
+        "revision" : "c6d462101ce2cd07748bc1725fb1192e659fed00",
+        "version" : "0.1.8"
       }
     },
     {

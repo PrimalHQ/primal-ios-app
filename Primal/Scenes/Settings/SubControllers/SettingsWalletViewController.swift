@@ -60,8 +60,6 @@ private extension SettingsWalletViewController {
     func updateNWCStack() async throws {
         nwcStack.subviews.forEach{ $0.removeFromSuperview() }
         
-        //nostr+walletconnect://1291af9c119879ef7a59636432c6e06a7a058c0cae80db27c0f20f61f3734e52?relay=wss%3A%2F%2Fnwc.primal.net%2Fx0yn66fe7i6ljbfsypyzme9wwr5o48&secret=7ab8341dbf75e0bc3d053bd9503c2a9d5d608fa54b3e42d0b942c9a1089f1857
-        
         let activeWallet = try await WalletManager.instance.walletAccountRepo.getActiveWallet(userId: IdentityManager.instance.userHexPubkey)
         
         if let nwc = activeWallet as? Wallet.NWC {

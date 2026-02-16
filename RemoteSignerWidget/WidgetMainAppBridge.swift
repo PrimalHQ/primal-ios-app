@@ -5,7 +5,6 @@
 //  Created by Pavle Stevanović on 16. 12. 2025..
 //
 
-// No Op for the widget
 @available(iOS 16.1, *)
 class WidgetMainAppBridge: WidgetMainAppBridgeProtocol {
     func endAllSessions() {

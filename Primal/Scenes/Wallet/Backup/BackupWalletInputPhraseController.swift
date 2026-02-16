@@ -28,7 +28,11 @@ class BackupWalletInputPhraseController: UIViewController {
     }
     
     func setup(_ seedPhrase: [String]) {
-        let wordViews = seedPhrase.enumerated().map({ ($0.0 + 1, $0.1) }).map { WalletInputPhraseView(word: $0.1, index: $0.0) }
+        let wordViews = seedPhrase.enumerated()
+            .shuffled()
+            .prefix(3)
+            .sorted(by: { $0.offset < $1.offset })
+            .map({ ($0.0 + 1, $0.1) }).map { WalletInputPhraseView(word: $0.1, index: $0.0) }
         let wordStack = UIStackView(axis: .vertical, spacing: 24, wordViews)
         
         let scrollView = UIScrollView()

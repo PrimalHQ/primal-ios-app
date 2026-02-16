@@ -7,13 +7,18 @@
 
 import UIKit
 import Combine
+import PrimalShared
+
+extension Int64 {
+    var kotlinLong: KotlinLong { .init(value: self) }
+}
 
 enum NwcBudgetOption: PickableEnum {
     static var allCases: [NwcBudgetOption] { [.number(1000), .number(10000), .number(100000), .number(1000000), .noLimit] }
     
     static var name: String { "Daily Budget" }
     
-    case number(Int), noLimit
+    case number(Int64), noLimit
     
     var name: String {
         switch self {
@@ -24,7 +29,7 @@ enum NwcBudgetOption: PickableEnum {
         }
     }
     
-    var sats: Int? {
+    var sats: Int64? {
         switch self {
         case .number(let int):
             return int
@@ -125,14 +130,26 @@ private extension SettingsNewNWCController {
                 return
             }
             
-            PrimalWalletRequest(type: .nwcConnect(name: input.text, amount: currentSelection.sats)).publisher()
-                .receive(on: DispatchQueue.main)
-                .sink { [weak self] res in
-                    guard let newNWC = res.newNWC else { return }
-                    
-                    self?.show(SettingsNewNwcQRController(data: newNWC), sender: nil)
+            guard let walletId = WalletManager.instance.walletID else {
+                showErrorMessage("No wallet.")
+                return
+            }
+            
+            let nwcRepo = WalletManager.instance.nwcRepo
+            let userId = IdentityManager.instance.userHexPubkey
+            
+            Task { @MainActor [weak self] in
+                let string = try await nwcRepo.createNewWalletConnection(userId: userId, walletId: walletId, appName: name, dailyBudget: currentSelection.sats?.kotlinLong).getOrNull()
+                
+                guard let string = string as? String else {
+                    self?.showErrorMessage("Unable to create new NWC connections")
+                    return
                 }
-                .store(in: &cancellables)
+                
+                NwcServiceManager.shared.startService()
+                
+                self?.show(SettingsNewNwcQRController(uri: string), sender: nil)
+            }
         }), for: .touchUpInside)
         
         budget.addAction(.init(handler: { [weak self] _ in
