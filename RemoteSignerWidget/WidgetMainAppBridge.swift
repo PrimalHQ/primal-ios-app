@@ -10,6 +10,7 @@ class WidgetMainAppBridge: WidgetMainAppBridgeProtocol {
     func endAllSessions() {
         RemoteSignerActivityManager.instance.endSignerActivity()
         RemoteSignerManager.instance.endAllSessions()
+        NwcServiceManager.shared.endService()
     }
     
     func nextSong() {

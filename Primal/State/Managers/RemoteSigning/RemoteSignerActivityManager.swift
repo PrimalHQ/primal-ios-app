@@ -45,10 +45,14 @@ class RemoteSignerActivityManager {
     }
     
     var connectedApps: [String] {
-        RemoteSignerManager.instance.activeSessions.map { $0.name ?? "Unknown" }
+        let remoteSessions = RemoteSignerManager.instance.activeSessions.map { $0.name ?? "Unknown" }
+        
+        guard remoteSessions.isEmpty, NwcServiceManager.shared.isServiceActive else { return remoteSessions }
+        
+        return ["NWC Service"]
     }
     
-    var activity: Activity<RemoteSignerWidgetAttributes>?
+    lazy var activity: Activity<RemoteSignerWidgetAttributes>? = .activities.first
     
     var cancellables: Set<AnyCancellable> = []
     
@@ -56,12 +60,14 @@ class RemoteSignerActivityManager {
         Publishers.CombineLatest(RemoteSignerManager.instance.isActivePublisher, NwcServiceManager.shared.isServiceActivePublisher)
             .map { $0 || $1 }
             .removeDuplicates()
-            .sink { isActive in
+            .sink { [weak self] isActive in
+                guard let self else { return }
                 if isActive {
-                    RemoteSignerActivityManager.instance.startSignerActivity()
-                    RemoteSignerActivityManager.instance.playSong()
+                    startSignerActivity()
+                    playSong()
                 } else {
-                    RemoteSignerActivityManager.instance.endSignerActivity()
+                    endSignerActivity()
+                    pause()
                 }
             }
             .store(in: &cancellables)
@@ -107,6 +113,10 @@ class RemoteSignerActivityManager {
     }
     
     func endSignerActivity() {
+        if let remotePlayer = VideoPlaybackManager.instance.currentlyPlaying as? RemoteSessionAudioPlayer {
+            VideoPlaybackManager.instance.currentlyPlaying = nil
+        }
+        
         guard let activity else { return }
         
         let finalState = RemoteSignerWidgetAttributes.ContentState(
@@ -125,9 +135,6 @@ class RemoteSignerActivityManager {
             
             print("Live Activity \(activity.id) ended immediately.")
         }
-
-        guard let remotePlayer = VideoPlaybackManager.instance.currentlyPlaying as? RemoteSessionAudioPlayer else { return }
-        VideoPlaybackManager.instance.currentlyPlaying = nil
     }
     
     func nextSong() {
