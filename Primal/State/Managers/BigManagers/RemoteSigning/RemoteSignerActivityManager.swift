@@ -57,20 +57,24 @@ class RemoteSignerActivityManager {
     var cancellables: Set<AnyCancellable> = []
     
     private init() {
-        Publishers.CombineLatest(RemoteSignerManager.instance.isActivePublisher, NwcServiceManager.shared.isServiceActivePublisher)
-            .map { $0 || $1 }
-            .removeDuplicates()
-            .sink { [weak self] isActive in
-                guard let self else { return }
-                if isActive {
-                    startSignerActivity()
-                    playSong()
-                } else {
-                    endSignerActivity()
-                    pause()
+        // Have to do async because of an infinite loop when shutting down the app
+        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) { [weak self] in
+            
+            guard let self else { return }
+            Publishers.CombineLatest(RemoteSignerManager.instance.isActivePublisher, NwcServiceManager.shared.isServiceActivePublisher)
+                .map { $0 || $1 }
+                .removeDuplicates()
+                .sink { [weak self] isActive in
+                    guard let self else { return }
+                    if isActive {
+                        startSignerActivity()
+                        playSong()
+                    } else {
+                        endSignerActivity()
+                    }
                 }
-            }
-            .store(in: &cancellables)
+                .store(in: &cancellables)
+        }
     }
     
     func startSignerActivity() {

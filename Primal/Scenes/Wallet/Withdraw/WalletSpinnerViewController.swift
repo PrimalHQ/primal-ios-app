@@ -12,26 +12,22 @@ final class WalletSpinnerViewController: UIViewController {
     
     let navTitle = UILabel("Sending...", color: .foreground, font: .appFont(withSize: 20, weight: .bold))
     
-    let amountView = LargeBalanceConversionView(showWalletBalance: false, showSecondaryRow: false)
+    let infoLabel = UILabel()
     
-    init(sats: Int, showBitcoin: Bool) {
+    init(sats: Int, address: String) {
         super.init(nibName: nil, bundle: nil)
         
         modalPresentationStyle = .overFullScreen
         modalTransitionStyle = .crossDissolve
-        
-        amountView.balance = sats
-        amountView.isBitcoinPrimary = showBitcoin
-        amountView.isUserInteractionEnabled = false
     
         view.addGestureRecognizer(UIScreenEdgePanGestureRecognizer())
 
         view.backgroundColor = Theme.current.isDarkTheme ? .black : .white
         
         let stack = UIStackView(axis: .vertical, [
-            navTitle,   SpacerView(height: 120),
-            amountView, SpacerView(height: 80),
-            spinner,    UIView()
+            navTitle,   SpacerView(height: 100),
+            spinner,    SpacerView(height: 80),
+            infoLabel, UIView()
         ])
         stack.alignment = .center
         view.addSubview(stack)
@@ -40,7 +36,27 @@ final class WalletSpinnerViewController: UIViewController {
             .pinToSuperview(edges: .top, safeArea: true)
             .pinToSuperview(edges: .bottom, padding: 40, safeArea: true)
         
-        amountView.largeAmountLabel.centerToView(view, axis: .horizontal)
+        infoLabel.numberOfLines = 0
+        infoLabel.textAlignment = .center
+        
+        let infoText = NSMutableAttributedString(string: "Sending ", attributes: [
+            .foregroundColor: UIColor.foreground,
+            .font: UIFont.appFont(withSize: 18, weight: .regular)
+        ])
+        infoText.append(.init(string: sats.localized(), attributes: [
+            .foregroundColor: UIColor.foreground,
+            .font: UIFont.appFont(withSize: 18, weight: .bold)
+        ]))
+        infoText.append(.init(string: " sats to\n", attributes: [
+            .foregroundColor: UIColor.foreground,
+            .font: UIFont.appFont(withSize: 18, weight: .regular)
+        ]))
+        infoText.append(.init(string: address, attributes: [
+            .foregroundColor: UIColor.foreground,
+            .font: UIFont.appFont(withSize: 18, weight: .regular)
+        ]))
+        
+        infoLabel.attributedText = infoText
         
         view.addSubview(navTitle)
         navTitle.pinToSuperview(edges: .top, padding: 10, safeArea: true).centerToSuperview(axis: .horizontal)

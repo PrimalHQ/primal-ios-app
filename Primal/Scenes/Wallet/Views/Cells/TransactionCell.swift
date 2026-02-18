@@ -69,7 +69,7 @@ final class TransactionCell: UITableViewCell, Themeable {
             nameLabel.text = "Bitcoin"
         } else {
             oldProfileId = ""
-            profileImage.image = .nonZapPaymentOld
+            profileImage.image = .nonZapPayment
             profileImage.contentMode = .scaleAspectFit
             nameLabel.text = isDeposit ? "Received" : "Sent"
         }

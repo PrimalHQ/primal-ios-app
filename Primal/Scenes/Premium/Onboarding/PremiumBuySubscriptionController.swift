@@ -190,7 +190,7 @@ private extension PremiumBuySubscriptionController {
 
                             WalletManager.instance.refreshPremiumState()
                             
-                            self.present(WalletTransferSummaryController(.success(title: "Success, payment received!", description: ["Your subscription is now active."])), animated: true) {
+                            self.present(WalletTransferSummaryController(.successOld(title: "Success, payment received!", description: "Your subscription is now active.")), animated: true) {
                                 
                                 guard let premium = self.navigationController?.viewControllers.first(where: { $0 as? PremiumViewController != nil }) as? PremiumViewController else {
                                     self.navigationController?.popViewController(animated: false)

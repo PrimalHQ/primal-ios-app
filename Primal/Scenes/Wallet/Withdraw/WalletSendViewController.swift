@@ -43,7 +43,7 @@ final class WalletSendViewController: UIViewController, Themeable {
                 if address.isBitcoinAddress {
                     return "Bitcoin Address"
                 }
-                return user?.data.lud16 ?? "Lightning Invoice"
+                return user?.data.lud16 ?? (address.count > 30 ? "Lightning Invoice" : address)
             }
         }
         
@@ -263,7 +263,7 @@ private extension WalletSendViewController {
                 profilePictureView.image = .onchainPayment
                 messageInput.placeholderText = "Add note to self"
             } else {
-                profilePictureView.image = .nonZapPaymentDynamic
+                profilePictureView.image = .nonZapPayment
                 profilePictureView.animatedImageView.clipsToBounds = false
                 messageInput.placeholderText = "message"
             }
@@ -341,13 +341,13 @@ private extension WalletSendViewController {
                 return
             }
             
-            let spinnerVC = WalletSpinnerViewController(sats: amount, showBitcoin: input.isBitcoinPrimary)
+            let spinnerVC = WalletSpinnerViewController(sats: amount, address: destination.addressDisplay)
             navigationController?.pushViewController(spinnerVC, animated: true)
             
             do {
                 let startTime = Date()
                 
-                switch self.destination {
+                switch destination {
                 case .user(let user, _):
                     try await WalletManager.instance.send(
                         user: user.data,
@@ -384,7 +384,7 @@ private extension WalletSendViewController {
                 spinnerVC.onAppearCallback = { [weak self] in
                     guard let self else { return }
                     
-                    let summary = WalletTransferSummaryController(.paymentSuccess(amount: amount, address: self.destination.address))
+                    let summary = WalletTransferSummaryController(.paymentSuccess(amount: amount, address: self.destination.addressDisplay))
                     self.navigationController?.pushViewController(summary, animated: true)
                     
                     summary.view.isUserInteractionEnabled = false

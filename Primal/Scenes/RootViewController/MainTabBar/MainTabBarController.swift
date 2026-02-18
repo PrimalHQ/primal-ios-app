@@ -147,7 +147,8 @@ final class MainTabBarController: UIViewController, Themeable {
         
         guard runOnce else { return }
         runOnce = false
-        WalletManager.instance.$activeWallet.filter({ $0 is Wallet.Primal })
+        let userId = IdentityManager.instance.userHexPubkey
+        WalletManager.instance.$activeWallet.filter({ $0 is Wallet.Primal && $0?.userId == userId })
             .first()
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in

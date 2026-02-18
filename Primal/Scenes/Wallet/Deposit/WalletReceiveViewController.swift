@@ -57,7 +57,7 @@ final class WalletReceiveViewController: UIViewController, Themeable {
     var onchainInvoice: String?
     var address: String? {
         guard let onchainInvoice else { return invoice }
-        return updateOnchainAddress(onchainInvoice, lightning: invoice)
+        return updateOnchainAddress(onchainInvoice)
     }
     
     var additionalInfo: AdditionalDepositInfo? {
@@ -115,11 +115,11 @@ private extension WalletReceiveViewController {
             onchainInvoice = nil
             defer { updateInfo() }
             
-            invoice = try await WalletManager.instance.createLightningInvoice(amountInBtc: btcString, comment: desc)
-            
-            if network == .lightning { return }
-            
-            onchainInvoice = try await WalletManager.instance.createOnchainInvoice()
+            if network == .lightning {
+                invoice = try await WalletManager.instance.createLightningInvoice(amountInBtc: btcString, comment: desc)
+            } else {
+                onchainInvoice = try await WalletManager.instance.createOnchainInvoice()
+            }
         }
     }
     
@@ -196,17 +196,14 @@ private extension WalletReceiveViewController {
         amountLabel.text = additionalInfo.satoshi.localized()
     }
     
-    func updateOnchainAddress(_ onchain: String, lightning: String?) -> String {
+    func updateOnchainAddress(_ onchain: String) -> String {
         var params = [(String, String)]()
         
         if let amount = additionalInfo?.satoshi {
             params.append(("amount", amount.satsToBitcoinString()))
         }
-        if let note = additionalInfo?.description {
+        if let note = additionalInfo?.description.trimmingCharacters(in: .whitespacesAndNewlines), !note.isEmpty {
             params.append(("label", note))
-        }
-        if let lightning {
-            params.append(("lightning", lightning))
         }
         
         guard let first = params.first else { return onchain }

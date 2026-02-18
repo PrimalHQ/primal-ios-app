@@ -10,25 +10,48 @@ import Lottie
 
 final class WalletTransferSummaryController: UIViewController {
     enum State {
-        case failure(navTitle: String, title: String, message: String)
-        case success(title: String, description: [String])
+        case failure(navTitle: String, title: String?, message: String)
+        case success(title: String?, description: [NSAttributedString])
+        
+        static func successOld(title: String, description: String) -> State {
+            .success(title: title, description: [.init(string: description, attributes: [
+                .foregroundColor: UIColor.white,
+                .font: UIFont.appFont(withSize: 18, weight: .regular)
+            ])])
+        }
         
         static func paymentSuccess(amount: Int, address: String) -> State {
-            if address.count > 30 {
-                return .success(title: "Success, payment sent!", description: ["\(amount.localized()) sats"])
-            }
-            return .success(title: "Success, payment sent!", description: ["\(amount.localized()) sats sent to", "\(address)."])
-        }
-        static func walletActivated(newAddress: String) -> State {
-            .success(
-                title: "Your wallet has been activated.\nYour new Nostr lightning address is:",
-                description: [newAddress]
-            )
+            let desc = NSMutableAttributedString(string: "Success! ", attributes: [
+                .foregroundColor: UIColor.white,
+                .font: UIFont.appFont(withSize: 18, weight: .regular)
+            ])
+            desc.append(.init(string: amount.localized(), attributes: [
+                .foregroundColor: UIColor.white,
+                .font: UIFont.appFont(withSize: 18, weight: .bold)
+            ]))
+            desc.append(.init(string: " sats sent to", attributes: [
+                .foregroundColor: UIColor.white,
+                .font: UIFont.appFont(withSize: 18, weight: .regular)
+            ]))
+            
+            let secondRowText = address.count <= 30 ? address : (address.isBitcoinAddress ? "Bitcoin Address" : "Lightning Invoice")
+            let secondRow = NSAttributedString(string: secondRowText, attributes: [
+                .foregroundColor: UIColor.white,
+                .font: UIFont.appFont(withSize: 18, weight: .regular)
+            ])
+            return .success(title: nil, description: [desc, secondRow])
         }
         
         var navTitle: String {
             guard case .failure(let navTitle, _, _) = self else { return "Success" }
             return navTitle
+        }
+        
+        var title: String? {
+            switch self {
+            case .failure(_, let title, _), .success(let title, _):
+                return title
+            }
         }
     }
     
@@ -46,8 +69,8 @@ final class WalletTransferSummaryController: UIViewController {
         setup(state)
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
         
         if !animationView.isAnimationPlaying {
             animationView.play()
@@ -76,15 +99,17 @@ private extension WalletTransferSummaryController {
         let close = UIButton().constrainToSize(width: 152, height: 56)
         
         let stack = UIStackView(axis: .vertical, [
-            topView,    SpacerView(height: 60),
-            animationView,       SpacerView(height: 4),
-            titleLabel,      SpacerView(height: 28),
-            subtitleStack,   UIView(),
+            topView,        SpacerView(height: 115),
+            animationView,  SpacerView(height: 46),
+            titleLabel,     SpacerView(height: 28),
+            subtitleStack,  UIView(),
             close
         ])
         stack.alignment = .center
         topView.pinToSuperview(edges: .horizontal)
         subtitleStack.pinToSuperview(edges: .horizontal, padding: 20)
+        
+        subtitleStack.alignment = .center
         
         view.addSubview(stack)
         stack.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .top, safeArea: true).pinToSuperview(edges: .bottom, padding: 40, safeArea: true)
@@ -100,14 +125,25 @@ private extension WalletTransferSummaryController {
             }
         }), for: .touchUpInside)
         
+        if let title = state.title {
+            titleLabel.text = title
+        } else {
+            titleLabel.isHidden = true
+        }
+        
         switch state {
-        case .success(let titleText, let subtitleText):
+        case .success(_, let subtitleText):
             animationView.animation = AnimationType.transferSuccess.animation
             
             navTitle.text = "Success"
-            titleLabel.text = titleText
             subtitleText
-                .map { UILabel($0, color: .white, font: .appFont(withSize: 20, weight: .semibold), multiline: true) }
+                .map {
+                    let label = UILabel()
+                    label.attributedText = $0
+                    label.numberOfLines = 0
+                    label.textAlignment = .center
+                    return label
+                }
                 .forEach { subtitleStack.addArrangedSubview($0) }
             
             close.setTitleColor(.white, for: .normal)
@@ -120,14 +156,14 @@ private extension WalletTransferSummaryController {
             close.backgroundColor = UIColor(rgb: 0x0E8A40)
             
             view.backgroundColor = .receiveMoney
-        case .failure(let navTitleText, let titleText, let messageText):
+        case .failure(let navTitleText, _, let messageText):
             animationView.animation = AnimationType.transferFailed.animation
             
             navTitle.text = navTitleText
-            titleLabel.text = titleText
             
             let subtitleLabel = UILabel(messageText, color: .white, font: .appFont(withSize: 18, weight: .regular), multiline: true)
             subtitleLabel.numberOfLines = 4
+            subtitleLabel.textAlignment = .center
             subtitleStack.addArrangedSubview(subtitleLabel)
             
             close.setTitleColor(.white, for: .normal)

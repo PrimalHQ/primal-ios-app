@@ -579,17 +579,6 @@ private extension NoteViewController {
             return
         }
         
-        guard let hasWallet = WalletManager.instance.userHasWallet else { return } // Unknown
-        guard hasWallet else {
-            let popup = PopupMenuViewController(message: "To zap people on Nostr, you need to activate your wallet and get some sats.", actions: [
-                .init(title: "Go to wallet", image: .init(named: "selectedTabIcon-wallet"), handler: { [weak self] _ in
-                    self?.mainTabBarController?.switchToTab(.wallet)
-                })
-            ])
-            present(popup, animated: true)
-            return
-        }
-        
         if showPopup {
             let popup = PopupZapSelectionViewController(entityToZap: postUser) { self.doZapFromCell(cell, amount: $0, message: $1) }
             present(popup, animated: true)

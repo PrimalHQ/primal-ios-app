@@ -117,41 +117,51 @@ struct PremiumState: Codable {
     var donated_btc: String?
 }
 
-typealias ParsedTransaction = (WalletTransaction, ParsedUser)
 
-protocol WalletImplementation {
-    var balance: Int { get }
-    var userHasWallet: Bool? { get }
-    var maxBalance: Int { get }
-    
-    var balancePublisher: AnyPublisher<Int, Never> { get }
-    var userHasWalletPublisher: AnyPublisher<Bool?, Never> { get }
-    var isLoadingWalletPublisher: AnyPublisher<Bool, Never> { get }
-    
-    func sendLNInvoice(_ lninvoice: String, satsOverride: Int?, messageOverride: String?) async throws
-    func sendLNURL(lnurl: String, pubkey: String?, sats: Int, note: String) async throws
-    func sendLud16(_ lud: String, sats: Int, note: String, pubkey: String?, zap: NostrObject?) async throws
-    func send(user: PrimalUser, sats: Int, note: String, zap: NostrObject?) async throws
-    func sendOnchain(_ btcAddress: String, tier: String, sats: Int, note: String) async throws
-    
-    func loadMoreTransactions()
-    func refreshBalance()
+extension String {
+    var lud16ToDecodedLNURL: String? {
+        let parts = components(separatedBy: "@")
+        
+        guard parts.count == 2 else { return nil }
+        
+        let username = parts[0]
+        let domain = parts[1]
+        
+        let scheme = domain.hasSuffix(".onion") ? "http" : "https"
+        
+        var components = URLComponents()
+        components.scheme = scheme
+        components.host = domain
+        components.path = "/.well-known/lnurlp/\(username)"
+        
+        guard let url = components.url?.absoluteString else { return nil }
+        
+        return url
+    }
 }
 
-extension PrimalWalletManager: WalletImplementation {
-    var isLoadingWalletPublisher: AnyPublisher<Bool, Never> { $isLoadingWallet.eraseToAnyPublisher() }
-    var balancePublisher: AnyPublisher<Int, Never> { $balance.eraseToAnyPublisher() }
-    var userHasWalletPublisher: AnyPublisher<Bool?, Never> { $userHasWallet.eraseToAnyPublisher() }
-    var transactionsPublisher: AnyPublisher<[WalletTransaction], Never> { $transactions.eraseToAnyPublisher() }
+extension PrimalUser {
+    var decodedLNURL: String? {
+        if lud16.isEmpty {
+            if lud06.isEmpty { return nil }
+            
+            return decode_lnurl(lud06)?.absoluteString
+        }
+        
+        return lud16.lud16ToDecodedLNURL
+    }
+}
+
+class MediaCacher: CachingMediaCacher {
+    static let instance = MediaCacher()
+    
+    func preCacheFeedMedia(urls: [String]) { }
+        
+    func preCacheUserAvatars(urls: [String]) { }
 }
 
 final class WalletManager {
     static let instance = WalletManager()
-    
-//    private(set) var impl: WalletImplementation
-    
-//    var primal: PrimalWalletManager? { impl as? PrimalWalletManager }
-//    var nwc: NWCWalletManager? { impl as? NWCWalletManager }
     
     var cancellables = Set<AnyCancellable>()
     var updateCancellables = Set<AnyCancellable>()
@@ -161,6 +171,7 @@ final class WalletManager {
     @Published var premiumState: PremiumState?
     @Published var didJustCreateWallet = false
     @Published var btcToUsd: Double = UserDefaults.standard.btcToUsd
+    @Published var balance: Int = 0
     @Published var isBitcoinPrimary = !UserDefaults.standard.useUSD {
         didSet {
             if oldValue != isBitcoinPrimary {
@@ -168,10 +179,6 @@ final class WalletManager {
             }
         }
     }
-    
-    @Published var userHasWallet: Bool?
-    @Published var isLoadingWallet = true
-    @Published var balance: Int = 0
     
     var maxBalance: Int { Int((activeWallet?.maxBalanceInBtc?.doubleValue ?? 0.00001) * .BTC_TO_SAT) }
     
@@ -206,6 +213,8 @@ final class WalletManager {
     var walletID: String? { activeWallet?.walletId }
     @Published var activeWallet: Wallet?
     
+    var transactionsSnapshot: IosPagingSnapshot<Transaction>?
+    
     private init() {
         let eventRepo = PrimalRepositoryFactory.shared.createEventRepository(cachingPrimalApiClient: regConnection, mediaCacher: MediaCacher.instance)
         
@@ -235,8 +244,10 @@ final class WalletManager {
         premiumState = nil
         activeWallet = nil
         updateCancellables = []
-        isLoadingWallet = false
-        userHasWallet = true
+        balance = 0
+        parsedTransactions = []
+        transactionsSnapshot?.dispose()
+        transactionsSnapshot = nil
         
         walletAccountRepo.observeActiveWallet(userId: pubkey)
             .toPublisher()
@@ -245,8 +256,6 @@ final class WalletManager {
                 guard let self, let wallet else { return }
                 activeWallet = wallet
                 balance = Int((wallet.balanceInBtc?.doubleValue ?? 0) * Double(SAT_PER_BTC))
-                isLoadingWallet = false
-                userHasWallet = (wallet as? Wallet.Primal)?.kycLevel ?? .email == .email
             }
             .store(in: &updateCancellables)
         
@@ -354,21 +363,37 @@ final class WalletManager {
         guard let walletID else { return }
         
         let flow = walletRepo.latestTransactions(walletId: walletID)
-        let snapshot = IosWalletPagingFactory.shared.createTransactionSnapshot(pagingFlow: flow)
+        
+        var snapshot: IosPagingSnapshot<Transaction>?
+        if let transactionsSnapshot {
+            transactionsSnapshot.refresh()
+        } else {
+            let newSnapshot = IosWalletPagingFactory.shared.createTransactionSnapshot(pagingFlow: flow)
+            transactionsSnapshot = newSnapshot
+            snapshot = newSnapshot
+        }
         
         Task { @MainActor in
             _ = try await self.walletRepo.fetchWalletBalance(walletId: walletID)
+            
+            guard let snapshot else { return }
             
             for await items in snapshot.items where !items.isEmpty{
                 print("Got \(items.count) transactions")
                 
                 self.parsedTransactions = items
                 
-                snapshot.dispose()
-                // Dismiss this snapshot so that it is not constantly updating forever
-                break
+                await asyncFunctionThatWaitsForEvent()
             }
         }
+    }
+    
+    func loadNewPage() {
+        // TODO: Fire event that lets the snapshot load
+    }
+    
+    func asyncFunctionThatWaitsForEvent() async {
+        // TODO: Write a function that will return when
     }
     
     func recheck() {
@@ -625,53 +650,6 @@ private extension WalletManager {
             self?.animatingZap.send(nil)
         }
         .store(in: &cancellables)
-    }
-}
-
-class DummyWalletImplementation: WalletImplementation {
-    
-    var balance: Int = 0
-    
-    var userHasWallet: Bool? = false
-    
-    var maxBalance: Int = 0
-    
-    var transactions: [WalletTransaction] = []
-    
-    var balancePublisher: AnyPublisher<Int, Never> { Just(0).eraseToAnyPublisher() }
-    
-    var userHasWalletPublisher: AnyPublisher<Bool?, Never> { Just(false).eraseToAnyPublisher() }
-    
-    var isLoadingWalletPublisher: AnyPublisher<Bool, Never> { Just(false).eraseToAnyPublisher() }
-    
-    var transactionsPublisher: AnyPublisher<[WalletTransaction], Never> { Just([]).eraseToAnyPublisher() }
-    
-    func sendLNInvoice(_ lninvoice: String, satsOverride: Int?, messageOverride: String?) async throws {
-        throw WalletError.noWallet
-    }
-    
-    func sendLNURL(lnurl: String, pubkey: String?, sats: Int, note: String) async throws {
-        throw WalletError.noWallet
-    }
-    
-    func sendLud16(_ lud: String, sats: Int, note: String, pubkey: String?, zap: NostrObject?) async throws {
-        throw WalletError.noWallet
-    }
-    
-    func send(user: PrimalUser, sats: Int, note: String, zap: NostrObject?) async throws {
-        throw WalletError.noWallet
-    }
-    
-    func sendOnchain(_ btcAddress: String, tier: String, sats: Int, note: String) async throws {
-        throw WalletError.noWallet
-    }
-    
-    func loadMoreTransactions() {
-        
-    }
-    
-    func refreshBalance() {
-        
     }
 }
 

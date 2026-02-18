@@ -67,15 +67,12 @@ final class WalletSpinnerToResultAnimator: NSObject, UIViewControllerAnimatedTra
         
         UIView.animate(withDuration: 8 / 30) {
             fromView.alpha = 0
-            self.spinner.spinner.transform = .init(translationX: 0, y: -200)
         }
         
         UIView.animate(withDuration: 4 / 30, delay: 4 / 30) {
             toView.alpha = 1
         } completion: { [self] _ in
             fromView.alpha = 1
-            
-            self.spinner.spinner.transform = .identity
             
             result.animationView.play()
             
@@ -86,16 +83,16 @@ final class WalletSpinnerToResultAnimator: NSObject, UIViewControllerAnimatedTra
             transitionContext.completeTransition(success)
         }
         
-        let staggeredViews: [UIView] = [result.titleLabel] + result.subtitleStack.arrangedSubviews
-        
-        staggeredViews.enumerated().forEach { (index, view) in
-            view.transform = .init(translationX: 50, y: 0)
-            view.alpha = 0.01
-            
-            UIView.animate(withDuration: 4 / 30, delay: 6 / 30 + TimeInterval(2 * index) / 30) {
-                view.transform = .identity
-                view.alpha = 1
-            }
-        }
+//        let staggeredViews: [UIView] = (result.titleLabel.isHidden ? [] : [result.titleLabel]) + result.subtitleStack.arrangedSubviews
+//        
+//        staggeredViews.enumerated().forEach { (index, view) in
+//            view.transform = .init(translationX: 50, y: 0)
+//            view.alpha = 0.01
+//            
+//            UIView.animate(withDuration: 4 / 30, delay: 6 / 30 + TimeInterval(2 * index) / 30) {
+//                view.transform = .identity
+//                view.alpha = 1
+//            }
+//        }
     }
 }

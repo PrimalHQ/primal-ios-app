@@ -329,13 +329,6 @@ private extension WalletHomeViewController {
         
         updateTheme()
         
-        WalletManager.instance.$userHasWallet.sink { [weak self] _ in
-            DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
-                self?.updateBuySatsButton()
-            }
-        }
-        .store(in: &cancellables)
-        
         Publishers.CombineLatest(
             WalletManager.instance.$activeWallet,
             WalletManager.instance.$parsedTransactions,
@@ -418,12 +411,12 @@ private extension WalletHomeViewController {
             }
         }
         .store(in: &cancellables)
-        
-        WalletManager.instance.$userHasWallet
-            .map { $0 ?? false }
-            .receive(on: DispatchQueue.main)
-            .assign(to: \.isHidden, onWeak: navBar.blockerView)
-            .store(in: &cancellables)
+
+//        WalletManager.instance.$userHasWallet
+//            .map { $0 ?? false }
+//            .receive(on: DispatchQueue.main)
+//            .assign(to: \.isHidden, onWeak: navBar.blockerView)
+//            .store(in: &cancellables)
     }
     
     

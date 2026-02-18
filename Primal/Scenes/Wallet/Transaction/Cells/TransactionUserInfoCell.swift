@@ -77,7 +77,7 @@ extension TransactionUserInfoCell: TransactionPartialCell {
             subtitleLabel.isHidden = subtitleLabel.text?.isEmpty != false
 //            checkbox.user = user.data
         } else {
-            avatar.image = .nonZapPaymentOld
+            avatar.image = .nonZapPayment
             mainLabel.text = "Lightning payment"
             subtitleLabel.isHidden = true
             checkbox.isHidden = true

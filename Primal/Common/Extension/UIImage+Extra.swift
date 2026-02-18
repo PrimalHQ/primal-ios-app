@@ -176,10 +176,6 @@ extension UIImage {
         return gradientImage ?? self
     }
     
-    static var nonZapPaymentDynamic: UIImage {
-        nonZapPayment.withTintColor(.accent, renderingMode: .alwaysOriginal)
-    }
-    
     func overlayed(with overlay: UIImage, at position: CGPoint? = nil) -> UIImage? {
         UIGraphicsBeginImageContextWithOptions(self.size, false, 0.0)
 

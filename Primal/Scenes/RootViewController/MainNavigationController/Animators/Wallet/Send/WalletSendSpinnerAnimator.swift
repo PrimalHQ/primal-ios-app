@@ -59,14 +59,9 @@ final class WalletSendSpinnerAnimator: NSObject, UIViewControllerAnimatedTransit
         ])
         backgroundParent.layoutIfNeeded()
         
-        sendController.input.largeAmountLabel.animateTransitionTo(spinner.amountView.largeAmountLabel, duration: 0.5, in: container)
-        sendController.input.largeCurrencyLabel.animateTransitionTo(spinner.amountView.largeCurrencyLabel, duration: 0.5, in: container)
-        
-        if sendController.input.large$Label.alpha > 0.1 && sendController.input.large$Label.superview?.isHidden == false {
-            sendController.input.large$Label.animateTransitionTo(spinner.amountView.large$Label, duration: 0.5, in: container)
-        }
-        
         spinner.navTitle.alpha = 0.01
+        spinner.infoLabel.alpha = 0.01
+        spinner.infoLabel.transform = .init(translationX: 100, y: 0)
         
         backgroundParent.alpha = 0
         toView.transform = .init(scaleX: 0.3, y: 0.3).translatedBy(x: 0, y: 200)
@@ -76,6 +71,8 @@ final class WalletSendSpinnerAnimator: NSObject, UIViewControllerAnimatedTransit
         
         UIView.animate(withDuration: 2 / 30, delay: 10 / 30) {
             self.spinner.navTitle.alpha = 1
+            self.spinner.infoLabel.alpha = 1
+            self.spinner.infoLabel.transform = .identity
         }
         
         UIView.animate(withDuration: 12 / 30, delay: 0) {
@@ -83,11 +80,8 @@ final class WalletSendSpinnerAnimator: NSObject, UIViewControllerAnimatedTransit
             toView.alpha = 1
             backgroundParent.alpha = 1
             backgroundParent.transform = .identity
-        } completion: { [self] _ in
+        } completion: { _ in
             toView.backgroundColor = Theme.current.isDarkTheme ? .black : .white
-            sendController.input.largeAmountLabel.alpha = 1
-            sendController.input.largeCurrencyLabel.alpha = 1
-            sendController.input.large$Label.alpha = 1
             backgroundParent.removeFromSuperview()
             
             let success = !transitionContext.transitionWasCancelled

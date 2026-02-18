@@ -31,7 +31,7 @@ final class WalletSendAmountController: UIViewController, Themeable, KeyboardInp
                 if address.isBitcoinAddress {
                     return "Onchain transaction"
                 }
-                return user?.data.lud16 ?? invoice?.lninvoice.description ?? "Lightning Invoice"
+                return user?.data.lud16 ?? (address.count > 30 ? "Lightning Invoice" : address)
             }
         }
         
@@ -162,7 +162,7 @@ private extension WalletSendAmountController {
                 self?.show(ProfileViewController(profile: user), sender: nil)
             })
         } else {
-            profilePictureView.image = destination.address.isBitcoinAddress ? .onchainPayment : .nonZapPaymentDynamic
+            profilePictureView.image = destination.address.isBitcoinAddress ? .onchainPayment : .nonZapPayment
             profilePictureView.animatedImageView.clipsToBounds = false
         }
         
