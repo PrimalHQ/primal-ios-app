@@ -66,7 +66,7 @@ class BackupWalletInputPhraseController: UIViewController {
             .store(in: &cancellables)
         }
         
-        $correctCount.map { $0 >= 12 }
+        $correctCount.map { $0 >= 3 }
             .sink { isAllCorrect in
                 nextButton.configuration = isAllCorrect ?
                     .accentPill(text: "Verify", font: .appFont(withSize: 18, weight: .semibold)) :

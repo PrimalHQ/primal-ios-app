@@ -362,44 +362,50 @@ final class WalletManager {
     func refresh() {
         guard let walletID else { return }
         
-        let flow = walletRepo.latestTransactions(walletId: walletID)
+        parsedTransactions = []
         
         var snapshot: IosPagingSnapshot<Transaction>?
         if let transactionsSnapshot {
             transactionsSnapshot.refresh()
+            loadNewTransactionsPage()
         } else {
+            let flow = walletRepo.latestTransactions(walletId: walletID)
             let newSnapshot = IosWalletPagingFactory.shared.createTransactionSnapshot(pagingFlow: flow)
             transactionsSnapshot = newSnapshot
             snapshot = newSnapshot
         }
         
         Task { @MainActor in
-            _ = try await self.walletRepo.fetchWalletBalance(walletId: walletID)
+            _ = try await walletRepo.fetchWalletBalance(walletId: walletID)
             
             guard let snapshot else { return }
             
             for await items in snapshot.items where !items.isEmpty{
-                print("Got \(items.count) transactions")
+                print("Got \(items.count) transactions on this page")
                 
-                self.parsedTransactions = items
+                parsedTransactions = (parsedTransactions + items).unique()
                 
-                await asyncFunctionThatWaitsForEvent()
+                await asyncFunctionThatWaitsForNewPageEvent()
             }
         }
     }
     
-    func loadNewPage() {
-        // TODO: Fire event that lets the snapshot load
+    private var newPageEvent: PassthroughSubject<Void, Never> = .init()
+    func loadNewTransactionsPage() {
+        newPageEvent.send(())
     }
-    
-    func asyncFunctionThatWaitsForEvent() async {
-        // TODO: Write a function that will return when
+    func asyncFunctionThatWaitsForNewPageEvent() async {
+        return await withCheckedContinuation { cont in
+            newPageEvent.first().sink {
+                cont.resume()
+            }
+            .store(in: &cancellables)
+        }
     }
     
     func recheck() {
-        // TODO: resolve recheck
-//        primal?.refreshBalance()
-//        primal?.recheckTransactions()
+        transactionsSnapshot?.refresh()
+        loadNewTransactionsPage()
     }
     
     func hasZapped(_ eventId: String) -> Bool { userZapped[eventId, default: 0] > 0 }

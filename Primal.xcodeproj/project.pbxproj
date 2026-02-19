@@ -565,6 +565,7 @@
 		B9C5A0E62F437E53007CB5D3 /* WalletSpinnerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C5A0E52F437E53007CB5D3 /* WalletSpinnerView.swift */; };
 		B9C5A0E82F44ACD3007CB5D3 /* SecretsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C5A0E72F44ACD3007CB5D3 /* SecretsManager.swift */; };
 		B9C5A0EA2F44ACF0007CB5D3 /* secrets.plist in Resources */ = {isa = PBXBuildFile; fileRef = B9C5A0E92F44ACF0007CB5D3 /* secrets.plist */; };
+		B9C5A0F02F46206C007CB5D3 /* CSVExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C5A0EF2F462060007CB5D3 /* CSVExporter.swift */; };
 		B9C672D42E1FEF5000243B45 /* LiveEventManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C672D32E1FEF5000243B45 /* LiveEventManager.swift */; };
 		B9C672D62E1FF65F00243B45 /* JSON+Extra.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C672D52E1FF65900243B45 /* JSON+Extra.swift */; };
 		B9C672D92E252D8600243B45 /* LiveVideoPlayerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C672D82E252D7E00243B45 /* LiveVideoPlayerController.swift */; };
@@ -1377,6 +1378,7 @@
 		B9C5A0E52F437E53007CB5D3 /* WalletSpinnerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletSpinnerView.swift; sourceTree = "<group>"; };
 		B9C5A0E72F44ACD3007CB5D3 /* SecretsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecretsManager.swift; sourceTree = "<group>"; };
 		B9C5A0E92F44ACF0007CB5D3 /* secrets.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = secrets.plist; sourceTree = "<group>"; };
+		B9C5A0EF2F462060007CB5D3 /* CSVExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CSVExporter.swift; sourceTree = "<group>"; };
 		B9C672D32E1FEF5000243B45 /* LiveEventManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveEventManager.swift; sourceTree = "<group>"; };
 		B9C672D52E1FF65900243B45 /* JSON+Extra.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "JSON+Extra.swift"; sourceTree = "<group>"; };
 		B9C672D82E252D7E00243B45 /* LiveVideoPlayerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveVideoPlayerController.swift; sourceTree = "<group>"; };
@@ -3257,11 +3259,20 @@
 		B9C5A0EB2F44AD91007CB5D3 /* BigManagers */ = {
 			isa = PBXGroup;
 			children = (
-				B94F2BAE2AD04FE40041181B /* WalletManager.swift */,
+				B9C5A0EC2F46204F007CB5D3 /* Wallet */,
 				B917982B2EE0690D00EF29EF /* RemoteSigning */,
 				B9B9E5652CB442050065DD7C /* FeedManagers */,
 			);
 			path = BigManagers;
+			sourceTree = "<group>";
+		};
+		B9C5A0EC2F46204F007CB5D3 /* Wallet */ = {
+			isa = PBXGroup;
+			children = (
+				B9C5A0EF2F462060007CB5D3 /* CSVExporter.swift */,
+				B94F2BAE2AD04FE40041181B /* WalletManager.swift */,
+			);
+			path = Wallet;
 			sourceTree = "<group>";
 		};
 		B9C672D72E252D6A00243B45 /* LiveVideoPlayer */ = {
@@ -4530,6 +4541,7 @@
 				9393D8342A424DB700F0C55A /* UnsentEvent.swift in Sources */,
 				B9E67EB82D0A26FF006BB397 /* MainThreadElementUserCell.swift in Sources */,
 				B934ADAD2DAFDF1E0044E5B5 /* SettingsMutedWordsController.swift in Sources */,
+				B9C5A0F02F46206C007CB5D3 /* CSVExporter.swift in Sources */,
 				9E8834B42A3239E0005DB548 /* ProfileNavigationView.swift in Sources */,
 				B91E56F52CC0496E00C14809 /* AdvancedSearchFilterController.swift in Sources */,
 				93CACB0629F525B6003BBCE5 /* hash_u5.c in Sources */,
@@ -4847,7 +4859,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.7.15;
+				MARKETING_VERSION = 2.7.16;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -4896,7 +4908,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.7.15;
+				MARKETING_VERSION = 2.7.16;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

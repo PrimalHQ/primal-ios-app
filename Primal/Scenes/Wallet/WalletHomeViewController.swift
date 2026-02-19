@@ -81,7 +81,7 @@ final class WalletHomeViewController: UIViewController, Themeable {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        WalletManager.instance.refresh()
+        WalletManager.instance.recheck()
         WalletManager.instance.loadNewExchangeRate()
         
         ICloudKeychainManager.instance.$userPubkey
@@ -176,6 +176,8 @@ extension WalletHomeViewController: UITableViewDataSource {
             (cell as? ErrorMessageCell)?.setText(message)
             return cell
         case .transaction(let transaction):
+            if tableData.count == indexPath.section + 1 { WalletManager.instance.loadNewTransactionsPage() }
+            
             let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
             
             if let cell = cell as? TransactionCell {
@@ -329,10 +331,12 @@ private extension WalletHomeViewController {
         
         updateTheme()
         
-        Publishers.CombineLatest(
-            WalletManager.instance.$activeWallet,
-            WalletManager.instance.$parsedTransactions,
+        let transactionsPublisher = Publishers.Merge(
+            WalletManager.instance.$parsedTransactions.first(),
+            WalletManager.instance.$parsedTransactions.compactMap { $0.isEmpty ? nil : $0 }
         )
+        
+        Publishers.CombineLatest(WalletManager.instance.$activeWallet, transactionsPublisher)
         .receive(on: DispatchQueue.main)
         .sink { [weak self] wallet, transactions in
             guard let self else { return }

@@ -92,7 +92,8 @@ class RemoteSignerManager {
 
                 var signerEvents: [NostrObject] = []
                 
-                for connection in connections {
+                // Only create sign events for auto start connections
+                for connection in connections.filter({ $0.autoStart }) {
                     let relays = connection.relays
                     let appPubkey = connection.clientPubKey
 

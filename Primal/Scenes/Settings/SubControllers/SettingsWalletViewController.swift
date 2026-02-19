@@ -23,7 +23,9 @@ struct WalletSettings {
 final class SettingsWalletViewController: UIViewController, SettingsController, Themeable {
     let minTransaction = SettingsInfoView(name: "Hide transactions below", desc: "1 sats", showArrow: true)
     let showNotifications = SettingsInfoView(name: "Show notifications above", desc: "1 sats", showArrow: true)
+    let backupWallet = SettingsInfoView(name: "Backup wallet", desc: "", showArrow: true)
     let restoreWallet = SettingsInfoView(name: "Restore existing wallet", desc: "", showArrow: true)
+    let exportWallet = SettingsInfoView(name: "Export transaction history", desc: "", showIcon: .menuImageSave)
     
     let nwcVC = SettingsWalletNWCController()
     
@@ -119,17 +121,14 @@ private extension SettingsWalletViewController {
     func setup() {
         title = "Wallet Settings"
         
-        let externalWallet = SettingsSwitchView("Use external wallet")
-        
-        let walletStart = SettingsSwitchView("Start in wallet")
-        
         let addressDesc = descLabel("You can change your Nostr Lightning Address (for receiving zaps) in your ", link: "profile settings.") { [weak self] in
             guard let user = IdentityManager.instance.user else { return }
             self?.show(EditProfileViewController(profile: user), sender: nil)
         }
-        
         let maxBalanceDesc = descLabel("Primal is a transactional wallet, designed for handling small amounts. We recommend self custody for larger amounts.")
-        let restoreDesc = descLabel("If you have an existing wallet that you wish to use with your Nostr account, you can restore it here using your 12-24 wallet recovery phrase.")
+        let backupDesc = descLabel("Write down your wallet recovery phrase so you don’t lose access to your funds")
+        let restoreDesc = descLabel("If you have an existing wallet that you wish to use with your Nostr account, you can restore it here using your 12-24 wallet recovery phrase")
+        let exportDesc = descLabel("Download your entire wallet transaction history in CSV format")
         
         let primalStack = UIStackView(axis: .vertical, [
             showNotifications,                                                                                                  SpacerView(height: 10),
@@ -142,21 +141,33 @@ private extension SettingsWalletViewController {
             nwcVC.view
         ])
         
+        let backupStack = UIStackView(axis: .vertical, [backupWallet, SpacerView(height: 10), backupDesc, SpacerView(height: 24)])
         let restoreStack = UIStackView(axis: .vertical, [restoreWallet, SpacerView(height: 10), restoreDesc, SpacerView(height: 24)])
+        let exportStack = UIStackView(axis: .vertical, [exportWallet, SpacerView(height: 10), exportDesc, SpacerView(height: 24)])
+        
+        let externalWallet = SettingsSwitchView("Use external wallet")
+        let walletStart = SettingsSwitchView("Start in wallet")
+        
+        let backupInfoView = WalletBackupInfoView()
         
         let mainStack = UIStackView(axis: .vertical, [
+            backupInfoView,
             SettingsInfoView(name: "LN Address", desc: IdentityManager.instance.user?.lud16 ?? "Not set...", showArrow: false), SpacerView(height: 10),
             addressDesc,                                                                                                        SpacerView(height: 24),
             walletStart,                                                                                                        SpacerView(height: 10),
             descLabel("Open the wallet when Primal starts"),                                                                    SpacerView(height: 24),
             minTransaction,                                                                                                     SpacerView(height: 10),
             descLabel("You can choose to hide small transactions to avoid spam in your transaction list"),                      SpacerView(height: 24),
+            backupStack,
             restoreStack,
+            exportStack,
             externalWallet,                                                                                                     SpacerView(height: 10),
             descLabel("Alternatively you can connect to an external lightning wallet via Nostr Wallet Connect"),                SpacerView(height: 24),
             nwcStack,
             primalStack,
         ])
+        
+        mainStack.setCustomSpacing(20, after: backupInfoView)
         
         nwcVC.willMove(toParent: self)
         addChild(nwcVC)
@@ -193,6 +204,24 @@ private extension SettingsWalletViewController {
             .assign(to: \.isHidden, on: restoreStack)
             .store(in: &cancellables)
         
+        // Hide backup button if the current wallet isn't spark or if it's already backed up
+        Publishers.CombineLatest($useNWCWallet.removeDuplicates(), WalletManager.instance.$activeWallet)
+            .map {
+                guard !$0, let spark = $1 as? Wallet.Spark else { return nil }
+                return spark
+            }
+            .receive(on: DispatchQueue.main)
+            .sink(receiveValue: { (wallet: Wallet.Spark?) in
+                guard let wallet else {
+                    backupStack.isHidden = true
+                    backupInfoView.isHidden = true
+                    return
+                }
+                backupStack.isHidden = false
+                backupInfoView.isHidden = wallet.balanceInBtc?.doubleValue ?? 0 == 0
+            })
+            .store(in: &cancellables)
+        
         externalWallet.switchView.addAction(.init(handler: { [weak self, weak externalWallet] _ in
             guard let externalWallet else { return }
             let usePrimalWallet = externalWallet.switchView.isOn
@@ -221,6 +250,23 @@ private extension SettingsWalletViewController {
             self?.show(RestoreWalletController(), sender: nil)
         }), for: .touchUpInside)
         
+        [backupInfoView.backupButton, backupWallet].forEach {
+            $0.addAction(.init(handler: { [weak self] _ in
+                self?.present(BackupWalletController(), animated: true)
+            }), for: .touchUpInside)
+        }
+        
+        exportWallet.addAction(.init(handler: { [weak self] _ in
+            guard let self, let walletId = WalletManager.instance.walletID else { return }
+            Task { @MainActor in
+                self.exportWallet.isEnabled = false
+                let transactions = try await WalletManager.instance.walletRepo.allTransactions(walletId: walletId)
+                
+                CSVExporter.exportTransactions(transactions, walletType: "Primal", from: self)
+                self.exportWallet.isEnabled = true
+            }
+        }), for: .touchUpInside)
+        
         Task {
             try await updateNWCStack()
         }
@@ -230,7 +276,7 @@ private extension SettingsWalletViewController {
 final class SettingsInfoView: MyButton, Themeable {
     let nameLabel = UILabel()
     let descLabel = UILabel()
-    let arrowImageView = UIImageView(image: UIImage(named: "settingsSmallArrow"))
+    let arrowImageView = UIImageView()
     
     override var isPressed: Bool {
         didSet {
@@ -238,14 +284,19 @@ final class SettingsInfoView: MyButton, Themeable {
         }
     }
     
-    init(name: String, desc: String, showArrow: Bool) {
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    convenience init(name: String, desc: String, showArrow: Bool = false) {
+        self.init(name: name, desc: desc, showIcon: showArrow ? .settingsSmallArrow : nil)
+    }
+    init(name: String, desc: String, showIcon: UIImage? = nil) {
         super.init(frame: .zero)
         
         let stack = UIStackView([nameLabel, SpacerView(width: 17, priority: .required), UIView(), descLabel])
         
-        if showArrow {
+        if let showIcon {
             stack.addArrangedSubview(SpacerView(width: 12, priority: .required))
             stack.addArrangedSubview(arrowImageView)
+            arrowImageView.image = showIcon
         } else {
             isUserInteractionEnabled = false
         }
@@ -271,8 +322,6 @@ final class SettingsInfoView: MyButton, Themeable {
         descLabel.font = .appFont(withSize: 16, weight: .regular)
     }
     
-    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
-    
     func updateTheme() {
         backgroundColor = .background3
         nameLabel.textColor = .foreground
@@ -286,6 +335,7 @@ class NWCInfoView: UIView, Themeable {
     let addressLabel = UILabel()
     let spacerView = SpacerView(height: 1)
     
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     init() {
         super.init(frame: .zero)
         
@@ -312,14 +362,48 @@ class NWCInfoView: UIView, Themeable {
         updateTheme()
     }
     
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
     func updateTheme() {
         backgroundColor = .background3
         addressLabel.textColor = .foreground
         relayLabel.textColor = .foreground
         spacerView.backgroundColor = .background
+    }
+}
+
+class WalletBackupInfoView: UIView, Themeable {
+    let titleLabel = UILabel("", color: .foreground, font: .appFont(withSize: 16, weight: .semibold))
+    let descriptionLabel = UILabel(
+        "This wallet has not been backed up. It is important to back up your wallet so you don’t lose access to your funds.",
+        color: .foreground,
+        font: .appFont(withSize: 14, weight: .regular)
+    )
+    let backupButton = UIButton().constrainToSize(height: 48)
+    
+    var updateCancellable: AnyCancellable?
+    
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    init() {
+        super.init(frame: .zero)
+        
+        let stackView = UIStackView(axis: .vertical, spacing: 12, [titleLabel, descriptionLabel, backupButton])
+        addSubview(stackView)
+        stackView.pinToSuperview(padding: 14)
+        
+        descriptionLabel.numberOfLines = 0
+        
+        layer.cornerRadius = 12
+        layer.borderWidth = 1
+        
+        updateTheme()
+        
+        updateCancellable = WalletManager.instance.$balance.map({ "Wallet Balance: \($0.localized()) sats" }).assign(to: \.text, on: titleLabel)
+    }
+    
+    func updateTheme() {
+        titleLabel.textColor = .foreground
+        descriptionLabel.textColor = .foreground.withAlphaComponent(0.75)
+        backupButton.configuration = .pill(text: "Back Up Wallet Now", foregroundColor: .white, backgroundColor: .failureRed, font: .appFont(withSize: 16, weight: .semibold))
+        layer.borderColor = UIColor.failureRed.withAlphaComponent(0.2).cgColor
+        backgroundColor = .failureRed.withAlphaComponent(0.12)
     }
 }
