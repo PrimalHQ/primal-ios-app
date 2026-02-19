@@ -125,7 +125,7 @@ private extension SettingsWalletViewController {
             guard let user = IdentityManager.instance.user else { return }
             self?.show(EditProfileViewController(profile: user), sender: nil)
         }
-        let maxBalanceDesc = descLabel("Primal is a transactional wallet, designed for handling small amounts. We recommend self custody for larger amounts.")
+        
         let backupDesc = descLabel("Write down your wallet recovery phrase so you don’t lose access to your funds")
         let restoreDesc = descLabel("If you have an existing wallet that you wish to use with your Nostr account, you can restore it here using your 12-24 wallet recovery phrase")
         let exportDesc = descLabel("Download your entire wallet transaction history in CSV format")
@@ -134,10 +134,6 @@ private extension SettingsWalletViewController {
             showNotifications,                                                                                                  SpacerView(height: 10),
             descLabel("Get notified with push notifications when you receive a payment above a certain size"),                  SpacerView(height: 24),
             
-//            SettingsInfoView(name: "Fiat currency", desc: "USD", showArrow: true),                                              SpacerView(height: 10),
-//            descLabel("You can choose to hide small transactions to avoid spam in your transaction list"),                      SpacerView(height: 24),
-            SettingsInfoView(name: "Max wallet balance", desc: "\(WalletManager.instance.maxBalance.localized()) sats", showArrow: false), SpacerView(height: 10),
-            maxBalanceDesc,
             nwcVC.view
         ])
         

@@ -237,9 +237,17 @@ final class WalletManager {
         }
     }
     
+    var oldPubkey: String?
     func reset(_ pubkey: String) {
-        // TODO: sparkWalletManager.disconnectWallet(walletId: ) stari wallet
+        // We have to disconnect old user Spark wallet to kill the connection
+        if let oldPubkey, oldPubkey != pubkey {
+            Task {
+                guard let oldWallet = try await walletAccountRepo.getActiveWallet(userId: pubkey) as? Wallet.Spark else { return }
+                try await sparkWalletManager.disconnectWallet(walletId: oldWallet.walletId)
+            }
+        }
         
+        oldPubkey = pubkey
         userZapped = [:]
         premiumState = nil
         activeWallet = nil
@@ -258,9 +266,6 @@ final class WalletManager {
                 balance = Int((wallet.balanceInBtc?.doubleValue ?? 0) * Double(SAT_PER_BTC))
             }
             .store(in: &updateCancellables)
-        
-        let nwcService = WalletRepositoryFactory.shared.createNwcService(walletRepository: walletRepo, nostrEncryptionService: EncryptionServiceHandler.instance, nwcRepository: nwcRepo)
-        
         
         Task {
             let wallet = try await walletAccountRepo.getActiveWallet(userId: pubkey)
@@ -282,9 +287,6 @@ final class WalletManager {
             
             let newResult = try await EnsureSparkWalletExistsUseCase(sparkWalletManager: sparkWalletManager, sparkWalletAccountRepository: sparkWalletAccountRepository, walletAccountRepository: walletAccountRepo, seedPhraseGenerator: RecoveryPhraseGenerator())
                 .invoke(userId: pubkey, register: true)
-            
-//            guard let sparkWallet = try await walletAccountRepo.findLastUsedWallet(userId: pubkey, type: .spark) else { return }
-//            try await walletAccountRepo.setActiveWallet(userId: pubkey, walletId: sparkWallet.walletId)
         }
         
         DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {

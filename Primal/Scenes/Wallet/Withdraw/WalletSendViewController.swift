@@ -31,15 +31,22 @@ final class WalletSendViewController: UIViewController, Themeable {
                 if address.isBitcoinAddress {
                     return address.parsedBitcoinAddress.0
                 }
-                return user?.data.lud16 ?? invoice?.lninvoice.description ?? address
+                if let user {
+                    return user.data.lud16.isEmpty ? user.data.lud06 : user.data.lud16
+                }
+                return address
             }
         }
         
-        var addressDisplay: String {
+        var name: String {
+            user?.data.name ?? (address.count <= 30 ? address : (address.isBitcoinAddress ? "Bitcoin Address" : "Lightning Invoice"))
+        }
+        
+        var summaryAddressDisplay: String {
             switch self {
             case let .user(user, _):
                 return user.data.lud16.isEmpty ? user.data.lud06 : user.data.lud16
-            case .address(let address, let invoice, let user, _):
+            case .address(let address, _, let user, _):
                 if address.isBitcoinAddress {
                     return "Bitcoin Address"
                 }
@@ -49,19 +56,17 @@ final class WalletSendViewController: UIViewController, Themeable {
         
         var startingAmount: Int {
             switch self {
-            case .user(_, let amount):                              return amount
+            case .user(_, let amount):
+                return amount
             case .address(_, let parsed, _, let startingAmount):
                 return startingAmount ?? (parsed?.lninvoice.amount_msat ?? 0) / 1000
             }
         }
         
-        var name: String? {
-            user?.data.name
-        }
-        
         var message: String {
             switch self {
-            case .user:                     return ""
+            case .user:                     
+                return ""
             case .address(let address, let parsed, _, _):
                 if address.isBitcoinAddress {
                     return address.parsedBitcoinAddress.2 ?? ""
@@ -84,7 +89,7 @@ final class WalletSendViewController: UIViewController, Themeable {
     let destination: Destination
     
     let profilePictureView = UserImageView(height: 88)
-    let nameLabel = UILabel()
+    lazy var nameLabel = UILabel(destination.name, color: .foreground, font: .appFont(withSize: 20, weight: .semibold))
     let input = LargeBalanceConversionView(showWalletBalance: false, showSecondaryRow: true)
     let messageInput = PlaceholderTextView()
     let messageParent = ThemeableView().setTheme { $0.backgroundColor = .background3 }
@@ -167,7 +172,7 @@ private extension WalletSendViewController {
         sendButton.constrainToSize(height: 58)
         sendButton.layer.cornerRadius = 29
         
-        let infoParent = UIStackView(axis: .vertical, [profilePictureView, SpacerView(height: 12), nipLabel, SpacerView(height: 2)])
+        let infoParent = UIStackView(axis: .vertical, [profilePictureView, SpacerView(height: 12), nameLabel, nipLabel, SpacerView(height: 2)])
         infoParent.alignment = .center
         
         let inputParent = UIView()
@@ -203,14 +208,7 @@ private extension WalletSendViewController {
         inputStack.pinToSuperview(edges: .horizontal)
         
         nipLabel.setContentCompressionResistancePriority(.required, for: .vertical)
-        
-        if let name = destination.name {
-            nameLabel.text = name
-            nameLabel.font = .appFont(withSize: 20, weight: .semibold)
-            nameLabel.textColor = .foreground
-            infoParent.insertArrangedSubview(nameLabel, at: 2)
-            nameLabel.setContentCompressionResistancePriority(.required, for: .vertical)
-        }
+        nameLabel.setContentCompressionResistancePriority(.required, for: .vertical)
         
         messageParent.heightAnchor.constraint(greaterThanOrEqualToConstant: 48).isActive = true
         messageParent.addSubview(messageInput)
@@ -272,7 +270,7 @@ private extension WalletSendViewController {
         feeView.isHidden = !destination.address.isBitcoinAddress
         feeView.alpha = 0.01
         
-        nipLabel.text = destination.addressDisplay
+        nipLabel.text = destination.address
         nipLabel.font = .appFont(withSize: 16, weight: .regular)
         nipLabel.textAlignment = .center
         
@@ -341,7 +339,7 @@ private extension WalletSendViewController {
                 return
             }
             
-            let spinnerVC = WalletSpinnerViewController(sats: amount, address: destination.addressDisplay)
+            let spinnerVC = WalletSpinnerViewController(sats: amount, address: destination.summaryAddressDisplay)
             navigationController?.pushViewController(spinnerVC, animated: true)
             
             do {
@@ -384,7 +382,7 @@ private extension WalletSendViewController {
                 spinnerVC.onAppearCallback = { [weak self] in
                     guard let self else { return }
                     
-                    let summary = WalletTransferSummaryController(.paymentSuccess(amount: amount, address: self.destination.addressDisplay))
+                    let summary = WalletTransferSummaryController(.paymentSuccess(amount: amount, address: self.destination.summaryAddressDisplay))
                     self.navigationController?.pushViewController(summary, animated: true)
                     
                     summary.view.isUserInteractionEnabled = false

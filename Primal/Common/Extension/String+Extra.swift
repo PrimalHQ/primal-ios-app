@@ -149,16 +149,15 @@ extension String : Identifiable {
         return regex.firstMatch(in: btcAddress, options: [], range: range) != nil
     }
     
-    var parsedBitcoinAddress: (String, Int?, String?, lightning: String?) {
+    var parsedBitcoinAddress: (String, Int?, String?) {
         let sections = split(separator: "?")
         guard
             let address = sections.first?.string,
             let params = sections.last?.split(separator: "&")
-        else { return (self, nil, nil, nil) }
+        else { return (self, nil, nil) }
         
         var amount: Int?
         var label: String?
-        var lightning: String?
         
         for param in params {
             let elements = param.split(separator: "=")
@@ -168,12 +167,9 @@ extension String : Identifiable {
             if elements.first == "label", let labelText = elements.last?.removingPercentEncoding {
                 label = labelText
             }
-            if elements.first == "lightning", let lightningText = elements.last?.string {
-                lightning = lightningText
-            }
         }
         
-        return (address, amount, label, lightning)
+        return (address, amount, label)
     }
     
     func hexToNoteId() -> String? { bech32_note_id(self) }

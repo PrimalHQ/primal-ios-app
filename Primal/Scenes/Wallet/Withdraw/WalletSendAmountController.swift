@@ -27,16 +27,19 @@ final class WalletSendAmountController: UIViewController, Themeable, KeyboardInp
             switch self {
             case let .user(user):
                 return user.data.lud16.isEmpty ? user.data.lud06 : user.data.lud16
-            case .address(let address, let invoice, let user):
+            case .address(let address, _, let user):
                 if address.isBitcoinAddress {
-                    return "Onchain transaction"
+                    return address.parsedBitcoinAddress.0
                 }
-                return user?.data.lud16 ?? (address.count > 30 ? "Lightning Invoice" : address)
+                if let user {
+                    return user.data.lud16.isEmpty ? user.data.lud06 : user.data.lud16
+                }
+                return address
             }
         }
         
-        var name: String? {
-            user?.data.name ?? (address.isBitcoinAddress ? "Bitcoin Address" : nil)
+        var name: String {
+            user?.data.name ?? (address.count <= 30 ? address : (address.isBitcoinAddress ? "Bitcoin Address" : "Lightning Invoice"))
         }
         
         var startingAmount: Int {
@@ -54,9 +57,9 @@ final class WalletSendAmountController: UIViewController, Themeable, KeyboardInp
     let input = LargeBalanceConversionView(showWalletBalance: false, showSecondaryRow: true)
     let keyboard = NumberKeyboardView()
     let profilePictureView = UserImageView(height: 88)
-    let nameLabel = UILabel()
+    lazy var nameLabel = UILabel(destination.name, color: .foreground, font: .appFont(withSize: 20, weight: .semibold))
     let nipLabel = ThemeableLabel().setTheme { $0.textColor = .foreground3 }
-    lazy var infoParent = UIStackView(axis: .vertical, [profilePictureView, SpacerView(height: 12), nipLabel, SpacerView(height: 2)])
+    lazy var infoParent = UIStackView(axis: .vertical, [profilePictureView, SpacerView(height: 12), nameLabel, nipLabel, SpacerView(height: 2)])
     
     let cancelButton = SimpleRoundedButton(title: "Cancel")
     let sendButton = LargeRoundedButton(title: "Next")
@@ -129,13 +132,6 @@ private extension WalletSendAmountController {
             inputStack,
             keyboardStack
         ])
-        
-        if let name = destination.name {
-            nameLabel.text = name
-            nameLabel.font = .appFont(withSize: 20, weight: .semibold)
-            nameLabel.textColor = .foreground
-            infoParent.insertArrangedSubview(nameLabel, at: 2)
-        }
         
         view.addSubview(scrollView)
         scrollView.pinToSuperview(safeArea: true)

@@ -13,9 +13,9 @@ class CSVExporter {
       
     // MARK: - CSV headers (matches Android column order exactly)
     private static let csvHeaders = [
-        "transactionId", "walletId", "type", "state",
+        "transactionId", "type", "state",
         "createdAt", "updatedAt", "completedAt", "userId",
-        "note", "invoice", "amountInBtc", "amountInUsd",
+        "note", "invoice", "amount", "amountInUsd",
         "exchangeRate", "totalFeeInBtc", "otherUserId",
         "otherLightningAddress", "otherUserProfile", "preimage",
         "paymentHash", "zappedEntity", "zappedByUserId",
@@ -77,12 +77,12 @@ class CSVExporter {
         }
 
         let values: [String?] = [
-            tx.transactionId, tx.walletId,
+            tx.transactionId,
             tx.type.name, tx.state.name,
             String(tx.createdAt), String(tx.updatedAt),
             tx.completedAt.map { String($0.int64Value) },
             tx.userId, tx.note, tx.invoice,
-            String(tx.amountInBtc),
+            String(Int(tx.amountInBtc * Double(SAT_PER_BTC))),
             tx.amountInUsd.map { String($0.int64Value) },
             tx.exchangeRate, tx.totalFeeInBtc,
             otherUserId, otherLightningAddress, otherUserProfile,
