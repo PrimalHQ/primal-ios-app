@@ -41,6 +41,7 @@ private extension SettingsAppearanceViewController {
             ThemeButton(theme: .midnightWave),
 //            ThemeButton(theme: .sunriseWave),
             ThemeButton(theme: .iceWave),
+            UIView(), UIView()
         ])
         themeStack.distribution = .fillEqually
         themeStack.spacing = 14
