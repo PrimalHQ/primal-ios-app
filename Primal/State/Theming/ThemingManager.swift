@@ -15,7 +15,7 @@ final class ThemingManager {
     static let instance = ThemingManager()
         
     func setStartingTheme(isFirstTime: Bool = false) {
-        Theme.current = Theme.defaultTheme ?? (UIScreen.main.traitCollection.userInterfaceStyle == .light ? SunriseWave.instance : SunsetWave.instance)
+        Theme.current = Theme.defaultTheme ?? (UIScreen.main.traitCollection.userInterfaceStyle == .light ? IceWave.instance : MidnightWave.instance)
         updateThemeFromUI(isFirstTime: isFirstTime)
         
         if !isFirstTime {
@@ -41,8 +41,8 @@ final class ThemingManager {
         let style = UIScreen.main.traitCollection.userInterfaceStyle
         
         switch Theme.current.kind {
-        case .sunriseWave, .sunsetWave:
-            Theme.current = style == .light ? SunriseWave.instance : SunsetWave.instance
+//        case .sunriseWave, .sunsetWave:
+//            Theme.current = style == .light ? SunriseWave.instance : SunsetWave.instance
         case .midnightWave, .iceWave:
             Theme.current = style == .light ? IceWave.instance : MidnightWave.instance
         }

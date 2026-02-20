@@ -214,7 +214,7 @@ private extension SettingsWalletViewController {
                     return
                 }
                 backupStack.isHidden = false
-                backupInfoView.isHidden = wallet.balanceInBtc?.doubleValue ?? 0 == 0
+                backupInfoView.isHidden = wallet.isBackedUp || wallet.balanceInBtc?.doubleValue ?? 0 == 0
             })
             .store(in: &cancellables)
         

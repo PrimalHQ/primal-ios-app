@@ -37,9 +37,9 @@ private extension SettingsAppearanceViewController {
         title = "Appearance"
         
         let themeStack = UIStackView([
-            ThemeButton(theme: .sunsetWave),
+//            ThemeButton(theme: .sunsetWave),
             ThemeButton(theme: .midnightWave),
-            ThemeButton(theme: .sunriseWave),
+//            ThemeButton(theme: .sunriseWave),
             ThemeButton(theme: .iceWave),
         ])
         themeStack.distribution = .fillEqually

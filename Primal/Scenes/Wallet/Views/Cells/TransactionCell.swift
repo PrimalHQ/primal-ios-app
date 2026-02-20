@@ -66,12 +66,12 @@ final class TransactionCell: UITableViewCell, Themeable {
             oldProfileId = ""
             profileImage.image = UIImage(named: "onchainPayment")
             profileImage.contentMode = .scaleAspectFit
-            nameLabel.text = "Bitcoin"
+            nameLabel.text = isDeposit ? "Received on-chain" : "Sent on-chain"
         } else {
             oldProfileId = ""
             profileImage.image = .nonZapPayment
             profileImage.contentMode = .scaleAspectFit
-            nameLabel.text = isDeposit ? "Received" : "Sent"
+            nameLabel.text = isDeposit ? "Received via Lightning" : "Sent via Lightning"
         }
 
         if let completedAt = transaction.completedAt {

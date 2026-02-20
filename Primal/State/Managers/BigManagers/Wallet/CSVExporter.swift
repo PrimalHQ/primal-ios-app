@@ -11,15 +11,16 @@ import UIKit
 
 class CSVExporter {
       
-    // MARK: - CSV headers (matches Android column order exactly)
+    private static let dateFormatter: DateFormatter = {
+        let f = DateFormatter()
+        f.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        f.timeZone = TimeZone(identifier: "UTC")
+        return f
+    }()
+
+    // MARK: - CSV headers
     private static let csvHeaders = [
-        "transactionId", "type", "state",
-        "createdAt", "updatedAt", "completedAt", "userId",
-        "note", "invoice", "amount", "amountInUsd",
-        "exchangeRate", "totalFeeInBtc", "otherUserId",
-        "otherLightningAddress", "otherUserProfile", "preimage",
-        "paymentHash", "zappedEntity", "zappedByUserId",
-        "onChainTxId", "onChainAddress", "sparkAddress",
+        "Type", "Amount", "Fee", "State", "TransactionDate", "Note", "TransactionId", "Invoice",
     ]
 
     // MARK: - CSV building
@@ -33,62 +34,18 @@ class CSVExporter {
     }
 
     private static func csvRow(for tx: Transaction) -> String {
-        // Type-specific fields s— default to nil for types that don't have them
-        var otherUserId: String? = nil
-        var otherLightningAddress: String? = nil
-        var otherUserProfile: String? = nil
-        var preimage: String? = nil
-        var paymentHash: String? = nil
-        var zappedEntity: String? = nil
-        var zappedByUserId: String? = nil
-        var onChainTxId: String? = nil
-        var onChainAddress: String? = nil
-        var sparkAddress: String? = nil
-
-        // NOTE: Adjust these type names to match the KMP-generated Swift interface in your project.
-        switch tx {
-        case let t as Transaction.Lightning:
-            otherUserId = t.otherUserId
-            otherLightningAddress = t.otherLightningAddress
-            otherUserProfile = t.otherUserProfile?.displayName ??
-            t.otherUserProfile?.handle ?? t.otherUserProfile?.profileId
-            preimage = t.preimage
-            paymentHash = t.paymentHash
-
-        case let t as Transaction.Zap:
-            otherUserId = t.otherUserId
-            otherLightningAddress = t.otherLightningAddress
-            otherUserProfile = t.otherUserProfile?.displayName ??
-            t.otherUserProfile?.handle ?? t.otherUserProfile?.profileId
-            preimage = t.preimage
-            paymentHash = t.paymentHash
-            zappedEntity = t.zappedEntity.toNostrString()
-            zappedByUserId = t.zappedByUserId
-
-        case let t as Transaction.OnChain:
-            onChainTxId = t.onChainTxId
-            onChainAddress = t.onChainAddress
-        case let t as Transaction.Spark:
-            sparkAddress = t.sparkAddress
-            preimage = t.preimage
-            paymentHash = t.paymentHash
-        default: // TransactionStorePurchase — no extra fields
-        break
-        }
-
+        let amountInSats = Int(tx.amountInBtc * Double(SAT_PER_BTC))
+        let feeInSats = Int((Double(tx.totalFeeInBtc ?? "") ?? 0) * Double(SAT_PER_BTC))
+        
         let values: [String?] = [
+            tx.type.name,
+            String(amountInSats),
+            String(feeInSats),
+            tx.state.name,
+            tx.completedAt.map { dateFormatter.string(from: Date(timeIntervalSince1970: TimeInterval($0.int64Value))) },
+            tx.note,
             tx.transactionId,
-            tx.type.name, tx.state.name,
-            String(tx.createdAt), String(tx.updatedAt),
-            tx.completedAt.map { String($0.int64Value) },
-            tx.userId, tx.note, tx.invoice,
-            String(Int(tx.amountInBtc * Double(SAT_PER_BTC))),
-            tx.amountInUsd.map { String($0.int64Value) },
-            tx.exchangeRate, tx.totalFeeInBtc,
-            otherUserId, otherLightningAddress, otherUserProfile,
-            preimage, paymentHash,
-            zappedEntity, zappedByUserId,
-            onChainTxId, onChainAddress, sparkAddress,
+            tx.invoice,
         ]
 
         return values.map(csvEscaped).joined(separator: ",")

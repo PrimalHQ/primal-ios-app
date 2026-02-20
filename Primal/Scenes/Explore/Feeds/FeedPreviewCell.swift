@@ -118,7 +118,7 @@ class FeedPreviewCell: UITableViewCell, Themeable {
 }
 
 class CreatedByPrimalView: UIView, Themeable {
-    let icon = UIImageView(image: UIImage(named: "sunsetWaveIcon16"))
+    let icon = UIImageView(image: .primalLogo).constrainToSize(16)
     let label = UILabel()
     
     init() {

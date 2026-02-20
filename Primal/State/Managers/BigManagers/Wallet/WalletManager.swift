@@ -393,15 +393,15 @@ final class WalletManager {
     }
     
     private var newPageEvent: PassthroughSubject<Void, Never> = .init()
+    private var newPageCancellable: AnyCancellable?
     func loadNewTransactionsPage() {
         newPageEvent.send(())
     }
     func asyncFunctionThatWaitsForNewPageEvent() async {
         return await withCheckedContinuation { cont in
-            newPageEvent.first().sink {
+            newPageCancellable = newPageEvent.first().sink {
                 cont.resume()
             }
-            .store(in: &cancellables)
         }
     }
     

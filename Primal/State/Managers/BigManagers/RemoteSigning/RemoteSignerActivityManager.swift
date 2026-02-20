@@ -84,7 +84,7 @@ class RemoteSignerActivityManager {
         
         let attributes = RemoteSignerWidgetAttributes(
             timeStarted: .now,
-            isBlue: Theme.current.isBlueTheme
+            isBlue: true
         )
 
         let initialContentState = RemoteSignerWidgetAttributes.ContentState(
