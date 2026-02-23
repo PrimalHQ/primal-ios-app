@@ -163,15 +163,10 @@ class MediaCacher: CachingMediaCacher {
 final class WalletManager {
     static let instance = WalletManager()
     
-    var cancellables = Set<AnyCancellable>()
-    var updateCancellables = Set<AnyCancellable>()
-    
-    var isNWCWalletActive: Bool { activeWallet is Wallet.NWC }
-    
-    @Published var premiumState: PremiumState?
-    @Published var didJustCreateWallet = false
-    @Published var btcToUsd: Double = UserDefaults.standard.btcToUsd
-    @Published var balance: Int = 0
+    @Published private(set) var activeWallet: Wallet?
+    @Published private(set) var premiumState: PremiumState?
+    @Published private(set) var btcToUsd: Double = UserDefaults.standard.btcToUsd
+    @Published private(set) var balance: Int = 0
     @Published var isBitcoinPrimary = !UserDefaults.standard.useUSD {
         didSet {
             if oldValue != isBitcoinPrimary {
@@ -180,8 +175,9 @@ final class WalletManager {
         }
     }
     
+    var isNWCWalletActive: Bool { activeWallet is Wallet.NWC }
+    var walletID: String? { activeWallet?.walletId }
     var maxBalance: Int { Int((activeWallet?.maxBalanceInBtc?.doubleValue ?? 0.00001) * .BTC_TO_SAT) }
-    
     var hasPremium: Bool { premiumState?.isExpired == false }
     var hasLegend: Bool { premiumState?.isLegend == true }
     var hasPremiumPublisher: AnyPublisher<Bool, Never> {
@@ -191,29 +187,28 @@ final class WalletManager {
     let zapEvent = PassthroughSubject<ParsedZap, Never>()
     let animatingZap = CurrentValueSubject<ParsedZap?, Never>(nil)
     
-    var userData: [String: ParsedUser] = [:]
+    let walletRepo: any WalletRepository
+    let walletAccountRepo = WalletRepositoryFactory.shared.createWalletAccountRepository()
+    
+    lazy var nwcRepo = WalletRepositoryFactory.shared.createNwcRepository(nip47EventsHandler: self)
     
     @Published var parsedTransactions: [PrimalShared.Transaction] = []
     @Published private var userZapped: [String: Int] = [:]
     
-    let zapFactory: any NostrZapperFactory
-    let walletRepo: any WalletRepository
+    private var cancellables = Set<AnyCancellable>()
+    private var updateCancellables = Set<AnyCancellable>()
+    private var oldPubkey: String?
+    private(set) var pendingDepositsSyncer: WalletDataSyncer? { didSet { oldValue?.stop() } }
+    private var balanceSyncer: WalletDataSyncer? { didSet { oldValue?.stop() } }
     
-    let regConnection = PrimalApiClientFactory.shared.create(serverType: .caching)
-    let walletConnection = PrimalApiClientFactory.shared.create(serverType: .wallet)
-    let walletAccountRepo = WalletRepositoryFactory.shared.createWalletAccountRepository()
-    
-    let profileRepo: ProfileRepository
-    lazy var primalWalletRepo = WalletRepositoryFactory.shared.createPrimalWalletAccountRepository(primalWalletApiClient: walletConnection, nostrEventSignatureHandler: SigningManager.instance)
-    lazy var sparkWalletManager = WalletRepositoryFactory.shared.createSparkWalletManager()
-    lazy var sparkWalletAccountRepository = WalletRepositoryFactory.shared.createSparkWalletAccountRepository(primalWalletApiClient: walletConnection, nostrEventSignatureHandler: SigningManager.instance)
-    
-    lazy var nwcRepo = WalletRepositoryFactory.shared.createNwcRepository(nip47EventsHandler: self)
-    
-    var walletID: String? { activeWallet?.walletId }
-    @Published var activeWallet: Wallet?
-    
-    var transactionsSnapshot: IosPagingSnapshot<Transaction>?
+    private let zapFactory: any NostrZapperFactory
+    private let regConnection = PrimalApiClientFactory.shared.create(serverType: .caching)
+    private let walletConnection = PrimalApiClientFactory.shared.create(serverType: .wallet)
+    private let profileRepo: ProfileRepository
+    private lazy var primalWalletRepo = WalletRepositoryFactory.shared.createPrimalWalletAccountRepository(primalWalletApiClient: walletConnection, nostrEventSignatureHandler: SigningManager.instance)
+    private lazy var sparkWalletManager = WalletRepositoryFactory.shared.createSparkWalletManager()
+    private lazy var sparkWalletAccountRepository = WalletRepositoryFactory.shared.createSparkWalletAccountRepository(primalWalletApiClient: walletConnection, nostrEventSignatureHandler: SigningManager.instance)
+    private var transactionsSnapshot: IosPagingSnapshot<Transaction>?
     
     private init() {
         let eventRepo = PrimalRepositoryFactory.shared.createEventRepository(cachingPrimalApiClient: regConnection, mediaCacher: MediaCacher.instance)
@@ -237,7 +232,6 @@ final class WalletManager {
         }
     }
     
-    var oldPubkey: String?
     func reset(_ pubkey: String) {
         // We have to disconnect old user Spark wallet to kill the connection
         if let oldPubkey, oldPubkey != pubkey {
@@ -257,6 +251,11 @@ final class WalletManager {
         transactionsSnapshot?.dispose()
         transactionsSnapshot = nil
         
+        pendingDepositsSyncer = SyncerFactory.shared.createPendingDepositsSyncer(userId: pubkey, walletAccountRepository: walletAccountRepo, sparkWalletManager: sparkWalletManager)
+        balanceSyncer = SyncerFactory.shared.createActiveWalletBalanceSyncer(userId: pubkey, walletRepository: walletRepo, walletAccountRepository: walletAccountRepo)
+        
+        balanceSyncer?.start()
+        
         walletAccountRepo.observeActiveWallet(userId: pubkey)
             .toPublisher()
             .receive(on: DispatchQueue.main)
@@ -266,17 +265,6 @@ final class WalletManager {
                 balance = Int((wallet.balanceInBtc?.doubleValue ?? 0) * Double(SAT_PER_BTC))
             }
             .store(in: &updateCancellables)
-        
-        
-        let syncers: [WalletDataSyncer] = [
-            // TODO: Start/stop when entering/exiting wallet screen
-            SyncerFactory.shared.createPendingDepositsSyncer(userId: pubkey, walletAccountRepository: walletAccountRepo, sparkWalletManager: sparkWalletManager),
-            
-            // TODO: start/stop on user change
-            SyncerFactory.shared.createActiveWalletBalanceSyncer(userId: pubkey, walletRepository: walletRepo, walletAccountRepository: walletAccountRepo)
-        ]
-        
-        syncers.forEach { $0.start() }
         
         Task {
             let wallet = try await walletAccountRepo.getActiveWallet(userId: pubkey)
@@ -471,10 +459,48 @@ final class WalletManager {
             .store(in: &cancellables)
     }
     
+    // MARK: - Sending
+    func sendLNInvoice(_ lninvoice: String, satsOverride: Int?, messageOverride: String?) async throws {
+        try await send(.LightningLnInvoice(amountSats: String(satsOverride ?? 0), noteRecipient: messageOverride, noteSelf: messageOverride, idempotencyKey: UUID().uuidString, lnInvoice: lninvoice))
+    }
     
-    // COPIED FROM NWC
-    func sendInvoice(_ address: String, satsOverride: Int?, messageOverride: String?) async throws {
-        throw WalletError.notSupported
+    func sendLNURL(lnurl: String, sats: Int, note: String) async throws {
+        try await send(.LightningLnUrl(amountSats: String(sats), noteRecipient: note, noteSelf: note, idempotencyKey: UUID().uuidString, lnUrl: lnurl, lud16: nil))
+    }
+    
+    func sendLud16(_ lud: String, sats: Int, note: String) async throws {
+        guard let decoded = lud.lud16ToDecodedLNURL else { throw WalletError.noLud }
+        
+        try await send(.LightningLnUrl(amountSats: String(sats), noteRecipient: note, noteSelf: note, idempotencyKey: UUID().uuidString, lnUrl: decoded, lud16: lud))
+    }
+    
+    func sendOnchain(_ btcAddress: String, tier: String, sats: Int, note: String) async throws {
+        try await send(.BitcoinOnChain(amountSats: String(sats), noteRecipient: note, noteSelf: note, idempotencyKey: UUID().uuidString, onChainAddress: btcAddress, onChainTierId: tier))
+    }
+    
+    func send(_ request: TxRequest) async throws {
+        guard let walletID else { throw WalletError.noWallet }
+
+        let res = try await walletRepo.pay(walletId: walletID, request: request)
+        
+        if let error = res.exceptionOrNull()?.description() { throw WalletError.serverError(error) }
+        if res.getOrNull() == nil { throw WalletError.serverError("Unable to pay invoice") }
+    }
+    
+    // MARK: - Zapping
+    
+    func send(user: PrimalUser, sats: Int, note: String, zap: NostrObject? = nil) async throws {
+        guard let zap = zap ?? zapUserObject(user) else { throw WalletError.signingError }
+        
+        try await zapUser(user, sats: sats, note: note, zap: zap)
+    }
+    
+    func zapUserObject(_ user: PrimalUser) -> NostrObject? {
+        var relays = Array((IdentityManager.instance.userRelays ?? [:]).keys)
+        if relays.isEmpty {
+            relays = bootstrap_relays
+        }
+        return NostrObject.zap(target: .profile(user.pubkey), relays: relays)
     }
     
     func zapUser(_ user: PrimalUser, sats: Int, note: String, zap: NostrObject) async throws {
@@ -498,76 +524,6 @@ final class WalletManager {
         }
     }
     
-    func sendLNInvoice(_ lninvoice: String, satsOverride: Int?, messageOverride: String?) async throws {
-        guard let walletID else { throw WalletError.noWallet }
-        let res = try await walletRepo.pay(walletId: walletID, request: .LightningLnInvoice(amountSats: String(satsOverride ?? 0), noteRecipient: messageOverride, noteSelf: messageOverride, idempotencyKey: UUID().uuidString, lnInvoice: lninvoice))
-        
-        if let error = res.exceptionOrNull()?.description() {
-            throw WalletError.serverError(error)
-        }
-        
-        if res.getOrNull() == nil {
-            throw WalletError.serverError("Unable to pay invoice")
-        }
-    }
-    
-    func sendLNURL(lnurl: String, pubkey: String?, sats: Int, note: String) async throws {
-        guard let walletID else { throw WalletError.noWallet }
-        let res = try await walletRepo.pay(walletId: walletID, request: .LightningLnUrl(amountSats: String(sats), noteRecipient: note, noteSelf: note, idempotencyKey: UUID().uuidString, lnUrl: lnurl, lud16: nil))
-        
-        if let error = res.exceptionOrNull()?.description() {
-            throw WalletError.serverError(error)
-        }
-        
-        if res.getOrNull() == nil {
-            throw WalletError.serverError("Unable to pay invoice")
-        }
-    }
-    
-    func sendLud16(_ lud: String, sats: Int, note: String, pubkey: String? = nil, zap: NostrObject? = nil) async throws {
-        guard let walletID else { throw WalletError.noWallet }
-        guard let decoded = lud.lud16ToDecodedLNURL else { throw WalletError.noLud }
-        
-        let res = try await walletRepo.pay(walletId: walletID, request: .LightningLnUrl(amountSats: String(sats), noteRecipient: note, noteSelf: note, idempotencyKey: UUID().uuidString, lnUrl: decoded, lud16: lud))
-        
-        if let error = res.exceptionOrNull()?.description() {
-            throw WalletError.serverError(error)
-        }
-        
-        if res.getOrNull() == nil {
-            throw WalletError.serverError("Unable to pay invoice")
-        }
-    }
-    
-    func send(user: PrimalUser, sats: Int, note: String, zap: NostrObject? = nil) async throws {
-        if let zap {
-            return try await zapUser(user, sats: sats, note: note, zap: zap)
-        }
-        
-        var relays = Array((IdentityManager.instance.userRelays ?? [:]).keys)
-        if relays.isEmpty {
-            relays = bootstrap_relays
-        }
-        
-        guard let zap = NostrObject.zap(target: .profile(user.pubkey), relays: relays) else { throw WalletError.signingError }
-        
-        try await zapUser(user, sats: sats, note: note, zap: zap)
-    }
-    
-    func sendOnchain(_ btcAddress: String, tier: String, sats: Int, note: String) async throws {
-        guard let walletID else { throw WalletError.noWallet }
-
-        let res = try await walletRepo.pay(walletId: walletID, request: .BitcoinOnChain(amountSats: String(sats), noteRecipient: note, noteSelf: note, idempotencyKey: UUID().uuidString, onChainAddress: btcAddress, onChainTierId: tier))
-        
-        if let error = res.exceptionOrNull()?.description() {
-            throw WalletError.serverError(error)
-        }
-        
-        if res.getOrNull() == nil {
-            throw WalletError.serverError("Unable to pay invoice")
-        }
-    }
-    
     func zap(post: ParsedContent, sats: Int, note: String) async throws {
         do {
             zapEvent.send(.init(receiptId: UUID().uuidString, postId: post.post.id, amountSats: sats, message: note, createdAt: Date().timeIntervalSince1970, user: IdentityManager.instance.parsedUserSafe))
@@ -586,6 +542,11 @@ final class WalletManager {
                 addZap(universalID, amount: sats)
             }
             try await send(user: object.userToZap.data, sats: sats, note: note, zap: NostrObject.zapWallet(note, sats: sats, reference: object))
+        } catch {
+            if let universalID = object.reference?.universalID {
+                removeZap(universalID, amount: sats)
+            }
+            throw error
         }
     }
 }
@@ -618,7 +579,7 @@ extension WalletManager {
         )
         
         Task {
-            try await migrationHandler.invoke(userId: IdentityManager.instance.userHexPubkey, onProgress: { prog in
+            try await migrationHandler.invoke(userId: pubkey, onProgress: { prog in
                 let step: WalletMigrationStep = {
                     if let inProgress = prog as? MigrationProgress.InProgress {
                         return .inProgress(MigrationStepName(rawValue: inProgress.step.name)?.userFriendlyDescription ?? inProgress.step.name)

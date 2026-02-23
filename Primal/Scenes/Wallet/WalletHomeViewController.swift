@@ -102,6 +102,8 @@ final class WalletHomeViewController: UIViewController, Themeable {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
+        WalletManager.instance.pendingDepositsSyncer?.start()
+        
         heavyImpact.prepare()
         
         foregroundUpdate = NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)
@@ -112,6 +114,8 @@ final class WalletHomeViewController: UIViewController, Themeable {
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
+        
+        WalletManager.instance.pendingDepositsSyncer?.stop()
         
         foregroundUpdate = nil
     }

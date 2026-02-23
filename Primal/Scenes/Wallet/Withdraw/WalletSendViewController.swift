@@ -358,12 +358,7 @@ private extension WalletSendViewController {
                     } else if address.isEmail {
                         try await WalletManager.instance.sendLud16(address, sats: amount, note: note)
                     } else if address.lowercased().hasPrefix("lnurl") {
-                        try await WalletManager.instance.sendLNURL(
-                            lnurl: address,
-                            pubkey: user?.data.pubkey,
-                            sats: amount,
-                            note: messageInput.text ?? ""
-                        )
+                        try await WalletManager.instance.sendLNURL(lnurl: address, sats: amount, note: messageInput.text ?? "")
                     } else {
                         if invoice?.lninvoice.amount_msat ?? 0 == 0 {
                             try await WalletManager.instance.sendLNInvoice(address, satsOverride: amount, messageOverride: messageInput.text)
