@@ -45,15 +45,15 @@ final class EditProfileViewController: UIViewController, Themeable {
         let nip05: String = nip05Input.text ?? profile.nip05
         
         return NostrProfile(
-            name: name,
-            display_name: displayName,
-            about: about,
-            picture: avatar,
-            banner: banner,
-            website: website,
-            lud06: profile.lud06,
-            lud16: lud16,
-            nip05: nip05
+            name: name.trimmingCharacters(in: .whitespacesAndNewlines),
+            display_name: displayName.trimmingCharacters(in: .whitespacesAndNewlines),
+            about: about.trimmingCharacters(in: .whitespacesAndNewlines),
+            picture: avatar.trimmingCharacters(in: .whitespacesAndNewlines),
+            banner: banner.trimmingCharacters(in: .whitespacesAndNewlines),
+            website: website.trimmingCharacters(in: .whitespacesAndNewlines),
+            lud06: profile.lud06.trimmingCharacters(in: .whitespacesAndNewlines),
+            lud16: lud16.trimmingCharacters(in: .whitespacesAndNewlines),
+            nip05: nip05.trimmingCharacters(in: .whitespacesAndNewlines)
         )
     }
     
