@@ -29,8 +29,9 @@ class AdvancedEmbedPostViewController: UIViewController {
     let imageButton = UIButton()
     let cameraButton = UIButton()
     let atButton = UIButton()
+    let gifButton = UIButton()
     let clearButton = UIButton(configuration: .capsuleBackground3(text: "Clear")).constrainToSize(width: 80, height: 28)
-    lazy var bottomStack = UIStackView(arrangedSubviews: [imageButton, cameraButton, atButton, UIView(), clearButton])
+    lazy var bottomStack = UIStackView(arrangedSubviews: [imageButton, gifButton, cameraButton, atButton, UIView(), clearButton])
     
     lazy var postButton = SmallPostButton(title: postButtonText)
     
@@ -131,8 +132,9 @@ private extension AdvancedEmbedPostViewController {
         imageButton.setImage(UIImage(named: "ImageIcon"), for: .normal)
         cameraButton.setImage(UIImage(named: "CameraIcon"), for: .normal)
         atButton.setImage(UIImage(named: "AtIcon"), for: .normal)
+        gifButton.setImage(.gifButton, for: .normal)
         
-        [imageButton, cameraButton, atButton].forEach {
+        [imageButton, gifButton, cameraButton, atButton].forEach {
             $0.tintColor = .foreground
             $0.constrainToSize(48)
         }
@@ -179,6 +181,9 @@ private extension AdvancedEmbedPostViewController {
         atButton.addTarget(manager, action: #selector(PostingTextViewManager.atButtonPressed), for: .touchUpInside)
         imageButton.addTarget(self, action: #selector(galleryButtonPressed), for: .touchUpInside)
         cameraButton.addTarget(self, action: #selector(cameraButtonPressed), for: .touchUpInside)
+        gifButton.addAction(.init(handler: { [weak self] _ in
+            self?.present(KlipyGifController(), animated: true)
+        }), for: .touchUpInside)
         
         cancel.addAction(.init(handler: { [weak self] _ in
             guard let self else { return }

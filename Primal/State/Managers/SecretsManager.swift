@@ -28,4 +28,11 @@ class SecretsManager {
         }
         return key
     }
+
+    var klipyApiKey: String {
+        guard let key = secrets["KlipyApiKey"] as? String else {
+            fatalError("Missing KlipyApiKey in secrets.plist")
+        }
+        return key
+    }
 }

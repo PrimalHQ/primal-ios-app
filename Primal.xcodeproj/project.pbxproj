@@ -637,6 +637,8 @@
 		B9DF0CB22C25AD78009ADC7B /* LargeZapGalleryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DF0CB12C25AD78009ADC7B /* LargeZapGalleryView.swift */; };
 		B9DF0CB52C25AE0F009ADC7B /* LargeZapPillViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DF0CB42C25AE0F009ADC7B /* LargeZapPillViews.swift */; };
 		B9DF0CB82C25EF2F009ADC7B /* LongFormZapsPostCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DF0CB72C25EF2F009ADC7B /* LongFormZapsPostCell.swift */; };
+		B9DF8EB02F4C61F600A3FA21 /* KlipyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DF8EAF2F4C61F600A3FA21 /* KlipyManager.swift */; };
+		B9DF8EB32F4C64D700A3FA21 /* KlipyGifController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DF8EB22F4C64C900A3FA21 /* KlipyGifController.swift */; };
 		B9DFA0AD2D7EFBC9002C6F34 /* primalShare.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = B9DFA0A32D7EFBC9002C6F34 /* primalShare.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		B9E0BE422BCD621B00FFF2BC /* LightningInvoiceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E0BE412BCD621B00FFF2BC /* LightningInvoiceView.swift */; };
 		B9E0BE442BCD76B500FFF2BC /* ChatInvoiceCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E0BE432BCD76B500FFF2BC /* ChatInvoiceCell.swift */; };
@@ -1450,6 +1452,8 @@
 		B9DF0CB12C25AD78009ADC7B /* LargeZapGalleryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LargeZapGalleryView.swift; sourceTree = "<group>"; };
 		B9DF0CB42C25AE0F009ADC7B /* LargeZapPillViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LargeZapPillViews.swift; sourceTree = "<group>"; };
 		B9DF0CB72C25EF2F009ADC7B /* LongFormZapsPostCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LongFormZapsPostCell.swift; sourceTree = "<group>"; };
+		B9DF8EAF2F4C61F600A3FA21 /* KlipyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KlipyManager.swift; sourceTree = "<group>"; };
+		B9DF8EB22F4C64C900A3FA21 /* KlipyGifController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KlipyGifController.swift; sourceTree = "<group>"; };
 		B9DFA0A32D7EFBC9002C6F34 /* primalShare.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = primalShare.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		B9E0BE412BCD621B00FFF2BC /* LightningInvoiceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LightningInvoiceView.swift; sourceTree = "<group>"; };
 		B9E0BE432BCD76B500FFF2BC /* ChatInvoiceCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatInvoiceCell.swift; sourceTree = "<group>"; };
@@ -2140,12 +2144,10 @@
 		9E5BD93A2A1E310A008DFFBE /* Posting */ = {
 			isa = PBXGroup;
 			children = (
+				B9DF8EB12F4C64BA00A3FA21 /* Views */,
+				B9DF8EB22F4C64C900A3FA21 /* KlipyGifController.swift */,
 				9E5BD93B2A1E3133008DFFBE /* NewPostViewController.swift */,
 				B98DD8B92C502DA300E8369A /* AdvancedEmbedPostViewController.swift */,
-				9E8834CB2A37A5EB005DB548 /* UserInfoTableCell.swift */,
-				9E83DF802A6ED99500F2C379 /* PostingImageView.swift */,
-				B9CE4DD52B7F675F0060A1B8 /* CircularProgressBar.swift */,
-				B98DD8BB2C50333200E8369A /* CompactArticleView.swift */,
 			);
 			path = Posting;
 			sourceTree = "<group>";
@@ -2555,6 +2557,7 @@
 				B9009B6B2B1F64B9002B0613 /* AnimatedImageCache.swift */,
 				B91EF0E12CECD20700299ECF /* PremiumCustomizationManager.swift */,
 				B9FAC6412D2BEE8400B57EF6 /* BlossomServerManager.swift */,
+				B9DF8EAF2F4C61F600A3FA21 /* KlipyManager.swift */,
 				B9FAC6472D31A95800B57EF6 /* LinkPreviewManager.swift */,
 			);
 			path = SmallManagers;
@@ -3468,6 +3471,17 @@
 			path = EmbeddedControllers;
 			sourceTree = "<group>";
 		};
+		B9DF8EB12F4C64BA00A3FA21 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				9E8834CB2A37A5EB005DB548 /* UserInfoTableCell.swift */,
+				9E83DF802A6ED99500F2C379 /* PostingImageView.swift */,
+				B9CE4DD52B7F675F0060A1B8 /* CircularProgressBar.swift */,
+				B98DD8BB2C50333200E8369A /* CompactArticleView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
 		B9E0E6242EEAC84A00F48B2A /* Views */ = {
 			isa = PBXGroup;
 			children = (
@@ -4092,6 +4106,7 @@
 				B9D331FF2EE862E30023D541 /* SettingsEditConnectionName.swift in Sources */,
 				B9D331F92EE85F300023D541 /* SettingsConnectedAppPermissionsController.swift in Sources */,
 				B981E0A02D6F6EF3002B9729 /* DoubleImageGalleryCell.swift in Sources */,
+				B9DF8EB32F4C64D700A3FA21 /* KlipyGifController.swift in Sources */,
 				B91E57162CD528A600C14809 /* UITableView+Extra.swift in Sources */,
 				B99E7BD32B238A7F00756F40 /* ImageGalleryController.swift in Sources */,
 				B91EF0E22CECD20700299ECF /* PremiumCustomizationManager.swift in Sources */,
@@ -4621,6 +4636,7 @@
 				B9CC1AEE2DF767020020BFC2 /* UserListViewController.swift in Sources */,
 				C1AF0260998E17001EF1988C /* MuteManager.swift in Sources */,
 				B9D331FD2EE860E10023D541 /* RemoteSignerConnectionInfoCell.swift in Sources */,
+				B9DF8EB02F4C61F600A3FA21 /* KlipyManager.swift in Sources */,
 				B928F6642B51D52B00B2273E /* ViewAnimations.swift in Sources */,
 				B900328A2BD266FF00ADD2E5 /* NoteZapsViewController.swift in Sources */,
 				B9FAC6522D3A98EF00B57EF6 /* ThreadElementWebkitLinkPreviewCell.swift in Sources */,
