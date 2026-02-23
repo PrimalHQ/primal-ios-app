@@ -267,18 +267,28 @@ final class WalletManager {
             }
             .store(in: &updateCancellables)
         
+        
+        let syncers: [WalletDataSyncer] = [
+            // TODO: Start/stop when entering/exiting wallet screen
+            SyncerFactory.shared.createPendingDepositsSyncer(userId: pubkey, walletAccountRepository: walletAccountRepo, sparkWalletManager: sparkWalletManager),
+            
+            // TODO: start/stop on user change
+            SyncerFactory.shared.createActiveWalletBalanceSyncer(userId: pubkey, walletRepository: walletRepo, walletAccountRepository: walletAccountRepo)
+        ]
+        
+        syncers.forEach { $0.start() }
+        
         Task {
             let wallet = try await walletAccountRepo.getActiveWallet(userId: pubkey)
             guard wallet == nil else {
                 if wallet is Wallet.Spark {
-                    let newResult = try await EnsureSparkWalletExistsUseCase(sparkWalletManager: sparkWalletManager, sparkWalletAccountRepository: sparkWalletAccountRepository, walletAccountRepository: walletAccountRepo, seedPhraseGenerator: RecoveryPhraseGenerator())
+                    _ = try await EnsureSparkWalletExistsUseCase(sparkWalletManager: sparkWalletManager, sparkWalletAccountRepository: sparkWalletAccountRepository, walletAccountRepository: walletAccountRepo, seedPhraseGenerator: RecoveryPhraseGenerator())
                         .invoke(userId: pubkey, register: false)
                 }
                 return
             }
             
-            
-            let result = try await EnsurePrimalWalletExistsUseCase(primalWalletAccountRepository: primalWalletRepo, walletAccountRepository: walletAccountRepo)
+            _ = try await EnsurePrimalWalletExistsUseCase(primalWalletAccountRepository: primalWalletRepo, walletAccountRepository: walletAccountRepo)
                 .invoke(userId: pubkey, setAsActive: true).getOrNull()
             
             let newWallet = try await walletAccountRepo.getActiveWallet(userId: pubkey)
@@ -387,6 +397,8 @@ final class WalletManager {
                 
                 parsedTransactions = (parsedTransactions + items).unique()
                 
+                snapshot.access(index: Int32(parsedTransactions.count - 1))
+                
                 await asyncFunctionThatWaitsForNewPageEvent()
             }
         }
@@ -482,20 +494,34 @@ final class WalletManager {
         let res = try await zapper?.zap(walletId: walletID, data: data)
         
         if let error = res as? ZapResult.Failure {
-            print(error.description())
+            throw WalletError.serverError(error.error.description)
         }
     }
     
     func sendLNInvoice(_ lninvoice: String, satsOverride: Int?, messageOverride: String?) async throws {
         guard let walletID else { throw WalletError.noWallet }
         let res = try await walletRepo.pay(walletId: walletID, request: .LightningLnInvoice(amountSats: String(satsOverride ?? 0), noteRecipient: messageOverride, noteSelf: messageOverride, idempotencyKey: UUID().uuidString, lnInvoice: lninvoice))
-        print(res)
+        
+        if let error = res.exceptionOrNull()?.description() {
+            throw WalletError.serverError(error)
+        }
+        
+        if res.getOrNull() == nil {
+            throw WalletError.serverError("Unable to pay invoice")
+        }
     }
     
     func sendLNURL(lnurl: String, pubkey: String?, sats: Int, note: String) async throws {
         guard let walletID else { throw WalletError.noWallet }
         let res = try await walletRepo.pay(walletId: walletID, request: .LightningLnUrl(amountSats: String(sats), noteRecipient: note, noteSelf: note, idempotencyKey: UUID().uuidString, lnUrl: lnurl, lud16: nil))
-        print(res)
+        
+        if let error = res.exceptionOrNull()?.description() {
+            throw WalletError.serverError(error)
+        }
+        
+        if res.getOrNull() == nil {
+            throw WalletError.serverError("Unable to pay invoice")
+        }
     }
     
     func sendLud16(_ lud: String, sats: Int, note: String, pubkey: String? = nil, zap: NostrObject? = nil) async throws {
@@ -503,7 +529,14 @@ final class WalletManager {
         guard let decoded = lud.lud16ToDecodedLNURL else { throw WalletError.noLud }
         
         let res = try await walletRepo.pay(walletId: walletID, request: .LightningLnUrl(amountSats: String(sats), noteRecipient: note, noteSelf: note, idempotencyKey: UUID().uuidString, lnUrl: decoded, lud16: lud))
-        print(res)
+        
+        if let error = res.exceptionOrNull()?.description() {
+            throw WalletError.serverError(error)
+        }
+        
+        if res.getOrNull() == nil {
+            throw WalletError.serverError("Unable to pay invoice")
+        }
     }
     
     func send(user: PrimalUser, sats: Int, note: String, zap: NostrObject? = nil) async throws {
@@ -525,7 +558,14 @@ final class WalletManager {
         guard let walletID else { throw WalletError.noWallet }
 
         let res = try await walletRepo.pay(walletId: walletID, request: .BitcoinOnChain(amountSats: String(sats), noteRecipient: note, noteSelf: note, idempotencyKey: UUID().uuidString, onChainAddress: btcAddress, onChainTierId: tier))
-        print(res)
+        
+        if let error = res.exceptionOrNull()?.description() {
+            throw WalletError.serverError(error)
+        }
+        
+        if res.getOrNull() == nil {
+            throw WalletError.serverError("Unable to pay invoice")
+        }
     }
     
     func zap(post: ParsedContent, sats: Int, note: String) async throws {
@@ -551,8 +591,6 @@ final class WalletManager {
 }
 
 extension WalletManager {
-    
-    
     func restoreWalletFromSeed(_ phrase: String) {
         Task {
             try await RestoreSparkWalletUseCase(

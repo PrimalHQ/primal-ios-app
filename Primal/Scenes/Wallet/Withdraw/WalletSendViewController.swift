@@ -372,11 +372,6 @@ private extension WalletSendViewController {
                         }
                     }
                 }
-
-//                if startTime.timeIntervalSinceNow > -1 {
-//                    print("WAIT: \(startTime.timeIntervalSinceNow)")
-//                    try await Task.sleep(for: .seconds(1))
-//                }
                 
                 // Have to use this callback as sometimes the result would come too soon
                 spinnerVC.onAppearCallback = { [weak self] in
