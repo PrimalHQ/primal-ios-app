@@ -182,7 +182,11 @@ private extension AdvancedEmbedPostViewController {
         imageButton.addTarget(self, action: #selector(galleryButtonPressed), for: .touchUpInside)
         cameraButton.addTarget(self, action: #selector(cameraButtonPressed), for: .touchUpInside)
         gifButton.addAction(.init(handler: { [weak self] _ in
-            self?.present(KlipyGifController(), animated: true)
+            self?.present(KlipyGifController { [weak self] res in
+                guard let url = res.gifURL ?? res.mediumgifURL ?? res.tinygifURL else { return }
+                
+                self?.manager.processSelectedAsset(RemoteGifMediaPickerResult(url: url))
+            }, animated: true)
         }), for: .touchUpInside)
         
         cancel.addAction(.init(handler: { [weak self] _ in

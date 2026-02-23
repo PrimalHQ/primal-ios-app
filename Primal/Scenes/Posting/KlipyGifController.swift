@@ -17,6 +17,8 @@ class KlipyGifController: UIViewController, Themeable {
     private let manager = KlipyManager()
     private var cancellables = Set<AnyCancellable>()
     
+    @Published var searchText = ""
+    
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     init(gifSelectedCallback: @escaping ((KlipyGIF) -> Void)) {
         self.gifSelectedCallback = gifSelectedCallback
@@ -283,7 +285,7 @@ extension KlipyGifController: UICollectionViewDataSource, UICollectionViewDelega
         if collectionView == categoryCollectionView {
             let text = KlipyManager.categories[indexPath.item] as NSString
             let textWidth = text.size(withAttributes: [.font: UIFont.appFont(withSize: 15, weight: .semibold)]).width
-            return CGSize(width: textWidth + 28, height: 32)
+            return CGSize(width: textWidth + 24, height: 32)
         }
 
         let spacing: CGFloat = 2 * 2
@@ -302,9 +304,9 @@ final class KlipyCategoryCell: UICollectionViewCell, Themeable {
         super.init(frame: frame)
 
         contentView.addSubview(label)
-        label.centerToSuperview().pinToSuperview(edges: .horizontal, padding: 14)
+        label.centerToSuperview().pinToSuperview(edges: .horizontal, padding: 12)
 
-        label.font = .appFont(withSize: 15, weight: .semibold)
+        label.font = .appFont(withSize: 16, weight: .regular)
         label.setContentCompressionResistancePriority(.required, for: .horizontal)
 
         layer.cornerRadius = 16

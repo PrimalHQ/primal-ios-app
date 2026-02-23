@@ -93,8 +93,9 @@ class OnboardingSession {
     
     func addPhoto(controller: UIViewController) {
         ImagePickerManager(controller) { [weak self] result in
-            guard let self = self, let (image, _) = result.image else { return }
-            self.image = image
+            guard let self = self, let imageRes = result as? ImageMediaPickerResult else { return }
+
+            self.image = imageRes.image
             self.isUploadingAvatar = true
             
             UploadAssetRequest(asset: result).publisher().receive(on: DispatchQueue.main).sink(receiveCompletion: { [weak self] in
@@ -115,8 +116,8 @@ class OnboardingSession {
     
     func addBanner(controller: UIViewController) {
         ImagePickerManager(controller) { [weak self] result in
-            guard let self = self, let (image, _) = result.image else { return }
-            self.bannerImage = image
+            guard let self = self, let imageRes = result as? ImageMediaPickerResult else { return }
+            self.bannerImage = imageRes.image
             self.isUploadingBanner = true
             
             UploadAssetRequest(asset: result).publisher().receive(on: DispatchQueue.main).sink(receiveCompletion: { [weak self] in

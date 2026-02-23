@@ -401,67 +401,12 @@ final class PostingTextViewManager: TextViewManager, MetadataCoding {
         for media in media {
             guard let resource = media.resource, let uploadedUrl = media.state.url else { continue }
 
-            switch resource {
-            case let .image((image, type)):
-                let tagString = {
-                    switch type {
-                    case .jpeg:
-                        return "image/jpeg"
-                    case .png:
-                        return "image/png"
-                    case .gif:
-                        return "image/gif"
-                    }
-                }
-                mediaTags.append([
-                    "imeta",
-                    "url \(uploadedUrl)",
-                    "m \(type)",
-                    "dim \(image.size.width)x\(image.size.height)",
-                ])
-            case .video(let video):
-                var info = [
-                    "imeta",
-                    "url \(uploadedUrl)"
-                ]
-                
-                if let mimeType = mimeType(for: video.url) {
-                    info.append("m \(mimeType)")
-                }
-
-                if let dimensions = try? await getVideoDimensions(from: video.url) {
-                    info.append("dim \(dimensions.width)x\(dimensions.height)")
-                }
-                
-                mediaTags.append(info)
-            }
+            mediaTags.append(await resource.metaTagsWithURL(uploadURL: uploadedUrl))
         }
         
         allTags += mediaTags
         
         return NostrObject.create(content: postingText, kind: 1, tags: allTags)
-    }
-    
-    func mimeType(for url: URL) -> String? {
-        guard let utType = UTType(filenameExtension: url.pathExtension) else { return nil }
-        return utType.preferredMIMEType
-    }
-
-    func getVideoDimensions(from url: URL) async throws -> CGSize {
-        let asset = AVURLAsset(url: url)
-        
-        // Load the tracks asynchronously
-        let tracks = try await asset.loadTracks(withMediaType: .video)
-        guard let track = tracks.first else {
-            throw NSError(domain: "VideoError", code: -1, userInfo: [NSLocalizedDescriptionKey: "No video track found"])
-        }
-        
-        // Load the natural size and preferred transform
-        let (naturalSize, preferredTransform) = try await track.load(.naturalSize, .preferredTransform)
-        
-        // Apply transform to handle rotated videos (e.g., portrait recordings)
-        let transformedSize = naturalSize.applying(preferredTransform)
-        return CGSize(width: abs(transformedSize.width), height: abs(transformedSize.height))
     }
 }
 

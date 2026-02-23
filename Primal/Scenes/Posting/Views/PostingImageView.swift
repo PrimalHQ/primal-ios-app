@@ -71,11 +71,16 @@ extension PostingImageCollectionView: UICollectionViewDataSource {
         let r = imageResources[indexPath.item]
         
         if let cell = cell as? PostingImageCell {
-            if let thumnail = r.resource?.animatedImage {
-                cell.imageView.animatedImage = thumnail
-            } else if let image = r.resource?.thumbnailImage {
-                cell.imageView.image = image
-                cell.playerView.isHidden = true
+            if let source = r.resource?.thumbnailSource {
+                switch source {
+                case .animated(let animImage):
+                    cell.imageView.animatedImage = animImage
+                case .thumbnail(let image):
+                    cell.imageView.image = image
+                    cell.playerView.isHidden = true
+                case .remote(let url):
+                    cell.imageView.kf.setImage(with: url)
+                }
             } else {
                 if case .uploaded(let url) = r.state {
                     if url.isVideoURL {

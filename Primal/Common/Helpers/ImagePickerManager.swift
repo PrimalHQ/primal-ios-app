@@ -12,40 +12,135 @@ import PhotosUI
 import FLAnimatedImage
 import Combine
 
-struct GalleryVideo {
-    var thumbnail: UIImage
-    var url: URL
-}
-
 enum ImageType {
     case png
     case gif(Data)
     case jpeg
 }
 
-typealias GalleryImage = (UIImage, ImageType)
+enum MediaPickerResultThumbnailSource {
+    case animated(FLAnimatedImage)
+    case thumbnail(UIImage)
+    case remote(URL)
+}
 
-enum ImagePickerResult {
-    case image(GalleryImage)
-    case video(GalleryVideo)
+protocol ImagePickerResult {  //TODO: Rename MediaPickerResult
+    var thumbnailSource: MediaPickerResultThumbnailSource? { get }
+    func metaTagsWithURL(uploadURL: String) async -> [String]
+    func uploadURL() async throws -> URL
+}
+
+extension ImagePickerResult {
+    var thumbnailImage: UIImage? {
+        guard case .thumbnail(let image) = thumbnailSource else { return nil }
+        return image
+    }
+}
+
+class ImageMediaPickerResult: ImagePickerResult {
+    let image: UIImage
+    let type: ImageType
     
-    var image: GalleryImage? {
-        switch self {
-        case .image(let image): return image
-        case .video:            return nil
-        }
+    init(image: UIImage, type: ImageType) {
+        self.image = image
+        self.type = type
     }
     
-    var thumbnailImage: UIImage {
-        switch self {
-        case .image(let image): return image.0
-        case .video(let video): return video.thumbnail
+    func metaTagsWithURL(uploadURL: String) async -> [String] {
+        let tagString = {
+            switch self.type {
+            case .jpeg:
+                return "image/jpeg"
+            case .png:
+                return "image/png"
+            case .gif:
+                return "image/gif"
+            }
         }
+        return [
+            "imeta",
+            "url \(uploadURL)",
+            "m \(type)",
+            "dim \(image.size.width)x\(image.size.height)",
+        ]
     }
     
-    var animatedImage: FLAnimatedImage? {
-        guard let image, case .gif(let data) = image.1 else { return nil }
-        return FLAnimatedImage(gifData: data)
+    var thumbnailSource: MediaPickerResultThumbnailSource? {
+        switch type {
+        case .gif(let data):
+            return .animated(FLAnimatedImage(gifData: data))
+        default:
+            return .thumbnail(image)
+        }
+    }
+    func uploadURL() async throws -> URL {
+        let tmpURL = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        switch type {
+        case .png:
+            guard let data = image.pngData() else { throw UploadError.unableToProcess }
+            
+            try data.write(to: tmpURL)
+            return tmpURL
+        case .jpeg:
+            guard let data = image.jpegData(compressionQuality: 0.9) else { throw UploadError.unableToProcess }
+            try data.write(to: tmpURL)
+            return tmpURL
+        case .gif(let data):
+            try data.write(to: tmpURL)
+            return tmpURL
+        }
+    }
+}
+
+class VideoMediaPickerResult: ImagePickerResult {
+    let thumbnail: UIImage
+    let url: URL
+    
+    init(thumbnail: UIImage, url: URL) {
+        self.thumbnail = thumbnail
+        self.url = url
+    }
+    
+    func uploadURL() async throws -> URL { url }
+    var thumbnailSource: MediaPickerResultThumbnailSource? { .thumbnail(thumbnail) }
+    
+    func metaTagsWithURL(uploadURL: String) async -> [String] {
+        var info = [
+            "imeta",
+            "url \(uploadURL)"
+        ]
+        
+        if let mimeType = mimeType(for: url) {
+            info.append("m \(mimeType)")
+        }
+
+        if let dimensions = try? await getVideoDimensions(from: url) {
+            info.append("dim \(dimensions.width)x\(dimensions.height)")
+        }
+        
+        return info
+    }
+    
+    func mimeType(for url: URL) -> String? {
+        guard let utType = UTType(filenameExtension: url.pathExtension) else { return nil }
+        return utType.preferredMIMEType
+    }
+
+    func getVideoDimensions(from url: URL) async throws -> CGSize {
+        let asset = AVURLAsset(url: url)
+        
+        // Load the tracks asynchronously
+        let tracks = try await asset.loadTracks(withMediaType: .video)
+        guard let track = tracks.first else {
+            throw NSError(domain: "VideoError", code: -1, userInfo: [NSLocalizedDescriptionKey: "No video track found"])
+        }
+        
+        // Load the natural size and preferred transform
+        let (naturalSize, preferredTransform) = try await track.load(.naturalSize, .preferredTransform)
+        
+        // Apply transform to handle rotated videos (e.g., portrait recordings)
+        let transformedSize = naturalSize.applying(preferredTransform)
+        return CGSize(width: abs(transformedSize.width), height: abs(transformedSize.height))
     }
 }
 
@@ -151,7 +246,7 @@ extension ImagePickerManager: UIImagePickerControllerDelegate, UINavigationContr
         // Handle camera capture; for simplicity we assume image capture.
         if let image = info[.originalImage] as? UIImage {
             // When captured from camera, treat as JPEG.
-            pickImageCallback(.image((image.updateImageOrientationUp(), .jpeg)))
+            pickImageCallback(ImageMediaPickerResult(image: image.updateImageOrientationUp(), type: .jpeg))
         }
         
         // (Additional video capture from camera could be added similarly.)
@@ -200,7 +295,7 @@ extension ImagePickerManager: PHPickerViewControllerDelegate {
                     DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(500)) {
                         progressAlert.dismiss(animated: true)
                     }
-                    self?.pickImageCallback(.video(.init(thumbnail: thumbnail, url: url)))
+                    self?.pickImageCallback(VideoMediaPickerResult(thumbnail: thumbnail, url: url))
                     self?.strongSelf = nil
                 }
             }
@@ -251,7 +346,7 @@ extension ImagePickerManager: PHPickerViewControllerDelegate {
                     // Load a UIImage for display purposes.
                     if let image = UIImage(data: gifData) {
                         DispatchQueue.main.async {
-                            self.pickImageCallback(.image((image, .gif(gifData))))
+                            self.pickImageCallback(ImageMediaPickerResult(image: image, type: .gif(gifData)))
                         }
                     }
                 } catch {
@@ -276,9 +371,9 @@ extension ImagePickerManager: PHPickerViewControllerDelegate {
                     if let image = UIImage(data: imageData) {
                         DispatchQueue.main.async {
                             if ext == "png" {
-                                self.pickImageCallback(.image((image, .png)))
+                                self.pickImageCallback(ImageMediaPickerResult(image: image, type: .png))
                             } else {
-                                self.pickImageCallback(.image((image.updateImageOrientationUp(), .jpeg)))
+                                self.pickImageCallback(ImageMediaPickerResult(image: image.updateImageOrientationUp(), type: .jpeg))
                             }
                         }
                     }

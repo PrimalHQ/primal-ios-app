@@ -20,6 +20,42 @@ extension UIButton.Configuration {
     }
 }
 
+class RemoteGifMediaPickerResult: ImagePickerResult {
+    let url: URL
+    
+    private var imageSize: CGSize?
+    
+    init(url: URL) {
+        self.url = url
+    }
+    
+    var thumbnailSource: MediaPickerResultThumbnailSource? { .remote(url) }
+    
+    func uploadURL() async throws -> URL {
+        let (data, _) = try await URLSession.shared.data(from: url)
+        let tempDir = FileManager.default.temporaryDirectory
+        let fileName = UUID().uuidString + ".gif"
+        let fileURL = tempDir.appendingPathComponent(fileName)
+        try data.write(to: fileURL)
+            
+        imageSize = UIImage(data: data)?.size
+            
+        return fileURL
+    }
+    
+    func metaTagsWithURL(uploadURL: String) async -> [String] {
+        var meta = [
+            "imeta",
+            "url \(uploadURL)",
+            "m image/gif"
+        ]
+        if let imageSize {
+            meta.append("dim \(imageSize.width)x\(imageSize.height)")
+        }
+        return meta
+    }
+}
+
 class NewPostViewController: UIViewController {
     let textView = UITextView()
     let imageView = UserImageView(height: 52)
@@ -179,10 +215,10 @@ private extension NewPostViewController {
         postButton.addTarget(self, action: #selector(postButtonPressed), for: .touchUpInside)
         atButton.addTarget(manager, action: #selector(PostingTextViewManager.atButtonPressed), for: .touchUpInside)
         gifButton.addAction(.init(handler: { [weak self] _ in
-            self?.present(KlipyGifController{ [weak self] res in
+            self?.present(KlipyGifController { [weak self] res in
                 guard let url = res.gifURL ?? res.mediumgifURL ?? res.tinygifURL else { return }
                 
-                self?.manager.processSelectedAsset(.image(()))
+                self?.manager.processSelectedAsset(RemoteGifMediaPickerResult(url: url))
             }, animated: true)
         }), for: .touchUpInside)
         imageButton.addTarget(self, action: #selector(galleryButtonPressed), for: .touchUpInside)
@@ -257,3 +293,4 @@ extension NewPostViewController: UIAdaptivePresentationControllerDelegate {
         false
     }
 }
+

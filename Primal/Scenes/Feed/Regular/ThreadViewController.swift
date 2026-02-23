@@ -635,11 +635,21 @@ private extension ThreadViewController {
         postButton.constrainToSize(width: 80, height: 28)
         postButton.addTarget(self, action: #selector(postButtonPressed), for: .touchUpInside)
         
+        let gifButton = ThemeableButton().constrainToSize(48).setTheme { $0.tintColor = .foreground }
+        gifButton.setImage(.gifButton, for: .normal)
+        gifButton.addAction(.init(handler: { [weak self] _ in
+            self?.present(KlipyGifController(gifSelectedCallback: { res in
+                guard let url = res.gifURL ?? res.mediumgifURL ?? res.tinygifURL else { return }
+                
+                self?.inputManager.processSelectedAsset(RemoteGifMediaPickerResult(url: url))
+            }), animated: true)
+        }), for: .touchUpInside)
+        
         let atButton = ThemeableButton().constrainToSize(48).setTheme { $0.tintColor = .foreground }
         atButton.setImage(UIImage(named: "AtIcon"), for: .normal)
         atButton.addTarget(inputManager, action: #selector(PostingTextViewManager.atButtonPressed), for: .touchUpInside)
         
-        [imageButton, cameraButton, atButton, UIView(), postButton].forEach {
+        [imageButton, gifButton, cameraButton, atButton, UIView(), postButton].forEach {
             buttonStack.addArrangedSubview($0)
         }
         
