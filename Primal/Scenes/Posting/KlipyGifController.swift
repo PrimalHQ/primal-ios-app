@@ -121,7 +121,7 @@ private extension KlipyGifController {
         searchField.addTarget(self, action: #selector(searchTextChanged), for: .editingChanged)
 
         cancelButton.setTitle("Cancel", for: .normal)
-        cancelButton.titleLabel?.font = .appFont(withSize: 16, weight: .medium)
+        cancelButton.titleLabel?.font = .appFont(withSize: 14, weight: .regular)
         cancelButton.addTarget(self, action: #selector(cancelTapped), for: .touchUpInside)
         cancelButton.setContentHuggingPriority(.required, for: .horizontal)
 
