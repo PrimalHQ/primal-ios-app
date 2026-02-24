@@ -25,7 +25,7 @@ class UpgradeWalletFailedController: UIViewController {
         super.viewDidLoad()
         
         title = "Wallet Upgrade"
-        navigationItem.hidesBackButton = true
+        navigationItem.leftBarButtonItem = customBackButtonWithDismiss
         view.backgroundColor = .background
         
         spinner.tintColor = .foreground4
@@ -52,7 +52,14 @@ class UpgradeWalletFailedController: UIViewController {
             self?.navigationController?.setViewControllers([UpgradeWalletProcessController()], animated: true)
         }), for: .touchUpInside)
         
-        let firstString = "But no worries, you can safely try again.\n\nIf this issue persists please feel free to contact support at "
+        
+        let firstString = """
+But no worries, your old wallet is still fully functional and you can safely try again. 
+
+If you have a larger wallet balance, you can try sending it to a different wallet first.
+
+If this issue persists please feel free to contact support at 
+"""
         let descText = NSMutableAttributedString(string: firstString, attributes: [
             .font: UIFont.appFont(withSize: 16, weight: .regular),
             .foregroundColor: UIColor.foreground3

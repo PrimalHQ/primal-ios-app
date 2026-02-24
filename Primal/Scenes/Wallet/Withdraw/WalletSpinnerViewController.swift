@@ -67,6 +67,9 @@ final class WalletSpinnerViewController: UIViewController {
         
         navigationController?.setNavigationBarHidden(true, animated: animated)
         navigationController?.interactivePopGestureRecognizer?.delegate = self
+        if #available(iOS 26.0, *) {
+            navigationController?.interactiveContentPopGestureRecognizer?.delegate = self
+        }
     }
     
     private var didAppear = false
@@ -89,6 +92,9 @@ final class WalletSpinnerViewController: UIViewController {
         super.viewDidDisappear(animated)
         
         navigationController?.interactivePopGestureRecognizer?.delegate = navigationController as? MainNavigationController
+        if #available(iOS 26.0, *) {
+            navigationController?.interactiveContentPopGestureRecognizer?.delegate = navigationController as? MainNavigationController
+        }
         navigationController?.viewControllers.remove(object: self)
         
         spinner.player?.pause()

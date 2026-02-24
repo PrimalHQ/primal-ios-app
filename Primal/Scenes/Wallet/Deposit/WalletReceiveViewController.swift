@@ -32,6 +32,8 @@ final class WalletReceiveViewController: UIViewController, Themeable {
     private let lightningImage = UIImage(named: "qr-lightning")
     private let bitcoinImage = UIImage(named: "qr-btc")
     
+    var monitorTask: Task<(), any Error>?
+    
     lazy var customLightningAddressButton = UIButton(
         configuration: .accent("get a custom lightning address", font: .appFont(withSize: 16, weight: .regular)),
         primaryAction: .init(handler: { [weak self]_ in
@@ -80,12 +82,19 @@ final class WalletReceiveViewController: UIViewController, Themeable {
         
         if isFirstTime {
             isFirstTime = false
+            startMonitoringInvoice()
         } else {
             requestInfo()
         }
         
         mainTabBarController?.setTabBarHidden(true, animated: animated)
         navigationController?.setNavigationBarHidden(false, animated: animated)
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+        stopMonitoringInvoice()
     }
     
     func updateTheme() {
@@ -104,6 +113,33 @@ extension WalletReceiveViewController: WalletReceiveDetailsControllerDelegate {
 }
 
 private extension WalletReceiveViewController {
+    func startMonitoringInvoice() {
+        let wallet = WalletManager.instance
+        wallet.pendingDepositsSyncer?.start()
+        
+        guard let invoice, let walletID = wallet.walletID else {
+            // todo: monitor regular transactions
+            return
+        }
+        
+        monitorTask?.cancel()
+        monitorTask = Task { @MainActor [weak self] in
+            let result = try await wallet.walletRepo.awaitInvoicePayment(walletId: walletID, invoice: invoice, timeout: .max)
+            
+            if result.isSuccess, let sats = result.getOrNull()?.description(), let self, self.navigationController?.topViewController == self {
+                navigationController?.pushViewController(WalletTransferSummaryController(.success(title: "\(sats) sats received", description: [])), animated: true)
+            } else {
+                print(result.exceptionOrNull())
+            }
+        }
+    }
+    
+    func stopMonitoringInvoice() {
+        WalletManager.instance.pendingDepositsSyncer?.stop()
+        monitorTask?.cancel()
+        monitorTask = nil
+    }
+    
     func requestInfo() {
         let network = activeButton == lightningButton ? WalletTransactionNetwork.lightning : .onchain
         
@@ -113,7 +149,10 @@ private extension WalletReceiveViewController {
         Task { @MainActor in
             invoice = nil
             onchainInvoice = nil
-            defer { updateInfo() }
+            defer {
+                updateInfo()
+                startMonitoringInvoice()
+            }
             
             if network == .lightning {
                 invoice = try await WalletManager.instance.createLightningInvoice(amountInBtc: btcString, comment: desc)

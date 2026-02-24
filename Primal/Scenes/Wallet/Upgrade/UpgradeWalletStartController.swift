@@ -20,15 +20,11 @@ class UpgradeWalletStartController: UIViewController {
         let satAmount = WalletManager.instance.balance.localized()
         
         let itemStack = UIStackView(axis: .vertical, spacing: 16, [
-            BulletPointStack(view: bulletLabel(textArray: [("The upgrade process should take less than a minute", false)])),
-            BulletPointStack(view: bulletLabel(textArray: [
-                ("We will transfer your wallet balance of ", false),
-                ("\(satAmount) sats", true),
-                (" to the new wallet", false),
-            ])),
-            BulletPointStack(view: bulletLabel(textArray: [("We will copy your entire transaction history to the new wallet", false)])),
-            BulletPointStack(view: bulletLabel(textArray: [("You will keep your existing lighting address ", false)])),
-            UILabel("Please keep Primal open\nuntil the upgrade process is done.", color: .foreground, font: .appFont(withSize: 16, weight: .regular), multiline: true),
+            BulletPointStack(view: bulletLabel(textArray: [("It will take less than a minute", false)])),
+            BulletPointStack(view: bulletLabel(textArray: [("We’ll transfer your wallet balance", false)])),
+            BulletPointStack(view: bulletLabel(textArray: [("We’ll copy your transaction history", false)])),
+            BulletPointStack(view: bulletLabel(textArray: [("You’ll keep your lighting address", false)])),
+            UILabel("Please keep Primal open\nuntil the upgrade process is done", color: .foreground, font: .appFont(withSize: 16, weight: .regular), multiline: true),
         ])
         
         let questionsLabel = NantesLabel()

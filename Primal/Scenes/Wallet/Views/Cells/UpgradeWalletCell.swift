@@ -53,7 +53,7 @@ final class UpgradeWalletCell: UITableViewCell, Themeable {
             .paragraphStyle: paragraphStyle,
             .underlineStyle: NSUnderlineStyle.single.rawValue
         ])
-        descText.append(.init(string: "This wallet will expire on March 31, 2026.\nPlease upgrade to continue using this wallet.", attributes: [
+        descText.append(.init(string: "This wallet will expire on April 30, 2026.\nPlease upgrade to continue using this wallet.", attributes: [
             .font: UIFont.appFont(withSize: 15, weight: .regular),
             .foregroundColor: UIColor.foreground5,
             .paragraphStyle: paragraphStyle

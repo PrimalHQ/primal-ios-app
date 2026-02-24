@@ -379,9 +379,9 @@ private extension WalletSendViewController {
                     DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
                         summary.view.isUserInteractionEnabled = true
                         self.navigationController?.viewControllers.removeAll(where: {
-                            $0 as? WalletSendAmountController != nil ||
-                            $0 as? WalletSendParentViewController != nil ||
-                            $0 as? WalletSendViewController != nil
+                            $0 is WalletSendAmountController ||
+                            $0 is WalletSendParentViewController ||
+                            $0 is WalletSendViewController
                         })
                     }
                 }

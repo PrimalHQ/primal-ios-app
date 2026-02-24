@@ -45,7 +45,7 @@ class MigrateWalletPopupController: UIViewController {
         let mainStack = UIStackView(axis: .vertical, [
             SpacerView(height: 2),
             userImage, SpacerView(height: 21),
-            UILabel("The New Primal Wallet is Here!", color: .foreground, font: .appFont(withSize: 20, weight: .bold), multiline: true),
+            UILabel("Upgrade Your Wallet!", color: .foreground, font: .appFont(withSize: 20, weight: .bold), multiline: true),
             SpacerView(height: 28),
             descLabel,
             SpacerView(height: 39),
@@ -58,7 +58,7 @@ class MigrateWalletPopupController: UIViewController {
         mainView.addSubview(mainStack)
         mainStack.pinToSuperview(edges: .horizontal, padding: 28).centerToSuperview(axis: .vertical)
         
-        IdentityManager.instance.$parsedUser.compactMap({ $0 }).first().sink { user in
+        IdentityManager.instance.$parsedUser.compactMap({ $0 }).sink { user in
             userImage.setUserImage(user)
         }
         .store(in: &cancellables)
@@ -80,7 +80,7 @@ class MigrateWalletPopupController: UIViewController {
         let text = NSMutableAttributedString(string:
 """
 Good news: Primal now features a new
-self-custodial wallet, which is a recommended upgrade for all users. 
+self-custodial wallet, which is a required upgrade for all users. 
 
 With one tap, we’ll move your funds and full transaction history to your new self-custodial wallet - so you fully control your bitcoin. 
 Questions?  Check out our  

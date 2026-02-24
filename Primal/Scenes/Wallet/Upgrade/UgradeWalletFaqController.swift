@@ -11,7 +11,7 @@ class UgradeWalletFaqController: UIViewController {
     let walletFAQs: [(question: String, answer: String)] = [
         (
             question: "Do I have to upgrade my wallet?",
-            answer: "Yes. Support for the old custodial wallet will be discontinued on March 31, 2026. All users need to upgrade prior to this date."
+            answer: "Yes. Support for the old custodial wallet will be discontinued on April 30, 2026. All users need to upgrade prior to this date."
         ),
         (
             question: "Does the new Primal wallet support both lightning and on-chain transactions?",
@@ -23,7 +23,7 @@ class UgradeWalletFaqController: UIViewController {
         ),
         (
             question: "Can I transfer my funds to a different wallet before I upgrade?",
-            answer: "Yes. The old custodial wallet remains fully functional until March 31, 2026. You can send your funds to any other bitcoin wallet prior to upgrading."
+            answer: "Yes. The old custodial wallet remains fully functional until April 30, 2026. You can send your funds to any other bitcoin wallet prior to upgrading."
         ),
         (
             question: "Will I be able to revert to the old custodial wallet after the upgrade?",
@@ -31,7 +31,7 @@ class UgradeWalletFaqController: UIViewController {
         ),
         (
             question: "What if I don't upgrade before support for the old wallet is discontinued?",
-            answer: "After March 31, 2026 the old custodial wallet will no longer be functional. If you don't upgrade and still have some funds in that wallet, you will be able to recover them by contacting us at support@primal.net."
+            answer: "After April 30, 2026 the old custodial wallet will no longer be functional. If you don't upgrade and still have some funds in that wallet, you will be able to recover them by contacting us at support@primal.net."
         ),
         (
             question: "Which technology is the new Primal wallet built on?",
@@ -40,6 +40,14 @@ class UgradeWalletFaqController: UIViewController {
         (
             question: "Are there any transaction fees that I need to pay to upgrade?",
             answer: "No. Primal will cover all transaction fees required to upgrade all our users to their new self-custodial wallets."
+        ),
+        (
+            question: "Does the new wallet support Nostr Wallet Connect?",
+            answer: "Yes. The new Primal wallet does support Nostr Wallet Connect, however it works a bit differently than the old one. Since the new wallet is self-custodial, the Primal mobile app needs to be running in order to sign NWC events. The NWC feature is best used in conjunction with the Primal remote signer."
+        ),
+        (
+            question: "I have existing NWC connections to the old Primal wallet. Will I have to re-create those with the new wallet? ",
+            answer: "Yes. Old NWC connections will stop working when the old wallet is deprecated on April 30, 2026."
         )
     ]
     
