@@ -20,8 +20,10 @@ class PollInputRowView: UIView {
         super.init(frame: .zero)
         
         valueStack.alignment = .center
+        
+        mainStack.isUserInteractionEnabled = false
         addSubview(mainStack)
-        mainStack.pinToSuperview(edges: .horizontal, padding: 4).centerToSuperview()
+        mainStack.pinToSuperview(edges: .horizontal, padding: 4).pinToSuperview(edges: .vertical)
         
         let border = SpacerView(height: 1, color: .foreground6)
         addSubview(border)

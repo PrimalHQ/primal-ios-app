@@ -642,6 +642,7 @@
 		B9DF8ED62F4E0E7A00A3FA21 /* WalletReceiveToResultAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DF8ED52F4E0E7A00A3FA21 /* WalletReceiveToResultAnimator.swift */; };
 		B9DF8ED82F4F2D1500A3FA21 /* PollInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DF8ED72F4F2D0C00A3FA21 /* PollInputView.swift */; };
 		B9DF8EDB2F4F3D3E00A3FA21 /* PollInputRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DF8EDA2F4F3D3E00A3FA21 /* PollInputRowView.swift */; };
+		B9DF8EDD2F4F54D900A3FA21 /* PollLengthRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DF8EDC2F4F54D900A3FA21 /* PollLengthRowView.swift */; };
 		B9DFA0AD2D7EFBC9002C6F34 /* primalShare.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = B9DFA0A32D7EFBC9002C6F34 /* primalShare.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		B9E0BE422BCD621B00FFF2BC /* LightningInvoiceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E0BE412BCD621B00FFF2BC /* LightningInvoiceView.swift */; };
 		B9E0BE442BCD76B500FFF2BC /* ChatInvoiceCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E0BE432BCD76B500FFF2BC /* ChatInvoiceCell.swift */; };
@@ -1460,6 +1461,7 @@
 		B9DF8ED52F4E0E7A00A3FA21 /* WalletReceiveToResultAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletReceiveToResultAnimator.swift; sourceTree = "<group>"; };
 		B9DF8ED72F4F2D0C00A3FA21 /* PollInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollInputView.swift; sourceTree = "<group>"; };
 		B9DF8EDA2F4F3D3E00A3FA21 /* PollInputRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollInputRowView.swift; sourceTree = "<group>"; };
+		B9DF8EDC2F4F54D900A3FA21 /* PollLengthRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollLengthRowView.swift; sourceTree = "<group>"; };
 		B9DFA0A32D7EFBC9002C6F34 /* primalShare.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = primalShare.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		B9E0BE412BCD621B00FFF2BC /* LightningInvoiceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LightningInvoiceView.swift; sourceTree = "<group>"; };
 		B9E0BE432BCD76B500FFF2BC /* ChatInvoiceCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatInvoiceCell.swift; sourceTree = "<group>"; };
@@ -3493,6 +3495,7 @@
 		B9DF8ED92F4F3D2800A3FA21 /* PollInputView */ = {
 			isa = PBXGroup;
 			children = (
+				B9DF8EDC2F4F54D900A3FA21 /* PollLengthRowView.swift */,
 				B9DF8EDA2F4F3D3E00A3FA21 /* PollInputRowView.swift */,
 				B9DF8ED72F4F2D0C00A3FA21 /* PollInputView.swift */,
 			);
@@ -4185,6 +4188,7 @@
 				9ED4160F2A4B7A8500892235 /* Notification.swift in Sources */,
 				B9C5A07F2F362B12007CB5D3 /* UpgradeWalletStartController.swift in Sources */,
 				B9C6D2322CA31B4E00B2EEBE /* ExploreTopicsViewController.swift in Sources */,
+				B9DF8EDD2F4F54D900A3FA21 /* PollLengthRowView.swift in Sources */,
 				B9318F692B62C1B50044B6AA /* WalletSendAmountSendAnimator.swift in Sources */,
 				B914CD6D2AA2487100CD0BD1 /* SettingsMutedUsersController.swift in Sources */,
 				B91EF0F52CF4D83E00299ECF /* OnboardingCheckInterestsController.swift in Sources */,

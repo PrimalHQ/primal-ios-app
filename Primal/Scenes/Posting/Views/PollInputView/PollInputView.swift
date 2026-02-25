@@ -13,10 +13,10 @@ class PollInputView: UIView {
     private let maxCharacters = 35
 
     private let choicesStack = UIStackView(axis: .vertical, spacing: 8, [])
-    private let addChoiceButton = UIButton()
+    private let addChoiceButton = UIButton(configuration: .accent("+ Add choice", font: .appFont(withSize: 16, weight: .regular))).constrainToSize(height: 42)
 
     private let pollTypeRow = PollInputRowView(title: "Poll type")
-    private let pollLengthRow = PollInputRowView(title: "Poll length")
+    private let pollLengthRow = PollLengthRowView()
     private let minZapRow = PollInputRowView(title: "Poll length")
     private let maxZapRow = PollInputRowView(title: "Poll length")
 
@@ -41,14 +41,6 @@ class PollInputView: UIView {
     }
 
     private func setup() {
-        // Add choice button
-        var addConfig = UIButton.Configuration.plain()
-        addConfig.attributedTitle = .init("+ Add choice", attributes: .init([
-            .font: UIFont.appFont(withSize: 16, weight: .regular),
-            .foregroundColor: UIColor.accent
-        ]))
-        addConfig.contentInsets = .init(top: 8, leading: 0, bottom: 8, trailing: 0)
-        addChoiceButton.configuration = addConfig
         addChoiceButton.contentHorizontalAlignment = .leading
         addChoiceButton.addTarget(self, action: #selector(addChoiceTapped), for: .touchUpInside)
 
@@ -132,7 +124,47 @@ class PollInputView: UIView {
         guard let pollOptions = manager.pollOptions else { return }
         
         pollTypeRow.valueLabel.text = pollOptions.type.name
-        pollLengthRow.valueLabel.text = 
+        pollLengthRow.valueLabel.text = timeStringForTime(pollOptions.length)
+        
+        switch pollOptions.type {
+        case .user:
+            minZapRow.isHidden = true
+            maxZapRow.isHidden = true
+        case .zap(let min, let max):
+            minZapRow.isHidden = false
+            maxZapRow.isHidden = false
+            
+            minZapRow.valueLabel.text = "\(min) sats"
+            maxZapRow.valueLabel.text = "\(max) sats"
+        }
+    }
+    
+    func timeStringForTime(_ time: (Int, Int, Int)) -> String {
+        let (days, hours, minutes) = time
+        
+        var string = ""
+        if days > 0 {
+            string += "\(days) day"
+            if days > 1 {
+                string += "s"
+            }
+        }
+        
+        if hours > 1 {
+            string += " \(hours) hour"
+            if hours > 1 {
+                string += "s"
+            }
+        }
+        
+        if minutes > 1 {
+            string += " \(minutes) minute"
+            if minutes > 1 {
+                string += "s"
+            }
+        }
+        
+        return string.isEmpty ? "Unlimited" : string
     }
 }
 

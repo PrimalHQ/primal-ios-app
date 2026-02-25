@@ -33,13 +33,9 @@ enum PollType {
     }
 }
 
-enum PollLength {
-    case 
-}
-
 struct PollData {
     var type: PollType = .user
-    var length: Double = 24 * 60 * 60
+    var length: (Int, Int, Int) = (1, 0, 0)  // Hours, minutes, seconds
     
     var options: [String] = []
 }
