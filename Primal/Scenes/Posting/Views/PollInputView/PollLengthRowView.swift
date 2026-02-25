@@ -15,23 +15,21 @@ class PollTextInputView: UIView {
     init(name: String, value: Int = 0) {
         super.init(frame: .zero)
 
-//        unitLabel.text = name
-//        unitLabel.isUserInteractionEnabled = false
-//        unitLabel.setContentHuggingPriority(.required, for: .horizontal)
-//
-//        textField.font = .appFont(withSize: 16, weight: .regular)
-//        textField.textColor = .foreground
-//        textField.keyboardType = .numberPad
-//        textField.text = "\(value)"
-//
-//        addSubview(textField)
-//        textField.pinToSuperview(edges: .vertical).pinToSuperview(edges: .horizontal, padding: 12)
-//        
-//        addSubview(unitLabel)
-//        unitLabel.pinToSuperview(edges: .trailing, padding: 12).centerToSuperview(axis: .vertical)
-//        
-//        textField.isUserInteractionEnabled = false
+        unitLabel.text = name
+        unitLabel.isUserInteractionEnabled = false
+        unitLabel.setContentHuggingPriority(.required, for: .horizontal)
 
+        textField.font = .appFont(withSize: 16, weight: .regular)
+        textField.textColor = .foreground
+        textField.keyboardType = .numberPad
+        textField.text = "\(value)"
+
+        addSubview(textField)
+        textField.pinToSuperview(edges: .vertical).pinToSuperview(edges: .horizontal, padding: 12)
+        
+        addSubview(unitLabel)
+        unitLabel.pinToSuperview(edges: .trailing, padding: 12).centerToSuperview(axis: .vertical)
+        
         backgroundColor = .background3
         layer.cornerRadius = 8
         layer.borderWidth = 1
@@ -43,11 +41,11 @@ class PollTextInputView: UIView {
             self?.becomeFirstResponder()
         }))
     }
-//    
-//    @discardableResult
-//    override func becomeFirstResponder() -> Bool {
-//        textField.becomeFirstResponder()
-//    }
+    
+    @discardableResult
+    override func becomeFirstResponder() -> Bool {
+        textField.becomeFirstResponder()
+    }
 }
 
 class PollLengthRowView: PollInputRowView {
@@ -69,7 +67,7 @@ class PollLengthRowView: PollInputRowView {
     init() {
         super.init(title: "Poll length")
         inputStack.distribution = .fillEqually
-//        inputStack.isHidden = true
+        inputStack.isHidden = true
 
         mainStack.addArrangedSubview(inputStack)
         mainStack.addArrangedSubview(SpacerView(height: 8))
@@ -83,20 +81,20 @@ class PollLengthRowView: PollInputRowView {
         
         valueStack.isUserInteractionEnabled = false
         
-//        let g = BindableTapGestureRecognizer(action: { [weak self] in
-//            self?.dayInput.becomeFirstResponder()
-//        })
-//        g.delegate = self
-//        tapGesture = g
-//        addGestureRecognizer(g)
+        let g = BindableTapGestureRecognizer(action: { [weak self] in
+            self?.dayInput.becomeFirstResponder()
+        })
+        g.delegate = self
+        tapGesture = g
+        addGestureRecognizer(g)
     }
 
     @objc private func inputChanged() {
-        if let day = Int(dayInput.textField.text ?? ""), day > 1000 {
-            dayInput.textField.text = "1000"
+        if let day = Int(dayInput.textField.text ?? ""), day > 100 {
+            dayInput.textField.text = "100"
         }
         if let hour = Int(hourInput.textField.text ?? ""), hour > 23 {
-            dayInput.textField.text = "23"
+            hourInput.textField.text = "23"
         }
         if let minutes = Int(minuteInput.textField.text ?? ""), minutes > 59 {
             minuteInput.textField.text = "59"

@@ -21,7 +21,6 @@ class PollInputRowView: UIView {
         
         valueStack.alignment = .center
         
-        mainStack.isUserInteractionEnabled = false
         addSubview(mainStack)
         mainStack.pinToSuperview(edges: .horizontal, padding: 4).pinToSuperview(edges: .vertical)
         
