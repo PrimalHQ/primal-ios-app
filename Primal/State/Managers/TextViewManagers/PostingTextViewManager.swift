@@ -22,6 +22,17 @@ struct UserToken {
     var user: PrimalUser
 }
 
+enum PollType {
+    case user, zap(min: Int, max: Int)
+}
+
+struct PollData {
+    var type: PollType = .user
+    var length: Double = 24 * 60 * 60
+    
+    var options: [String] = []
+}
+
 extension NoteDraft {
     var isPosting: Bool { preparedEvent != nil }
 }
@@ -30,6 +41,7 @@ final class PostingTextViewManager: TextViewManager, MetadataCoding {
     @Published var userSearchText: String?
     @Published var users: [ParsedUser] = []
     @Published var isPosting: Bool = false
+    @Published var pollOptions: PollData?
     
     @Published var postButtonEnabledState = true
     @Published var postButtonTitle: String

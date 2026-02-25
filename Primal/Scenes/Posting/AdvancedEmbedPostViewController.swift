@@ -17,6 +17,18 @@ enum PostEmbedPreview {
     case live(ParsedLiveEvent)
 }
 
+extension UIButton.Configuration {
+    static func iconTextButton(icon: UIImage, text: String, font: UIFont = .appFont(withSize: 16, weight: .regular), color: UIColor) -> UIButton.Configuration {
+        var config = UIButton.Configuration.plain()
+        config.attributedTitle = .init(text, attributes: .init([
+            .font: font,
+            .foregroundColor: color
+        ]))
+        config.image = icon.withTintColor(color, renderingMode: .alwaysOriginal)
+        return config
+    }
+}
+
 class AdvancedEmbedPostViewController: UIViewController {
     let postButtonText = "Post"
     
@@ -30,12 +42,16 @@ class AdvancedEmbedPostViewController: UIViewController {
     let cameraButton = UIButton()
     let atButton = UIButton()
     let gifButton = UIButton()
+    let pollButton = UIButton(configuration: .simpleImage(.pollIcon))
+    let removePollButton = UIButton(configuration: .iconTextButton(icon: .trash, text: "Remove poll", color: .delete))
     let clearButton = UIButton(configuration: .capsuleBackground3(text: "Clear")).constrainToSize(width: 80, height: 28)
-    lazy var bottomStack = UIStackView(arrangedSubviews: [imageButton, gifButton, cameraButton, atButton, UIView(), clearButton])
+    lazy var bottomStack = UIStackView(arrangedSubviews: [imageButton, gifButton, pollButton, cameraButton, atButton, UIView(), removePollButton, clearButton])
     
     lazy var postButton = SmallPostButton(title: postButtonText)
     
-    let embeddedPreviewStack = UIStackView(axis: .vertical, [])
+    let pollInputView = PollInputView()
+    
+    lazy var embeddedPreviewStack = UIStackView(axis: .vertical, spacing: 4, [pollInputView])
     
     let manager: PostingTextViewManager
     
@@ -214,6 +230,14 @@ private extension AdvancedEmbedPostViewController {
             self?.present(alert, animated: true)
         }), for: .touchUpInside)
         
+        removePollButton.addAction(.init(handler: { [weak self] _ in
+            self?.manager.pollOptions = nil
+        }), for: .touchUpInside)
+        
+        pollButton.addAction(.init(handler: { [weak self] _ in
+            self?.manager.pollOptions = .init()
+        }), for: .touchUpInside)
+        
         textView.tintColor = .accent
         
         setupBindings()
@@ -288,7 +312,7 @@ private extension AdvancedEmbedPostViewController {
                 myView.addSubview(view)
                 view.pinToSuperview()
                 
-                let xButton = UIButton(configuration: .simpleImage("deleteImageIcon"))
+                let xButton = UIButton(configuration: .simpleImage(.deleteImageIcon))
                 myView.addSubview(xButton)
                 xButton.constrainToSize(24).pinToSuperview(edges: [.top, .trailing], padding: 8)
                 xButton.addAction(.init(handler: { [unowned self] _ in
@@ -297,6 +321,20 @@ private extension AdvancedEmbedPostViewController {
                 
                 self.embeddedPreviewStack.addArrangedSubview(myView)
             }
+        }
+        .store(in: &cancellables)
+        
+        manager.$pollOptions.sink { [weak self] poll in
+            guard let self else { return }
+            
+            removePollButton.isHidden = poll == nil
+            pollInputView.isHidden = poll == nil
+            clearButton.isHidden = poll != nil
+            pollButton.isHidden = poll != nil
+            
+            guard let poll else { return }
+            
+            pollInputView.
         }
         .store(in: &cancellables)
     }

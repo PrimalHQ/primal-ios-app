@@ -640,6 +640,7 @@
 		B9DF8EB02F4C61F600A3FA21 /* KlipyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DF8EAF2F4C61F600A3FA21 /* KlipyManager.swift */; };
 		B9DF8EB32F4C64D700A3FA21 /* KlipyGifController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DF8EB22F4C64C900A3FA21 /* KlipyGifController.swift */; };
 		B9DF8ED62F4E0E7A00A3FA21 /* WalletReceiveToResultAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DF8ED52F4E0E7A00A3FA21 /* WalletReceiveToResultAnimator.swift */; };
+		B9DF8ED82F4F2D1500A3FA21 /* PollInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DF8ED72F4F2D0C00A3FA21 /* PollInputView.swift */; };
 		B9DFA0AD2D7EFBC9002C6F34 /* primalShare.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = B9DFA0A32D7EFBC9002C6F34 /* primalShare.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		B9E0BE422BCD621B00FFF2BC /* LightningInvoiceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E0BE412BCD621B00FFF2BC /* LightningInvoiceView.swift */; };
 		B9E0BE442BCD76B500FFF2BC /* ChatInvoiceCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E0BE432BCD76B500FFF2BC /* ChatInvoiceCell.swift */; };
@@ -1456,6 +1457,7 @@
 		B9DF8EAF2F4C61F600A3FA21 /* KlipyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KlipyManager.swift; sourceTree = "<group>"; };
 		B9DF8EB22F4C64C900A3FA21 /* KlipyGifController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KlipyGifController.swift; sourceTree = "<group>"; };
 		B9DF8ED52F4E0E7A00A3FA21 /* WalletReceiveToResultAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletReceiveToResultAnimator.swift; sourceTree = "<group>"; };
+		B9DF8ED72F4F2D0C00A3FA21 /* PollInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollInputView.swift; sourceTree = "<group>"; };
 		B9DFA0A32D7EFBC9002C6F34 /* primalShare.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = primalShare.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		B9E0BE412BCD621B00FFF2BC /* LightningInvoiceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LightningInvoiceView.swift; sourceTree = "<group>"; };
 		B9E0BE432BCD76B500FFF2BC /* ChatInvoiceCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatInvoiceCell.swift; sourceTree = "<group>"; };
@@ -3481,6 +3483,7 @@
 				9E83DF802A6ED99500F2C379 /* PostingImageView.swift */,
 				B9CE4DD52B7F675F0060A1B8 /* CircularProgressBar.swift */,
 				B98DD8BB2C50333200E8369A /* CompactArticleView.swift */,
+				B9DF8ED72F4F2D0C00A3FA21 /* PollInputView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -4603,6 +4606,7 @@
 				B98DD8E22C666B4B00E8369A /* PostRequestResult+FeedPicker.swift in Sources */,
 				B91E571A2CD940CB00C14809 /* NoteProcessor.swift in Sources */,
 				93CACB0329F525B6003BBCE5 /* take.c in Sources */,
+				B9DF8ED82F4F2D1500A3FA21 /* PollInputView.swift in Sources */,
 				9E5BD9452A1E71F2008DFFBE /* PostingTextViewManager.swift in Sources */,
 				9E4AAAA82A1155F200C962BD /* GradientBorderView.swift in Sources */,
 				B9EDA58F2E4F5EA5003262E4 /* LiveChatTextViewManager.swift in Sources */,

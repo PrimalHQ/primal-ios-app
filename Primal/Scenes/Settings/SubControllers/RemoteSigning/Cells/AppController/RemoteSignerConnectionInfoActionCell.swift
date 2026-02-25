@@ -101,7 +101,7 @@ final class RemoteSignerConnectionInfoActionCell: UITableViewCell {
         
         startSessionButton.configuration = .pill(text: isActive ? "Stop Session" : "Start Session", foregroundColor: .background5, backgroundColor: .foreground, font: .appFont(withSize: 14, weight: .regular))
         editNameButton.configuration = .pill(text: "Edit Name", foregroundColor: .foreground, backgroundColor: .foreground6, font: .appFont(withSize: 14, weight: .regular))
-        deleteConnectionButton.configuration = .pill(text: "Delete Connection", foregroundColor: .init(rgb: 0xFA3C3C), backgroundColor: .init(rgb: 0x1F0404), font: .appFont(withSize: 14, weight: .regular))
+        deleteConnectionButton.configuration = .pill(text: "Delete Connection", foregroundColor: .delete, backgroundColor: .init(rgb: 0x1F0404), font: .appFont(withSize: 14, weight: .regular))
 //        deleteConnectionButton.backgroundColor = Theme.midnightWave.theme.background
         
         backgroundColor = .background5

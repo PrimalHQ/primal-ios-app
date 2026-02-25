@@ -24,6 +24,7 @@ enum NostrKind: Int {
     case channelHideMessage = 43
     case channelMuteUser = 44
     
+    case poll = 1068
     case liveComment = 1311
     
     case zapIntention = 9041
