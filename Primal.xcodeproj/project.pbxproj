@@ -639,6 +639,7 @@
 		B9DF0CB82C25EF2F009ADC7B /* LongFormZapsPostCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DF0CB72C25EF2F009ADC7B /* LongFormZapsPostCell.swift */; };
 		B9DF8EB02F4C61F600A3FA21 /* KlipyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DF8EAF2F4C61F600A3FA21 /* KlipyManager.swift */; };
 		B9DF8EB32F4C64D700A3FA21 /* KlipyGifController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DF8EB22F4C64C900A3FA21 /* KlipyGifController.swift */; };
+		B9DF8ED62F4E0E7A00A3FA21 /* WalletReceiveToResultAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DF8ED52F4E0E7A00A3FA21 /* WalletReceiveToResultAnimator.swift */; };
 		B9DFA0AD2D7EFBC9002C6F34 /* primalShare.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = B9DFA0A32D7EFBC9002C6F34 /* primalShare.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		B9E0BE422BCD621B00FFF2BC /* LightningInvoiceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E0BE412BCD621B00FFF2BC /* LightningInvoiceView.swift */; };
 		B9E0BE442BCD76B500FFF2BC /* ChatInvoiceCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E0BE432BCD76B500FFF2BC /* ChatInvoiceCell.swift */; };
@@ -1454,6 +1455,7 @@
 		B9DF0CB72C25EF2F009ADC7B /* LongFormZapsPostCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LongFormZapsPostCell.swift; sourceTree = "<group>"; };
 		B9DF8EAF2F4C61F600A3FA21 /* KlipyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KlipyManager.swift; sourceTree = "<group>"; };
 		B9DF8EB22F4C64C900A3FA21 /* KlipyGifController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KlipyGifController.swift; sourceTree = "<group>"; };
+		B9DF8ED52F4E0E7A00A3FA21 /* WalletReceiveToResultAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletReceiveToResultAnimator.swift; sourceTree = "<group>"; };
 		B9DFA0A32D7EFBC9002C6F34 /* primalShare.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = primalShare.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		B9E0BE412BCD621B00FFF2BC /* LightningInvoiceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LightningInvoiceView.swift; sourceTree = "<group>"; };
 		B9E0BE432BCD76B500FFF2BC /* ChatInvoiceCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatInvoiceCell.swift; sourceTree = "<group>"; };
@@ -3384,6 +3386,7 @@
 				B9318F682B62C1B50044B6AA /* WalletSendAmountSendAnimator.swift */,
 				B9CE4DA02B63C8D80060A1B8 /* WalletSendSpinnerAnimator.swift */,
 				B9CE4DA62B6829A00060A1B8 /* WalletSpinnerToResultAnimator.swift */,
+				B9DF8ED52F4E0E7A00A3FA21 /* WalletReceiveToResultAnimator.swift */,
 			);
 			path = Send;
 			sourceTree = "<group>";
@@ -4277,6 +4280,7 @@
 				B9C5A07D2F36258E007CB5D3 /* UgradeWalletFaqController.swift in Sources */,
 				B9009B692B1F4577002B0613 /* CachingManager.swift in Sources */,
 				9E83DF792A57FDEC00F2C379 /* UploadAssetRequest.swift in Sources */,
+				B9DF8ED62F4E0E7A00A3FA21 /* WalletReceiveToResultAnimator.swift in Sources */,
 				B91E56F32CBD9B1E00C14809 /* UserPickerCollectionViewCell.swift in Sources */,
 				B98DD8D32C62547300E8369A /* ArticleFeedViewController.swift in Sources */,
 				B9C5A0E82F44ACD3007CB5D3 /* SecretsManager.swift in Sources */,

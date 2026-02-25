@@ -122,12 +122,19 @@ private extension WalletReceiveViewController {
             return
         }
         
+        let text: String
+        if let sats = additionalInfo?.satoshi {
+            text = "\(sats) sats received"
+        } else {
+            text = "Invoice paid"
+        }
+        
         monitorTask?.cancel()
         monitorTask = Task { @MainActor [weak self] in
             let result = try await wallet.walletRepo.awaitInvoicePayment(walletId: walletID, invoice: invoice, timeout: .max)
             
-            if result.isSuccess, let sats = result.getOrNull()?.description(), let self, self.navigationController?.topViewController == self {
-                navigationController?.pushViewController(WalletTransferSummaryController(.success(title: "\(sats) sats received", description: [])), animated: true)
+            if result.isSuccess, let self, self.navigationController?.topViewController == self {
+                navigationController?.pushViewController(WalletTransferSummaryController(.success(title: text, description: [])), animated: true)
             } else {
                 print(result.exceptionOrNull())
             }

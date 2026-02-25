@@ -136,6 +136,9 @@ extension MainNavigationController: UINavigationControllerDelegate {
             if let spinner = fromVC as? WalletSpinnerViewController {
                 return WalletSpinnerToResultAnimator(spinner: spinner, result: result)
             }
+            if let receive = fromVC as? WalletReceiveViewController {
+                return WalletReceiveToResultAnimator(receive: receive, result: result)
+            }
         }
         
         if let longForm = toVC as? ArticleViewController {

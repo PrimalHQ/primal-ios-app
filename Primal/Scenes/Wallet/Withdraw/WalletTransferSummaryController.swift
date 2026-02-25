@@ -62,6 +62,8 @@ final class WalletTransferSummaryController: UIViewController {
     let titleLabel = UILabel("", color: .white, font: .appFont(withSize: 24, weight: .semibold))
     let subtitleStack = UIStackView(axis: .vertical, spacing: 4, [])
     
+    let closeButton = UIButton().constrainToSize(width: 152, height: 56)
+    
     init(_ state: State) {
         self.state = state
         super.init(nibName: nil, bundle: nil)
@@ -102,14 +104,12 @@ private extension WalletTransferSummaryController {
         titleLabel.numberOfLines = 0
         titleLabel.textAlignment = .center
         
-        let close = UIButton().constrainToSize(width: 152, height: 56)
-        
         let stack = UIStackView(axis: .vertical, [
             topView,        SpacerView(height: 115),
             animationView,  SpacerView(height: 46),
             titleLabel,     SpacerView(height: 28),
             subtitleStack,  UIView(),
-            close
+            closeButton
         ])
         stack.alignment = .center
         topView.pinToSuperview(edges: .horizontal)
@@ -120,10 +120,10 @@ private extension WalletTransferSummaryController {
         view.addSubview(stack)
         stack.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .top, safeArea: true).pinToSuperview(edges: .bottom, padding: 40, safeArea: true)
         
-        close.layer.cornerRadius = 28
-        close.setTitle("Close", for: .normal)
-        close.titleLabel?.font = .appFont(withSize: 18, weight: .regular)
-        close.addAction(.init(handler: { [weak self] _ in
+        closeButton.layer.cornerRadius = 28
+        closeButton.setTitle("Close", for: .normal)
+        closeButton.titleLabel?.font = .appFont(withSize: 18, weight: .regular)
+        closeButton.addAction(.init(handler: { [weak self] _ in
             if let navigationController = self?.navigationController {
                 navigationController.popViewController(animated: true)
             } else {
@@ -152,14 +152,14 @@ private extension WalletTransferSummaryController {
                 }
                 .forEach { subtitleStack.addArrangedSubview($0) }
             
-            close.setTitleColor(.white, for: .normal)
+            closeButton.setTitleColor(.white, for: .normal)
             [titleLabel, navTitle].forEach {
                 $0.textColor = .white
             }
             
-            titleLabel.font = .appFont(withSize: 20, weight: .regular)
+            titleLabel.font = .appFont(withSize: 18, weight: .semibold)
             
-            close.backgroundColor = UIColor(rgb: 0x0E8A40)
+            closeButton.backgroundColor = UIColor(rgb: 0x0E8A40)
             
             view.backgroundColor = .receiveMoney
         case .failure(let navTitleText, _, let messageText):
@@ -172,12 +172,12 @@ private extension WalletTransferSummaryController {
             subtitleLabel.textAlignment = .center
             subtitleStack.addArrangedSubview(subtitleLabel)
             
-            close.setTitleColor(.white, for: .normal)
+            closeButton.setTitleColor(.white, for: .normal)
             [titleLabel, navTitle].forEach {
                 $0.textColor = .white
             }
             
-            close.backgroundColor = UIColor(rgb: 0x222222)
+            closeButton.backgroundColor = UIColor(rgb: 0x222222)
             
             view.backgroundColor = .black
         }
