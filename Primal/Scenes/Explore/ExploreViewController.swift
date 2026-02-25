@@ -13,7 +13,7 @@ final class ExploreViewController: PrimalPageController {
     
     private var cancellables: Set<AnyCancellable> = []
     
-    private let configButton = UIButton(configuration: .simpleImage("searchConfig"))
+    private let configButton = UIButton(configuration: .simpleImage(.searchConfig))
     
     let postButtonParent = UIView()
     let postButton = NewPostButton()

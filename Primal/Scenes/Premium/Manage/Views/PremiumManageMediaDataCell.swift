@@ -64,7 +64,7 @@ class PremiumManageMediaDataCell: UITableViewCell {
         copyButton.setImage(UIImage(named: "MenuImageCopy")?.withRenderingMode(.alwaysTemplate), for: .normal)
         copyButton.tintColor = .foreground
         
-        let deleteButton = UIButton(configuration: .simpleImage("trash")).constrainToSize(width: 67, height: 68)
+        let deleteButton = UIButton(configuration: .simpleImage(.trash)).constrainToSize(width: 67, height: 68)
         deleteButton.tintColor = .delete
         
         let stack = UIStackView([imageParent, infoStack, copyButton, deleteButton])

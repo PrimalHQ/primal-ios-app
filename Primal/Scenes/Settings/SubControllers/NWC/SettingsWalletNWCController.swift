@@ -161,7 +161,7 @@ final class SettingsConnectedAppsView: UIView, Themeable {
         followsParent.addSubview(budgetLabel)
         budgetLabel.pinToSuperview(padding: 12)
         
-        let deleteButton = UIButton(configuration: .simpleImage("deleteCell"))
+        let deleteButton = UIButton(configuration: .simpleImage(.deleteCell))
         deleteButton.setContentHuggingPriority(.required, for: .horizontal)
         
         let stack = UIStackView([nameParent, followsParent, deleteButton])

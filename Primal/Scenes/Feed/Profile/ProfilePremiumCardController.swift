@@ -266,7 +266,7 @@ private extension ProfilePremiumCardController {
         }), for: .touchUpInside)
         
         if PremiumCustomizationManager.instance.getCustomization(pubkey: user.data.pubkey) != nil, user.data.pubkey == IdentityManager.instance.userHexPubkey {
-            let threeDotsButton = UIButton(configuration: .simpleImage("threeDots"))
+            let threeDotsButton = UIButton(configuration: .simpleImage(.threeDots))
             threeDotsButton.tintColor = .init(rgb: 0x1E1E1E)
             threeDotsButton.showsMenuAsPrimaryAction = true
             threeDotsButton.menu = .init(children: [

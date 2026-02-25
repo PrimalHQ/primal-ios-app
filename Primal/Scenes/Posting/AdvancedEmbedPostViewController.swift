@@ -49,7 +49,7 @@ class AdvancedEmbedPostViewController: UIViewController {
     
     lazy var postButton = SmallPostButton(title: postButtonText)
     
-    lazy var pollInputView = PollInputView()
+    lazy var pollInputView = PollInputView(manager: manager)
     
     lazy var embeddedPreviewStack = UIStackView(axis: .vertical, spacing: 4, [pollInputView])
     
