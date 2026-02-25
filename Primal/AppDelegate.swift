@@ -127,6 +127,13 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         print("Failed to register for remote notifications: \(error.localizedDescription)")
     }
     
+    func applicationWillEnterForeground(_ application: UIApplication) {
+        PrimalApiClientFactory.shared.resumeAll()
+    }
+    
+    func applicationDidEnterBackground(_ application: UIApplication) {
+        PrimalApiClientFactory.shared.pauseAll()
+    }
 }
 
 private extension AppDelegate {

@@ -223,7 +223,7 @@ final class WalletManager {
             eventRepository: eventRepo
         )
         
-        zapFactory = NostrZapperFactoryProvider.shared.createNostrZapperFactory(walletRepository: walletRepo, nostrEventSignatureHandler: SigningManager.instance, primalWalletApiClient: walletConnection)
+        zapFactory = NostrZapperFactoryProvider.shared.createNostrZapperFactory(walletRepository: walletRepo, nostrEventSignatureHandler: SigningManager.instance, primalWalletApiClient: walletConnection, eventRepository: eventRepo)
         
         setupPublishers()
         
@@ -385,7 +385,7 @@ final class WalletManager {
                 
                 parsedTransactions = (parsedTransactions + items).unique()
                 
-                snapshot.access(index: Int32(parsedTransactions.count - 1))
+                snapshot.accessLast()
                 
                 await asyncFunctionThatWaitsForNewPageEvent()
             }
