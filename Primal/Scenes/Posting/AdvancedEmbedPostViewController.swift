@@ -49,7 +49,7 @@ class AdvancedEmbedPostViewController: UIViewController {
     
     lazy var postButton = SmallPostButton(title: postButtonText)
     
-    let pollInputView = PollInputView()
+    lazy var pollInputView = PollInputView()
     
     lazy var embeddedPreviewStack = UIStackView(axis: .vertical, spacing: 4, [pollInputView])
     
@@ -331,10 +331,6 @@ private extension AdvancedEmbedPostViewController {
             pollInputView.isHidden = poll == nil
             clearButton.isHidden = poll != nil
             pollButton.isHidden = poll != nil
-            
-            guard let poll else { return }
-            
-            pollInputView.
         }
         .store(in: &cancellables)
     }
