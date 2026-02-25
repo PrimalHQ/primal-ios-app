@@ -641,6 +641,7 @@
 		B9DF8EB32F4C64D700A3FA21 /* KlipyGifController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DF8EB22F4C64C900A3FA21 /* KlipyGifController.swift */; };
 		B9DF8ED62F4E0E7A00A3FA21 /* WalletReceiveToResultAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DF8ED52F4E0E7A00A3FA21 /* WalletReceiveToResultAnimator.swift */; };
 		B9DF8ED82F4F2D1500A3FA21 /* PollInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DF8ED72F4F2D0C00A3FA21 /* PollInputView.swift */; };
+		B9DF8EDB2F4F3D3E00A3FA21 /* PollInputRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DF8EDA2F4F3D3E00A3FA21 /* PollInputRowView.swift */; };
 		B9DFA0AD2D7EFBC9002C6F34 /* primalShare.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = B9DFA0A32D7EFBC9002C6F34 /* primalShare.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		B9E0BE422BCD621B00FFF2BC /* LightningInvoiceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E0BE412BCD621B00FFF2BC /* LightningInvoiceView.swift */; };
 		B9E0BE442BCD76B500FFF2BC /* ChatInvoiceCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E0BE432BCD76B500FFF2BC /* ChatInvoiceCell.swift */; };
@@ -1458,6 +1459,7 @@
 		B9DF8EB22F4C64C900A3FA21 /* KlipyGifController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KlipyGifController.swift; sourceTree = "<group>"; };
 		B9DF8ED52F4E0E7A00A3FA21 /* WalletReceiveToResultAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletReceiveToResultAnimator.swift; sourceTree = "<group>"; };
 		B9DF8ED72F4F2D0C00A3FA21 /* PollInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollInputView.swift; sourceTree = "<group>"; };
+		B9DF8EDA2F4F3D3E00A3FA21 /* PollInputRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollInputRowView.swift; sourceTree = "<group>"; };
 		B9DFA0A32D7EFBC9002C6F34 /* primalShare.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = primalShare.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		B9E0BE412BCD621B00FFF2BC /* LightningInvoiceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LightningInvoiceView.swift; sourceTree = "<group>"; };
 		B9E0BE432BCD76B500FFF2BC /* ChatInvoiceCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatInvoiceCell.swift; sourceTree = "<group>"; };
@@ -3479,13 +3481,22 @@
 		B9DF8EB12F4C64BA00A3FA21 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				B9DF8ED92F4F3D2800A3FA21 /* PollInputView */,
 				9E8834CB2A37A5EB005DB548 /* UserInfoTableCell.swift */,
 				9E83DF802A6ED99500F2C379 /* PostingImageView.swift */,
 				B9CE4DD52B7F675F0060A1B8 /* CircularProgressBar.swift */,
 				B98DD8BB2C50333200E8369A /* CompactArticleView.swift */,
-				B9DF8ED72F4F2D0C00A3FA21 /* PollInputView.swift */,
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		B9DF8ED92F4F3D2800A3FA21 /* PollInputView */ = {
+			isa = PBXGroup;
+			children = (
+				B9DF8EDA2F4F3D3E00A3FA21 /* PollInputRowView.swift */,
+				B9DF8ED72F4F2D0C00A3FA21 /* PollInputView.swift */,
+			);
+			path = PollInputView;
 			sourceTree = "<group>";
 		};
 		B9E0E6242EEAC84A00F48B2A /* Views */ = {
@@ -4061,6 +4072,7 @@
 				B9E0E6262EEAC89600F48B2A /* CheckboxRadioButton.swift in Sources */,
 				B9C6D23B2CA5BDE300B2EEBE /* ExploreFeedPreviewParentController.swift in Sources */,
 				B9E0E6572EF1F6B500F48B2A /* RemoteSignerActivityManager.swift in Sources */,
+				B9DF8EDB2F4F3D3E00A3FA21 /* PollInputRowView.swift in Sources */,
 				B98DD8B22C493D7D00E8369A /* PostRequestResult+Article.swift in Sources */,
 				B94F2BAF2AD04FE40041181B /* WalletManager.swift in Sources */,
 				B94A0E262AA8E42B00DEBFE1 /* ChatTableCell.swift in Sources */,

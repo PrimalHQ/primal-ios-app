@@ -24,6 +24,17 @@ struct UserToken {
 
 enum PollType {
     case user, zap(min: Int, max: Int)
+    
+    var name: String {
+        switch self {
+        case .user: return "User Poll"
+        case .zap:  return "Zap Poll"
+        }
+    }
+}
+
+enum PollLength {
+    case 
 }
 
 struct PollData {

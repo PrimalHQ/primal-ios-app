@@ -25,6 +25,7 @@ extension UIButton.Configuration {
             .foregroundColor: color
         ]))
         config.image = icon.withTintColor(color, renderingMode: .alwaysOriginal)
+        config.imagePadding = 4
         return config
     }
 }
@@ -51,7 +52,7 @@ class AdvancedEmbedPostViewController: UIViewController {
     
     lazy var pollInputView = PollInputView(manager: manager)
     
-    lazy var embeddedPreviewStack = UIStackView(axis: .vertical, spacing: 4, [pollInputView])
+    lazy var embeddedPreviewStack = UIStackView(axis: .vertical, spacing: 4, [])
     
     let manager: PostingTextViewManager
     
@@ -124,7 +125,7 @@ private extension AdvancedEmbedPostViewController {
         presentationController?.delegate = self
         view.backgroundColor = .background2
         
-        let verticalStack = UIStackView(axis: .vertical, [textView, imagesCollectionView, embeddedPreviewStack])
+        let verticalStack = UIStackView(axis: .vertical, [textView, imagesCollectionView, pollInputView, embeddedPreviewStack])
         verticalStack.spacing = 12
         let scrollView = UIScrollView()
         scrollView.addSubview(verticalStack)
@@ -150,7 +151,7 @@ private extension AdvancedEmbedPostViewController {
         atButton.setImage(UIImage(named: "AtIcon"), for: .normal)
         gifButton.setImage(.gifButton, for: .normal)
         
-        [imageButton, gifButton, cameraButton, atButton].forEach {
+        [imageButton, gifButton, cameraButton, atButton, pollButton].forEach {
             $0.tintColor = .foreground
             $0.constrainToSize(48)
         }
@@ -236,6 +237,7 @@ private extension AdvancedEmbedPostViewController {
         
         pollButton.addAction(.init(handler: { [weak self] _ in
             self?.manager.pollOptions = .init()
+            self?.pollInputView.reset()
         }), for: .touchUpInside)
         
         textView.tintColor = .accent
