@@ -12,6 +12,14 @@ class PollSatsRowView: PollInputRowView {
 
     var tapGesture: BindableTapGestureRecognizer?
 
+    var satsValue: Int {
+        get { Int(satsInput.textField.text ?? "") ?? 0 }
+        set {
+            satsInput.textField.text = "\(newValue)"
+            updateValueLabel()
+        }
+    }
+    
     var currentlyEditing: UITextField? {
         didSet {
             satsInput.isHidden = currentlyEditing == nil
@@ -24,8 +32,8 @@ class PollSatsRowView: PollInputRowView {
 
         satsInput.isHidden = true
 
-        mainStack.addArrangedSubview(satsInput)
-        mainStack.addArrangedSubview(SpacerView(height: 8))
+        addSubview(satsInput)
+        satsInput.pinToSuperview(edges: .trailing).centerToSuperview(axis: .vertical).constrainToSize(width: 120)
 
         valueStack.isUserInteractionEnabled = false
 
@@ -44,17 +52,9 @@ class PollSatsRowView: PollInputRowView {
         updateValueLabel()
     }
 
-    func updateValueLabel() {
+    private func updateValueLabel() {
         let sats = Int(satsInput.textField.text ?? "") ?? 0
-        valueLabel.text = "\(sats) sats"
-    }
-
-    var satsValue: Int {
-        get { Int(satsInput.textField.text ?? "") ?? 0 }
-        set {
-            satsInput.textField.text = "\(newValue)"
-            updateValueLabel()
-        }
+        valueLabel.text = "\(sats.localized()) sats"
     }
 }
 

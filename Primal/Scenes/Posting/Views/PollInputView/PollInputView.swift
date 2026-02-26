@@ -15,7 +15,7 @@ class PollInputView: UIView {
     private let choicesStack = UIStackView(axis: .vertical, spacing: 8, [])
     private let addChoiceButton = UIButton(configuration: .accent("+ Add choice", font: .appFont(withSize: 16, weight: .regular))).constrainToSize(height: 42)
 
-    private let pollTypeRow = PollInputRowView(title: "Poll type")
+    let pollTypeRow = PollInputRowView(title: "Poll type")
     private let pollLengthRow = PollLengthRowView()
     private let minZapRow = PollSatsRowView(title: "Min zap")
     private let maxZapRow = PollSatsRowView(title: "Max zap")
@@ -134,8 +134,8 @@ class PollInputView: UIView {
             minZapRow.isHidden = false
             maxZapRow.isHidden = false
             
-            minZapRow.valueLabel.text = "\(min) sats"
-            maxZapRow.valueLabel.text = "\(max) sats"
+            minZapRow.satsValue = min
+            maxZapRow.satsValue = max
         }
     }
     

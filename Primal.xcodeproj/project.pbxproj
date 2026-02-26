@@ -382,6 +382,7 @@
 		B93638162D80A3B2003F1EC3 /* NoConnectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B93638152D80A3B2003F1EC3 /* NoConnectionView.swift */; };
 		B9370EEB2DE88276004A9760 /* SettingsNWCQRScanController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9370EEA2DE8826B004A9760 /* SettingsNWCQRScanController.swift */; };
 		B93BFFDD2F508BA3001C8BDC /* PollSatsRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B93BFFDC2F508B9C001C8BDC /* PollSatsRowView.swift */; };
+		B93BFFDF2F50937B001C8BDC /* PopupPollTypeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B93BFFDE2F50937B001C8BDC /* PopupPollTypeController.swift */; };
 		B93F6B642D75EE3700DF00CD /* DatabaseManager+MediaMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = B93F6B632D75EE3700DF00CD /* DatabaseManager+MediaMetadata.swift */; };
 		B94429202BD2836800746FBC /* zap-medium.json in Resources */ = {isa = PBXBuildFile; fileRef = B944291F2BD2836800746FBC /* zap-medium.json */; };
 		B94429222BD2866D00746FBC /* thread-zap-medium.json in Resources */ = {isa = PBXBuildFile; fileRef = B94429212BD2866D00746FBC /* thread-zap-medium.json */; };
@@ -1202,6 +1203,7 @@
 		B93638152D80A3B2003F1EC3 /* NoConnectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoConnectionView.swift; sourceTree = "<group>"; };
 		B9370EEA2DE8826B004A9760 /* SettingsNWCQRScanController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsNWCQRScanController.swift; sourceTree = "<group>"; };
 		B93BFFDC2F508B9C001C8BDC /* PollSatsRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollSatsRowView.swift; sourceTree = "<group>"; };
+		B93BFFDE2F50937B001C8BDC /* PopupPollTypeController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupPollTypeController.swift; sourceTree = "<group>"; };
 		B93F6B632D75EE3700DF00CD /* DatabaseManager+MediaMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DatabaseManager+MediaMetadata.swift"; sourceTree = "<group>"; };
 		B944291F2BD2836800746FBC /* zap-medium.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "zap-medium.json"; sourceTree = "<group>"; };
 		B94429212BD2866D00746FBC /* thread-zap-medium.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "thread-zap-medium.json"; sourceTree = "<group>"; };
@@ -3497,6 +3499,7 @@
 		B9DF8ED92F4F3D2800A3FA21 /* PollInputView */ = {
 			isa = PBXGroup;
 			children = (
+				B93BFFDE2F50937B001C8BDC /* PopupPollTypeController.swift */,
 				B93BFFDC2F508B9C001C8BDC /* PollSatsRowView.swift */,
 				B9DF8EDC2F4F54D900A3FA21 /* PollLengthRowView.swift */,
 				B9DF8EDA2F4F3D3E00A3FA21 /* PollInputRowView.swift */,
@@ -4272,6 +4275,7 @@
 				B91E56E82CB9843A00C14809 /* AdvancedSearchMenuItemView.swift in Sources */,
 				B9E67E7D2D075E35006BB397 /* FeedElementUserCell.swift in Sources */,
 				9EF4BFC42A8BE9C5003396AA /* IceWave.swift in Sources */,
+				B93BFFDF2F50937B001C8BDC /* PopupPollTypeController.swift in Sources */,
 				93F27DA42A27EA04004ADA55 /* FollowManager.swift in Sources */,
 				B91E56EF2CB99D4E00C14809 /* AdvancedSearchTimeRangeController.swift in Sources */,
 				9E8834B12A320E90005DB548 /* ProfileViewController.swift in Sources */,

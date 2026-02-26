@@ -240,6 +240,12 @@ private extension AdvancedEmbedPostViewController {
             self?.pollInputView.reset()
         }), for: .touchUpInside)
         
+        pollInputView.pollTypeRow.addGestureRecognizer(BindableTapGestureRecognizer(action: { [weak self] in
+            let popup = PopupPollTypeController(currentType: self?.manager.pollOptions?.type ?? .user)
+            popup.delegate = self
+            self?.present(popup, animated: true)
+        }))
+        
         textView.tintColor = .accent
         
         setupBindings()
@@ -345,6 +351,20 @@ extension AdvancedEmbedPostViewController: UIAdaptivePresentationControllerDeleg
     
     func presentationControllerShouldDismiss(_ presentationController: UIPresentationController) -> Bool {
         false
+    }
+}
+
+extension AdvancedEmbedPostViewController: PopupPollTypeDelegate {
+    func pollTypeController(_ controller: PopupPollTypeController, didSelect type: PollType) {
+        switch manager.pollOptions?.type ?? .user {
+        case .user:
+            manager.pollOptions?.type = type
+        case .zap:
+            if case .user = type {
+                manager.pollOptions?.type = type
+            }
+        }
+        pollInputView.updateLabels()
     }
 }
 

@@ -31,6 +31,8 @@ enum PollType {
         case .zap:  return "Zap Poll"
         }
     }
+    
+    static var defaultZap = PollType.zap(min: 21, max: 21000)
 }
 
 struct PollData {
