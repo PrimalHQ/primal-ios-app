@@ -17,8 +17,8 @@ class PollInputView: UIView {
 
     private let pollTypeRow = PollInputRowView(title: "Poll type")
     private let pollLengthRow = PollLengthRowView()
-    private let minZapRow = PollInputRowView(title: "Poll length")
-    private let maxZapRow = PollInputRowView(title: "Poll length")
+    private let minZapRow = PollSatsRowView(title: "Min zap")
+    private let maxZapRow = PollSatsRowView(title: "Max zap")
 
     private var cancellables: Set<AnyCancellable> = []
     let manager: PostingTextViewManager
