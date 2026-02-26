@@ -26,6 +26,7 @@ enum NostrKind: Int {
     
     case poll = 1068
     case liveComment = 1311
+    case zapPoll = 6969
     
     case zapIntention = 9041
     case zapReceipt = 9735

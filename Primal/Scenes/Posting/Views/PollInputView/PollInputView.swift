@@ -56,6 +56,18 @@ class PollInputView: UIView {
 
         addSubview(mainStack)
         mainStack.pinToSuperview()
+
+        pollLengthRow.onValueChanged = { [weak self] length in
+            self?.manager.pollOptions?.length = length
+        }
+        minZapRow.onValueChanged = { [weak self] min in
+            guard let self, case .zap(_, let max) = self.manager.pollOptions?.type else { return }
+            self.manager.pollOptions?.type = .zap(min: min, max: max)
+        }
+        maxZapRow.onValueChanged = { [weak self] max in
+            guard let self, case .zap(let min, _) = self.manager.pollOptions?.type else { return }
+            self.manager.pollOptions?.type = .zap(min: min, max: max)
+        }
     }
 
     // MARK: - Choice Fields

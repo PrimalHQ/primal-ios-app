@@ -19,7 +19,7 @@ struct FollowUsersMutelistRequest {
             guard let first = result.first else {
                 guard let followedMuteListsEvent = NostrObject.followedMuteLists(content: "", tags: [
                     ["d", "mutelists"],
-                    ["p", pubkey, "https://relay.primal.net", "", "[\"content\",\"trending\"]"]
+                    ["p", pubkey, "wss://relay.primal.net", "", "[\"content\",\"trending\"]"]
                 ]) else {
                     return
                 }
@@ -34,7 +34,7 @@ struct FollowUsersMutelistRequest {
                 let updatedObject = NostrObject.followedMuteLists(
                     content: nostrObject.content,
                     tags: nostrObject.tags + [
-                        ["p", pubkey, "https://relay.primal.net", "", "[\"content\",\"trending\"]"]
+                        ["p", pubkey, "wss://relay.primal.net", "", "[\"content\",\"trending\"]"]
                     ]
                 )
             else { return }

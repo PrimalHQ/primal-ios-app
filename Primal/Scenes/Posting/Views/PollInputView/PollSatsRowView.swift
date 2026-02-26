@@ -48,8 +48,11 @@ class PollSatsRowView: PollInputRowView {
         addGestureRecognizer(g)
     }
 
+    var onValueChanged: ((Int) -> Void)?
+
     @objc private func inputChanged() {
         updateValueLabel()
+        onValueChanged?(satsValue)
     }
 
     private func updateValueLabel() {

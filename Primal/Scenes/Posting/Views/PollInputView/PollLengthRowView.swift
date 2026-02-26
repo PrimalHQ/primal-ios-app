@@ -89,6 +89,8 @@ class PollLengthRowView: PollInputRowView {
         addGestureRecognizer(g)
     }
 
+    var onValueChanged: (((Int, Int, Int)) -> Void)?
+
     @objc private func inputChanged() {
         if let day = Int(dayInput.textField.text ?? ""), day > 100 {
             dayInput.textField.text = "100"
@@ -100,6 +102,10 @@ class PollLengthRowView: PollInputRowView {
             minuteInput.textField.text = "59"
         }
         updateValueLabel()
+        let days = Int(dayInput.textField.text ?? "") ?? 0
+        let hours = Int(hourInput.textField.text ?? "") ?? 0
+        let mins = Int(minuteInput.textField.text ?? "") ?? 0
+        onValueChanged?((days, hours, mins))
     }
 
     func updateValueLabel() {
