@@ -381,6 +381,7 @@
 		B934ADB02DB117450044E5B5 /* UnmuteWordCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B934ADAF2DB117410044E5B5 /* UnmuteWordCell.swift */; };
 		B93638162D80A3B2003F1EC3 /* NoConnectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B93638152D80A3B2003F1EC3 /* NoConnectionView.swift */; };
 		B9370EEB2DE88276004A9760 /* SettingsNWCQRScanController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9370EEA2DE8826B004A9760 /* SettingsNWCQRScanController.swift */; };
+		B93BFFDD2F508BA3001C8BDC /* PollSatsRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B93BFFDC2F508B9C001C8BDC /* PollSatsRowView.swift */; };
 		B93F6B642D75EE3700DF00CD /* DatabaseManager+MediaMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = B93F6B632D75EE3700DF00CD /* DatabaseManager+MediaMetadata.swift */; };
 		B94429202BD2836800746FBC /* zap-medium.json in Resources */ = {isa = PBXBuildFile; fileRef = B944291F2BD2836800746FBC /* zap-medium.json */; };
 		B94429222BD2866D00746FBC /* thread-zap-medium.json in Resources */ = {isa = PBXBuildFile; fileRef = B94429212BD2866D00746FBC /* thread-zap-medium.json */; };
@@ -1200,6 +1201,7 @@
 		B934ADAF2DB117410044E5B5 /* UnmuteWordCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnmuteWordCell.swift; sourceTree = "<group>"; };
 		B93638152D80A3B2003F1EC3 /* NoConnectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoConnectionView.swift; sourceTree = "<group>"; };
 		B9370EEA2DE8826B004A9760 /* SettingsNWCQRScanController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsNWCQRScanController.swift; sourceTree = "<group>"; };
+		B93BFFDC2F508B9C001C8BDC /* PollSatsRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollSatsRowView.swift; sourceTree = "<group>"; };
 		B93F6B632D75EE3700DF00CD /* DatabaseManager+MediaMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DatabaseManager+MediaMetadata.swift"; sourceTree = "<group>"; };
 		B944291F2BD2836800746FBC /* zap-medium.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "zap-medium.json"; sourceTree = "<group>"; };
 		B94429212BD2866D00746FBC /* thread-zap-medium.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "thread-zap-medium.json"; sourceTree = "<group>"; };
@@ -3495,6 +3497,7 @@
 		B9DF8ED92F4F3D2800A3FA21 /* PollInputView */ = {
 			isa = PBXGroup;
 			children = (
+				B93BFFDC2F508B9C001C8BDC /* PollSatsRowView.swift */,
 				B9DF8EDC2F4F54D900A3FA21 /* PollLengthRowView.swift */,
 				B9DF8EDA2F4F3D3E00A3FA21 /* PollInputRowView.swift */,
 				B9DF8ED72F4F2D0C00A3FA21 /* PollInputView.swift */,
@@ -4327,6 +4330,7 @@
 				B917982D2EE0690D00EF29EF /* SigningManager.swift in Sources */,
 				9ED415FC2A41E02200892235 /* SearchHeaderView.swift in Sources */,
 				9E83DF812A6ED99500F2C379 /* PostingImageView.swift in Sources */,
+				B93BFFDD2F508BA3001C8BDC /* PollSatsRowView.swift in Sources */,
 				B91EF0E62CED109F00299ECF /* SearchPremiumCell.swift in Sources */,
 				B9009B4C2B068653002B0613 /* OnboardingProfileImageView.swift in Sources */,
 				9E5BD9412A1E6586008DFFBE /* CancelButton.swift in Sources */,
