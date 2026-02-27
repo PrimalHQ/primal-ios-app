@@ -117,21 +117,18 @@ private extension WalletReceiveViewController {
         let wallet = WalletManager.instance
         wallet.pendingDepositsSyncer?.start()
         
-        guard let invoice, let walletID = wallet.walletID else {
-            // todo: monitor regular transactions
-            return
-        }
+        guard let walletID = wallet.walletID else { return }
         
         let text: String
         if let sats = additionalInfo?.satoshi {
             text = "\(sats) sats received"
         } else {
-            text = "Invoice paid"
+            text = invoice == nil ? "Sats received" : "Invoice paid"
         }
         
         monitorTask?.cancel()
         monitorTask = Task { @MainActor [weak self] in
-            let result = try await wallet.walletRepo.awaitInvoicePayment(walletId: walletID, invoice: invoice, timeout: .max)
+            let result = try await wallet.walletRepo.awaitLightningPayment(walletId: walletID, invoice: self?.invoice, timeout: .max)
             
             if result.isSuccess, let self, self.navigationController?.topViewController == self {
                 navigationController?.pushViewController(WalletTransferSummaryController(.success(title: text, description: [])), animated: true)

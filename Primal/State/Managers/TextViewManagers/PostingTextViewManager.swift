@@ -407,7 +407,7 @@ final class PostingTextViewManager: TextViewManager, MetadataCoding {
                 pubkeysToTag.insert(live.event.pubkey)
                 
                 allTags.append(["a", live.event.universalID, RelayHintManager.instance.getRelayHint(live.event.universalID), "mention"])
-            case .invoice(_):
+            case .invoice:
                 break
             }
         }
