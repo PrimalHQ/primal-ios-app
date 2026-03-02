@@ -105,8 +105,12 @@ class PollInputView: UIView {
     }
 
     @objc private func addChoiceTapped() {
-        let index = choicesStack.arrangedSubviews.count + 1
-        addChoiceField(placeholder: "Choice \(index)")
+        let count = choicesStack.arrangedSubviews.count + 1
+        addChoiceField(placeholder: "Choice \(count)")
+        addChoiceButton.isHidden = count >= 5
+        let clearMode: UITextField.ViewMode = count >= 3 ? .always : .never
+        let textFields: [UITextField] = choicesStack.findAllSubviews()
+        textFields.forEach { $0.clearButtonMode = clearMode }
     }
 
     @objc private func textFieldChanged(_ textField: UITextField) {
@@ -117,6 +121,22 @@ class PollInputView: UIView {
             let count = textField.text?.count ?? 0
             countLabel.text = "\(count)/\(maxCharacters)"
         }
+        syncOptionsToManager()
+    }
+
+    private func removeChoice(_ container: UIView) {
+        guard choicesStack.arrangedSubviews.count > 2 else { return }
+        container.removeFromSuperview()
+        
+        let textFields: [UITextField] = choicesStack.findAllSubviews()
+        for (index, textField) in textFields.enumerated() {
+            textField.attributedPlaceholder = NSAttributedString(string: "Choice \(index + 1)", attributes: [
+                .foregroundColor: UIColor.foreground4,
+                .font: UIFont.appFont(withSize: 16, weight: .regular)
+            ])
+            textField.clearButtonMode = textFields.count >= 3 ? .always : .never
+        }
+        addChoiceButton.isHidden = textFields.count >= 5
         syncOptionsToManager()
     }
 
@@ -188,6 +208,12 @@ extension PollInputView: UITextFieldDelegate {
         guard let stringRange = Range(range, in: currentText) else { return false }
         let updatedText = currentText.replacingCharacters(in: stringRange, with: string)
         return updatedText.count <= maxCharacters
+    }
+
+    func textFieldShouldClear(_ textField: UITextField) -> Bool {
+        guard let container = textField.superview?.superview else { return true }
+        removeChoice(container)
+        return false
     }
 
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
