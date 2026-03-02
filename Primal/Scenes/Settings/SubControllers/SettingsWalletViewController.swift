@@ -253,10 +253,15 @@ private extension SettingsWalletViewController {
         }
         
         exportWallet.addAction(.init(handler: { [weak self] _ in
-            guard let self, let walletId = WalletManager.instance.walletID else { return }
+            guard let walletId = WalletManager.instance.walletID else { return }
             Task { @MainActor in
-                self.exportWallet.isEnabled = false
+                self?.exportWallet.isEnabled = false
+                
+                try await WalletManager.instance.syncSparkWalletTransactions()
+                
                 let transactions = try await WalletManager.instance.walletRepo.allTransactions(walletId: walletId)
+                
+                guard let self else { return }
                 
                 CSVExporter.exportTransactions(transactions, walletType: "Primal", from: self)
                 self.exportWallet.isEnabled = true

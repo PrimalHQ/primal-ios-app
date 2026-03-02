@@ -207,7 +207,7 @@ final class WalletManager {
     private let profileRepo: ProfileRepository
     private lazy var primalWalletRepo = WalletRepositoryFactory.shared.createPrimalWalletAccountRepository(primalWalletApiClient: walletConnection, nostrEventSignatureHandler: SigningManager.instance)
     private lazy var sparkWalletManager = WalletRepositoryFactory.shared.createSparkWalletManager()
-    private lazy var sparkWalletAccountRepository = WalletRepositoryFactory.shared.createSparkWalletAccountRepository(primalWalletApiClient: walletConnection, nostrEventSignatureHandler: SigningManager.instance)
+    lazy var sparkWalletAccountRepository = WalletRepositoryFactory.shared.createSparkWalletAccountRepository(primalWalletApiClient: walletConnection, nostrEventSignatureHandler: SigningManager.instance)
     private var transactionsSnapshot: IosPagingSnapshot<Transaction>?
     
     private init() {
@@ -600,6 +600,13 @@ extension WalletManager {
                 }
             })
         }
+    }
+    
+    func syncSparkWalletTransactions() async throws {
+        guard let wallet = activeWallet as? Wallet.Spark else { return }
+        
+        try await WalletRepositoryFactory.shared.createMigratePrimalTransactionsHandler(primalWalletApiClient: walletConnection, nostrEventSignatureHandler: SigningManager.instance, profileRepository: profileRepo)
+            .invoke(userId: IdentityManager.instance.userHexPubkey, targetSparkWalletId: wallet.walletId, maxPages: nil, onPageFetched: nil)
     }
 }
 
