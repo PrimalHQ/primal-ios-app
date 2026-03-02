@@ -331,10 +331,8 @@ final class PostingTextViewManager: TextViewManager, MetadataCoding {
     func reset() {
         oldDraft = nil
         isPosting = false
-        postButtonTitle = defaultPostButtonTitle
-        postButtonEnabledState = true
-        
         textView.text = ""
+        isEmpty = true
         media = []
         embeddedElements = []
     }
@@ -666,27 +664,27 @@ private extension PostingTextViewManager {
             })
             .store(in: &cancellables)
         
-        Publishers.CombineLatest4($media, $isEmpty.removeDuplicates(), $oldDraft, $isPosting)
+        Publishers.CombineLatest(
+            Publishers.CombineLatest4($media, $isEmpty.removeDuplicates(), $oldDraft, $isPosting),
+            $pollOptions
+        )
             .debounce(for: 0.1, scheduler: RunLoop.main)
-            .sink { [weak self] images, isEmpty, oldDraft, isPosting in
+            .sink { [weak self] group, pollOptions in
                 guard let self else { return }
                 
+                let (images, isEmpty, oldDraft, isPosting) = group
+
                 if oldDraft?.preparedEvent != nil || isPosting {
                     postButtonEnabledState = false
                     postButtonTitle = "Posting..."
                     return
                 }
-                
-                let isUploadingImages: Bool = {
-                    for image in images {
-                        if case .uploading = image.state {
-                            return true
-                        }
-                    }
-                    return false
-                }()
-                
-                postButtonEnabledState = (!isEmpty || !images.isEmpty) && !isUploadingImages
+
+                let isUploadingImages = images.contains { if case .uploading = $0.state { true } else { false } }
+                let hasContent = !isEmpty || !images.isEmpty
+                let hasPollWithEnoughChoices = pollOptions == nil || (pollOptions?.options.count ?? 0) >= 2
+
+                postButtonEnabledState = hasContent && !isUploadingImages && hasPollWithEnoughChoices
                 postButtonTitle = isUploadingImages ? "Uploading..." : defaultPostButtonTitle
             }
             .store(in: &cancellables)
