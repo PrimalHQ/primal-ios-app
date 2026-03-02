@@ -91,12 +91,26 @@ class PollInputView: UIView {
         countLabel.setContentHuggingPriority(.required, for: .horizontal)
         countLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
 
-        let innerStack = UIStackView(arrangedSubviews: [textField, countLabel])
+        let closeButton = UIButton(type: .system)
+        closeButton.setImage(UIImage(named: "close")?.withRenderingMode(.alwaysTemplate), for: .normal)
+        closeButton.tintColor = .foreground4
+        closeButton.constrainToSize(20)
+        closeButton.isHidden = true
+        closeButton.addAction(.init(handler: { [weak self, weak container] _ in
+            guard let self, let container else { return }
+            self.removeChoice(container)
+        }), for: .touchUpInside)
+
+        let innerStack = UIStackView(arrangedSubviews: [textField, closeButton, countLabel])
         innerStack.spacing = 8
         innerStack.alignment = .center
 
         container.addSubview(innerStack)
         innerStack.pinToSuperview(edges: .horizontal, padding: 12).pinToSuperview(edges: .vertical, padding: 10)
+        
+        container.addGestureRecognizer(BindableTapGestureRecognizer(action: {
+            textField.becomeFirstResponder()
+        }))
 
         // Tag the count label on the container for later lookup
         container.tag = choicesStack.arrangedSubviews.count
@@ -105,12 +119,11 @@ class PollInputView: UIView {
     }
 
     @objc private func addChoiceTapped() {
+        guard choicesStack.arrangedSubviews.count < 5 else { return }
         let count = choicesStack.arrangedSubviews.count + 1
         addChoiceField(placeholder: "Choice \(count)")
-        addChoiceButton.isHidden = count >= 5
-        let clearMode: UITextField.ViewMode = count >= 3 ? .always : .never
-        let textFields: [UITextField] = choicesStack.findAllSubviews()
-        textFields.forEach { $0.clearButtonMode = clearMode }
+        addChoiceButton.alpha = count >= 5 ? 0 : 1
+        updateCloseButtons()
     }
 
     @objc private func textFieldChanged(_ textField: UITextField) {
@@ -127,17 +140,23 @@ class PollInputView: UIView {
     private func removeChoice(_ container: UIView) {
         guard choicesStack.arrangedSubviews.count > 2 else { return }
         container.removeFromSuperview()
-        
+
         let textFields: [UITextField] = choicesStack.findAllSubviews()
         for (index, textField) in textFields.enumerated() {
             textField.attributedPlaceholder = NSAttributedString(string: "Choice \(index + 1)", attributes: [
                 .foregroundColor: UIColor.foreground4,
                 .font: UIFont.appFont(withSize: 16, weight: .regular)
             ])
-            textField.clearButtonMode = textFields.count >= 3 ? .always : .never
         }
-        addChoiceButton.isHidden = textFields.count >= 5
+        addChoiceButton.alpha = textFields.count >= 5 ? 0 : 1
+        updateCloseButtons()
         syncOptionsToManager()
+    }
+
+    private func updateCloseButtons() {
+        let buttons: [UIButton] = choicesStack.findAllSubviews()
+        let showClose = choicesStack.arrangedSubviews.count >= 3
+        buttons.forEach { $0.isHidden = !showClose }
     }
 
     private func syncOptionsToManager() {
@@ -208,12 +227,6 @@ extension PollInputView: UITextFieldDelegate {
         guard let stringRange = Range(range, in: currentText) else { return false }
         let updatedText = currentText.replacingCharacters(in: stringRange, with: string)
         return updatedText.count <= maxCharacters
-    }
-
-    func textFieldShouldClear(_ textField: UITextField) -> Bool {
-        guard let container = textField.superview?.superview else { return true }
-        removeChoice(container)
-        return false
     }
 
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
