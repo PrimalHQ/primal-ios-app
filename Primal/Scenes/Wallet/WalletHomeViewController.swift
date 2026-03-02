@@ -358,7 +358,7 @@ private extension WalletHomeViewController {
             }
             
             if wallet == nil {
-                firstSection.cells += [.upgradeWallet, .loading]
+                firstSection.cells += [.loading]
             } else if let primal = wallet as? Wallet.Primal {
                 firstSection.cells += [.upgradeWallet]
             } else if let spark = wallet as? Wallet.Spark, let balance = spark.balanceInBtc?.doubleValue, balance > 0, !spark.isBackedUp {

@@ -91,6 +91,8 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         PushNotificationsManager.instance.registerForPushNotifications()
         registerNotificationCategory()
         
+        NwcServiceManager.shared.autoStartServiceNow()
+        
         if #available(iOS 16.1, *) {
             WidgetBridge = WidgetMainAppBridge()
         }

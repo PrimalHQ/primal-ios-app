@@ -46,7 +46,6 @@ class RemoteSignerManager {
         return .init(privateKey: privkey, pubKey: newKeypair.pubkey)
     }()
     
-    
     @Published var activeSessions: [RemoteAppSession] = []
     
     @Published var activeConnections: [RemoteAppConnection] = []

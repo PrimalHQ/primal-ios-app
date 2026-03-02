@@ -41,6 +41,8 @@ final class KlipyManager {
 
     static let categories = [
         "Trending",
+        "Yes",
+        "No",
         "OMG",
         "Funny",
         "Sad",
@@ -50,8 +52,6 @@ final class KlipyManager {
         "Terrible",
         "Wow",
         "Cringe",
-        "Yes",
-        "No",
         "LOL",
         "Savage",
         "Blessed"

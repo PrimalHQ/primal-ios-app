@@ -149,7 +149,6 @@ final class ICloudKeychainManager {
         return true
     }
     
-    // Used until we get to support multiple accounts
     func getLoginInfo() -> NostrKeypair? {
         guard let npub = localNpubs.first else { return nil }
         

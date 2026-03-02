@@ -38,10 +38,19 @@ class NwcServiceManager {
     
     func setAutoStart(_ isOn: Bool) {
         autoStartService = isOn
+        
+        if isOn {
+            startService()
+        }
     }
     
     func endService() {
         activeServices = [:]
+    }
+    
+    func autoStartServiceNow() {
+        guard autoStartService else { return }
+        startService()
     }
     
     func startService() {

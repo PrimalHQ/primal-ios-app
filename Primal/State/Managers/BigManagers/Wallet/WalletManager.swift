@@ -233,15 +233,15 @@ final class WalletManager {
     }
     
     func reset(_ pubkey: String) {
-        // We have to disconnect old user Spark wallet to kill the connection
-        if let oldPubkey, oldPubkey != pubkey {
-            Task {
-                guard let oldWallet = try await walletAccountRepo.getActiveWallet(userId: pubkey) as? Wallet.Spark else { return }
-                try await sparkWalletManager.disconnectWallet(walletId: oldWallet.walletId)
-            }
+        guard oldPubkey != pubkey else { return }
+        
+        Task {
+            // We have to disconnect old user Spark wallet to kill the connection
+            guard let oldPubkey, let oldWallet = try await walletAccountRepo.getActiveWallet(userId: oldPubkey) as? Wallet.Spark else { return }
+            _ = try await sparkWalletManager.disconnectWallet(walletId: oldWallet.walletId)
         }
         
-        oldPubkey = pubkey
+        self.oldPubkey = pubkey
         userZapped = [:]
         premiumState = nil
         activeWallet = nil
@@ -382,6 +382,8 @@ final class WalletManager {
             
             for await items in snapshot.items where !items.isEmpty{
                 print("Got \(items.count) transactions on this page")
+                
+                if walletID != self.walletID { return } // If we changed the wallet stop updating from this snapshot
                 
                 parsedTransactions = (parsedTransactions + items).unique()
                 

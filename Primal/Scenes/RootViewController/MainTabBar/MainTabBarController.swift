@@ -400,13 +400,15 @@ private extension MainTabBarController {
         }
         .store(in: &cancellables)
         
-        RemoteSignerManager.instance.isActivePublisher.sink { [weak self] isActive in
-            self?.remoteSignerView.isOff = !isActive
-            remoteSignerButton.isHidden = !isActive
-            
-            UIApplication.shared.isIdleTimerDisabled = isActive
-        }
-        .store(in: &cancellables)
+        Publishers.CombineLatest(RemoteSignerManager.instance.isActivePublisher, NwcServiceManager.shared.isServiceActivePublisher)
+            .map { $0 || $1 }
+            .sink { [weak self] isActive in
+                self?.remoteSignerView.isOff = !isActive
+                remoteSignerButton.isHidden = !isActive
+                
+                UIApplication.shared.isIdleTimerDisabled = isActive
+            }
+            .store(in: &cancellables)
         
         if #available(iOS 16.1, *) {
             NotificationCenter.default.publisher(for: UIApplication.didEnterBackgroundNotification)
