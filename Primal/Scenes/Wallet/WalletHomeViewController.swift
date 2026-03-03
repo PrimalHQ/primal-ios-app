@@ -81,28 +81,22 @@ final class WalletHomeViewController: UIViewController, Themeable {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        WalletManager.instance.recheck()
-        WalletManager.instance.loadNewExchangeRate()
-        
-        ICloudKeychainManager.instance.$userPubkey
-            .compactMap { $0.isEmpty ? nil : $0 }
-            .removeDuplicates()
-            .dropFirst()
-            .sink { [weak self] _ in
-                self?.cancellables = []
-            }
-            .store(in: &cancellables)
-        
         table.reloadData()
         mainTabBarController?.setTabBarHidden(false, animated: animated)
         navigationController?.setNavigationBarHidden(false, animated: animated)
         (navigationController as? MainNavigationController)?.isTransparent = false
     }
     
+    var monitorTask: Task<(), Error>?
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
         WalletManager.instance.pendingDepositsSyncer?.start()
+        
+        startMonitorTask()
+        
+        WalletManager.instance.recheck()
+        WalletManager.instance.loadNewExchangeRate()
         
         heavyImpact.prepare()
         
@@ -118,6 +112,8 @@ final class WalletHomeViewController: UIViewController, Themeable {
         WalletManager.instance.pendingDepositsSyncer?.stop()
         
         foregroundUpdate = nil
+        
+        monitorTask?.cancel()
     }
     
     func updateTheme() {
@@ -139,6 +135,17 @@ final class WalletHomeViewController: UIViewController, Themeable {
 //        button.tintColor = .foreground3
 //        button.addAction(.init(handler: { [weak self] _ in self?.buySatsPressed() }), for: .touchUpInside)
 //        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: button)
+    }
+    
+    func startMonitorTask() {
+        let wallet = WalletManager.instance
+        guard let walletID = wallet.walletID else { return }
+        monitorTask?.cancel()
+        monitorTask = Task { @MainActor in
+            let result = try await wallet.walletRepo.awaitLightningPayment(walletId: walletID, invoice: nil, timeout: .max)
+            
+            wallet.recheck()
+        }
     }
 }
 

@@ -11,7 +11,7 @@ class UpgradeWalletProcessController: UIViewController {
     let spinner = LoadingSpinnerView().constrainToSize(160)
     
     let titleLabel = UILabel("", color: .foreground3, font: .appFont(withSize: 18, weight: .regular), multiline: true)
-    let message = UILabel("Please keep Primal open\nuntil the upgrade process is done.", color: .foreground3, font: .appFont(withSize: 18, weight: .regular), multiline: true)
+    let message = UILabel("Please keep Primal open\nuntil the upgrade process is done.", color: .foreground, font: .appFont(withSize: 16, weight: .regular), multiline: true)
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -20,14 +20,14 @@ class UpgradeWalletProcessController: UIViewController {
         navigationItem.hidesBackButton = true
         view.backgroundColor = .background
         
-        let mainStack = UIStackView(axis: .vertical, [spinner, titleLabel, message, SpacerView(height: 50)])
+        let mainStack = UIStackView(axis: .vertical, [spinner, SpacerView(height: 60), titleLabel, SpacerView(height: 90), message])
         mainStack.alignment = .center
         mainStack.distribution = .equalSpacing
         view.addSubview(mainStack)
-        mainStack
-            .pinToSuperview(edges: .horizontal, padding: 28)
-            .pinToSuperview(edges: .bottom, padding: 10, safeArea: true)
-            .constrainToSize(height: 560)
+        mainStack.centerToSuperview().constrainToSize(width: 275)
+        
+        let aspect = RootViewController.instance.view.frame.width / 375
+        mainStack.transform = .init(scaleX: aspect, y: aspect)
         
         WalletManager.instance.migrateToSpark { [weak self] step in
             switch step {

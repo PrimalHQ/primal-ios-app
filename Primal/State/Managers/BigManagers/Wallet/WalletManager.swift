@@ -359,31 +359,24 @@ final class WalletManager {
         return try await WalletManager.instance.walletRepo.createOnChainAddress(walletId: walletID).getOrNull()?.address
     }
     
-    func refresh() {
+    func refresh(reset: Bool = true) {
         guard let walletID else { return }
         
-        parsedTransactions = []
+//        if reset {
+            parsedTransactions = []
+//        }
         
-        var snapshot: IosPagingSnapshot<Transaction>?
-        if let transactionsSnapshot {
-            transactionsSnapshot.refresh()
-            loadNewTransactionsPage()
-        } else {
-            let flow = walletRepo.latestTransactions(walletId: walletID)
-            let newSnapshot = IosWalletPagingFactory.shared.createTransactionSnapshot(pagingFlow: flow)
-            transactionsSnapshot = newSnapshot
-            snapshot = newSnapshot
-        }
+        let flow = walletRepo.latestTransactions(walletId: walletID)
+        let snapshot = IosWalletPagingFactory.shared.createTransactionSnapshot(pagingFlow: flow)
+        transactionsSnapshot = snapshot
         
         Task { @MainActor in
             _ = try await walletRepo.fetchWalletBalance(walletId: walletID)
             
-            guard let snapshot else { return }
-            
             for await items in snapshot.items where !items.isEmpty{
                 print("Got \(items.count) transactions on this page")
                 
-                if walletID != self.walletID { return } // If we changed the wallet stop updating from this snapshot
+                if walletID != self.walletID || snapshot != self.transactionsSnapshot  { return } // If we changed the wallet stop updating from this snapshot
                 
                 parsedTransactions = (parsedTransactions + items).unique()
                 
@@ -408,8 +401,7 @@ final class WalletManager {
     }
     
     func recheck() {
-        transactionsSnapshot?.refresh()
-        loadNewTransactionsPage()
+        refresh(reset: false)
     }
     
     func hasZapped(_ eventId: String) -> Bool { userZapped[eventId, default: 0] > 0 }

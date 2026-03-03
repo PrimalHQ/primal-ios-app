@@ -109,6 +109,7 @@ class UserImageView: UIView, Themeable {
     
     func removeUserImage() {
         legendaryGradient.isHidden = true
+        legendaryBackgroundCircleView.isHidden = true
         animatedImageView.kf.cancelDownloadTask()
         animatedImageView.image = UIImage(named: "Profile")        
     }
@@ -134,6 +135,9 @@ class UserImageView: UIView, Themeable {
             legendaryBackgroundCircleView.isHidden = false
             legendaryGradient.setLegendGradient(theme)
             cachedLegendTheme = theme
+        } else {
+            legendaryGradient.isHidden = true
+            legendaryBackgroundCircleView.isHidden = true
         }
 
         guard let image = user.avatarCdnImage, let url = URL(string: image.variants.first?.mediaUrl ?? image.sourceUrl) else {

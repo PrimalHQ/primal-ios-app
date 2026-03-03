@@ -19,7 +19,7 @@ class UpgradeWalletStartController: UIViewController {
         
         let satAmount = WalletManager.instance.balance.localized()
         
-        let itemStack = UIStackView(axis: .vertical, spacing: 16, [
+        let itemStack = UIStackView(axis: .vertical, spacing: 28, [
             BulletPointStack(view: bulletLabel(textArray: [("It will take less than a minute", false)])),
             BulletPointStack(view: bulletLabel(textArray: [("We’ll transfer your wallet balance", false)])),
             BulletPointStack(view: bulletLabel(textArray: [("We’ll copy your transaction history", false)])),
@@ -32,9 +32,9 @@ class UpgradeWalletStartController: UIViewController {
         
         let mainStack = UIStackView(axis: .vertical, [
             UIImageView(image: .walletFilledLarge.withTintColor(.foreground3, renderingMode: .alwaysOriginal)),
-            SpacerView(height: 65),
+            SpacerView(height: 76),
             itemStack,
-            SpacerView(height: 44),
+            SpacerView(height: 65),
             questionsLabel,
             SpacerView(height: 40),
             upgradeButton
@@ -42,7 +42,7 @@ class UpgradeWalletStartController: UIViewController {
         mainStack.alignment = .center
         
         upgradeButton.pinToSuperview(edges: .horizontal)
-        itemStack.pinToSuperview(edges: .horizontal, padding: 22)
+        itemStack.pinToSuperview(edges: .horizontal, padding: 13)
         
         let contentView = UIView().constrainToSize(width: 375)
         contentView.addSubview(mainStack)
