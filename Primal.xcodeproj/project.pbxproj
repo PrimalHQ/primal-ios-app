@@ -4907,7 +4907,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.0.4;
+				MARKETING_VERSION = 3.0.6;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -4956,7 +4956,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.0.4;
+				MARKETING_VERSION = 3.0.6;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -5384,7 +5384,7 @@
 			repositoryURL = "https://github.com/breez/breez-sdk-spark-swift.git";
 			requirement = {
 				kind = exactVersion;
-				version = "0.7.13-dev2";
+				version = 0.10.0;
 			};
 		};
 		B906AB022C99F3E40089813F /* XCRemoteSwiftPackageReference "GRDB.swift" */ = {

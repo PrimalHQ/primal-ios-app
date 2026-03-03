@@ -194,14 +194,24 @@ extension UserImageView {
         if let cachedLegendTheme {
             animatingIV.legendaryGradient.setLegendGradient(cachedLegendTheme)
             animatingIV.legendaryGradient.isHidden = false
+            animatingIV.legendaryBackgroundCircleView.isHidden = false
         }
-        
+
+        let targetHeight = other.bounds.height
+        let targetGlowSize = UserImageView.glowSize(for: targetHeight)
+        let targetBgSize = UserImageView.backgroundCircleSize(for: targetHeight)
+
+        let glowScale = (targetGlowSize / animatingIV.legendGradientSize) / scale
+        let bgScale = (targetBgSize / animatingIV.legendBackgroundCircleSize) / scale
+
         CATransaction.begin()
         CATransaction.setAnimationTimingFunction(timing)
-        
+
         UIView.animate(withDuration: duration) {
             animatingIV.transform = .init(translationX: distance.x, y: distance.y).scaledBy(x: scale, y: scale)
-            
+            animatingIV.legendaryGradient.transform = .init(scaleX: glowScale, y: glowScale)
+            animatingIV.legendaryBackgroundCircleView.transform = .init(scaleX: bgScale, y: bgScale)
+
             if fade {
                 animatingIV.alpha = 0
             }

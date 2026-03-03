@@ -25,7 +25,7 @@ class UserImageView: UIView, Themeable {
     
     var url = ""
     
-    var legendGradientSize: CGFloat {
+    static func glowSize(for height: CGFloat) -> CGFloat {
         height + {
             if height >= 100 { return 8 }
             if height >= 75 { return 6 }
@@ -34,15 +34,21 @@ class UserImageView: UIView, Themeable {
             return 4
         }()
     }
-    
-    var noBackgroundCircle = false { didSet { updateHeight() } }
-    
-    var legendBackgroundCircleSize: CGFloat {
-        noBackgroundCircle ? height : height + {
+
+    static func backgroundCircleSize(for height: CGFloat) -> CGFloat {
+        height + {
             if height >= 78 { return 1 }
             if height >= 24 { return 0.5 }
             return 0
         }()
+    }
+
+    var legendGradientSize: CGFloat { Self.glowSize(for: height) }
+
+    var noBackgroundCircle = false { didSet { updateHeight() } }
+
+    var legendBackgroundCircleSize: CGFloat {
+        noBackgroundCircle ? height : Self.backgroundCircleSize(for: height)
     }
     
     lazy var livePill = UserImageLivePill(userImageHeight: height)
