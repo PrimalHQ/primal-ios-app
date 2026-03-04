@@ -686,6 +686,7 @@
 		B9E67E962D088720006BB397 /* ThreadFeedDatasource.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E67E952D088720006BB397 /* ThreadFeedDatasource.swift */; };
 		B9E67EA32D09D8F9006BB397 /* ThreadElementZapPreviewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E67E982D09D8F9006BB397 /* ThreadElementZapPreviewCell.swift */; };
 		B9E67EA42D09D8F9006BB397 /* ThreadElementInvoiceCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E67E992D09D8F9006BB397 /* ThreadElementInvoiceCell.swift */; };
+		5B1009E4B01A4CEA9E8CA7A7 /* ThreadElementPollCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32167054FC4146F3845A370A /* ThreadElementPollCell.swift */; };
 		B9E67EA52D09D8F9006BB397 /* ThreadElementInfoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E67E9A2D09D8F9006BB397 /* ThreadElementInfoCell.swift */; };
 		B9E67EA62D09D8F9006BB397 /* ThreadElementSmallZapGalleryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E67E9B2D09D8F9006BB397 /* ThreadElementSmallZapGalleryCell.swift */; };
 		B9E67EA72D09D8F9006BB397 /* ThreadElementImageGalleryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E67E9C2D09D8F9006BB397 /* ThreadElementImageGalleryCell.swift */; };
@@ -1507,6 +1508,7 @@
 		B9E67E952D088720006BB397 /* ThreadFeedDatasource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadFeedDatasource.swift; sourceTree = "<group>"; };
 		B9E67E982D09D8F9006BB397 /* ThreadElementZapPreviewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThreadElementZapPreviewCell.swift; sourceTree = "<group>"; };
 		B9E67E992D09D8F9006BB397 /* ThreadElementInvoiceCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThreadElementInvoiceCell.swift; sourceTree = "<group>"; };
+		32167054FC4146F3845A370A /* ThreadElementPollCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadElementPollCell.swift; sourceTree = "<group>"; };
 		B9E67E9A2D09D8F9006BB397 /* ThreadElementInfoCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThreadElementInfoCell.swift; sourceTree = "<group>"; };
 		B9E67E9B2D09D8F9006BB397 /* ThreadElementSmallZapGalleryCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThreadElementSmallZapGalleryCell.swift; sourceTree = "<group>"; };
 		B9E67E9C2D09D8F9006BB397 /* ThreadElementImageGalleryCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThreadElementImageGalleryCell.swift; sourceTree = "<group>"; };
@@ -3614,6 +3616,7 @@
 				B9E67E9C2D09D8F9006BB397 /* ThreadElementImageGalleryCell.swift */,
 				B9E67E9A2D09D8F9006BB397 /* ThreadElementInfoCell.swift */,
 				B9E67E992D09D8F9006BB397 /* ThreadElementInvoiceCell.swift */,
+				32167054FC4146F3845A370A /* ThreadElementPollCell.swift */,
 				B9E67E9D2D09D8F9006BB397 /* ThreadElementPostPreviewCell.swift */,
 				B9E67E9B2D09D8F9006BB397 /* ThreadElementSmallZapGalleryCell.swift */,
 				B9E67EA12D09D8F9006BB397 /* ThreadElementWebPreviewCell.swift */,
@@ -4244,6 +4247,7 @@
 				93CACB0429F525B6003BBCE5 /* amount.c in Sources */,
 				B9C672E72E2FE43700243B45 /* LiveVideoChatMessageCell.swift in Sources */,
 				B9E67EA42D09D8F9006BB397 /* ThreadElementInvoiceCell.swift in Sources */,
+				5B1009E4B01A4CEA9E8CA7A7 /* ThreadElementPollCell.swift in Sources */,
 				B99E7BD52B238C7200756F40 /* ImageFullScreenViewController.swift in Sources */,
 				B9DD12FB2CB85F3400C435FD /* DatabaseManager+Nip05Check.swift in Sources */,
 				B956778A2F030DA500B8166C /* SettingsRemoteEventController.swift in Sources */,

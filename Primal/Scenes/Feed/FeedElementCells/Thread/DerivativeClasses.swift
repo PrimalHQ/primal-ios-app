@@ -118,6 +118,26 @@ class ChildThreadElementPostPreviewCell: ThreadElementPostPreviewCell {
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 }
 
+// Poll
+class ParentThreadElementPollCell: ThreadElementPollCell {
+    init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(position: .parent, style: style, reuseIdentifier: reuseIdentifier)
+    }
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+}
+class MainThreadElementPollCell: ThreadElementPollCell {
+    init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(position: .main, style: style, reuseIdentifier: reuseIdentifier)
+    }
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+}
+class ChildThreadElementPollCell: ThreadElementPollCell {
+    init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(position: .child, style: style, reuseIdentifier: reuseIdentifier)
+    }
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+}
+
 // Invoice
 class ParentThreadElementInvoiceCell: ThreadElementInvoiceCell {
     init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
