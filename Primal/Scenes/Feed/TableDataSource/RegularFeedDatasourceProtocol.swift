@@ -24,6 +24,7 @@ enum NoteFeedElement: Hashable {
     case info
     case live
     case invoice
+    case poll
     case reactions
 }
 
@@ -67,6 +68,8 @@ extension NoteFeedElement {
             return FeedElementInfoCell.cellID
         case .invoice:
             return FeedElementInvoiceCell.cellID
+        case .poll:
+            return FeedElementPollCell.cellID
         case .reactions:
             return FeedElementReactionsCell.cellID
         }
@@ -87,6 +90,7 @@ extension RegularFeedDatasourceProtocol {
         tableView.register(FeedElementPostPreviewCell.self, forCellReuseIdentifier: FeedElementPostPreviewCell.cellID)
         tableView.register(FeedElementZapPreviewCell.self, forCellReuseIdentifier: FeedElementZapPreviewCell.cellID)
         tableView.register(FeedElementInvoiceCell.self, forCellReuseIdentifier: FeedElementInvoiceCell.cellID)
+        tableView.register(FeedElementPollCell.self, forCellReuseIdentifier: FeedElementPollCell.cellID)
         tableView.register(FeedElementReactionsCell.self, forCellReuseIdentifier: FeedElementReactionsCell.cellID)
         tableView.register(FeedElementArticleCell.self, forCellReuseIdentifier: FeedElementArticleCell.cellID)
         tableView.register(FeedElementLivePreviewCell.self, forCellReuseIdentifier: FeedElementLivePreviewCell.cellID)
@@ -108,7 +112,8 @@ extension RegularFeedDatasourceProtocol {
 
             if !content.text.isEmpty { parts.append(.text) }
             if !content.mediaResources.isEmpty { parts.append(.imageGallery) }
-            if let invoice = content.invoice { parts.append(.invoice) }
+            if content.invoice != nil { parts.append(.invoice) }
+            if content.poll != nil { parts.append(.poll) }
             if let article = content.article { parts.append(.article) }
             
             if short, let embedded = content.embeddedPosts.first {

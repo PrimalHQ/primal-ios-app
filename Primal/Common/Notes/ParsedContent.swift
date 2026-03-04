@@ -60,6 +60,20 @@ extension PrimalFeedPost {
     var isArticle: Bool { kind == NostrKind.longForm.rawValue || kind == NostrKind.shortenedArticle.rawValue }
 }
 
+struct ParsedPoll: Hashable {
+    struct Option: Hashable {
+        let id: String
+        let label: String
+    }
+
+    let options: [Option]
+    let pollType: String
+    let endsAt: Date?
+    let isZapPoll: Bool
+    let valueMinimum: Int?
+    let valueMaximum: Int?
+}
+
 enum NotFoundContent: Hashable {
     case note, article
 }
@@ -90,6 +104,7 @@ final class ParsedContent: Hashable {
     var article: Article?
     
     var invoice: Invoice?
+    var poll: ParsedPoll?
     
     var text: String = ""
     var attributedText: NSAttributedString = NSAttributedString(string: "")
@@ -393,6 +408,7 @@ extension ParsedContent {
         new.linkPreviews = linkPreviews
         
         new.invoice = invoice
+        new.poll = poll
         
         new.text = text
         new.attributedText = attributedText

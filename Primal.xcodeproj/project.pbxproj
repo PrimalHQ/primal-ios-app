@@ -647,6 +647,7 @@
 		B9DF8EDD2F4F54D900A3FA21 /* PollLengthRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DF8EDC2F4F54D900A3FA21 /* PollLengthRowView.swift */; };
 		B9DFA0AD2D7EFBC9002C6F34 /* primalShare.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = B9DFA0A32D7EFBC9002C6F34 /* primalShare.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		B9E0BE422BCD621B00FFF2BC /* LightningInvoiceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E0BE412BCD621B00FFF2BC /* LightningInvoiceView.swift */; };
+		024790235F8243AC95A947C7 /* PollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 254BECF85EE9411B88FDCEFA /* PollView.swift */; };
 		B9E0BE442BCD76B500FFF2BC /* ChatInvoiceCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E0BE432BCD76B500FFF2BC /* ChatInvoiceCell.swift */; };
 		B9E0E6232EE9EB2700F48B2A /* RemoteSignerPendingEventsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E0E6222EE9EB1400F48B2A /* RemoteSignerPendingEventsController.swift */; };
 		B9E0E6262EEAC89600F48B2A /* CheckboxRadioButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E0E6252EEAC86100F48B2A /* CheckboxRadioButton.swift */; };
@@ -678,6 +679,7 @@
 		B9E67E892D07636C006BB397 /* FeedElementPostPreviewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E67E882D07636C006BB397 /* FeedElementPostPreviewCell.swift */; };
 		B9E67E8B2D0766F1006BB397 /* FeedElementReactionsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E67E8A2D0766F1006BB397 /* FeedElementReactionsCell.swift */; };
 		B9E67E8D2D0767AE006BB397 /* FeedElementInvoiceCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E67E8C2D0767AE006BB397 /* FeedElementInvoiceCell.swift */; };
+		37F34936B75F413BAC729EB5 /* FeedElementPollCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11014EF06E484DF7AE794F7D /* FeedElementPollCell.swift */; };
 		B9E67E8F2D0767F3006BB397 /* FeedElementZapPreviewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E67E8E2D0767F3006BB397 /* FeedElementZapPreviewCell.swift */; };
 		B9E67E912D07682B006BB397 /* FeedElementArticleCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E67E902D07682B006BB397 /* FeedElementArticleCell.swift */; };
 		B9E67E942D076F6F006BB397 /* RegularFeedDatasource.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E67E932D076F6F006BB397 /* RegularFeedDatasource.swift */; };
@@ -1468,6 +1470,7 @@
 		B9DF8EDC2F4F54D900A3FA21 /* PollLengthRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollLengthRowView.swift; sourceTree = "<group>"; };
 		B9DFA0A32D7EFBC9002C6F34 /* primalShare.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = primalShare.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		B9E0BE412BCD621B00FFF2BC /* LightningInvoiceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LightningInvoiceView.swift; sourceTree = "<group>"; };
+		254BECF85EE9411B88FDCEFA /* PollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollView.swift; sourceTree = "<group>"; };
 		B9E0BE432BCD76B500FFF2BC /* ChatInvoiceCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatInvoiceCell.swift; sourceTree = "<group>"; };
 		B9E0E6222EE9EB1400F48B2A /* RemoteSignerPendingEventsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSignerPendingEventsController.swift; sourceTree = "<group>"; };
 		B9E0E6252EEAC86100F48B2A /* CheckboxRadioButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckboxRadioButton.swift; sourceTree = "<group>"; };
@@ -1497,6 +1500,7 @@
 		B9E67E882D07636C006BB397 /* FeedElementPostPreviewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedElementPostPreviewCell.swift; sourceTree = "<group>"; };
 		B9E67E8A2D0766F1006BB397 /* FeedElementReactionsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedElementReactionsCell.swift; sourceTree = "<group>"; };
 		B9E67E8C2D0767AE006BB397 /* FeedElementInvoiceCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedElementInvoiceCell.swift; sourceTree = "<group>"; };
+		11014EF06E484DF7AE794F7D /* FeedElementPollCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedElementPollCell.swift; sourceTree = "<group>"; };
 		B9E67E8E2D0767F3006BB397 /* FeedElementZapPreviewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedElementZapPreviewCell.swift; sourceTree = "<group>"; };
 		B9E67E902D07682B006BB397 /* FeedElementArticleCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedElementArticleCell.swift; sourceTree = "<group>"; };
 		B9E67E932D076F6F006BB397 /* RegularFeedDatasource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegularFeedDatasource.swift; sourceTree = "<group>"; };
@@ -2203,6 +2207,7 @@
 				9EF4BFCF2A955FB5003396AA /* NewPostButton.swift */,
 				B9031D512ACDDD4200C7489F /* ReplyingToView.swift */,
 				B9E0BE412BCD621B00FFF2BC /* LightningInvoiceView.swift */,
+				254BECF85EE9411B88FDCEFA /* PollView.swift */,
 				B94429292BD5A82600746FBC /* PostLoadingCell.swift */,
 				B9B9E57A2CB6E2C00065DD7C /* SimpleInfoView.swift */,
 				B91E570A2CC8258500C14809 /* GenericLoadingView.swift */,
@@ -3572,6 +3577,7 @@
 				B9E67E882D07636C006BB397 /* FeedElementPostPreviewCell.swift */,
 				B9E67E8E2D0767F3006BB397 /* FeedElementZapPreviewCell.swift */,
 				B9E67E8C2D0767AE006BB397 /* FeedElementInvoiceCell.swift */,
+				11014EF06E484DF7AE794F7D /* FeedElementPollCell.swift */,
 				B9E67E8A2D0766F1006BB397 /* FeedElementReactionsCell.swift */,
 				B9E67E902D07682B006BB397 /* FeedElementArticleCell.swift */,
 			);
@@ -4438,6 +4444,7 @@
 				B9CE4DCF2B7A63330060A1B8 /* PopupDatePickerController.swift in Sources */,
 				B90585382C9DDFD600FC4108 /* SettingsDevModeController.swift in Sources */,
 				B9E0BE422BCD621B00FFF2BC /* LightningInvoiceView.swift in Sources */,
+				024790235F8243AC95A947C7 /* PollView.swift in Sources */,
 				B9E67E942D076F6F006BB397 /* RegularFeedDatasource.swift in Sources */,
 				B95677842F02E85400B8166C /* EventDetailsView.swift in Sources */,
 				B91EF0D72CEB8D4200299ECF /* PremiumManageSubscriptionDataCell.swift in Sources */,
@@ -4485,6 +4492,7 @@
 				B90032882BD11DEA00ADD2E5 /* NoteReactionsParentController.swift in Sources */,
 				9363DE712A30DD9E0060F4BD /* DeeplinkHandlerProtocol.swift in Sources */,
 				B9E67E8D2D0767AE006BB397 /* FeedElementInvoiceCell.swift in Sources */,
+				37F34936B75F413BAC729EB5 /* FeedElementPollCell.swift in Sources */,
 				9EC63E6A29FD6193006DC1C4 /* FollowSectionHeader.swift in Sources */,
 				B9EDA5712E4532B6003262E4 /* LivePreviewFeedCell.swift in Sources */,
 				B91E56F12CBD69B100C14809 /* AdvancedSearchUserPickerController.swift in Sources */,
