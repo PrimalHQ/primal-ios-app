@@ -79,6 +79,32 @@ struct PrimalFeed: Codable {
     var description: String = ""
     var feedkind: String = ""
     var enabled: Bool = true
+
+    private static let kindToKinds: [String: [Int]] = [
+        "notes": [NostrKind.text.rawValue],
+        "reads": [NostrKind.longForm.rawValue],
+    ]
+
+    /// Migrates legacy specs using `"kind":"notes"` / `"kind":"reads"` to `"kinds":[1]` / `"kinds":[30023]`
+    func migratingKindToKinds() -> PrimalFeed {
+        guard let data = spec.data(using: .utf8),
+              var json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let kind = json["kind"] as? String,
+              json["kinds"] == nil,
+              let intKinds = Self.kindToKinds[kind]
+        else { return self }
+
+        json.removeValue(forKey: "kind")
+        json["kinds"] = intKinds
+
+        guard let newData = try? JSONSerialization.data(withJSONObject: json),
+              let newSpec = String(data: newData, encoding: .utf8)
+        else { return self }
+
+        var updated = self
+        updated.spec = newSpec
+        return updated
+    }
 }
 
 extension PostRequestResult {

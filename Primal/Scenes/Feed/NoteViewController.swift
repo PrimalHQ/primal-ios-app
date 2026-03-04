@@ -482,7 +482,7 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
             BookmarkManager.instance.unbookmark(post)
             (cell as? FeedElementBaseCell)?.update(post)
         case .articleTag(let tag):
-            showViewController(ArticleFeedViewController(feed: .init(name: "#\(tag)", spec: "{\"kind\":\"reads\",\"topic\":\"\(tag)\"}")))
+            showViewController(ArticleFeedViewController(feed: .init(name: "#\(tag)", spec: "{\"kinds\":[\(NostrKind.longForm.rawValue)],\"topic\":\"\(tag)\"}")))
         case .requestDelete:
             requestDelete(post)
         }

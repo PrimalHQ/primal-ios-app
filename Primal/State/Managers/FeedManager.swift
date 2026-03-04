@@ -297,7 +297,7 @@ private extension FeedManager {
             return Just([]).eraseToAnyPublisher()
         }
         
-        return SocketRequest(name: "mega_feed_directive", payload: .object([
+        return SocketRequest(name: "multi_kind_mega_feed_directive", payload: .object([
                 "spec": .string(spec),
                 "user_pubkey": .string(IdentityManager.instance.userHexPubkey),
                 "limit": .number(Double(40)),
@@ -408,7 +408,7 @@ private extension FeedManager {
             payload["offset"] = 1
         }
         
-        return ("mega_feed_directive", .object(payload))
+        return ("multi_kind_mega_feed_directive", .object(payload))
     }
     
     func generateProfileFeedRequest(_ profileId: String) -> (String, JSON) {

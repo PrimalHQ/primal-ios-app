@@ -20,7 +20,7 @@ class ArticleFeedManager: BaseFeedManager {
     init(feed: PrimalFeed) {
         self.feed = feed
         
-        super.init(request: FeedManagerRequest(name: "mega_feed_directive", body: [
+        super.init(request: FeedManagerRequest(name: "multi_kind_mega_feed_directive", body: [
             "spec": .string(feed.spec),
             "user_pubkey": .string(IdentityManager.instance.userHexPubkey),
         ]))

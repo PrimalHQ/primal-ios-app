@@ -43,6 +43,13 @@ enum PrimalFeedType {
         case .article:  return "reads"
         }
     }
+
+    var kinds: [Int] {
+        switch self {
+        case .note:     return [NostrKind.text.rawValue]
+        case .article:  return [NostrKind.longForm.rawValue]
+        }
+    }
     
     var name: String {
         switch self {
@@ -102,20 +109,23 @@ extension PrimalFeed {
     private static var allReadsKey: String { IdentityManager.instance.userHexPubkey + "allReadsFeedsKey" }
     private static var allNotesKey: String { IdentityManager.instance.userHexPubkey + "allNotesFeedsKey" }
     static func getAllFeeds(_ type: PrimalFeedType) -> [PrimalFeed] {
-        switch type {
-        case .note:
-            return UserDefaults.standard.string(forKey: allNotesKey)?.decode() ?? []
-        case .article:
-            return UserDefaults.standard.string(forKey: allReadsKey)?.decode() ?? []
-        }
+        let feeds: [PrimalFeed] = {
+            switch type {
+            case .note:
+                return UserDefaults.standard.string(forKey: allNotesKey)?.decode() ?? []
+            case .article:
+                return UserDefaults.standard.string(forKey: allReadsKey)?.decode() ?? []
+            }
+        }()
+        return feeds.map { $0.migratingKindToKinds() }
     }
     
     static func getActiveFeeds(_ type: PrimalFeedType) -> [PrimalFeed] {
         getAllFeeds(type).filter { $0.enabled }
     }
     
-    static let defaultReadsFeed = PrimalFeed(name: "Nostr Reads", spec: "{\"kind\":\"reads\",\"scope\":\"follows\"}")
-    static let defaultNotesFeed = PrimalFeed(name: "Latest", spec: "{\"kind\":\"notes\",\"id\":\"latest\"}")
+    static let defaultReadsFeed = PrimalFeed(name: "Nostr Reads", spec: "{\"kinds\":[\(NostrKind.longForm.rawValue)],\"scope\":\"follows\"}")
+    static let defaultNotesFeed = PrimalFeed(name: "Latest", spec: "{\"kinds\":[\(NostrKind.text.rawValue)],\"id\":\"latest\"}")
     
     static func fetchPublisher(type: PrimalFeedType) -> AnyPublisher<[PrimalFeed], Never> {
         guard let ev = NostrObject.create(content: "{\"subkey\":\"\(type.subkey)\"}", kind: 30078)?.toJSON() else {

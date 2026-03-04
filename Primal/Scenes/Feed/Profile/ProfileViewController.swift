@@ -386,7 +386,7 @@ extension ProfileViewController: ProfileNavigationViewDelegate {
         
         PrimalFeed.addFeed(.init(
             name: "\(profile.data.firstIdentifier)'s feed",
-            spec: "{\"id\":\"feed\",\"kind\":\"notes\",\"pubkey\":\"c48e29f04b482cc01ca1f9ef8c86ef8318c059e0e9353235162f080f26e14c11\"}",
+            spec: "{\"id\":\"feed\",\"kinds\":[\(NostrKind.text.rawValue)],\"pubkey\":\"\(profile.data.pubkey)\"}",
             description: "Notes feed of \(profile.data.firstIdentifier)"
         ), type: .note, notifyBackend: true)
         

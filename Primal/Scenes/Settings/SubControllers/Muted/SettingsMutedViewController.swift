@@ -12,7 +12,7 @@ import Kingfisher
 class SettingsMutedFeedController: NoteFeedViewController {
     override var adjustedTopBarHeight: CGFloat { super.adjustedTopBarHeight + 60 }
     
-    init() { super.init(feed: .init(newFeed: .init(name: "Muted notes", spec: "{\"id\":\"muted-threads\",\"kind\":\"notes\"}"))) }
+    init() { super.init(feed: .init(newFeed: .init(name: "Muted notes", spec: "{\"id\":\"muted-threads\",\"kinds\":[\(NostrKind.text.rawValue)]}"))) }
     
     @MainActor required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     

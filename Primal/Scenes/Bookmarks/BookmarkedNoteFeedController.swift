@@ -14,7 +14,7 @@ final class BookmarkedNoteFeedController: NoteFeedViewController {
     init() {
         let feed = FeedManager(newFeed: .init(
             name: "Bookmarks",
-            spec: "{\"id\":\"feed\",\"kind\":\"notes\",\"notes\":\"bookmarks\",\"pubkey\":\"\(IdentityManager.instance.userHexPubkey)\"}"
+            spec: "{\"id\":\"feed\",\"kinds\":[\(NostrKind.text.rawValue)],\"notes\":\"bookmarks\",\"pubkey\":\"\(IdentityManager.instance.userHexPubkey)\"}"
         ))
         super.init(feed: feed)
         
