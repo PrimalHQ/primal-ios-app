@@ -34,7 +34,6 @@
 		939330FA29A3E370003954C2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 939330F929A3E370003954C2 /* Assets.xcassets */; };
 		939330FD29A3E370003954C2 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 939330FC29A3E370003954C2 /* Preview Assets.xcassets */; };
 		9393310729A3E370003954C2 /* PrimalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9393310629A3E370003954C2 /* PrimalTests.swift */; };
-		AA9CF3DB44709B5BC13CA5A8 /* GenerateAmountsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD61E893F7939D2AC33A6A4C /* GenerateAmountsTests.swift */; };
 		9393311129A3E370003954C2 /* PrimalUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9393311029A3E370003954C2 /* PrimalUITests.swift */; };
 		9393311329A3E370003954C2 /* PrimalUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9393311229A3E370003954C2 /* PrimalUITestsLaunchTests.swift */; };
 		9393312129A3E44D003954C2 /* GenericJSON in Frameworks */ = {isa = PBXBuildFile; productRef = 9393312029A3E44D003954C2 /* GenericJSON */; };
@@ -119,7 +118,6 @@
 		9E79D3A52A015BC9008404DB /* FeedButtons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E79D3A42A015BC9008404DB /* FeedButtons.swift */; };
 		9E83DF5F2A53308200F2C379 /* FLAnimatedImage in Frameworks */ = {isa = PBXBuildFile; productRef = 9E83DF5E2A53308200F2C379 /* FLAnimatedImage */; };
 		9E83DF622A545E3900F2C379 /* PopupZapSelectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E83DF612A545E3900F2C379 /* PopupZapSelectionViewController.swift */; };
-		B9CF41022F59B99900387448 /* PopupZapPollVoteViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9CF41012F59B99900387448 /* PopupZapPollVoteViewController.swift */; };
 		9E83DF652A54CB3200F2C379 /* LargeGradientIconButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E83DF642A54CB3200F2C379 /* LargeGradientIconButton.swift */; };
 		9E83DF672A54CEE200F2C379 /* ZapAmountSelectionButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E83DF662A54CEE200F2C379 /* ZapAmountSelectionButton.swift */; };
 		9E83DF6C2A573DF700F2C379 /* TextRepresenting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E83DF6B2A573DF700F2C379 /* TextRepresenting.swift */; };
@@ -214,6 +212,7 @@
 		9EF4BFCC2A8E57EF003396AA /* VerifiedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EF4BFCB2A8E57EF003396AA /* VerifiedView.swift */; };
 		9EF4BFCE2A93CE1B003396AA /* loadingSpinnerBlue.json in Resources */ = {isa = PBXBuildFile; fileRef = 9EF4BFCD2A93CE1B003396AA /* loadingSpinnerBlue.json */; };
 		9EF4BFD02A955FB5003396AA /* NewPostButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EF4BFCF2A955FB5003396AA /* NewPostButton.swift */; };
+		AA9CF3DB44709B5BC13CA5A8 /* GenerateAmountsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD61E893F7939D2AC33A6A4C /* GenerateAmountsTests.swift */; };
 		B90032852BD0183600ADD2E5 /* NoteZapsRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90032842BD0183600ADD2E5 /* NoteZapsRequest.swift */; };
 		B90032882BD11DEA00ADD2E5 /* NoteReactionsParentController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90032872BD11DEA00ADD2E5 /* NoteReactionsParentController.swift */; };
 		B900328A2BD266FF00ADD2E5 /* NoteZapsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90032892BD266FF00ADD2E5 /* NoteZapsViewController.swift */; };
@@ -619,6 +618,7 @@
 		B9CE4DD62B7F675F0060A1B8 /* CircularProgressBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9CE4DD52B7F675F0060A1B8 /* CircularProgressBar.swift */; };
 		B9CE4DDB2B8513410060A1B8 /* PopupUIPickerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9CE4DDA2B8513410060A1B8 /* PopupUIPickerController.swift */; };
 		B9CE4DDD2B8662BF0060A1B8 /* TermsAndConditionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9CE4DDC2B8662BF0060A1B8 /* TermsAndConditionsView.swift */; };
+		B9CF41022F59B99900387448 /* PopupZapPollVoteViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9CF41012F59B99900387448 /* PopupZapPollVoteViewController.swift */; };
 		B9D308B82D244212003F53BB /* MainThreadElementImageGalleryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9D308B72D244212003F53BB /* MainThreadElementImageGalleryCell.swift */; };
 		B9D331F32EE84A970023D541 /* RemoteSignerConnectionTrustCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9D331F22EE84A970023D541 /* RemoteSignerConnectionTrustCell.swift */; };
 		B9D331F52EE84E050023D541 /* RemoteSignerConnectionSimpleAccentCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9D331F42EE84DD80023D541 /* RemoteSignerConnectionSimpleAccentCell.swift */; };
@@ -836,7 +836,6 @@
 		939330FC29A3E370003954C2 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		9393310229A3E370003954C2 /* PrimalTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PrimalTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		9393310629A3E370003954C2 /* PrimalTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimalTests.swift; sourceTree = "<group>"; };
-		BD61E893F7939D2AC33A6A4C /* GenerateAmountsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenerateAmountsTests.swift; sourceTree = "<group>"; };
 		9393310C29A3E370003954C2 /* PrimalUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PrimalUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		9393311029A3E370003954C2 /* PrimalUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimalUITests.swift; sourceTree = "<group>"; };
 		9393311229A3E370003954C2 /* PrimalUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimalUITestsLaunchTests.swift; sourceTree = "<group>"; };
@@ -955,7 +954,6 @@
 		9E79D3A22A01530B008404DB /* Date+Extra.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Extra.swift"; sourceTree = "<group>"; };
 		9E79D3A42A015BC9008404DB /* FeedButtons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedButtons.swift; sourceTree = "<group>"; };
 		9E83DF612A545E3900F2C379 /* PopupZapSelectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupZapSelectionViewController.swift; sourceTree = "<group>"; };
-		B9CF41012F59B99900387448 /* PopupZapPollVoteViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupZapPollVoteViewController.swift; sourceTree = "<group>"; };
 		9E83DF642A54CB3200F2C379 /* LargeGradientIconButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LargeGradientIconButton.swift; sourceTree = "<group>"; };
 		9E83DF662A54CEE200F2C379 /* ZapAmountSelectionButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZapAmountSelectionButton.swift; sourceTree = "<group>"; };
 		9E83DF6B2A573DF700F2C379 /* TextRepresenting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextRepresenting.swift; sourceTree = "<group>"; };
@@ -1446,6 +1444,7 @@
 		B9CE4DD52B7F675F0060A1B8 /* CircularProgressBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircularProgressBar.swift; sourceTree = "<group>"; };
 		B9CE4DDA2B8513410060A1B8 /* PopupUIPickerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupUIPickerController.swift; sourceTree = "<group>"; };
 		B9CE4DDC2B8662BF0060A1B8 /* TermsAndConditionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TermsAndConditionsView.swift; sourceTree = "<group>"; };
+		B9CF41012F59B99900387448 /* PopupZapPollVoteViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupZapPollVoteViewController.swift; sourceTree = "<group>"; };
 		B9D308B72D244212003F53BB /* MainThreadElementImageGalleryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainThreadElementImageGalleryCell.swift; sourceTree = "<group>"; };
 		B9D331F22EE84A970023D541 /* RemoteSignerConnectionTrustCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSignerConnectionTrustCell.swift; sourceTree = "<group>"; };
 		B9D331F42EE84DD80023D541 /* RemoteSignerConnectionSimpleAccentCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSignerConnectionSimpleAccentCell.swift; sourceTree = "<group>"; };
@@ -1564,6 +1563,7 @@
 		B9FAC6552D3A996D00B57EF6 /* ThreadElementMusicPreviewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadElementMusicPreviewCell.swift; sourceTree = "<group>"; };
 		B9FAC6572D42B53A00B57EF6 /* SettingsWalletNWCController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsWalletNWCController.swift; sourceTree = "<group>"; };
 		B9FAC65A2D42C5FA00B57EF6 /* SettingsNewNWCController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsNewNWCController.swift; sourceTree = "<group>"; };
+		BD61E893F7939D2AC33A6A4C /* GenerateAmountsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenerateAmountsTests.swift; sourceTree = "<group>"; };
 		C1AF0026036532D4652C7322 /* MuteManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MuteManager.swift; sourceTree = "<group>"; };
 		C1AF0C03B5BEAE4C6902AD25 /* NostrScheme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NostrScheme.swift; sourceTree = "<group>"; };
 		C1AF0E693616ED45B0E46466 /* PrimalScheme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PrimalScheme.swift; sourceTree = "<group>"; };
@@ -4931,7 +4931,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.0.8;
+				MARKETING_VERSION = 3.0.9;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -4980,7 +4980,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.0.8;
+				MARKETING_VERSION = 3.0.9;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

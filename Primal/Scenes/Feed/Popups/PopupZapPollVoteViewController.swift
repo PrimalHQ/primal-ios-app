@@ -321,18 +321,6 @@ private extension PopupZapPollVoteViewController {
         ])
         keyboardSpacerView.updateHeightCancellable().store(in: &cancellables)
 
-        KeyboardManager.instance.$keyboardHeight.map { $0 > 5 }.sink(receiveValue: { [weak self] keyboardShown in
-            self?.usdLabel.isHidden = keyboardShown
-            if keyboardShown {
-                mainStack.distribution = .fill
-                mainStack.spacing = 12
-            } else {
-                mainStack.distribution = .equalSpacing
-                mainStack.spacing = UIStackView.spacingUseDefault
-            }
-        })
-        .store(in: &cancellables)
-
         view.addSubview(bodyStack)
         bodyStack.pinToSuperview(edges: .top, padding: 16).pinToSuperview(edges: .horizontal, padding: 32).pinToSuperview(edges: .bottom)
         voteButton.bottomAnchor.constraint(lessThanOrEqualTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
