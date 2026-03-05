@@ -168,36 +168,47 @@ final class PollVotingOptionView: UIButton, Themeable {
 // MARK: - PollResultOptionView
 
 final class PollResultOptionView: UIView, Themeable {
+    private let progressParent = UIView()
     private let progressBar = UIView()
     private let label = UILabel()
     private let percentLabel = UILabel()
-    private var progressWidthConstraint: NSLayoutConstraint?
 
     private var isSelected = false
-    private var percentage: Double = 0
+    private var percentage: CGFloat = 0
 
+    private var progressConstraint: NSLayoutConstraint? {
+        didSet {
+            oldValue?.isActive = false
+            progressConstraint?.priority = .defaultLow
+            progressConstraint?.isActive = true
+        }
+    }
+    
     init() {
         super.init(frame: .zero)
 
-        layer.cornerRadius = 8
-        clipsToBounds = true
+        progressBar.layer.cornerRadius = 6
+        progressParent.addSubview(progressBar)
+        progressBar.pinToSuperview(edges: .leading).pinToSuperview(edges: .vertical, padding: 2)
+        progressBar.widthAnchor.constraint(greaterThanOrEqualToConstant: 6).isActive = true
 
-        addSubview(progressBar)
-        progressBar.pinToSuperview(edges: [.leading, .vertical])
-
+        progressParent.addSubview(label)
+        label.pinToSuperview(edges: .horizontal, padding: 12).centerToSuperview(axis: .vertical)
         label.font = .appFont(withSize: 15, weight: .regular)
-        label.numberOfLines = 0
 
-        percentLabel.font = .appFont(withSize: 14, weight: .semibold)
+        percentLabel.font = .appFont(withSize: 15, weight: .bold)
         percentLabel.setContentHuggingPriority(.required, for: .horizontal)
         percentLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
 
-        let hStack = UIStackView(arrangedSubviews: [label, percentLabel])
+        let hStack = UIStackView(arrangedSubviews: [progressParent, percentLabel])
         hStack.alignment = .center
         hStack.spacing = 8
 
         addSubview(hStack)
-        hStack.pinToSuperview(padding: 12)
+        hStack.pinToSuperview()
+        
+        constrainToSize(height: 36)
+        progressParent.constrainToSize(height: 36)
 
         updateTheme()
     }
@@ -210,22 +221,24 @@ final class PollResultOptionView: UIView, Themeable {
 
         label.text = text
         label.font = .appFont(withSize: 15, weight: isSelected ? .bold : .regular)
-        percentLabel.text = "\(Int(round(percentage * 100)))%"
 
-        progressWidthConstraint?.isActive = false
-        progressWidthConstraint = progressBar.widthAnchor.constraint(equalTo: widthAnchor, multiplier: max(CGFloat(percentage), 0.001))
-        progressWidthConstraint?.isActive = true
+        let pct = percentage * 100
+        if pct == floor(pct) {
+            percentLabel.text = "\(Int(pct))%"
+        } else {
+            percentLabel.text = String(format: "%.1f%%", pct)
+        }
 
-        layer.borderWidth = isSelected ? 1.5 : 0
+        progressConstraint = progressBar.widthAnchor.constraint(equalTo: progressParent.widthAnchor, multiplier: max(percentage, 0.001))
+        progressBar.layer.cornerRadius = progressParent.frame.width * percentage > 12 ? 6 : 3
 
         updateTheme()
     }
 
     func updateTheme() {
-        backgroundColor = .background2
+        backgroundColor = .clear
         label.textColor = .foreground
-        percentLabel.textColor = .foreground3
-        progressBar.backgroundColor = isSelected ? UIColor.accent.withAlphaComponent(0.2) : UIColor.foreground.withAlphaComponent(0.08)
-        layer.borderColor = isSelected ? UIColor.accent.cgColor : UIColor.clear.cgColor
+        percentLabel.textColor = .foreground
+        progressBar.backgroundColor = isSelected ? .accent : UIColor.foreground.withAlphaComponent(0.15)
     }
 }
