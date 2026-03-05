@@ -27,8 +27,8 @@ class ThreadElementPollCell: ThreadElementBaseCell, RegularFeedElementCell {
     override func update(_ content: ParsedContent) {
         super.update(content)
 
-        guard let poll = content.poll else { return }
-        pollView.updateForPoll(poll)
+        guard content.poll != nil else { return }
+        pollView.updateForContent(content)
         pollView.updateTheme()
     }
 }

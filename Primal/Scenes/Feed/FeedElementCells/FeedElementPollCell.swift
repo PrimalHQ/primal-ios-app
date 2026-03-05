@@ -25,8 +25,8 @@ class FeedElementPollCell: FeedElementBaseCell, RegularFeedElementCell {
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
     override func update(_ content: ParsedContent) {
-        guard let poll = content.poll else { return }
-        pollView.updateForPoll(poll)
+        guard content.poll != nil else { return }
+        pollView.updateForContent(content)
         pollView.updateTheme()
     }
 }
