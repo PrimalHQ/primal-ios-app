@@ -163,9 +163,6 @@ private extension PopupZapPollVoteViewController {
 
     func setup() {
         view.backgroundColor = .background4
-        if let pc = presentationController as? UISheetPresentationController {
-            pc.detents = [.custom(resolver: { _ in 540 })]
-        }
 
         let pullBar = UIView()
         pullBar.constrainToSize(width: 60, height: 5)
@@ -242,11 +239,11 @@ private extension PopupZapPollVoteViewController {
         }
         customAmountLabel.text = rangeText
         customAmountLabel.font = .appFont(withSize: 14, weight: .regular)
-        customAmountLabel.textColor = .foreground5
+        customAmountLabel.textColor = .foreground4
         customAmountLabel.textAlignment = .center
         
         contentViews.append(customAmountLabel)
-        contentViews.append(SpacerView(height: 4, priority: .required))
+        contentViews.append(SpacerView(height: 10, priority: .required))
 
         if showCustomAmount {
 
@@ -292,6 +289,19 @@ private extension PopupZapPollVoteViewController {
         // Layout
         let contentStack = UIStackView(axis: .vertical, contentViews)
         contentStack.arrangedSubviews.compactMap({ $0 as? UIStackView }).forEach { $0.pinToSuperview(edges: .horizontal) }
+
+        // Compute dynamic sheet height based on content
+        let contentWidth = UIScreen.main.bounds.width - 64 // 32 padding each side
+        let contentHeight = contentStack.systemLayoutSizeFitting(
+            CGSize(width: contentWidth, height: UIView.layoutFittingCompressedSize.height),
+            withHorizontalFittingPriority: .required,
+            verticalFittingPriority: .fittingSizeLevel
+        ).height
+        
+        let sheetHeight = contentHeight + 180
+        if let pc = presentationController as? UISheetPresentationController {
+            pc.detents = [.custom(resolver: { _ in sheetHeight })]
+        }
 
         let mainStack = UIStackView(axis: .vertical, [
             pullBar,
