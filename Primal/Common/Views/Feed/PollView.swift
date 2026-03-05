@@ -114,7 +114,7 @@ private extension PollView {
             return
         }
 
-        let popup = PopupZapSelectionViewController(entityToZap: pollAuthor) { amount, message in
+        let popup = PopupZapPollVoteViewController(valueMinimum: poll.valueMinimum, valueMaximum: poll.valueMaximum) { amount, message in
             let presenter = RootViewController.instance.presentedViewController ?? RootViewController.instance
 
             if let min = poll.valueMinimum, amount < min {

@@ -34,6 +34,7 @@
 		939330FA29A3E370003954C2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 939330F929A3E370003954C2 /* Assets.xcassets */; };
 		939330FD29A3E370003954C2 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 939330FC29A3E370003954C2 /* Preview Assets.xcassets */; };
 		9393310729A3E370003954C2 /* PrimalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9393310629A3E370003954C2 /* PrimalTests.swift */; };
+		AA9CF3DB44709B5BC13CA5A8 /* GenerateAmountsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD61E893F7939D2AC33A6A4C /* GenerateAmountsTests.swift */; };
 		9393311129A3E370003954C2 /* PrimalUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9393311029A3E370003954C2 /* PrimalUITests.swift */; };
 		9393311329A3E370003954C2 /* PrimalUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9393311229A3E370003954C2 /* PrimalUITestsLaunchTests.swift */; };
 		9393312129A3E44D003954C2 /* GenericJSON in Frameworks */ = {isa = PBXBuildFile; productRef = 9393312029A3E44D003954C2 /* GenericJSON */; };
@@ -118,6 +119,7 @@
 		9E79D3A52A015BC9008404DB /* FeedButtons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E79D3A42A015BC9008404DB /* FeedButtons.swift */; };
 		9E83DF5F2A53308200F2C379 /* FLAnimatedImage in Frameworks */ = {isa = PBXBuildFile; productRef = 9E83DF5E2A53308200F2C379 /* FLAnimatedImage */; };
 		9E83DF622A545E3900F2C379 /* PopupZapSelectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E83DF612A545E3900F2C379 /* PopupZapSelectionViewController.swift */; };
+		B9CF41022F59B99900387448 /* PopupZapPollVoteViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9CF41012F59B99900387448 /* PopupZapPollVoteViewController.swift */; };
 		9E83DF652A54CB3200F2C379 /* LargeGradientIconButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E83DF642A54CB3200F2C379 /* LargeGradientIconButton.swift */; };
 		9E83DF672A54CEE200F2C379 /* ZapAmountSelectionButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E83DF662A54CEE200F2C379 /* ZapAmountSelectionButton.swift */; };
 		9E83DF6C2A573DF700F2C379 /* TextRepresenting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E83DF6B2A573DF700F2C379 /* TextRepresenting.swift */; };
@@ -834,6 +836,7 @@
 		939330FC29A3E370003954C2 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		9393310229A3E370003954C2 /* PrimalTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PrimalTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		9393310629A3E370003954C2 /* PrimalTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimalTests.swift; sourceTree = "<group>"; };
+		BD61E893F7939D2AC33A6A4C /* GenerateAmountsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenerateAmountsTests.swift; sourceTree = "<group>"; };
 		9393310C29A3E370003954C2 /* PrimalUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PrimalUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		9393311029A3E370003954C2 /* PrimalUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimalUITests.swift; sourceTree = "<group>"; };
 		9393311229A3E370003954C2 /* PrimalUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimalUITestsLaunchTests.swift; sourceTree = "<group>"; };
@@ -952,6 +955,7 @@
 		9E79D3A22A01530B008404DB /* Date+Extra.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Extra.swift"; sourceTree = "<group>"; };
 		9E79D3A42A015BC9008404DB /* FeedButtons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedButtons.swift; sourceTree = "<group>"; };
 		9E83DF612A545E3900F2C379 /* PopupZapSelectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupZapSelectionViewController.swift; sourceTree = "<group>"; };
+		B9CF41012F59B99900387448 /* PopupZapPollVoteViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupZapPollVoteViewController.swift; sourceTree = "<group>"; };
 		9E83DF642A54CB3200F2C379 /* LargeGradientIconButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LargeGradientIconButton.swift; sourceTree = "<group>"; };
 		9E83DF662A54CEE200F2C379 /* ZapAmountSelectionButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZapAmountSelectionButton.swift; sourceTree = "<group>"; };
 		9E83DF6B2A573DF700F2C379 /* TextRepresenting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextRepresenting.swift; sourceTree = "<group>"; };
@@ -1791,6 +1795,7 @@
 			isa = PBXGroup;
 			children = (
 				933DBDAD2A112593008DCF1F /* Common */,
+				BD61E893F7939D2AC33A6A4C /* GenerateAmountsTests.swift */,
 				9393310629A3E370003954C2 /* PrimalTests.swift */,
 			);
 			path = PrimalTests;
@@ -2228,6 +2233,7 @@
 				9E83DF632A54CB1F00F2C379 /* Views */,
 				9ED4160C2A48744600892235 /* PopupMenuViewController.swift */,
 				9E83DF612A545E3900F2C379 /* PopupZapSelectionViewController.swift */,
+				B9CF41012F59B99900387448 /* PopupZapPollVoteViewController.swift */,
 				B9009B562B0FBF41002B0613 /* FullScreenVideoPlayerController.swift */,
 				B9CE4DCE2B7A63330060A1B8 /* PopupDatePickerController.swift */,
 				B9CE4DDA2B8513410060A1B8 /* PopupUIPickerController.swift */,
@@ -4081,6 +4087,7 @@
 				9EE07ABC2A1CFD4F00FB6C86 /* ThemedColors.swift in Sources */,
 				93CACB1329F7D136003BBCE5 /* Keys.swift in Sources */,
 				9E83DF622A545E3900F2C379 /* PopupZapSelectionViewController.swift in Sources */,
+				B9CF41022F59B99900387448 /* PopupZapPollVoteViewController.swift in Sources */,
 				9E79D3A32A01530B008404DB /* Date+Extra.swift in Sources */,
 				93CACB0129F525B6003BBCE5 /* mem.c in Sources */,
 				B9C6D2402CAC53E800B2EEBE /* ZappingViewController.swift in Sources */,
@@ -4702,6 +4709,7 @@
 			files = (
 				9E8834CE2A37BFB9005DB548 /* NSRangeTests.swift in Sources */,
 				B94B18A02D5E233600A932CE /* RegexTests.swift in Sources */,
+				AA9CF3DB44709B5BC13CA5A8 /* GenerateAmountsTests.swift in Sources */,
 				9393310729A3E370003954C2 /* PrimalTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

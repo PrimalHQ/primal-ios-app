@@ -682,9 +682,12 @@ private extension PostingTextViewManager {
 
                 let isUploadingImages = images.contains { if case .uploading = $0.state { true } else { false } }
                 let hasContent = !isEmpty || !images.isEmpty
-                let hasPollWithEnoughChoices = pollOptions == nil || (pollOptions?.options.count ?? 0) >= 2
+                var pollWellFormated = pollOptions == nil || (pollOptions?.options.count ?? 0) >= 2
+                if case .zap(let min, let max) = pollOptions?.type {
+                    pollWellFormated = pollWellFormated && min <= max && min >= 0 && max >= 0
+                }
 
-                postButtonEnabledState = hasContent && !isUploadingImages && hasPollWithEnoughChoices
+                postButtonEnabledState = hasContent && !isUploadingImages && pollWellFormated
                 postButtonTitle = isUploadingImages ? "Uploading..." : defaultPostButtonTitle
             }
             .store(in: &cancellables)
