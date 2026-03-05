@@ -322,6 +322,13 @@ extension NostrObject {
         return createNostrObjectAndSign(pubkey: pubkey, privkey: secret, content: base64, kind: 23194, tags: [["p", serverPubkey]])
     }
     
+    static func pollVote(pollEventId: String, pollAuthorPubkey: String, optionId: String) -> NostrObject? {
+        createNostrObject(content: "", kind: 1018, tags: [
+            ["e", pollEventId],
+            ["response", optionId]
+        ])
+    }
+
     static func liveComment(live: ProcessedLiveEvent, comment: String) -> NostrObject? {
         let relay = IdentityManager.instance.userRelays?.first(where: { $0.value.write })?.key ?? ""
         return createNostrObject(content: comment, kind: NostrKind.liveComment.rawValue, tags: [

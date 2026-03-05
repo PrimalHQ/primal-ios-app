@@ -441,6 +441,8 @@ extension PostRequestResult {
             Task {
                 await BlossomServerManager.instance.addBlossomInfo(payload)
             }
+        case .pollStats:
+            PollManager.instance.parsePollStatsContent(contentString)
         default:
             events.append(payload)
         }
