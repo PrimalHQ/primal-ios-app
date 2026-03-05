@@ -113,18 +113,35 @@ private extension PopupZapPollVoteViewController {
         return inputAmount ?? 0
     }
 
+    var isInputOutOfRange: Bool {
+        guard selectedAmountIndex == nil, let amount = inputAmount, amount > 0 else { return false }
+        if let min = valueMinimum, amount < min { return true }
+        if let max = valueMaximum, amount > max { return true }
+        return false
+    }
+
     func updateView() {
         for (index, button) in buttons.enumerated() {
             button.isChosen = index == selectedAmountIndex
         }
 
+        let outOfRange = isInputOutOfRange
+
         if selectedAmountIndex != nil {
             amountParent.layer.borderWidth = 0
+            amountParent.layer.borderColor = UIColor.accent.cgColor
             amountParent.backgroundColor = .background3
+        } else if outOfRange {
+            amountParent.backgroundColor = .background2
+            amountParent.layer.borderWidth = 1
+            amountParent.layer.borderColor = UIColor.failureRed.cgColor
         } else {
             amountParent.backgroundColor = .background2
             amountParent.layer.borderWidth = 1
+            amountParent.layer.borderColor = UIColor.accent.cgColor
         }
+
+        voteButton.isEnabled = !outOfRange
 
         let amount = selectedAmount
 
