@@ -88,7 +88,7 @@ final class PollManager {
             .store(in: &cancellables)
     }
 
-    // MARK: - Vote
+    // MARK: - Vote (regular poll)
 
     func vote(pollEventId: String, pollAuthorPubkey: String, optionId: String) {
         guard LoginManager.instance.method() == .nsec else { return }
@@ -118,6 +118,41 @@ final class PollManager {
                 self?.fetchPollVotes(pollEventId)
             }
         })
+    }
+
+    // MARK: - Zap Vote (zap poll)
+
+    func zapVote(pollEventId: String, pollAuthor: PrimalUser, optionId: String, sats: Int, message: String) {
+        guard !hasVoted(pollEventId) else { return }
+
+        guard let zap = NostrObject.zapPollVote(
+            note: message,
+            sats: sats,
+            pollEventId: pollEventId,
+            pollAuthorPubkey: pollAuthor.pubkey,
+            optionId: optionId
+        ) else {
+            fetchPollVotes(pollEventId)
+            return
+        }
+        
+        userVotes[pollEventId] = optionId
+
+        // Optimistic update: increment votes and sats
+        var options = pollStats[pollEventId]?.options ?? [:]
+        var optionStats = options[optionId] ?? PollOptionStats(votes: 0, satszapped: 0)
+        optionStats = PollOptionStats(votes: optionStats.votes + 1, satszapped: optionStats.satszapped + sats)
+        options[optionId] = optionStats
+        pollStats[pollEventId] = PollStats(eventId: pollEventId, options: options)
+
+        Task { @MainActor in
+            do {
+                try await WalletManager.instance.zapUser(pollAuthor, sats: sats, note: message, zap: zap)
+            } catch {
+                userVotes[pollEventId] = nil
+                fetchPollVotes(pollEventId)
+            }
+        }
     }
 
     // MARK: - Process responses

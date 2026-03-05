@@ -16,7 +16,7 @@ final class PollView: UIView, Themeable {
 
     private var poll: ParsedPoll?
     private var eventId: String?
-    private var authorPubkey: String?
+    private var authorUser: PrimalUser?
     private var cancellables: Set<AnyCancellable> = []
 
     init() {
@@ -31,7 +31,7 @@ final class PollView: UIView, Themeable {
 
         self.poll = poll
         self.eventId = content.post.id
-        self.authorPubkey = content.post.pubkey
+        self.authorUser = content.user.data
 
         cancellables = []
 
@@ -85,8 +85,12 @@ private extension PollView {
                 let row = PollVotingOptionView()
                 row.configure(text: option.label)
                 row.addAction(.init(handler: { [weak self] _ in
-                    guard let self, let eventId = self.eventId, let authorPubkey = self.authorPubkey else { return }
-                    PollManager.instance.vote(pollEventId: eventId, pollAuthorPubkey: authorPubkey, optionId: option.id)
+                    guard let self, let eventId = self.eventId, let authorUser = self.authorUser else { return }
+                    if poll.isZapPoll {
+                        self.presentZapVote(pollEventId: eventId, pollAuthor: authorUser, optionId: option.id, poll: poll)
+                    } else {
+                        PollManager.instance.vote(pollEventId: eventId, pollAuthorPubkey: authorUser.pubkey, optionId: option.id)
+                    }
                 }), for: .touchUpInside)
                 optionsStack.addArrangedSubview(row)
             }
@@ -100,6 +104,36 @@ private extension PollView {
             totalVotesLabel.isHidden = true
             separatorLabel.isHidden = true
         }
+    }
+
+    func presentZapVote(pollEventId: String, pollAuthor: PrimalUser, optionId: String, poll: ParsedPoll) {
+        let vc = RootViewController.instance.presentedViewController ?? RootViewController.instance
+
+        if pollAuthor.address == nil {
+            vc.showErrorMessage(title: "Can't Zap", "The poll author didn't set up their lightning wallet")
+            return
+        }
+
+        let popup = PopupZapSelectionViewController(entityToZap: pollAuthor) { amount, message in
+            let presenter = RootViewController.instance.presentedViewController ?? RootViewController.instance
+
+            if let min = poll.valueMinimum, amount < min {
+                presenter.showErrorMessage(title: "Invalid Amount", "Minimum zap for this poll is \(min) sats")
+                return
+            }
+            if let max = poll.valueMaximum, amount > max {
+                presenter.showErrorMessage(title: "Invalid Amount", "Maximum zap for this poll is \(max) sats")
+                return
+            }
+
+            if WalletManager.instance.balance < amount {
+                presenter.showErrorMessage("Insufficient funds for this zap. Check your wallet.")
+                return
+            }
+
+            PollManager.instance.zapVote(pollEventId: pollEventId, pollAuthor: pollAuthor, optionId: optionId, sats: amount, message: message)
+        }
+        vc.present(popup, animated: true)
     }
 
     func updateExpiration(_ poll: ParsedPoll) {

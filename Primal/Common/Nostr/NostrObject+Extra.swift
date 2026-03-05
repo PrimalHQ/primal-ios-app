@@ -329,6 +329,21 @@ extension NostrObject {
         ])
     }
 
+    static func zapPollVote(note: String, sats: Int, pollEventId: String, pollAuthorPubkey: String, optionId: String) -> NostrObject? {
+        var relays = Array((IdentityManager.instance.userRelays ?? [:]).keys)
+        if relays.isEmpty {
+            relays = bootstrap_relays
+        }
+
+        return createNostrObject(content: note, kind: 9734, tags: [
+            ["e", pollEventId],
+            ["p", pollAuthorPubkey],
+            ["poll_option", optionId],
+            ["amount", "\(sats)000"],
+            ["relays"] + relays
+        ])
+    }
+
     static func liveComment(live: ProcessedLiveEvent, comment: String) -> NostrObject? {
         let relay = IdentityManager.instance.userRelays?.first(where: { $0.value.write })?.key ?? ""
         return createNostrObject(content: comment, kind: NostrKind.liveComment.rawValue, tags: [
