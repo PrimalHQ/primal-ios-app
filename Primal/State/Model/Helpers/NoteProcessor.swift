@@ -370,35 +370,6 @@ class NoteProcessor: MetadataCoding {
                 }
             }
         }
-        
-        // MARK: - Parsing poll data
-        if post.kind == NostrKind.poll.rawValue || post.kind == NostrKind.zapPoll.rawValue {
-            let options: [ParsedPoll.Option] = post.tags.compactMap { tag in
-                guard tag.count >= 3, tag[0] == "option" else { return nil }
-                return .init(id: tag[1], label: tag[2])
-            }
-
-            let pollType = post.tags.first(where: { $0.first == "polltype" })?[safe: 1] ?? "singlechoice"
-
-            let endsAt: Date? = {
-                guard let str = post.tags.first(where: { $0.first == "endsAt" })?[safe: 1], let ts = TimeInterval(str) else { return nil }
-                return Date(timeIntervalSince1970: ts)
-            }()
-
-            let valueMinimum = post.tags.first(where: { $0.first == "value_minimum" }).flatMap { $0[safe: 1] }.flatMap { Int($0) }
-            let valueMaximum = post.tags.first(where: { $0.first == "value_maximum" }).flatMap { $0[safe: 1] }.flatMap { Int($0) }
-
-            if !options.isEmpty {
-                p.poll = ParsedPoll(
-                    options: options,
-                    pollType: pollType,
-                    endsAt: endsAt,
-                    isZapPoll: post.kind == NostrKind.zapPoll.rawValue,
-                    valueMinimum: valueMinimum,
-                    valueMaximum: valueMaximum
-                )
-            }
-        }
 
         // MARK: - Editing text
         
@@ -488,7 +459,29 @@ class NoteProcessor: MetadataCoding {
         p.highlightEvents = highlights.map { $0.highlight }
         p.text = text
         p.buildContentString(style: contentStyle)
-        
+
+        // MARK: - Parsing poll data
+        if post.kind == NostrKind.poll.rawValue || post.kind == NostrKind.zapPoll.rawValue {
+            let options: [ParsedPoll.Option] = post.tags.compactMap { tag in
+                guard tag.count >= 3, tag[0] == "option" else { return nil }
+                return .init(id: tag[1], label: tag[2])
+            }
+            let pollType = post.tags.first(where: { $0.first == "polltype" })?[safe: 1] ?? "singlechoice"
+            let endsAt: Date? = post.tags.first(where: { $0.first == "endsAt" })
+                .flatMap { $0[safe: 1] }.flatMap { TimeInterval($0) }
+                .map { Date(timeIntervalSince1970: $0) }
+            let valueMinimum = post.tags.first(where: { $0.first == "value_minimum" }).flatMap { $0[safe: 1] }.flatMap { Int($0) }
+            let valueMaximum = post.tags.first(where: { $0.first == "value_maximum" }).flatMap { $0[safe: 1] }.flatMap { Int($0) }
+
+            if !options.isEmpty {
+                p.poll = ParsedPoll(
+                    options: options, pollType: pollType, endsAt: endsAt,
+                    isZapPoll: post.kind == NostrKind.zapPoll.rawValue,
+                    valueMinimum: valueMinimum, valueMaximum: valueMaximum
+                )
+            }
+        }
+
         return p
     }
     

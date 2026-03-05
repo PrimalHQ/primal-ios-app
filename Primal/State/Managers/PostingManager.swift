@@ -92,7 +92,8 @@ final class PostingManager {
         
         var notifiedEvs: Set<String> = []
         postedEvent.sink { obj in
-            if obj.kind != NostrKind.text.rawValue { return }
+            let kinds = [NostrKind.text, .zapPoll, .poll].map { $0.rawValue }
+            if !kinds.contains(obj.kind) { return }
             if notifiedEvs.contains(obj.id) { return }
             notifiedEvs.insert(obj.id)
             

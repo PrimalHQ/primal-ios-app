@@ -9,6 +9,7 @@ import Combine
 import UIKit
 import AVKit
 import NostrSDK
+import GenericJSON
 
 extension UIButton.Configuration {
     static func navChevronButton(title: String) -> UIButton.Configuration {
@@ -66,7 +67,6 @@ final class HomeFeedViewController: UIViewController, Themeable {
             guard let self else { return }
             present(FeedPickerController(currentFeed: currentFeed, type: .note, callback: { [weak self] feed in
                 self?.setFeed(feed)
-                self?.pageVC.setViewControllers([HomeFeedChildController(feed: .init(newFeed: feed))], direction: .forward, animated: false)
             }), animated: true)
         }), for: .touchUpInside)
         
@@ -90,7 +90,6 @@ final class HomeFeedViewController: UIViewController, Themeable {
         
         navigationItem.rightBarButtonItem = customSearchButton()
         updateTitle()
-        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -133,7 +132,7 @@ final class HomeFeedViewController: UIViewController, Themeable {
     func setFeed(_ feed: PrimalFeed) {
         currentFeed = feed
         navTitleView.title = feed.name
-//        pageVC.setViewControllers([HomeFeedChildController(feed: .init(feed: feed))], direction: .forward, animated: false)
+        pageVC.setViewControllers([HomeFeedChildController(feed: .init(newFeed: feed))], direction: .forward, animated: false)
     }
     
     func feedToLeftOfCurrentFeed() -> PrimalFeed? {
@@ -144,7 +143,7 @@ final class HomeFeedViewController: UIViewController, Themeable {
     func feedToLeftOfFeed(_ feed: PrimalFeed?) -> PrimalFeed? {
         let allFeeds = PrimalFeed.getActiveFeeds(.note)
         
-        guard let index = allFeeds.firstIndex(where: { $0.spec == feed?.spec }) else { return nil }
+        guard let index = allFeeds.firstIndex(where: { $0.hasEqualSpec(feed) }) else { return nil }
         
         return allFeeds[safe: (allFeeds.count + index - 1) % allFeeds.count]
     }
@@ -157,7 +156,7 @@ final class HomeFeedViewController: UIViewController, Themeable {
     func feedToRightOfFeed(_ feed: PrimalFeed?) -> PrimalFeed? {
         let allFeeds = PrimalFeed.getActiveFeeds(.note)
         
-        guard let index = allFeeds.firstIndex(where: { $0.spec == feed?.spec }) else { return nil }
+        guard let index = allFeeds.firstIndex(where: { $0.hasEqualSpec(feed) }) else { return nil }
         
         return allFeeds[safe: (index + 1) % allFeeds.count]
     }
@@ -194,7 +193,7 @@ extension HomeFeedViewController: UIPageViewControllerDelegate {
         
         guard
             let articleFeed = pageViewController.viewControllers?.first as? HomeFeedChildController,
-            let feed = allFeeds.first(where: { $0.spec == articleFeed.feed.newFeed?.spec })
+            let feed = allFeeds.first(where: { $0.hasEqualSpec(articleFeed.feed.newFeed) })
         else { return }
         
         DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
@@ -212,4 +211,14 @@ extension HomeFeedViewController: DropdownNavigationViewGestureController {
     func feedNameRightOfCurrentFeed() -> String? {
         feedToRightOfCurrentFeed()?.name
     }
+}
+
+extension PrimalFeed {
+    func hasEqualSpec(_ other: PrimalFeed?) -> Bool {
+        guard let other else { return false }
+        guard spec != other.spec else { return true }
+        return specJSON == other.specJSON
+    }
+    
+    var specJSON: [String: JSON]? { spec.decode() }
 }

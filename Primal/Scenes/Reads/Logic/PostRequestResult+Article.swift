@@ -85,19 +85,33 @@ struct PrimalFeed: Codable {
         "reads": [NostrKind.longForm.rawValue],
     ]
 
-    /// Migrates legacy specs using `"kind":"notes"` / `"kind":"reads"` to `"kinds":[1]` / `"kinds":[30023]`
-    func migratingKindToKinds() -> PrimalFeed {
+    /// Migrates legacy `"kind"` to `"kinds"` array and adds poll kinds (1068, 6969) alongside kind 1
+    func migratingToMultiKind() -> PrimalFeed {
         guard let data = spec.data(using: .utf8),
-              var json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-              let kind = json["kind"] as? String,
-              json["kinds"] == nil,
-              let intKinds = Self.kindToKinds[kind]
+              var json = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
         else { return self }
 
-        json.removeValue(forKey: "kind")
-        json["kinds"] = intKinds
+        var didEdit = false
+        // Migrate legacy "kind" string to "kinds" array
+        if let kind = json["kind"] as? String, json["kinds"] == nil, let intKinds = Self.kindToKinds[kind] {
+            json.removeValue(forKey: "kind")
+            json["kinds"] = intKinds
+            didEdit = true
+        }
 
-        guard let newData = try? JSONSerialization.data(withJSONObject: json),
+        // Add poll kinds alongside kind 1
+        if var kinds = json["kinds"] as? [Int], kinds.contains(NostrKind.text.rawValue) {
+            let pollKinds = [NostrKind.poll.rawValue, NostrKind.zapPoll.rawValue]
+            let kindsToAdd = pollKinds.filter { !kinds.contains($0) }
+            if !kindsToAdd.isEmpty {
+                kinds.append(contentsOf: kindsToAdd)
+                json["kinds"] = kinds
+                didEdit = true
+            }
+        }
+
+        guard didEdit,
+              let newData = try? JSONSerialization.data(withJSONObject: json),
               let newSpec = String(data: newData, encoding: .utf8)
         else { return self }
 

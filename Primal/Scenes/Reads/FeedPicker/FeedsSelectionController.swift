@@ -117,7 +117,7 @@ extension PrimalFeed {
                 return UserDefaults.standard.string(forKey: allReadsKey)?.decode() ?? []
             }
         }()
-        return feeds.map { $0.migratingKindToKinds() }
+        return feeds.map { $0.migratingToMultiKind() }
     }
     
     static func getActiveFeeds(_ type: PrimalFeedType) -> [PrimalFeed] {
@@ -125,7 +125,7 @@ extension PrimalFeed {
     }
     
     static let defaultReadsFeed = PrimalFeed(name: "Nostr Reads", spec: "{\"kinds\":[\(NostrKind.longForm.rawValue)],\"scope\":\"follows\"}")
-    static let defaultNotesFeed = PrimalFeed(name: "Latest", spec: "{\"kinds\":[\(NostrKind.text.rawValue)],\"id\":\"latest\"}")
+    static let defaultNotesFeed = PrimalFeed(name: "Latest", spec: "{\"kinds\":[\(NostrKind.text.rawValue),\(NostrKind.poll.rawValue),\(NostrKind.zapPoll.rawValue)],\"id\":\"latest\"}")
     
     static func fetchPublisher(type: PrimalFeedType) -> AnyPublisher<[PrimalFeed], Never> {
         guard let ev = NostrObject.create(content: "{\"subkey\":\"\(type.subkey)\"}", kind: 30078)?.toJSON() else {

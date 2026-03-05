@@ -42,7 +42,7 @@ final class FeedManager {
     @Published var newPostObjects: [ParsedContent] = []
     @Published var newPosts: (Int, [ParsedUser]) = (0, [])
     
-    @Published var newFeed: PrimalFeed?
+    var newFeed: PrimalFeed?
     var profilePubkey: String?
     @Published var didReachEnd = false
     
@@ -400,7 +400,7 @@ private extension FeedManager {
         var payload: [String: JSON] = [
             "spec": .string(feed.spec),
             "user_pubkey": .string(IdentityManager.instance.userHexPubkey),
-            "limit": .number(Double(20))
+            "limit": 20
         ]
         
         if let until: Double = paginationInfo?.since {
@@ -412,24 +412,19 @@ private extension FeedManager {
     }
     
     func generateProfileFeedRequest(_ profileId: String) -> (String, JSON) {
+        let notes = withRepliesOverride == true ? "replies" : "authored"
+        
         var payload: [String: JSON] = [
-            "pubkey": .string(profileId),
+            "spec": .string("{\"id\":\"feed\",\"kinds\":[1,1068,6969],\"notes\":\"\(notes)\",\"pubkey\":\"\(profileId)\"}"),
             "user_pubkey": .string(IdentityManager.instance.userHexPubkey),
-            "notes": .string("authored"),
-            "limit": .number(40)
+            "limit": 40
         ]
         
-        if let until = paginationInfo?.since {
+        if let until: Double = paginationInfo?.since {
             payload["until"] = .number(until.rounded())
-        } else if let last = parsedPosts.last {
-            let until: Double = last.reposted?.date.timeIntervalSince1970 ?? last.post.created_at
-            payload["until"] = .number(until.rounded())
+            payload["offset"] = 1
         }
         
-        if withRepliesOverride == true {
-            payload["include_replies"] = true
-        }
-        
-        return ("feed", .object(payload))
+        return ("multi_kind_mega_feed_directive", .object(payload))
     }
 }

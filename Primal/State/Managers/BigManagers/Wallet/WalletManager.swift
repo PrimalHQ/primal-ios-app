@@ -484,7 +484,14 @@ final class WalletManager {
     // MARK: - Zapping
     
     func send(user: PrimalUser, sats: Int, note: String, zap: NostrObject? = nil) async throws {
-        guard let zap = zap ?? zapUserObject(user) else { throw WalletError.signingError }
+        guard let zap = zap else {
+            if !user.lud16.isEmpty {
+                try await sendLud16(user.lud16, sats: sats, note: note)
+            } else {
+                try await sendLNURL(lnurl: user.lud06, sats: sats, note: note)
+            }
+            return
+        }
         
         try await zapUser(user, sats: sats, note: note, zap: zap)
     }

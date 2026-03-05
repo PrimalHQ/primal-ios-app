@@ -187,7 +187,7 @@ extension PostRequestResult {
                 user.rawData = payload.encodeToString()
                 users[nostrUser.pubkey] = user
             }
-        case .text:
+        case .text, .poll, .zapPoll:
             let content = NostrContent(jsonData: payload)
             posts.append(content)
             order.append(content.id)

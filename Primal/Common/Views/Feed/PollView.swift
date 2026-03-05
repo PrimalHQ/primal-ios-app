@@ -8,7 +8,6 @@
 import UIKit
 
 final class PollView: UIView, Themeable {
-    private let titleLabel = UILabel()
     private let optionsStack = UIStackView(axis: .vertical, [])
     private let expirationLabel = UILabel()
 
@@ -20,8 +19,6 @@ final class PollView: UIView, Themeable {
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
     func updateForPoll(_ poll: ParsedPoll) {
-        titleLabel.text = poll.isZapPoll ? "Zap Poll" : "Poll"
-
         optionsStack.arrangedSubviews.forEach { $0.removeFromSuperview() }
         for option in poll.options {
             let row = createOptionRow(option.label)
@@ -41,7 +38,6 @@ final class PollView: UIView, Themeable {
     }
 
     func updateTheme() {
-        titleLabel.textColor = .foreground
         expirationLabel.textColor = .foreground3
         backgroundColor = .background3
 
@@ -76,12 +72,11 @@ private extension PollView {
     }
 
     func setup() {
-        titleLabel.font = .appFont(withSize: 15, weight: .bold)
         expirationLabel.font = .appFont(withSize: 13, weight: .regular)
 
         optionsStack.spacing = 8
 
-        let mainStack = UIStackView(axis: .vertical, [titleLabel, optionsStack, expirationLabel])
+        let mainStack = UIStackView(axis: .vertical, [optionsStack, expirationLabel])
         mainStack.spacing = 8
 
         addSubview(mainStack)

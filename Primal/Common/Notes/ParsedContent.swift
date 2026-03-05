@@ -91,7 +91,6 @@ final class ParsedContent: Hashable {
     
     var hashtags: [ParsedElement] = []
     var mentions: [ParsedElement] = []
-//    var notes: [ParsedElement] = []
     var httpUrls: [ParsedElement] = []
     var highlights: [ParsedElement] = []
     var zaps: [ParsedZap] = []
