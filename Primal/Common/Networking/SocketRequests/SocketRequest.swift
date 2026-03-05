@@ -246,6 +246,9 @@ extension PostRequestResult {
             if noteStatus.zapped {
                 WalletManager.instance.setZapUnknown(noteStatus.event_id)
             }
+            if let voted = noteStatus.voted {
+                PollManager.instance.userVotes[noteStatus.event_id] = voted
+            }
         case .mentions:
             guard let contentJSON: JSON = contentString.decode() else {
                 print("Error decoding mentions string to json")
