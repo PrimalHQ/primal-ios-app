@@ -118,6 +118,24 @@ extension Date {
         return "now"
     }
     
+    func timeLeftDisplay() -> String {
+        let totalSeconds = Int(timeIntervalSince(Date()))
+        guard totalSeconds > 0 else { return "ended" }
+
+        let days = totalSeconds / 86400
+        let hours = (totalSeconds % 86400) / 3600
+        let minutes = (totalSeconds % 3600) / 60
+
+        var parts: [String] = []
+        if days > 0 { parts.append("\(days) day\(days == 1 ? "" : "s")") }
+        if hours > 0 { parts.append("\(hours) hour\(hours == 1 ? "" : "s")") }
+        if minutes > 0 && days == 0 { parts.append("\(minutes) minute\(minutes == 1 ? "" : "s")") }
+
+        if parts.isEmpty { return "less than a minute left" }
+        if parts.count == 1 { return "\(parts[0]) left" }
+        return "\(parts[0]) and \(parts[1]) left"
+    }
+
     func daysAgoDisplay() -> String {
         if Calendar.current.isDateInToday(self) {
             return "today".localizedLowercase

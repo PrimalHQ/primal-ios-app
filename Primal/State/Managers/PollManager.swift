@@ -70,7 +70,7 @@ final class PollManager {
 
     // MARK: - Fetch poll votes (returns poll stats + individual votes with paging)
 
-    func fetchPollVotes(_ pollEventId: String, limit: Int = 20, until: Int? = nil, callback: (([JSON]) -> Void)? = nil) {
+    func fetchPollVotes(_ pollEventId: String, limit: Int = 20, until: Int? = nil) {
         var payload: [String: JSON] = [
             "event_id": .string(pollEventId),
             "limit": .number(Double(limit))
@@ -80,12 +80,12 @@ final class PollManager {
             payload["until"] = .number(Double(until))
         }
 
-        Connection.regular.requestCache(name: "poll_votes", payload: .object(payload)) { [weak self] result in
-            DispatchQueue.main.async {
+        SocketRequest(name: "poll_votes", payload: .object(payload)).publisher()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] result in
                 self?.processPollVotesResponse(result)
-                callback?(result)
             }
-        }
+            .store(in: &cancellables)
     }
 
     // MARK: - Vote
@@ -122,14 +122,14 @@ final class PollManager {
 
     // MARK: - Process responses
 
-    func processPollVotesResponse(_ result: [JSON]) {
-        for response in result {
-            guard let kind = NostrKind.fromGenericJSON(response) else { continue }
+    func processPollVotesResponse(_ result: PostRequestResult) {
+        for response in result.events {
+            guard
+                let kind = NostrKind.fromGenericJSON(.object(response)), kind == .pollStats,
+                let contentString = response["content"]?.stringValue
+            else { continue }
 
-            if kind == .pollStats {
-                guard let contentString = response.objectValue?["content"]?.stringValue else { continue }
-                parsePollStatsContent(contentString)
-            }
+            parsePollStatsContent(contentString)
         }
     }
 

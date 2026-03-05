@@ -12,6 +12,7 @@ final class PollView: UIView, Themeable {
     private let optionsStack = UIStackView(axis: .vertical, [])
     private let expirationLabel = UILabel()
     private let totalVotesLabel = UILabel()
+    private let separatorLabel = UILabel()
 
     private var poll: ParsedPoll?
     private var eventId: String?
@@ -48,56 +49,14 @@ final class PollView: UIView, Themeable {
     }
 
     func updateTheme() {
-        expirationLabel.textColor = .foreground3
-        totalVotesLabel.textColor = .foreground3
-        backgroundColor = .background3
+        expirationLabel.textColor = .foreground4
+        separatorLabel.textColor = .foreground4
+        totalVotesLabel.textColor = .accent2
 
         guard let poll, let eventId else { return }
         let stats = PollManager.instance.pollStats[eventId]
         let userVote = PollManager.instance.userVotes[eventId]
         render(poll: poll, stats: stats, userVote: userVote)
-    }
-}
-
-// MARK: - PollVotingOptionView
-
-final class PollVotingOptionView: UIView, Themeable {
-    private let label = UILabel()
-    private let button = UIButton()
-
-    var onTap: (() -> Void)?
-
-    init() {
-        super.init(frame: .zero)
-
-        layer.cornerRadius = 8
-        layer.borderWidth = 1
-
-        label.font = .appFont(withSize: 15, weight: .regular)
-        label.numberOfLines = 0
-
-        addSubview(label)
-        label.pinToSuperview(padding: 12)
-
-        addSubview(button)
-        button.pinToSuperview()
-        button.addAction(.init(handler: { [weak self] _ in
-            self?.onTap?()
-        }), for: .touchUpInside)
-
-        updateTheme()
-    }
-
-    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
-
-    func configure(text: String) {
-        label.text = text
-    }
-
-    func updateTheme() {
-        layer.borderColor = UIColor.foreground6.cgColor
-        backgroundColor = .background2
-        label.textColor = .foreground
     }
 }
 
@@ -125,29 +84,31 @@ private extension PollView {
             } else {
                 let row = PollVotingOptionView()
                 row.configure(text: option.label)
-                row.onTap = { [weak self] in
+                row.addAction(.init(handler: { [weak self] _ in
                     guard let self, let eventId = self.eventId, let authorPubkey = self.authorPubkey else { return }
                     PollManager.instance.vote(pollEventId: eventId, pollAuthorPubkey: authorPubkey, optionId: option.id)
-                }
+                }), for: .touchUpInside)
                 optionsStack.addArrangedSubview(row)
             }
         }
 
-        if showResults && totalVotes > 0 {
+        if totalVotes > 0 {
             totalVotesLabel.isHidden = false
             totalVotesLabel.text = totalVotes == 1 ? "1 vote" : "\(totalVotes) votes"
+            separatorLabel.isHidden = expirationLabel.isHidden
         } else {
             totalVotesLabel.isHidden = true
+            separatorLabel.isHidden = true
         }
     }
 
     func updateExpiration(_ poll: ParsedPoll) {
         if let endsAt = poll.endsAt {
             expirationLabel.isHidden = false
-            if endsAt > Date() {
-                expirationLabel.text = "Ends: \(endsAt.timeInFutureDisplayLong())"
+            if endsAt > .now {
+                expirationLabel.text = endsAt.timeLeftDisplay()
             } else {
-                expirationLabel.text = "Ended: \(endsAt.timeAgoDisplayLong())"
+                expirationLabel.text = "Ended \(endsAt.timeAgoDisplayLong())"
             }
         } else {
             expirationLabel.isHidden = true
@@ -155,24 +116,51 @@ private extension PollView {
     }
 
     func setup() {
-        expirationLabel.font = .appFont(withSize: 13, weight: .regular)
-        totalVotesLabel.font = .appFont(withSize: 13, weight: .regular)
+        expirationLabel.font = .appFont(withSize: 12, weight: .regular)
+        totalVotesLabel.font = .appFont(withSize: 12, weight: .regular)
         totalVotesLabel.isHidden = true
+        separatorLabel.font = .appFont(withSize: 14, weight: .heavy)
+        separatorLabel.text = "•"
+        separatorLabel.isHidden = true
 
-        optionsStack.spacing = 8
+        optionsStack.spacing = 10
 
-        let bottomStack = UIStackView(arrangedSubviews: [totalVotesLabel, expirationLabel])
-        bottomStack.spacing = 8
+        let bottomStack = UIStackView(arrangedSubviews: [totalVotesLabel, separatorLabel, expirationLabel, UIView()])
+        bottomStack.spacing = 6
 
         let mainStack = UIStackView(axis: .vertical, [optionsStack, bottomStack])
-        mainStack.spacing = 8
+        mainStack.spacing = 10
 
         addSubview(mainStack)
-        mainStack.pinToSuperview(padding: 12)
-
-        layer.cornerRadius = 8
+        mainStack.pinToSuperview()
 
         updateTheme()
+    }
+}
+
+// MARK: - PollVotingOptionView
+
+final class PollVotingOptionView: UIButton, Themeable {
+    var text: String = ""
+    init() {
+        super.init(frame: .zero)
+        
+        layer.borderWidth = 1
+        layer.cornerRadius = 18
+        constrainToSize(height: 36)
+        updateTheme()
+    }
+
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+
+    func configure(text: String) {
+        self.text = text
+        updateTheme()
+    }
+
+    func updateTheme() {
+        layer.borderColor = UIColor.foreground6.cgColor
+        configuration = .pill(text: text, foregroundColor: .foreground, backgroundColor: .background4, font: .appFont(withSize: 15, weight: .regular))
     }
 }
 
