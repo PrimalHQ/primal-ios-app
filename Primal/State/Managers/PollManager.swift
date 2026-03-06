@@ -9,7 +9,7 @@ import Combine
 import Foundation
 import GenericJSON
 
-struct PollOptionStats: Codable, Equatable {
+struct PollOptionStats: Codable, Hashable {
     let votes: Int
     let satszapped: Int
 }

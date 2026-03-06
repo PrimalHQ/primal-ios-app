@@ -222,6 +222,9 @@
 		B90032912BD26F9600ADD2E5 /* NoteLikesAndRepostsRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90032902BD26F9600ADD2E5 /* NoteLikesAndRepostsRequest.swift */; };
 		B90032932BD271BC00ADD2E5 /* LikeUserTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90032922BD271BC00ADD2E5 /* LikeUserTableViewCell.swift */; };
 		2F98EB1DCC624734794395F1 /* PollVoteUserCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 251E11AFC9FB66D804B5217F /* PollVoteUserCell.swift */; };
+		2D7F552B70900BC23221F4AC /* PollVoteOptionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC1B50E71AC4CB3BACD02E0A /* PollVoteOptionCell.swift */; };
+		D5A4266E6F84FB8044839C0E /* PollVoteDetailsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDBBAA6B683A9D0CB02B7060 /* PollVoteDetailsCell.swift */; };
+		6644DA131F09CD104098EFA2 /* PollVoteTitleCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 731729354B231F6AE303270F /* PollVoteTitleCell.swift */; };
 		B90032952BD2742A00ADD2E5 /* NoteRepostsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90032942BD2742900ADD2E5 /* NoteRepostsViewController.swift */; };
 		B9009B4C2B068653002B0613 /* OnboardingProfileImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9009B4B2B068652002B0613 /* OnboardingProfileImageView.swift */; };
 		B9009B4E2B068D8B002B0613 /* UserRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9009B4D2B068D8B002B0613 /* UserRequest.swift */; };
@@ -1058,6 +1061,9 @@
 		B90032902BD26F9600ADD2E5 /* NoteLikesAndRepostsRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteLikesAndRepostsRequest.swift; sourceTree = "<group>"; };
 		B90032922BD271BC00ADD2E5 /* LikeUserTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LikeUserTableViewCell.swift; sourceTree = "<group>"; };
 		251E11AFC9FB66D804B5217F /* PollVoteUserCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollVoteUserCell.swift; sourceTree = "<group>"; };
+		EC1B50E71AC4CB3BACD02E0A /* PollVoteOptionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollVoteOptionCell.swift; sourceTree = "<group>"; };
+		FDBBAA6B683A9D0CB02B7060 /* PollVoteDetailsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollVoteDetailsCell.swift; sourceTree = "<group>"; };
+		731729354B231F6AE303270F /* PollVoteTitleCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollVoteTitleCell.swift; sourceTree = "<group>"; };
 		B90032942BD2742900ADD2E5 /* NoteRepostsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteRepostsViewController.swift; sourceTree = "<group>"; };
 		B9009B4B2B068652002B0613 /* OnboardingProfileImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingProfileImageView.swift; sourceTree = "<group>"; };
 		B9009B4D2B068D8B002B0613 /* UserRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserRequest.swift; sourceTree = "<group>"; };
@@ -2551,6 +2557,9 @@
 				B90032922BD271BC00ADD2E5 /* LikeUserTableViewCell.swift */,
 				B94429232BD291C300746FBC /* RepostUserTableViewCell.swift */,
 				251E11AFC9FB66D804B5217F /* PollVoteUserCell.swift */,
+				EC1B50E71AC4CB3BACD02E0A /* PollVoteOptionCell.swift */,
+				FDBBAA6B683A9D0CB02B7060 /* PollVoteDetailsCell.swift */,
+				731729354B231F6AE303270F /* PollVoteTitleCell.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -4312,6 +4321,9 @@
 				B9CE4DD12B7D1DFC0060A1B8 /* Data+Extra.swift in Sources */,
 				B90032932BD271BC00ADD2E5 /* LikeUserTableViewCell.swift in Sources */,
 				2F98EB1DCC624734794395F1 /* PollVoteUserCell.swift in Sources */,
+				2D7F552B70900BC23221F4AC /* PollVoteOptionCell.swift in Sources */,
+				D5A4266E6F84FB8044839C0E /* PollVoteDetailsCell.swift in Sources */,
+				6644DA131F09CD104098EFA2 /* PollVoteTitleCell.swift in Sources */,
 				9E5BD93F2A1E6567008DFFBE /* SmallPostButton.swift in Sources */,
 				939427142A436AF3001C1E10 /* RelayURL.swift in Sources */,
 				B9E67E812D0762CD006BB397 /* FeedElementSmallZapGalleryCell.swift in Sources */,
