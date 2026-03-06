@@ -9,16 +9,9 @@ import Combine
 import UIKit
 import GenericJSON
 
-enum PollVotesTableCellType: Hashable {
-    case option(ParsedPoll.Option, PollOptionStats, isSelected: Bool)
-    case optionsDetails(totalCount: Int, message: String)
-    case voteTitle(String, count: Int)
-    case vote(ParsedUser)
-}
-
 class PollVotesViewController: UIViewController, Themeable {
     private let table = UITableView()
-    private lazy var datasource = makeDatasource()
+    private lazy var datasource = PollVotesDatasource(tableView: table, delegate: self)
 
     private let eventId: String
     private let poll: ParsedPoll
@@ -57,6 +50,15 @@ class PollVotesViewController: UIViewController, Themeable {
     }
 }
 
+// MARK: - PollVotesDatasourceDelegate
+
+extension PollVotesViewController: PollVotesDatasourceDelegate {
+    var totalVotes: Int { pollStats?.totalVotes ?? 0 }
+    var maxVotes: Int { pollStats?.maxVotes ?? 0 }
+    var userVote: String? { PollManager.instance.userVotes[eventId] }
+    var didEnd: Bool { poll.didEnd }
+}
+
 // MARK: - Private
 
 private extension PollVotesViewController {
@@ -68,11 +70,6 @@ private extension PollVotesViewController {
         table.pinToSuperview(safeArea: true)
         table.delegate = self
         table.separatorStyle = .none
-        table.register(PollVoteOptionCell.self, forCellReuseIdentifier: "option")
-        table.register(PollVoteDetailsCell.self, forCellReuseIdentifier: "details")
-        table.register(PollVoteTitleCell.self, forCellReuseIdentifier: "title")
-        table.register(PollVoteUserCell.self, forCellReuseIdentifier: "vote")
-
         table.dataSource = datasource
 
         PollManager.instance.$pollStats
@@ -92,53 +89,14 @@ private extension PollVotesViewController {
         refresh()
     }
 
-    func makeDatasource() -> UITableViewDiffableDataSource<SingleSection, PollVotesTableCellType> {
-        UITableViewDiffableDataSource(tableView: table) { [weak self] tableView, indexPath, item in
-            guard let self else { return UITableViewCell() }
-            switch item {
-            case let .option(option, stats, isSelected):
-                let cell = tableView.dequeueReusableCell(withIdentifier: "option", for: indexPath)
-                if let cell = cell as? PollVoteOptionCell {
-                    let totalVotes = self.pollStats?.totalVotes ?? 0
-                    let maxVotes = self.pollStats?.maxVotes ?? 0
-                    let userVote = PollManager.instance.userVotes[self.eventId]
-                    cell.configure(
-                        option: option,
-                        stats: stats,
-                        totalVotes: totalVotes,
-                        maxVotes: maxVotes,
-                        isSelected: isSelected,
-                        userVote: userVote,
-                        didEnd: self.poll.didEnd
-                    )
-                }
-                return cell
-            case let .optionsDetails(totalCount, message):
-                let cell = tableView.dequeueReusableCell(withIdentifier: "details", for: indexPath)
-                (cell as? PollVoteDetailsCell)?.configure(totalCount: totalCount, message: message)
-                return cell
-            case let .voteTitle(title, count):
-                let cell = tableView.dequeueReusableCell(withIdentifier: "title", for: indexPath)
-                (cell as? PollVoteTitleCell)?.configure(title: title, count: count)
-                return cell
-            case let .vote(user):
-                let cell = tableView.dequeueReusableCell(withIdentifier: "vote", for: indexPath)
-                (cell as? PollVoteUserCell)?.updateForUser(user)
-                return cell
-            }
-        }
-    }
-
     func reloadData() {
         var items: [PollVotesTableCellType] = []
 
-        // Option rows
         for (index, option) in poll.options.enumerated() {
             let stats = pollStats?.options[option.id] ?? PollOptionStats(votes: 0, satszapped: 0)
             items.append(.option(option, stats, isSelected: index == selectedOptionIndex))
         }
 
-        // Details row
         let totalVotes = pollStats?.totalVotes ?? 0
         let message: String
         if let endsAt = poll.endsAt {
@@ -148,21 +106,16 @@ private extension PollVotesViewController {
         }
         items.append(.optionsDetails(totalCount: totalVotes, message: message))
 
-        // Vote title
         if let selectedOption = poll.options[safe: selectedOptionIndex] {
             let optionVotes = pollStats?.options[selectedOption.id]?.votes ?? 0
             items.append(.voteTitle(selectedOption.label, count: optionVotes))
         }
 
-        // Vote user rows
         for user in users {
             items.append(.vote(user))
         }
 
-        var snapshot = NSDiffableDataSourceSnapshot<SingleSection, PollVotesTableCellType>()
-        snapshot.appendSections([.main])
-        snapshot.appendItems(items)
-        datasource.apply(snapshot, animatingDifferences: false)
+        datasource.setItems(items)
     }
 
     func selectOption(_ index: Int) {
