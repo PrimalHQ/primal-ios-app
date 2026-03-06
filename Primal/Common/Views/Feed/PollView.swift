@@ -8,6 +8,13 @@
 import Combine
 import UIKit
 
+extension ParsedPoll {
+    var didEnd: Bool {
+        guard let endsAt else { return false }
+        return endsAt < .now
+    }
+}
+
 final class PollView: UIView, Themeable {
     private let optionsStack = UIStackView(axis: .vertical, [])
     private let expirationLabel = UILabel()
@@ -79,7 +86,15 @@ private extension PollView {
             if showResults {
                 let row = PollResultOptionView()
                 let optionVotes = stats?.options[option.id]?.votes ?? 0
-                row.configure(text: option.label, votes: optionVotes, totalVotes: totalVotes, isSelected: userVote == option.id)
+                let didEnd = poll.didEnd
+                let maxVotes = stats?.totalVotes
+                row.configure(
+                    text: option.label,
+                    votes: optionVotes,
+                    totalVotes: totalVotes,
+                    isSelected: userVote == option.id,
+                    didWin: didEnd && optionVotes == maxVotes
+                )
                 optionsStack.addArrangedSubview(row)
             } else {
                 let row = PollVotingOptionView()
@@ -206,6 +221,7 @@ final class PollResultOptionView: UIView, Themeable {
     private let progressBar = UIView()
     private let label = UILabel()
     private let percentLabel = UILabel()
+    private let checkIcon = UIImageView(image: .pollOptionWon)
 
     private var isSelected = false
     private var percentage: CGFloat = 0
@@ -226,8 +242,14 @@ final class PollResultOptionView: UIView, Themeable {
         progressBar.pinToSuperview(edges: .leading).pinToSuperview(edges: .vertical, padding: 2)
         progressBar.widthAnchor.constraint(greaterThanOrEqualToConstant: 6).isActive = true
 
-        progressParent.addSubview(label)
-        label.pinToSuperview(edges: .horizontal, padding: 12).centerToSuperview(axis: .vertical)
+        checkIcon.setContentHuggingPriority(.required, for: .horizontal)
+        checkIcon.setContentCompressionResistancePriority(.required, for: .horizontal)
+        
+        let labelCheckStack = UIStackView(spacing: 6, [label, checkIcon])
+        labelCheckStack.alignment = .center
+        
+        progressParent.addSubview(labelCheckStack)
+        labelCheckStack.pinToSuperview(edges: .horizontal, padding: 12).centerToSuperview(axis: .vertical)
         label.font = .appFont(withSize: 15, weight: .regular)
 
         percentLabel.font = .appFont(withSize: 15, weight: .bold)
@@ -249,9 +271,11 @@ final class PollResultOptionView: UIView, Themeable {
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
-    func configure(text: String, votes: Int, totalVotes: Int, isSelected: Bool) {
+    func configure(text: String, votes: Int, totalVotes: Int, isSelected: Bool, didWin: Bool) {
         self.isSelected = isSelected
         percentage = totalVotes > 0 ? Double(votes) / Double(totalVotes) : 0
+        
+        checkIcon.isHidden = !didWin
 
         label.text = text
         label.font = .appFont(withSize: 15, weight: isSelected ? .bold : .regular)
@@ -274,5 +298,6 @@ final class PollResultOptionView: UIView, Themeable {
         label.textColor = .foreground
         percentLabel.textColor = .foreground
         progressBar.backgroundColor = isSelected ? .accent : UIColor.foreground.withAlphaComponent(0.15)
+        checkIcon.tintColor = .foreground
     }
 }

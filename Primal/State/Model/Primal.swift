@@ -29,7 +29,7 @@ struct PrimalNoteStatus: Codable, Hashable {
     let liked: Bool
     let reposted: Bool
     let zapped: Bool
-    let voted: String?
+    let voted_for_option: String?
 }
 
 struct PrimalZapDefaultSettings: Codable, Hashable {

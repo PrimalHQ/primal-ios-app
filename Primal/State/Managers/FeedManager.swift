@@ -149,9 +149,15 @@ final class FeedManager {
         
         SocketRequest(
             useHTTP: true,
-            name: "thread_view",
+            name: "multi_kind_thread_view",
             payload: .object([
                 "event_id": .string(postId),
+                "kinds": [
+                    .number(Double(NostrKind.text.rawValue)),
+                    .number(Double(NostrKind.otherComments.rawValue)),
+                    .number(Double(NostrKind.poll.rawValue)),
+                    .number(Double(NostrKind.zapPoll.rawValue))
+                ],
                 "limit": .number(Double(limit)),
                 "user_pubkey": .string(IdentityManager.instance.userHexPubkey),
                 "include_parent_posts": .bool(includeParent)

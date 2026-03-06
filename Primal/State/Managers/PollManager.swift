@@ -18,6 +18,7 @@ struct PollStats: Equatable {
     let eventId: String
     let options: [String: PollOptionStats]
 
+    var maxVotes: Int { options.values.map({ $0.votes }).max() ?? -1 }
     var totalVotes: Int { options.values.reduce(0) { $0 + $1.votes } }
     var totalSatsZapped: Int { options.values.reduce(0) { $0 + $1.satszapped } }
 }

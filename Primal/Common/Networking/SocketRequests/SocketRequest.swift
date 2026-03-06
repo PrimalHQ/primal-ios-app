@@ -187,7 +187,7 @@ extension PostRequestResult {
                 user.rawData = payload.encodeToString()
                 users[nostrUser.pubkey] = user
             }
-        case .text, .poll, .zapPoll:
+        case .text, .poll, .zapPoll, .otherComments:
             let content = NostrContent(jsonData: payload)
             posts.append(content)
             order.append(content.id)
@@ -246,7 +246,7 @@ extension PostRequestResult {
             if noteStatus.zapped {
                 WalletManager.instance.setZapUnknown(noteStatus.event_id)
             }
-            if let voted = noteStatus.voted {
+            if let voted = noteStatus.voted_for_option {
                 PollManager.instance.userVotes[noteStatus.event_id] = voted
             }
         case .mentions:
