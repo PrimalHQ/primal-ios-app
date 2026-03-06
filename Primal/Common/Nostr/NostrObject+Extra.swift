@@ -323,7 +323,7 @@ extension NostrObject {
     }
     
     static func pollVote(pollEventId: String, pollAuthorPubkey: String, optionId: String) -> NostrObject? {
-        createNostrObject(content: "", kind: 1018, tags: [
+        createNostrObject(content: "", kind: NostrKind.pollVote.rawValue, tags: [
             ["e", pollEventId],
             ["response", optionId]
         ])

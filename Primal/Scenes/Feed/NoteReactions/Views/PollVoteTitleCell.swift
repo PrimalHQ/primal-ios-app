@@ -16,10 +16,8 @@ final class PollVoteTitleCell: UITableViewCell, Themeable {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         selectionStyle = .none
 
-        titleLabel.font = .appFont(withSize: 18, weight: .bold)
+        titleLabel.font = .appFont(withSize: 16, weight: .semibold)
         titleLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
-
-        countLabel.font = .appFont(withSize: 16, weight: .regular)
         countLabel.setContentHuggingPriority(.required, for: .horizontal)
         countLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
 
@@ -30,7 +28,7 @@ final class PollVoteTitleCell: UITableViewCell, Themeable {
         contentView.addSubview(stack)
         stack.pinToSuperview(edges: .horizontal, padding: 16).pinToSuperview(edges: .vertical, padding: 14)
 
-        topBorder.constrainToSize(height: 6)
+        topBorder.constrainToSize(height: 2)
         contentView.addSubview(topBorder)
         topBorder.pinToSuperview(edges: [.top, .horizontal])
 
@@ -41,13 +39,23 @@ final class PollVoteTitleCell: UITableViewCell, Themeable {
 
     func configure(title: String, count: Int) {
         titleLabel.text = title
-        countLabel.text = count == 1 ? "1 vote" : "\(count.localized()) votes"
+        
+        let countText = NSMutableAttributedString(string: count.localized(), attributes: [
+            .font: UIFont.appFont(withSize: 14, weight: .semibold),
+            .foregroundColor: UIColor.foreground
+        ])
+        countText.append(.init(string: " vote\(count == 1 ? "" : "s")", attributes: [
+            .font: UIFont.appFont(withSize: 14, weight: .regular),
+            .foregroundColor: UIColor.foreground3
+        ]))
+        countLabel.attributedText = countText
+        
+        updateTheme()
     }
 
     func updateTheme() {
-        contentView.backgroundColor = .background2
+        contentView.backgroundColor = .background
         titleLabel.textColor = .foreground
-        countLabel.textColor = .accent2
-        topBorder.backgroundColor = .background
+        topBorder.backgroundColor = .background3
     }
 }

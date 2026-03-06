@@ -7,7 +7,6 @@
 
 import Combine
 import UIKit
-import GenericJSON
 
 class PollVotesViewController: UIViewController, Themeable {
     private let table = UITableView()
@@ -17,12 +16,10 @@ class PollVotesViewController: UIViewController, Themeable {
     private let poll: ParsedPoll
     private var pollStats: PollStats?
 
-    private var users: [ParsedUser] = []
-
+    private var cachedFeedManagers: [String: PollVotesFeedManager] = [:]
+    private var feedManager: PollVotesFeedManager?
     private var cancellables: Set<AnyCancellable> = []
-    private var paginationInfo: PrimalPagination?
-    private var isRequestingNewPage = false
-    private var didReachEnd = false
+    var feedUpdate: AnyCancellable?
 
     private var selectedOptionIndex = 0
 
@@ -40,7 +37,7 @@ class PollVotesViewController: UIViewController, Themeable {
         view.backgroundColor = .background
         table.backgroundColor = .background
         navigationItem.leftBarButtonItem = customBackButton
-        reloadData()
+        table.reloadData()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -72,28 +69,23 @@ private extension PollVotesViewController {
         table.separatorStyle = .none
         table.dataSource = datasource
 
-        PollManager.instance.$pollStats
-            .compactMap { [eventId] in $0[eventId] }
-            .removeDuplicates()
+        PollManager.instance.statsPublisher(eventId)
             .receive(on: DispatchQueue.main)
             .sink { [weak self] stats in
                 self?.pollStats = stats
-                self?.reloadData()
+                self?.reloadData(stats: stats)
             }
             .store(in: &cancellables)
 
-        PollManager.instance.statsPublisher(eventId)
-            .sink { _ in }
-            .store(in: &cancellables)
-
-        refresh()
+        selectOption(0)
     }
 
-    func reloadData() {
+    func reloadData(users: [ParsedUser]? = nil, stats: PollStats? = nil) {
         var items: [PollVotesTableCellType] = []
+        let stats = stats ?? self.pollStats
 
         for (index, option) in poll.options.enumerated() {
-            let stats = pollStats?.options[option.id] ?? PollOptionStats(votes: 0, satszapped: 0)
+            let stats = stats?.options[option.id] ?? PollOptionStats(votes: 0, satszapped: 0)
             items.append(.option(option, stats, isSelected: index == selectedOptionIndex))
         }
 
@@ -110,7 +102,8 @@ private extension PollVotesViewController {
             let optionVotes = pollStats?.options[selectedOption.id]?.votes ?? 0
             items.append(.voteTitle(selectedOption.label, count: optionVotes))
         }
-
+        
+        let users = users ?? feedManager?.users ?? []
         for user in users {
             items.append(.vote(user))
         }
@@ -119,70 +112,21 @@ private extension PollVotesViewController {
     }
 
     func selectOption(_ index: Int) {
-        guard index != selectedOptionIndex else { return }
+        guard let option = poll.options[safe: index] else { return }
         selectedOptionIndex = index
-        refresh()
-    }
 
-    func refresh() {
-        users = []
-        paginationInfo = nil
-        isRequestingNewPage = false
-        didReachEnd = false
-        reloadData()
-        requestNewPage()
-    }
-
-    func requestNewPage() {
-        guard !isRequestingNewPage, !didReachEnd else { return }
-        guard let optionId = poll.options[safe: selectedOptionIndex]?.id else { return }
-
-        isRequestingNewPage = true
-
-        var payload: [String: JSON] = [
-            "event_id": .string(eventId),
-            "option": .string(optionId),
-            "limit": .number(20),
-            "user_pubkey": .string(IdentityManager.instance.userHexPubkey)
-        ]
-
-        if let until = paginationInfo?.since {
-            payload["until"] = .number(until.rounded())
-            payload["offset"] = .number(1)
+        if let cachedFeed = cachedFeedManagers[option.id] {
+            feedManager = cachedFeed
+        } else {
+            let newFeed = PollVotesFeedManager(eventId: eventId, optionId: option.id)
+            cachedFeedManagers[option.id] = newFeed
+            feedManager = newFeed
         }
-
-        SocketRequest(name: "poll_votes", payload: .object(payload)).publisher()
+        
+        feedManager?.refresh()
+        feedUpdate = feedManager?.$users
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] result in
-                guard let self else { return }
-                isRequestingNewPage = false
-
-                PollManager.instance.processPollVotesResponse(result)
-
-                let newUsers = result.getSortedUsers()
-
-                if newUsers.isEmpty {
-                    didReachEnd = true
-                } else {
-                    let existingPubkeys = Set(users.map { $0.data.pubkey })
-                    let filtered = newUsers.filter { !existingPubkeys.contains($0.data.pubkey) }
-                    users += filtered
-                }
-
-                if let pagination = result.pagination {
-                    if var oldInfo = paginationInfo {
-                        oldInfo.since = pagination.since
-                        paginationInfo = oldInfo
-                    } else {
-                        paginationInfo = pagination
-                    }
-                } else {
-                    didReachEnd = true
-                }
-
-                reloadData()
-            }
-            .store(in: &cancellables)
+            .sink { [weak self] users in self?.reloadData(users: users) }
     }
 }
 
@@ -204,7 +148,7 @@ extension PollVotesViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         guard let item = datasource.itemIdentifier(for: indexPath) else { return }
         if case .vote = item, indexPath.row >= datasource.snapshot().numberOfItems - 5 {
-            requestNewPage()
+            feedManager?.requestNewPage()
         }
     }
 }

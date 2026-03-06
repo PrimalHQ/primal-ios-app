@@ -530,7 +530,7 @@ class NoteProcessor: MetadataCoding {
             let content = mention.post.content.trimmingCharacters(in: .whitespacesAndNewlines)
             
             highlights.append((mentionText, content, mention))
-        } else if mention.post.kind == post.kind {
+        } else if [NostrKind.text.rawValue, NostrKind.poll.rawValue, NostrKind.zapPoll.rawValue].contains(mention.post.kind) {
             referencedPosts.append((mentionText, mention))
         } else if mention.post.kind == NostrKind.mediaPost.rawValue, let urlTag = mention.post.tags.first(where: { $0.first == "imeta" })?[safe: 1], urlTag.hasPrefix("url ") {
             let url = String(urlTag.dropFirst(4))
