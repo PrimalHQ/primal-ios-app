@@ -28,6 +28,7 @@ class ThreadElementPollCell: ThreadElementBaseCell, RegularFeedElementCell {
         super.update(content)
 
         guard content.poll != nil else { return }
+        pollView.delegate = delegate
         pollView.updateForContent(content)
         pollView.updateTheme()
     }

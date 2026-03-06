@@ -21,6 +21,8 @@ final class PollView: UIView, Themeable {
     private let totalVotesLabel = UILabel()
     private let separatorLabel = UILabel()
 
+    weak var delegate: FeedElementCellDelegate?
+
     private var poll: ParsedPoll?
     private var eventId: String?
     private var authorUser: PrimalUser?
@@ -182,6 +184,12 @@ private extension PollView {
 
         addSubview(mainStack)
         mainStack.pinToSuperview()
+
+        totalVotesLabel.isUserInteractionEnabled = true
+        totalVotesLabel.addGestureRecognizer(BindableTapGestureRecognizer(action: { [weak self] in
+            guard let self, let cell = self.firstParent(ofType: UITableViewCell.self) else { return }
+            self.delegate?.postCellDidTap(cell, .pollVotesDetails)
+        }))
 
         updateTheme()
     }

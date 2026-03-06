@@ -9,6 +9,15 @@ import UIKit
 import SwiftUI
 
 extension UIView {
+    func firstParent<T>(ofType type: T.Type) -> T? {
+        var current: UIView? = superview
+        while let view = current {
+            if let match = view as? T { return match }
+            current = view.superview
+        }
+        return nil
+    }
+
     func takeScreenshot() -> UIImage? {
         let renderer = UIGraphicsImageRenderer(bounds: bounds)
         return renderer.image { context in

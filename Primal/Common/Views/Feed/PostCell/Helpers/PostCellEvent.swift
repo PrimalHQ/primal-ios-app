@@ -30,6 +30,7 @@ enum PostCellEvent {
     case zapDetails
     case likeDetails
     case repostDetails
+    case pollVotesDetails
     
     case share
     case shareAsImage

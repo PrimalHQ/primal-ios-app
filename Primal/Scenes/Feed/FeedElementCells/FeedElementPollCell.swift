@@ -26,6 +26,7 @@ class FeedElementPollCell: FeedElementBaseCell, RegularFeedElementCell {
 
     override func update(_ content: ParsedContent) {
         guard content.poll != nil else { return }
+        pollView.delegate = delegate
         pollView.updateForContent(content)
         pollView.updateTheme()
     }
