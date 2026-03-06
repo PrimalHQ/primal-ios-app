@@ -18,19 +18,12 @@ enum PollVotesTableCellType {
 
 class PollVotesViewController: UIViewController, Themeable {
     private let table = UITableView()
-    private let emptyView = EmptyTableView(title: "There are no votes for this option yet")
-    private let tabSelectionView = PollView()
 
     private let eventId: String
     private let poll: ParsedPoll
     private var pollStats: PollStats?
 
-    private var users: [ParsedUser] = [] {
-        didSet {
-            table.reloadData()
-            emptyView.isHidden = !users.isEmpty
-        }
-    }
+    private var users: [ParsedUser] = [] 
 
     private var cancellables: Set<AnyCancellable> = []
     private var paginationInfo: PrimalPagination?
@@ -69,26 +62,10 @@ private extension PollVotesViewController {
 
         view.addSubview(table)
         table.pinToSuperview(safeArea: true)
-        table.dataSource = self
         table.delegate = self
         table.separatorStyle = .none
-        table.register(PollVoteUserCell.self, forCellReuseIdentifier: "cell")
-
-        view.addSubview(emptyView)
-        emptyView.centerToSuperview()
-        emptyView.isHidden = true
-        emptyView.refresh.addAction(.init(handler: { [unowned self] _ in
-            refresh()
-        }), for: .touchUpInside)
-
-        tabSelectionView.$selectedTab
-            .removeDuplicates()
-            .sink { [weak self] tab in
-                guard let self else { return }
-                selectedOptionIndex = tab
-                refresh()
-            }
-            .store(in: &cancellables)
+        table.register(PollVoteUserCell.self, forCellReuseIdentifier: "vote")
+        table.register(EmptyTableViewCell.self, forCellReuseIdentifier: "empty")
     }
 
     func refresh() {
@@ -148,16 +125,6 @@ private extension PollVotesViewController {
                 }
             }
             .store(in: &cancellables)
-    }
-}
-
-extension PollVotesViewController: UITableViewDataSource {
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { users.count }
-
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-        (cell as? PollVoteUserCell)?.updateForUser(users[indexPath.row])
-        return cell
     }
 }
 
