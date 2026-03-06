@@ -100,11 +100,13 @@ private extension PollVotesViewController {
                 let cell = tableView.dequeueReusableCell(withIdentifier: "option", for: indexPath)
                 if let cell = cell as? PollVoteOptionCell {
                     let totalVotes = self.pollStats?.totalVotes ?? 0
+                    let maxVotes = self.pollStats?.maxVotes ?? 0
                     let userVote = PollManager.instance.userVotes[self.eventId]
                     cell.configure(
                         option: option,
                         stats: stats,
                         totalVotes: totalVotes,
+                        maxVotes: maxVotes,
                         isSelected: isSelected,
                         userVote: userVote,
                         didEnd: self.poll.didEnd

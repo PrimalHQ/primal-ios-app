@@ -288,7 +288,7 @@ final class PollResultOptionView: UIView, Themeable {
         }
 
         progressConstraint = progressBar.widthAnchor.constraint(equalTo: progressParent.widthAnchor, multiplier: max(percentage, 0.001))
-        progressBar.layer.cornerRadius = progressParent.frame.width * percentage > 12 ? 6 : 3
+        progressBar.layer.cornerRadius = 300 * percentage > 12 ? 6 : 3
 
         updateTheme()
     }
@@ -297,7 +297,8 @@ final class PollResultOptionView: UIView, Themeable {
         backgroundColor = .clear
         label.textColor = .foreground
         percentLabel.textColor = .foreground
-        progressBar.backgroundColor = isSelected ? .accent : UIColor.foreground.withAlphaComponent(0.15)
+        progressBar.backgroundColor = isSelected ? .accent : UIColor.foreground6
+        progressBar.alpha = Theme.current.isLightTheme ? 0.5 : 1
         checkIcon.tintColor = .foreground
     }
 }
