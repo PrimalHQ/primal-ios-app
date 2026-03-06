@@ -463,11 +463,11 @@ class NoteProcessor: MetadataCoding {
         // MARK: - Parsing poll data
         if post.kind == NostrKind.poll.rawValue || post.kind == NostrKind.zapPoll.rawValue {
             let options: [ParsedPoll.Option] = post.tags.compactMap { tag in
-                guard tag.count >= 3, tag[0] == "option" else { return nil }
+                guard tag.count >= 3, tag[0] == "poll_option" else { return nil }
                 return .init(id: tag[1], label: tag[2])
             }
             let pollType = post.tags.first(where: { $0.first == "polltype" })?[safe: 1] ?? "singlechoice"
-            let endsAt: Date? = post.tags.first(where: { $0.first == "endsAt" })
+            let endsAt: Date? = (post.tags.first(where: { $0.first == "closed_at" }))
                 .flatMap { $0[safe: 1] }.flatMap { TimeInterval($0) }
                 .map { Date(timeIntervalSince1970: $0) }
             let valueMinimum = post.tags.first(where: { $0.first == "value_minimum" }).flatMap { $0[safe: 1] }.flatMap { Int($0) }

@@ -425,20 +425,16 @@ final class PostingTextViewManager: TextViewManager, MetadataCoding {
         
         allTags += mediaTags
 
-        // NIP-88: Poll support (kind 1068)
         if let poll = pollOptions, !poll.options.isEmpty {
             for (index, option) in poll.options.enumerated() {
-                let optionId = "option\(index)"
-                allTags.append(["option", optionId, option])
+                allTags.append(["poll_option", "\(index)", option])
             }
-
-            allTags.append(["polltype", "singlechoice"])
 
             let (days, hours, minutes) = poll.length
             let totalSeconds = (days * 86400) + (hours * 3600) + (minutes * 60)
             if totalSeconds > 0 {
-                let endsAt = Int(Date().timeIntervalSince1970) + totalSeconds
-                allTags.append(["endsAt", "\(endsAt)"])
+                let closedAt = Int(Date().timeIntervalSince1970) + totalSeconds
+                allTags.append(["closed_at", "\(closedAt)"])
             }
 
             let kind: Int
@@ -450,8 +446,6 @@ final class PostingTextViewManager: TextViewManager, MetadataCoding {
             case .user:
                 kind = NostrKind.poll.rawValue
             }
-
-            allTags.append(["relay", "wss://relay.primal.net"])
 
             return NostrObject.create(content: postingText, kind: kind, tags: allTags)
         }
