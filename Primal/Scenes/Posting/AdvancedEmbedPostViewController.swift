@@ -62,13 +62,21 @@ class AdvancedEmbedPostViewController: UIViewController {
     
     init(including: PostEmbedPreview? = nil, onPost: (() -> Void)? = nil) {
         manager = PostingTextViewManager(textView: textView, usersTable: usersTableView, replyId: nil, replyingTo: nil)
-        
+
         self.onPost = onPost
         super.init(nibName: nil, bundle: nil)
-        
+
         if let including {
             manager.embeddedElements.append(including)
         }
+        setup()
+    }
+
+    init(replyId: String, replyingTo: PrimalFeedPost?, onPost: (() -> Void)? = nil) {
+        manager = PostingTextViewManager(textView: textView, usersTable: usersTableView, replyId: replyId, replyingTo: replyingTo, defaultPostTitle: "Reply")
+
+        self.onPost = onPost
+        super.init(nibName: nil, bundle: nil)
         setup()
     }
     

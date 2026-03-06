@@ -13,9 +13,11 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
     let id: String
     var mainObject: PrimalFeedPost? {
         didSet {
-            inputManager.replyingTo = mainObject
+            replyController?.manager.replyingTo = mainObject
         }
     }
+
+    private var replyController: AdvancedEmbedPostViewController?
     
     var didPostNewComment = false
         
@@ -78,8 +80,7 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
         
         self.init(threadId: post.post.id, startingPosts: [post])
         mainObject = post.post
-        inputManager.replyingTo = mainObject
-        
+
         updateReplyToLabel()
     }
     
@@ -90,8 +91,7 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
         
         self.init(threadId: post.post.id, startingPosts: posts.map { $0.post.id == post.post.id ? post : $0 })
         mainObject = post.post
-        inputManager.replyingTo = mainObject
-        
+
         updateReplyToLabel()
     }
     
@@ -166,7 +166,7 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
                 if nav.viewControllers.contains(where: { $0 == self }) {
                     return // the controller is still in the nav stack so data will not be lost
                 }
-                inputManager.askToSave(nav)
+                replyController?.manager.askToSave(nav)
             }
         }
     }
@@ -233,7 +233,11 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
         navigationItem.leftBarButtonItem = .init(customView: back)
         back.addAction(.init(handler: { [weak self] _ in
             guard let self else { return }
-            inputManager.askToSaveThenDismiss(self)
+            if let manager = replyController?.manager {
+                manager.askToSaveThenDismiss(self)
+            } else {
+                backButtonPressed()
+            }
         }), for: .touchUpInside)
         
         textInputView.tintColor = .accent
@@ -275,6 +279,21 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
 }
 
 private extension ThreadViewController {
+    @objc func replyBoxTapped() {
+        guard !posts.isEmpty else { return }
+
+        if replyController == nil {
+            replyController = AdvancedEmbedPostViewController(replyId: id, replyingTo: mainObject, onPost: { [weak self] in
+                guard let self else { return }
+                didPostNewComment = true
+                feed.requestThread(postId: id, includeParent: false)
+            })
+        }
+
+        guard let replyController, replyController.presentingViewController == nil else { return }
+        present(replyController, animated: true)
+    }
+
     @objc func postButtonPressed() {
         guard textInputView.isEditable, !posts.isEmpty else { return }
         
@@ -673,6 +692,10 @@ private extension ThreadViewController {
         textHeightConstraint?.priority = .defaultHigh
         inputContentMaxHeightConstraint = contentStack.heightAnchor.constraint(equalToConstant: 600)
         inputContentMaxHeightConstraint?.priority = .init(500)
+
+        textInputView.isUserInteractionEnabled = false
+        let replyTap = UITapGestureRecognizer(target: self, action: #selector(replyBoxTapped))
+        inputBackground.addGestureRecognizer(replyTap)
         
         view.addSubview(usersTableView)
         usersTableView.pin(to: inputParent, edges: .horizontal)
@@ -705,16 +728,17 @@ private extension ThreadViewController {
 // Back gesture
 extension ThreadViewController: UIGestureRecognizerDelegate {
     var askToSaveIsNecessary: Bool {
-        let draft = inputManager.currentDraft
-        
-        if let oldDraft = inputManager.oldDraft {
+        guard let manager = replyController?.manager else { return false }
+        let draft = manager.currentDraft
+
+        if let oldDraft = manager.oldDraft {
             if oldDraft.text == draft.text && oldDraft.uploadedAssets == draft.uploadedAssets {
                 return false
             }
-        } else if textInputView.text.isEmpty == true {
+        } else if manager.textView.text?.isEmpty ?? true {
             return false
         }
-        
+
         return true
     }
     
@@ -722,7 +746,7 @@ extension ThreadViewController: UIGestureRecognizerDelegate {
         if navigationController?.topViewController != self { return true }
         
         if askToSaveIsNecessary {
-            inputManager.askToSave(self) { [weak self] dialog in
+            replyController?.manager.askToSave(self) { [weak self] dialog in
                 if !dialog {
                     self?.backButtonPressed()
                 }
