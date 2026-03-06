@@ -4931,7 +4931,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.0.9;
+				MARKETING_VERSION = 3.0.10;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -4980,7 +4980,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.0.9;
+				MARKETING_VERSION = 3.0.10;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -5440,7 +5440,7 @@
 			repositoryURL = "https://github.com/PrimalHQ/primal-shared-ios";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 0.1.12;
+				minimumVersion = 0.1.13;
 			};
 		};
 		B9F933162B867D860064B495 /* XCRemoteSwiftPackageReference "qrcode" */ = {
