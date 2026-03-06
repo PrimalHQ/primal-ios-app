@@ -426,25 +426,35 @@ final class PostingTextViewManager: TextViewManager, MetadataCoding {
         allTags += mediaTags
 
         if let poll = pollOptions, !poll.options.isEmpty {
-            for (index, option) in poll.options.enumerated() {
-                allTags.append(["poll_option", "\(index)", option])
-            }
-
-            let (days, hours, minutes) = poll.length
-            let totalSeconds = (days * 86400) + (hours * 3600) + (minutes * 60)
-            if totalSeconds > 0 {
-                let closedAt = Int(Date().timeIntervalSince1970) + totalSeconds
-                allTags.append(["closed_at", "\(closedAt)"])
-            }
-
             let kind: Int
             switch poll.type {
             case .zap(let min, let max):
+                for (index, option) in poll.options.enumerated() {
+                    allTags.append(["poll_option", "\(index)", option])
+                }
                 allTags.append(["value_minimum", "\(min)"])
                 allTags.append(["value_maximum", "\(max)"])
                 kind = NostrKind.zapPoll.rawValue
+
+                let (days, hours, minutes) = poll.length
+                let totalSeconds = (days * 86400) + (hours * 3600) + (minutes * 60)
+                if totalSeconds > 0 {
+                    let closedAt = Int(Date().timeIntervalSince1970) + totalSeconds
+                    allTags.append(["closed_at", "\(closedAt)"])
+                }
             case .user:
+                for (index, option) in poll.options.enumerated() {
+                    allTags.append(["option", "\(index)", option])
+                }
+                allTags.append(["polltype", "singlechoice"])
                 kind = NostrKind.poll.rawValue
+
+                let (days, hours, minutes) = poll.length
+                let totalSeconds = (days * 86400) + (hours * 3600) + (minutes * 60)
+                if totalSeconds > 0 {
+                    let endsAt = Int(Date().timeIntervalSince1970) + totalSeconds
+                    allTags.append(["endsAt", "\(endsAt)"])
+                }
             }
 
             return NostrObject.create(content: postingText, kind: kind, tags: allTags)

@@ -9,14 +9,21 @@ import Combine
 import UIKit
 import GenericJSON
 
+enum PollVotesTableCellType {
+    case option(ParsedPoll.Option, PollOptionStats, isSelected: Bool)
+    case optionsDetails(totalCount: Int, message: String)
+    case voteTitle(String, count: Int)
+    case vote(ParsedUser)
+}
+
 class PollVotesViewController: UIViewController, Themeable {
     private let table = UITableView()
     private let emptyView = EmptyTableView(title: "There are no votes for this option yet")
-    private let tabSelectionView: TabSelectionView
+    private let tabSelectionView = PollView()
 
     private let eventId: String
     private let poll: ParsedPoll
-    private let pollStats: PollStats?
+    private var pollStats: PollStats?
 
     private var users: [ParsedUser] = [] {
         didSet {
@@ -32,16 +39,9 @@ class PollVotesViewController: UIViewController, Themeable {
 
     private var selectedOptionIndex = 0
 
-    init(eventId: String, poll: ParsedPoll, pollStats: PollStats?) {
+    init(eventId: String, poll: ParsedPoll) {
         self.eventId = eventId
         self.poll = poll
-        self.pollStats = pollStats
-
-        let tabTitles = poll.options.map { option in
-            let votes = pollStats?.options[option.id]?.votes ?? 0
-            return "\(option.label) (\(votes))"
-        }
-        tabSelectionView = TabSelectionView(tabs: tabTitles, spacing: 8)
 
         super.init(nibName: nil, bundle: nil)
         setup()
@@ -64,7 +64,7 @@ class PollVotesViewController: UIViewController, Themeable {
 
 private extension PollVotesViewController {
     func setup() {
-        title = "Poll Votes"
+        title = "Votes"
         updateTheme()
 
         view.addSubview(table)
@@ -73,14 +73,6 @@ private extension PollVotesViewController {
         table.delegate = self
         table.separatorStyle = .none
         table.register(PollVoteUserCell.self, forCellReuseIdentifier: "cell")
-
-        let header = UIView()
-        header.addSubview(tabSelectionView)
-        tabSelectionView.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .vertical)
-        header.layoutIfNeeded()
-        let size = header.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize)
-        header.frame.size = CGSize(width: table.bounds.width, height: size.height)
-        table.tableHeaderView = header
 
         view.addSubview(emptyView)
         emptyView.centerToSuperview()

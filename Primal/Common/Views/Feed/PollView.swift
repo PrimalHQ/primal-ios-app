@@ -18,14 +18,11 @@ extension ParsedPoll {
 final class PollView: UIView, Themeable {
     private let optionsStack = UIStackView(axis: .vertical, [])
     private let expirationLabel = UILabel()
-    private let totalVotesLabel = UILabel()
     private let separatorLabel = UILabel()
-
-    weak var delegate: FeedElementCellDelegate?
-
-    private var poll: ParsedPoll?
-    private var eventId: String?
-    private var authorUser: PrimalUser?
+    let totalVotesButton = UIButton()
+    
+    private var content: ParsedContent?
+    private var showResults: Bool?
     private var cancellables: Set<AnyCancellable> = []
 
     init() {
@@ -35,12 +32,11 @@ final class PollView: UIView, Themeable {
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
-    func updateForContent(_ content: ParsedContent) {
+    func updateForContent(_ content: ParsedContent, showResults: Bool? = nil) {
         guard let poll = content.poll else { return }
 
-        self.poll = poll
-        self.eventId = content.post.id
-        self.authorUser = content.user.data
+        self.content = content
+        self.showResults = showResults
 
         cancellables = []
 
@@ -52,7 +48,7 @@ final class PollView: UIView, Themeable {
         )
         .receive(on: DispatchQueue.main)
         .sink { [weak self] stats, userVote in
-            self?.render(poll: poll, stats: stats, userVote: userVote)
+            self?.render(poll: poll, stats: stats, userVote: userVote, showResults: showResults)
         }
         .store(in: &cancellables)
     }
@@ -60,12 +56,12 @@ final class PollView: UIView, Themeable {
     func updateTheme() {
         expirationLabel.textColor = .foreground4
         separatorLabel.textColor = .foreground4
-        totalVotesLabel.textColor = .accent2
 
-        guard let poll, let eventId else { return }
-        let stats = PollManager.instance.pollStats[eventId]
-        let userVote = PollManager.instance.userVotes[eventId]
-        render(poll: poll, stats: stats, userVote: userVote)
+        guard let content, let poll = content.poll else { return }
+        
+        let stats = PollManager.instance.pollStats[content.post.id]
+        let userVote = PollManager.instance.userVotes[content.post.id]
+        render(poll: poll, stats: stats, userVote: userVote, showResults: showResults)
     }
 }
 
@@ -73,11 +69,11 @@ final class PollView: UIView, Themeable {
 
 private extension PollView {
     var isExpired: Bool {
-        guard let endsAt = poll?.endsAt else { return false }
+        guard let endsAt = content?.poll?.endsAt else { return false }
         return endsAt <= Date()
     }
 
-    func render(poll: ParsedPoll, stats: PollStats?, userVote: String?) {
+    func render(poll: ParsedPoll, stats: PollStats?, userVote: String?, showResults: Bool?) {
         let showResults = isExpired || userVote != nil
 
         optionsStack.arrangedSubviews.forEach { $0.removeFromSuperview() }
@@ -102,11 +98,11 @@ private extension PollView {
                 let row = PollVotingOptionView()
                 row.configure(text: option.label)
                 row.addAction(.init(handler: { [weak self] _ in
-                    guard let self, let eventId = self.eventId, let authorUser = self.authorUser else { return }
+                    guard let self, let content = self.content, let poll = content.poll else { return }
                     if poll.isZapPoll {
-                        self.presentZapVote(pollEventId: eventId, pollAuthor: authorUser, optionId: option.id, poll: poll)
+                        self.presentZapVote(pollEventId: content.post.id, pollAuthor: content.user.data, optionId: option.id, poll: poll)
                     } else {
-                        PollManager.instance.vote(pollEventId: eventId, pollAuthorPubkey: authorUser.pubkey, optionId: option.id)
+                        PollManager.instance.vote(pollEventId: content.post.id, pollAuthorPubkey: content.user.data.pubkey, optionId: option.id)
                     }
                 }), for: .touchUpInside)
                 optionsStack.addArrangedSubview(row)
@@ -114,11 +110,13 @@ private extension PollView {
         }
 
         if totalVotes > 0 {
-            totalVotesLabel.isHidden = false
-            totalVotesLabel.text = totalVotes == 1 ? "1 vote" : "\(totalVotes) votes"
+            var config = UIButton.Configuration.accent(totalVotes == 1 ? "1 vote" : "\(totalVotes) votes", font: .appFont(withSize: 12, weight: .regular))
+            config.contentInsets = .zero
+            totalVotesButton.configuration = config
+            totalVotesButton.isHidden = false
             separatorLabel.isHidden = expirationLabel.isHidden
         } else {
-            totalVotesLabel.isHidden = true
+            totalVotesButton.isHidden = true
             separatorLabel.isHidden = true
         }
     }
@@ -159,7 +157,7 @@ private extension PollView {
             if endsAt > .now {
                 expirationLabel.text = endsAt.timeLeftDisplay()
             } else {
-                expirationLabel.text = "Ended \(endsAt.timeAgoDisplayLong())"
+                expirationLabel.text = "Final Results"
             }
         } else {
             expirationLabel.isHidden = true
@@ -168,15 +166,14 @@ private extension PollView {
 
     func setup() {
         expirationLabel.font = .appFont(withSize: 12, weight: .regular)
-        totalVotesLabel.font = .appFont(withSize: 12, weight: .regular)
-        totalVotesLabel.isHidden = true
+        totalVotesButton.isHidden = true
         separatorLabel.font = .appFont(withSize: 14, weight: .heavy)
         separatorLabel.text = "•"
         separatorLabel.isHidden = true
 
         optionsStack.spacing = 10
 
-        let bottomStack = UIStackView(arrangedSubviews: [totalVotesLabel, separatorLabel, expirationLabel, UIView()])
+        let bottomStack = UIStackView(arrangedSubviews: [totalVotesButton, separatorLabel, expirationLabel, UIView()])
         bottomStack.spacing = 6
 
         let mainStack = UIStackView(axis: .vertical, [optionsStack, bottomStack])
@@ -184,12 +181,6 @@ private extension PollView {
 
         addSubview(mainStack)
         mainStack.pinToSuperview()
-
-        totalVotesLabel.isUserInteractionEnabled = true
-        totalVotesLabel.addGestureRecognizer(BindableTapGestureRecognizer(action: { [weak self] in
-            guard let self, let cell = self.firstParent(ofType: UITableViewCell.self) else { return }
-            self.delegate?.postCellDidTap(cell, .pollVotesDetails)
-        }))
 
         updateTheme()
     }
@@ -253,8 +244,9 @@ final class PollResultOptionView: UIView, Themeable {
         checkIcon.setContentHuggingPriority(.required, for: .horizontal)
         checkIcon.setContentCompressionResistancePriority(.required, for: .horizontal)
         
-        let labelCheckStack = UIStackView(spacing: 6, [label, checkIcon])
+        let labelCheckStack = UIStackView([label, checkIcon, UIView()])
         labelCheckStack.alignment = .center
+        labelCheckStack.setCustomSpacing(6, after: label)
         
         progressParent.addSubview(labelCheckStack)
         labelCheckStack.pinToSuperview(edges: .horizontal, padding: 12).centerToSuperview(axis: .vertical)

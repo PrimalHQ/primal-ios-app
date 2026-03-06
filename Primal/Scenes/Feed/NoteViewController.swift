@@ -435,10 +435,9 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
         case .repostDetails:
             show(NoteReactionsParentController(.reposts, noteId: post.post.universalID), sender: nil)
         case .pollVotesDetails:
-            if let poll = post.poll {
-                let stats = PollManager.instance.pollStats[post.post.id]
-                show(PollVotesViewController(eventId: post.post.id, poll: poll, pollStats: stats), sender: nil)
-            }
+            guard let poll = post.poll else { return }
+            
+            show(PollVotesViewController(eventId: post.post.id, poll: poll), sender: nil)
         case .share:
             let activityViewController = UIActivityViewController(activityItems: [post.webURL()], applicationActivities: nil)
             present(activityViewController, animated: true, completion: nil)

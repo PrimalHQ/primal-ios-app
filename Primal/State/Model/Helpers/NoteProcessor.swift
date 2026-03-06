@@ -462,12 +462,17 @@ class NoteProcessor: MetadataCoding {
 
         // MARK: - Parsing poll data
         if post.kind == NostrKind.poll.rawValue || post.kind == NostrKind.zapPoll.rawValue {
+            let isZapPoll = post.kind == NostrKind.zapPoll.rawValue
+            // NIP-88 user polls use "option" tag; zap polls use "poll_option" tag
+            let optionTagName = isZapPoll ? "poll_option" : "option"
             let options: [ParsedPoll.Option] = post.tags.compactMap { tag in
-                guard tag.count >= 3, tag[0] == "poll_option" else { return nil }
+                guard tag.count >= 3, tag[0] == optionTagName else { return nil }
                 return .init(id: tag[1], label: tag[2])
             }
             let pollType = post.tags.first(where: { $0.first == "polltype" })?[safe: 1] ?? "singlechoice"
-            let endsAt: Date? = (post.tags.first(where: { $0.first == "closed_at" }))
+            // NIP-88 user polls use "endsAt" tag; zap polls use "closed_at" tag
+            let endsAtTagName = isZapPoll ? "closed_at" : "endsAt"
+            let endsAt: Date? = (post.tags.first(where: { $0.first == endsAtTagName }))
                 .flatMap { $0[safe: 1] }.flatMap { TimeInterval($0) }
                 .map { Date(timeIntervalSince1970: $0) }
             let valueMinimum = post.tags.first(where: { $0.first == "value_minimum" }).flatMap { $0[safe: 1] }.flatMap { Int($0) }
@@ -476,7 +481,7 @@ class NoteProcessor: MetadataCoding {
             if !options.isEmpty {
                 p.poll = ParsedPoll(
                     options: options, pollType: pollType, endsAt: endsAt,
-                    isZapPoll: post.kind == NostrKind.zapPoll.rawValue,
+                    isZapPoll: isZapPoll,
                     valueMinimum: valueMinimum, valueMaximum: valueMaximum
                 )
             }
