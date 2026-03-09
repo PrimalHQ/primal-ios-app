@@ -72,7 +72,8 @@ class PollInputView: UIView {
 
     // MARK: - Choice Fields
 
-    private func addChoiceField(placeholder: String) {
+    @discardableResult
+    private func addChoiceField(placeholder: String) -> UITextField {
         let container = UIView()
         container.backgroundColor = .background3
         container.layer.cornerRadius = 8
@@ -116,12 +117,14 @@ class PollInputView: UIView {
         container.tag = choicesStack.arrangedSubviews.count
 
         choicesStack.addArrangedSubview(container)
+        
+        return textField
     }
 
     @objc private func addChoiceTapped() {
         guard choicesStack.arrangedSubviews.count < 5 else { return }
         let count = choicesStack.arrangedSubviews.count + 1
-        addChoiceField(placeholder: "Choice \(count)")
+        addChoiceField(placeholder: "Choice \(count)").becomeFirstResponder()
         addChoiceButton.alpha = count >= 5 ? 0 : 1
         updateCloseButtons()
     }
