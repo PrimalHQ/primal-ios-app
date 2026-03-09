@@ -190,6 +190,8 @@ private extension PollView {
 
 final class PollVotingOptionView: UIButton, Themeable {
     var text: String = ""
+    let zapIcon = UIImageView(image: .zapPollZapIcon)
+    
     init() {
         super.init(frame: .zero)
         
@@ -197,16 +199,21 @@ final class PollVotingOptionView: UIButton, Themeable {
         layer.cornerRadius = 18
         constrainToSize(height: 36)
         updateTheme()
+        
+        addSubview(zapIcon)
+        zapIcon.pinToSuperview(edges: .trailing, padding: 10).centerToSuperview(axis: .vertical)
     }
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
-    func configure(text: String) {
+    func configure(text: String, isZap: Bool) {
         self.text = text
+        zapIcon.isHidden = !isZap
         updateTheme()
     }
 
     func updateTheme() {
+        zapIcon.tintColor = .foreground6
         layer.borderColor = UIColor.foreground6.cgColor
         configuration = .pill(text: text, foregroundColor: .foreground, backgroundColor: .background4, font: .appFont(withSize: 15, weight: .regular))
     }
