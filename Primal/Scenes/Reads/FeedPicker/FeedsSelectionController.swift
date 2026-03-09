@@ -160,6 +160,20 @@ final class FeedsSelectionController: UIViewController {
     let addFeedButton = UIButton(configuration: .accent18("Add Custom Feed"))
     let editButton = UIButton(configuration: .accent18("Edit"))
     let doneButton = UIButton(configuration: .accent18("Done"))
+
+    lazy var restoreDefaultsFooter: UIView = {
+        let button = UIButton(configuration: .accent18("Restore Default Feeds"))
+        button.addAction(.init(handler: { [weak self] _ in
+            self?.showRestoreFeedsDialog()
+        }), for: .touchUpInside)
+
+        let container = UIView()
+        container.addSubview(button)
+        button.pinToSuperview(edges: .top, padding: 14).pinToSuperview(edges: .leading, padding: 20)
+
+        container.frame = CGRect(x: 0, y: 0, width: 0, height: 110)
+        return container
+    }()
     
     var currentFeed: PrimalFeed
     let type: PrimalFeedType
@@ -249,21 +263,23 @@ private extension FeedsSelectionController {
         editButton.isHidden = true
         doneButton.isHidden = false
         addFeedButton.isHidden = false
-        
+
         isEditing = true
         table.dragDelegate = self
-        
+        table.tableFooterView = restoreDefaultsFooter
+
         updateFeeds(feeds, PrimalFeed.getAllFeeds(type), animate: animate)
     }
-    
+
     func endEditing(animate: Bool = true) {
         editButton.isHidden = LoginManager.instance.method() == .nsec ? false : true
         doneButton.isHidden = true
         addFeedButton.isHidden = true
-        
+
         isEditing = false
         table.dragDelegate = nil
-        
+        table.tableFooterView = nil
+
         updateFeeds(feeds, PrimalFeed.getActiveFeeds(type), animate: animate)
     }
     
@@ -320,7 +336,6 @@ private extension FeedsSelectionController {
         
         table.showsVerticalScrollIndicator = false
         table.register(FeedSelectionCell.self, forCellReuseIdentifier: "cell")
-        table.register(UITableViewCell.self, forCellReuseIdentifier: "restoreDefaults")
         table.dataSource = self
         table.delegate = self
         table.separatorStyle = .none
@@ -360,15 +375,13 @@ private extension FeedsSelectionController {
 
 extension FeedsSelectionController: UITableViewDragDelegate {
     func tableView(_ tableView: UITableView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
-        guard indexPath.section == 0 else { return [] }
-        
         let dragItem = UIDragItem(itemProvider: NSItemProvider())
         dragItem.localObject = feeds[indexPath.row]
         return [dragItem]
     }
 
     func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCell.EditingStyle { .none }
-    
+
     func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
         let feed = feeds.remove(at: sourceIndexPath.row)
         if destinationIndexPath.row < feeds.count {
@@ -376,13 +389,11 @@ extension FeedsSelectionController: UITableViewDragDelegate {
         } else {
             feeds.append(feed)
         }
-        
+
         PrimalFeed.setAllFeeds(feeds, type: type, notifyBackend: true)
     }
-    
-    func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
-        indexPath.section == 0
-    }
+
+    func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool { true }
 }
 
 extension FeedsSelectionController: FeedSelectionCellDelegate {
@@ -415,28 +426,13 @@ extension FeedsSelectionController: FeedSelectionCellDelegate {
 }
 
 extension FeedsSelectionController: UITableViewDataSource {
-    func numberOfSections(in tableView: UITableView) -> Int { isEditing ? 2 : 1 }
-    
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { section == 0 ? feeds.count : 1 }
-    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { feeds.count }
+
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard indexPath.section == 0 else {
-            let cell = table.dequeueReusableCell(withIdentifier: "restoreDefaults", for: indexPath)
-            var content = cell.defaultContentConfiguration()
-            content.attributedText = .init(string: "Restore Default Feeds", attributes: [
-                .font: UIFont.appFont(withSize: 18, weight: .regular),
-                .foregroundColor: UIColor.accent
-            ])
-            content.directionalLayoutMargins = .init(top: 14, leading: 32, bottom: 65, trailing: 32)
-            cell.contentConfiguration = content
-            cell.contentView.backgroundColor = .background2
-            cell.selectionStyle = .none
-            return cell
-        }
         let cell = table.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-        
+
         let feed = feeds[indexPath.row]
-        
+
         (cell as? FeedSelectionCell)?.setup(feed, selected: feed.spec == currentFeed.spec, editing: isEditing, delegate: self)
         return cell
     }
@@ -444,13 +440,8 @@ extension FeedsSelectionController: UITableViewDataSource {
 
 extension FeedsSelectionController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if indexPath.section == 1 { // Restore feeds
-            showRestoreFeedsDialog()
-            return
-        }
-        
         if isEditing { return }
-        
+
         currentFeed = feeds[indexPath.row]
         table.reloadData()
         dismiss(animated: true)
