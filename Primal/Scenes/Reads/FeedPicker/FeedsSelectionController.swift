@@ -62,15 +62,15 @@ enum PrimalFeedType {
 extension PrimalFeed {
     static func setServerFeeds(_ feeds: [PrimalFeed], type: PrimalFeedType) {
         var allFeeds = getAllFeeds(type)
-        
+
         allFeeds.removeAll(where: { feed in
-            feed.isFromBackend && !feeds.contains(where: { $0.spec == feed.spec })
+            feed.isFromBackend && !feeds.contains(where: { $0.hasEqualSpec(feed) })
         })
-        
-        for feed in feeds where !allFeeds.contains(where: { $0.spec == feed.spec }) {
+
+        for feed in feeds where !allFeeds.contains(where: { $0.hasEqualSpec(feed) }) {
             allFeeds.append(feed)
         }
-        
+
         setAllFeeds(allFeeds, type: type)
     }
     
