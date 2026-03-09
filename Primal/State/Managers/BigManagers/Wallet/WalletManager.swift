@@ -305,6 +305,8 @@ final class WalletManager {
         guard let wallet = try? await walletAccountRepo.getActiveWallet(userId: pubkey) else { return nil }
 
         return try? await sparkWalletAccountRepository.getLightningAddress(walletId: wallet.walletId)
+        
+        // TODO: - wait and retry if failed
     }
     
     func seedPhrase() async throws -> [String] {
