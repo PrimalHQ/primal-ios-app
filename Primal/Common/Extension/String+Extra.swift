@@ -93,7 +93,7 @@ extension String : Identifiable {
     }
     
     var isHashtag: Bool {
-        let hashtagPattern = "(?:\\s|^)#[^\\s!@#$%^&*(),.?\":{}|<>]+"
+        let hashtagPattern = "(?:\\s|^)#(?!\\d+$)[^\\s!@#$%^&*(),.?\":{}|<>]+"
         
         guard let hashtagRegex = try? Regex(hashtagPattern) else {
             print("Unable to create hashtag pattern regex")
@@ -195,7 +195,7 @@ extension String : Identifiable {
     }
     
     func extractHashtags() -> [String] {
-        guard let regex = try? NSRegularExpression(pattern: "(?<!\\S)#\\w+", options: []) else { return [] }
+        guard let regex = try? NSRegularExpression(pattern: "(?<!\\S)#(?!\\d+\\b)\\w+", options: []) else { return [] }
         
         return regex.matches(in: self, options: [], range: NSRange(startIndex..., in: self))
             .compactMap { Range($0.range, in: self) }
