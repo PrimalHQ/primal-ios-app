@@ -123,7 +123,6 @@ private extension PollVotesViewController {
             feedManager = newFeed
         }
         
-        feedManager?.refresh()
         feedUpdate = feedManager?.$users
             .receive(on: DispatchQueue.main)
             .sink { [weak self] users in self?.reloadData(users: users) }

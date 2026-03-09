@@ -31,27 +31,24 @@ class PollVotesFeedManager: BaseFeedManager {
 
                 var newUsers = result.getSortedUsers()
                 
-                let missingUsers = result.events
+                let votingUsers = result.events
                     .filter({ Int($0["kind"]?.doubleValue ?? 0) == NostrKind.pollVote.rawValue })
                     .compactMap({ $0["pubkey"]?.stringValue })
                     .unique()
-                    .filter({ pubkey in !newUsers.contains(where: { $0.data.pubkey == pubkey }) })
-                    .map { ParsedUser(data: .init(pubkey: $0)) }
+                    .map { pubkey in newUsers.first(where: { $0.data.pubkey == pubkey }) ?? ParsedUser(data: .init(pubkey: pubkey)) }
                 
-                if !missingUsers.isEmpty {
-                    newUsers.append(contentsOf: missingUsers)
-                }
-
-                if newUsers.isEmpty {
+                if votingUsers.isEmpty {
                     didReachEnd = true
                 } else {
                     let existingPubkeys = Set(users.map { $0.data.pubkey })
-                    let filtered = newUsers.filter { !existingPubkeys.contains($0.data.pubkey) }
+                    let filtered = votingUsers.filter { !existingPubkeys.contains($0.data.pubkey) }
                     usersTmp += filtered
                     users = usersTmp
                 }
             }
             .store(in: &cancellables)
+        
+        refresh()
     }
 
     override func refresh() {

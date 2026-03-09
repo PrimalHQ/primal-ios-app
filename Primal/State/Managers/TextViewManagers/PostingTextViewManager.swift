@@ -335,6 +335,7 @@ final class PostingTextViewManager: TextViewManager, MetadataCoding {
         isEmpty = true
         media = []
         embeddedElements = []
+        pollOptions = nil
     }
     
     func post() async -> NostrObject? {
