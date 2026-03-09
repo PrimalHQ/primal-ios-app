@@ -347,6 +347,13 @@ private extension WalletHomeViewController {
             WalletManager.instance.$parsedTransactions.compactMap { $0.isEmpty ? nil : $0 }
         )
         
+        WalletManager.instance.$activeWallet.compactMap({ $0 })
+            .compactMap { $0 is Wallet.Primal ? "Legacy Wallet" : "Wallet" }
+            .removeDuplicates()
+            .receive(on: DispatchQueue.main)
+            .assign(to: \.title, onWeak: self)
+            .store(in: &cancellables)
+        
         Publishers.CombineLatest(WalletManager.instance.$activeWallet, transactionsPublisher)
         .receive(on: DispatchQueue.main)
         .sink { [weak self] wallet, transactions in
