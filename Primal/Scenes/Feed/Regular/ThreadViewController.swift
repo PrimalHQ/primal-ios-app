@@ -377,7 +377,13 @@ private extension ThreadViewController {
         }
         
         result.append(mainPost) // Main post
-        let mainChildren = posts.filter({ $0.replyingTo?.post.id == mainPost.post.id }).sorted(by: { $0.post.created_at > $1.post.created_at })
+        let mainAuthor = mainPost.user.data.pubkey
+        let mainChildren = posts.filter({ $0.replyingTo?.post.id == mainPost.post.id }).sorted(by: {
+            let lhsIsAuthor = $0.user.data.pubkey == mainAuthor
+            let rhsIsAuthor = $1.user.data.pubkey == mainAuthor
+            if lhsIsAuthor != rhsIsAuthor { return lhsIsAuthor }
+            return $0.post.created_at > $1.post.created_at
+        })
         result.append(contentsOf: mainChildren)
         
         if result.count != posts.count { // In case some post is missing or added twice
