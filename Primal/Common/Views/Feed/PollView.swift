@@ -96,7 +96,7 @@ private extension PollView {
                 optionsStack.addArrangedSubview(row)
             } else {
                 let row = PollVotingOptionView()
-                row.configure(text: option.label)
+                row.configure(text: option.label, isZap: poll.isZapPoll)
                 row.addAction(.init(handler: { [weak self] _ in
                     guard let self, let content = self.content, let poll = content.poll else { return }
                     if poll.isZapPoll {

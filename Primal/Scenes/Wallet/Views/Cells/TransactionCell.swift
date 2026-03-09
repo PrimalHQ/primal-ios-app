@@ -8,6 +8,7 @@
 import UIKit
 import PrimalShared
 import FLAnimatedImage
+import Combine
 
 extension UIColor {
     static var receiveMoney = UIColor(rgb: 0x2CA85E)
@@ -36,7 +37,9 @@ final class TransactionCell: UITableViewCell, Themeable {
     private let coverView = UIView()
     
     weak var delegate: TransactionCellDelegate?
-    
+
+    private var profileCancellable: AnyCancellable?
+
     var wasPulsing = false
     var oldProfileId = ""
     
@@ -51,6 +54,7 @@ final class TransactionCell: UITableViewCell, Themeable {
  
     var oldWasBtc: Bool? = nil
     func setup(with transaction: PrimalShared.Transaction, showBTC: Bool) {
+        profileCancellable = nil
         let isDeposit = transaction.type == .deposit
         var isZap = false
         
@@ -60,7 +64,14 @@ final class TransactionCell: UITableViewCell, Themeable {
                 oldProfileId = user.profileId
             }
             profileImage.contentMode = .scaleAspectFill
-            nameLabel.text = user.displayName
+            nameLabel.text = user.firstIdentifier
+            if !user.hasDisplayName {
+                profileCancellable = DatabaseManager.instance.getProfilePublisher(user.profileId)
+                    .receive(on: DispatchQueue.main)
+                    .sink(receiveCompletion: { _ in }, receiveValue: { [weak self] parsedUser in
+                        self?.nameLabel.text = parsedUser.data.firstIdentifier
+                    })
+            }
             isZap = true
         } else if let onchain = transaction as? Transaction.OnChain {
             oldProfileId = ""

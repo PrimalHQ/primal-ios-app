@@ -9,6 +9,7 @@ import UIKit
 import FLAnimatedImage
 import PrimalShared
 import Nantes
+import Combine
 import SafariServices
 
 extension ProfileData {
@@ -21,7 +22,13 @@ extension ProfileData {
         }
         return profileId
     }
-    
+
+    var hasDisplayName: Bool {
+        if let displayName, !displayName.isEmpty { return true }
+        if let handle, !handle.isEmpty { return true }
+        return false
+    }
+
     var address: String? {
         return lightningAddress ?? lnUrlDecoded
     }
@@ -36,7 +43,9 @@ class TransactionUserInfoCell: UITableViewCell {
     let checkbox = VerifiedView()
     let subtitleLabel = UILabel()
     let messageLabel = NantesLabel()
-    
+
+    private var profileCancellable: AnyCancellable?
+
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
@@ -49,6 +58,8 @@ class TransactionUserInfoCell: UITableViewCell {
 
 extension TransactionUserInfoCell: TransactionPartialCell {
     func setupWithCellInfo(_ info: TransactionCellType) {
+        profileCancellable = nil
+        
         let user: ProfileData?
         let message: String?
         let onchain: Bool
@@ -73,6 +84,13 @@ extension TransactionUserInfoCell: TransactionPartialCell {
         } else if let user {
             avatar.setSharedUserImage(user)
             mainLabel.text = user.firstIdentifier
+            if !user.hasDisplayName {
+                profileCancellable = DatabaseManager.instance.getProfilePublisher(user.profileId)
+                    .receive(on: DispatchQueue.main)
+                    .sink(receiveCompletion: { _ in }, receiveValue: { [weak self] parsedUser in
+                        self?.mainLabel.text = parsedUser.data.firstIdentifier
+                    })
+            }
             subtitleLabel.text = user.address
             subtitleLabel.isHidden = subtitleLabel.text?.isEmpty != false
 //            checkbox.user = user.data
