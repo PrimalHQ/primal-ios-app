@@ -382,6 +382,7 @@ private extension ThreadViewController {
             let lhsIsAuthor = $0.user.data.pubkey == mainAuthor
             let rhsIsAuthor = $1.user.data.pubkey == mainAuthor
             if lhsIsAuthor != rhsIsAuthor { return lhsIsAuthor }
+            if lhsIsAuthor { return $0.post.created_at < $1.post.created_at }
             return $0.post.created_at > $1.post.created_at
         })
         result.append(contentsOf: mainChildren)
