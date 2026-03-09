@@ -12,7 +12,6 @@ import GenericJSON
 struct SocketRequest {
     let url: URL = URL(string: "https://cache2.primal.net/api/")!
     
-    var useHTTP = false
     let name: String
     let payload: JSON?
     

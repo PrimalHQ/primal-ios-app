@@ -10,7 +10,7 @@ import Combine
 
 extension SocketRequest {
     static func eventZaps(noteId: String, limit: Int) -> SocketRequest {
-        .init(useHTTP: true, name: "event_zaps_by_satszapped", payload: .object([
+        .init(name: "event_zaps_by_satszapped", payload: .object([
             "event_id": .string(noteId),
             "limit": .number(Double(limit)),
             "user_pubkey": .string(IdentityManager.instance.userHexPubkey)
@@ -18,7 +18,7 @@ extension SocketRequest {
     }
     
     static func articleZaps(identifier: String, pubkey: String, limit: Int) -> SocketRequest {
-        .init(useHTTP: true, name: "event_zaps_by_satszapped", payload: .object([
+        .init(name: "event_zaps_by_satszapped", payload: .object([
             "identifier": .string(identifier),
             "pubkey": .string(pubkey),
             "limit": .number(Double(limit)),

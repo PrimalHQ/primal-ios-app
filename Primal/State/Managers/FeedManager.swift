@@ -148,7 +148,6 @@ final class FeedManager {
         }
         
         SocketRequest(
-            useHTTP: true,
             name: "multi_kind_thread_view",
             payload: .object([
                 "event_id": .string(postId),
