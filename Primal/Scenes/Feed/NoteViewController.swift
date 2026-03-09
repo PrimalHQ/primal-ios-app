@@ -403,8 +403,7 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
             guard let thread = open(post: post) as? ThreadViewController else { return }
         
             DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(200)) {
-                thread.textInputView.becomeFirstResponder()
-                thread.animateBarsToVisible()
+                thread.replyBoxTapped()
             }
         case .embeddedPost:
             guard

@@ -34,7 +34,7 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
     @Published private var didLoadData = false
     
     private var textHeightConstraint: NSLayoutConstraint?
-    let textInputView = SelfSizingTextView()
+    private let textInputView = SelfSizingTextView()
     let textInputLoadingIndicator = LoadingSpinnerView().constrainToSize(30)
     private let placeholderLabel = UILabel()
     private let inputParent = UIView()
@@ -276,9 +276,7 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
     override func showToast(_ message: String) {
         view.showToastTop(message)
     }
-}
 
-private extension ThreadViewController {
     @objc func replyBoxTapped() {
         guard !posts.isEmpty else { return }
 
@@ -293,7 +291,9 @@ private extension ThreadViewController {
         guard let replyController, replyController.presentingViewController == nil else { return }
         present(replyController, animated: true)
     }
+}
 
+private extension ThreadViewController {
     @objc func postButtonPressed() {
         guard textInputView.isEditable, !posts.isEmpty else { return }
         
