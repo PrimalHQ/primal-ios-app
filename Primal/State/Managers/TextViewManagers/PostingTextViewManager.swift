@@ -507,7 +507,7 @@ private extension PostingTextViewManager {
            let charBeforePosition = textView.position(from: startPosition, offset: -1),
            let charBeforeRange = textView.textRange(from: charBeforePosition, to: startPosition),
            let charBefore = textView.text(in: charBeforeRange),
-           charBefore.first?.isWhitespace == false
+           charBefore.first?.isWhitespace == false && charBefore.first != "("
         {
             currentlyEditingToken = nil
             return
