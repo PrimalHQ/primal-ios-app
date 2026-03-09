@@ -304,9 +304,13 @@ final class WalletManager {
 
         guard let wallet = try? await walletAccountRepo.getActiveWallet(userId: pubkey) else { return nil }
 
-        return try? await sparkWalletAccountRepository.getLightningAddress(walletId: wallet.walletId)
+        let address = try? await sparkWalletAccountRepository.getLightningAddress(walletId: wallet.walletId)
         
-        // TODO: - wait and retry if failed
+        guard address == nil else { return address }
+        
+        try? await Task.sleep(nanoseconds: 5_000_000_000)
+        
+        return try? await sparkWalletAccountRepository.getLightningAddress(walletId: wallet.walletId)
     }
     
     func seedPhrase() async throws -> [String] {
