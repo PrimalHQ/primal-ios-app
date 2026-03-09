@@ -294,11 +294,17 @@ final class WalletManager {
     }
     
     func newWalletSpark(_ pubkey: String) {
+        Task { await createSparkWallet(pubkey) }
+    }
+
+    func createSparkWallet(_ pubkey: String) async -> String? {
         let ensureSpark = EnsureSparkWalletExistsUseCase(sparkWalletManager: sparkWalletManager, sparkWalletAccountRepository: sparkWalletAccountRepository, walletAccountRepository: walletAccountRepo, seedPhraseGenerator: RecoveryPhraseGenerator())
-        
-        Task {
-            let invokeSpark = try await ensureSpark.invoke(userId: pubkey, register: true)
-        }
+
+        let _ = try? await ensureSpark.invoke(userId: pubkey, register: true)
+
+        guard let wallet = try? await walletAccountRepo.getActiveWallet(userId: pubkey) else { return nil }
+
+        return try? await sparkWalletAccountRepository.getLightningAddress(walletId: wallet.walletId)
     }
     
     func seedPhrase() async throws -> [String] {

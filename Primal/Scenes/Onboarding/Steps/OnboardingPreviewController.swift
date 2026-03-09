@@ -132,22 +132,25 @@ private extension OnboardingPreviewController {
     }
     
     func createAccount() {
+        let pubkey = session.newUserKeypair.hexVariant.pubkey
+        let profileData = self.profile
+
         RelaysPostbox.instance.connect(session.defaultRelays)
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
             let profile = NostrProfile(
-                name: self.profile.username,
-                display_name: self.profile.displayname,
-                about: self.profile.bio,
-                picture: self.profile.avatar,
-                banner: self.profile.banner,
-                website: self.profile.website,
+                name: profileData.username,
+                display_name: profileData.displayname,
+                about: profileData.bio,
+                picture: profileData.avatar,
+                banner: profileData.banner,
+                website: profileData.website,
                 lud06: nil,
-                lud16: self.profile.lightningWallet,
-                nip05: self.profile.nip05
+                lud16: profileData.lightningWallet,
+                nip05: profileData.nip05
             )
-            
+
             var userSet = Set(self.session.usersToFollow)
-            userSet.insert(self.session.newUserKeypair.hexVariant.pubkey)
+            userSet.insert(pubkey)
 
             guard
                 let metadata_ev = NostrObject.metadata(profile),
@@ -157,28 +160,54 @@ private extension OnboardingPreviewController {
                 print("Unable to create profile and contacts, this shouldn't be possible")
                 return
             }
-            
-            RelaysPostbox.instance.request(metadata_ev, successHandler: { [weak self] _ in
-                RelaysPostbox.instance.request(contacts_ev, successHandler: { _ in
-                    RelaysPostbox.instance.request(relays_ev, successHandler: { _ in
-                        guard
-                            let nsec = self?.session.newUserKeypair.nVariant.nsec,
-                            LoginManager.instance.login(nsec)
-                        else {
-                            print("Unable to save keypair to the keychain, this shouldn't be possible")
-                            return
-                        }
-                        
-                        RootViewController.instance.needsReset = true
-                        self?.state = .created
+
+            Task { [self] in
+                // Run relay publishing and wallet creation in parallel
+                async let lnAddress = WalletManager.instance.createSparkWallet(pubkey)
+                async let relaysPublished = self.publishToRelays(metadata: metadata_ev, contacts: contacts_ev, relays: relays_ev)
+
+                let (address, published) = await (lnAddress, relaysPublished)
+
+                guard published == true else {
+                    await MainActor.run { self.state = .ready }
+                    return
+                }
+                
+                await MainActor.run {
+                    guard
+                        let nsec = self.session.newUserKeypair.nVariant.nsec,
+                        LoginManager.instance.login(nsec)
+                    else { return }
+                    
+                    self.state = .created
+                    RootViewController.instance.needsReset = true
+                }
+
+                // Republish metadata with lightning address if resolved
+                if let address, !address.isEmpty {
+                    profile.lud16 = address
+                    if let updated_ev = NostrObject.metadata(profile) {
+                        RelaysPostbox.instance.request(updated_ev, successHandler: { _ in }, errorHandler: {})
+                    }
+                }
+            }
+        }
+    }
+
+    private func publishToRelays(metadata: NostrObject, contacts: NostrObject, relays: NostrObject) async -> Bool {
+        await withCheckedContinuation { continuation in
+            RelaysPostbox.instance.request(metadata, successHandler: { _ in
+                RelaysPostbox.instance.request(contacts, successHandler: { _ in
+                    RelaysPostbox.instance.request(relays, successHandler: { _ in
+                        continuation.resume(returning: true)
                     }, errorHandler: {
-                        self?.state = .ready
+                        continuation.resume(returning: false)
                     })
                 }, errorHandler: {
-                    self?.state = .ready
+                    continuation.resume(returning: false)
                 })
             }, errorHandler: { [weak self] in
-                self?.state = .ready
+                continuation.resume(returning: false)
             })
         }
     }
@@ -262,8 +291,7 @@ private extension OnboardingPreviewController {
             } else {
                 ICloudKeychainManager.instance.toggleOnlineSyncForNpub(nVariants.npub, on: infoView.onlineSwitch.isOn)
             }
-            
-            WalletManager.instance.newWalletSpark(session.newUserKeypair.hexVariant.pubkey)
+
             RootViewController.instance.reset()
         case .uploading:
             return
