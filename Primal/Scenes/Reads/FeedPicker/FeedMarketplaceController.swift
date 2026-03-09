@@ -115,7 +115,7 @@ extension FeedMarketplaceController: UITableViewDelegate {
             let pubkey = feed.pubkey
         else { return }
         
-        let spec = feed.primal_spec ?? "{\"dvm_id\":\"\(id)\",\"dvm_pubkey\":\"\(pubkey)\", \"kinds\":\(type.kinds)}"
+        let spec = feed.primal_spec ?? "{\"dvm_id\":\"\(id)\",\"dvm_pubkey\":\"\(pubkey)\"}"
         
         let readsFeed = PrimalFeed(
             name: feed.name,

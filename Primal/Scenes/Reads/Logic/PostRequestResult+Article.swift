@@ -80,34 +80,20 @@ struct PrimalFeed: Codable {
     var feedkind: String = ""
     var enabled: Bool = true
 
-    private static let kindToKinds: [String: [Int]] = [
-        "notes": [NostrKind.text.rawValue],
-        "reads": [NostrKind.longForm.rawValue],
-    ]
-
-    /// Migrates legacy `"kind"` to `"kinds"` array and adds poll kinds (1068, 6969) alongside kind 1
+    /// Removes legacy `"kind"` and `"kinds"` from the spec (kinds are now passed as a separate request parameter)
     func migratingToMultiKind() -> PrimalFeed {
         guard let data = spec.data(using: .utf8),
               var json = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
         else { return self }
 
         var didEdit = false
-        // Migrate legacy "kind" string to "kinds" array
-        if let kind = json["kind"] as? String, json["kinds"] == nil, let intKinds = Self.kindToKinds[kind] {
-            json.removeValue(forKey: "kind")
-            json["kinds"] = intKinds
+
+        if json.removeValue(forKey: "kind") != nil {
             didEdit = true
         }
 
-        // Add poll kinds alongside kind 1
-        if var kinds = json["kinds"] as? [Int], kinds.contains(NostrKind.text.rawValue) {
-            let pollKinds = [NostrKind.poll.rawValue, NostrKind.zapPoll.rawValue]
-            let kindsToAdd = pollKinds.filter { !kinds.contains($0) }
-            if !kindsToAdd.isEmpty {
-                kinds.append(contentsOf: kindsToAdd)
-                json["kinds"] = kinds
-                didEdit = true
-            }
+        if json.removeValue(forKey: "kinds") != nil {
+            didEdit = true
         }
 
         guard didEdit,

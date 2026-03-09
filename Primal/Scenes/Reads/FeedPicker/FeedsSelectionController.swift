@@ -46,9 +46,13 @@ enum PrimalFeedType {
 
     var kinds: [Int] {
         switch self {
-        case .note:     return [NostrKind.text.rawValue]
+        case .note:     return [NostrKind.text.rawValue, NostrKind.repost.rawValue, NostrKind.poll.rawValue, NostrKind.zapPoll.rawValue]
         case .article:  return [NostrKind.longForm.rawValue]
         }
+    }
+
+    var kindsJSON: JSON {
+        .array(kinds.map { .number(Double($0)) })
     }
     
     var name: String {
@@ -124,8 +128,8 @@ extension PrimalFeed {
         getAllFeeds(type).filter { $0.enabled }
     }
     
-    static let defaultReadsFeed = PrimalFeed(name: "Nostr Reads", spec: "{\"kinds\":[\(NostrKind.longForm.rawValue)],\"scope\":\"follows\"}")
-    static let defaultNotesFeed = PrimalFeed(name: "Latest", spec: "{\"kinds\":[\(NostrKind.text.rawValue),\(NostrKind.poll.rawValue),\(NostrKind.zapPoll.rawValue)],\"id\":\"latest\"}")
+    static let defaultReadsFeed = PrimalFeed(name: "Nostr Reads", spec: "{\"scope\":\"follows\"}")
+    static let defaultNotesFeed = PrimalFeed(name: "Latest", spec: "{\"id\":\"latest\"}")
     
     static func fetchPublisher(type: PrimalFeedType) -> AnyPublisher<[PrimalFeed], Never> {
         guard let ev = NostrObject.create(content: "{\"subkey\":\"\(type.subkey)\"}", kind: 30078)?.toJSON() else {

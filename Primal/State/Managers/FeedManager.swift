@@ -304,6 +304,7 @@ private extension FeedManager {
         
         return SocketRequest(name: "multi_kind_mega_feed_directive", payload: .object([
                 "spec": .string(spec),
+                "kinds": PrimalFeedType.note.kindsJSON,
                 "user_pubkey": .string(IdentityManager.instance.userHexPubkey),
                 "limit": .number(Double(40)),
                 "since": .number(until.rounded())
@@ -404,6 +405,7 @@ private extension FeedManager {
     func generateNewFeedPageRequest(_ feed: PrimalFeed) -> (String, JSON) {
         var payload: [String: JSON] = [
             "spec": .string(feed.spec),
+            "kinds": PrimalFeedType.note.kindsJSON,
             "user_pubkey": .string(IdentityManager.instance.userHexPubkey),
             "limit": 20
         ]
@@ -418,9 +420,10 @@ private extension FeedManager {
     
     func generateProfileFeedRequest(_ profileId: String) -> (String, JSON) {
         let notes = withRepliesOverride == true ? "replies" : "authored"
-        
+
         var payload: [String: JSON] = [
-            "spec": .string("{\"id\":\"feed\",\"kinds\":[1,1068,6969],\"notes\":\"\(notes)\",\"pubkey\":\"\(profileId)\"}"),
+            "spec": .string("{\"id\":\"feed\",\"notes\":\"\(notes)\",\"pubkey\":\"\(profileId)\"}"),
+            "kinds": PrimalFeedType.note.kindsJSON,
             "user_pubkey": .string(IdentityManager.instance.userHexPubkey),
             "limit": 40
         ]

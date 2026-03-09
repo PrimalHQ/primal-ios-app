@@ -14,7 +14,7 @@ final class BookmarkedArticleFeedController: ArticleFeedViewController {
     init() {
         super.init(feed: .init(
             name: "Bookmarks",
-            spec: "{\"id\":\"feed\",\"kinds\":[\(NostrKind.longForm.rawValue)],\"notes\":\"bookmarks\",\"pubkey\":\"\(IdentityManager.instance.userHexPubkey)\"}"
+            spec: "{\"id\":\"feed\",\"notes\":\"bookmarks\",\"pubkey\":\"\(IdentityManager.instance.userHexPubkey)\"}"
         ))
         
         manager.$articles.dropFirst()

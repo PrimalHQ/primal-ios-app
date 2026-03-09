@@ -117,7 +117,7 @@ extension ExploreFeedsViewController: UITableViewDelegate {
         
         let feedType: PrimalFeedType = parsed.metadata?.kind == "notes" ? .note : .article
 
-        let spec = feed.primal_spec ?? "{\"dvm_id\":\"\(id)\",\"dvm_pubkey\":\"\(pubkey)\", \"kinds\":\(feedType.kinds)}"
+        let spec = feed.primal_spec ?? "{\"dvm_id\":\"\(id)\",\"dvm_pubkey\":\"\(pubkey)\"}"
         
         let readsFeed = PrimalFeed(
             name: feed.name,
