@@ -15,8 +15,8 @@ protocol WalletDetectedCellDelegate: AnyObject {
 final class WalletDetectedCell: UITableViewCell, Themeable {
     let descLabel = UILabel()
     let restoreButton = LargeRoundedButton(title: "Restore Existing Wallet")
-    let createButton = SimpleRoundedButton(title: "Create New Wallet")
-
+    let createButton = UIButton(configuration: .accent18("Create New Wallet"))
+    
     weak var delegate: WalletDetectedCellDelegate?
 
     private var isDiscontinued = false
@@ -25,7 +25,7 @@ final class WalletDetectedCell: UITableViewCell, Themeable {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         selectionStyle = .none
 
-        let stack = UIStackView(axis: .vertical, [descLabel, restoreButton, createButton])
+        let stack = UIStackView(axis: .vertical, [descLabel, SpacerView(height: 50), restoreButton, createButton])
         stack.spacing = 14
 
         contentView.addSubview(stack)
@@ -67,13 +67,13 @@ final class WalletDetectedCell: UITableViewCell, Themeable {
             : "We detected that you already have a self-custodial Primal wallet associated with this Nostr account. To use it on this device, please restore it via the recovery phrase. Alternatively, you can create a new wallet which will be associated with your account."
 
         let descText = NSMutableAttributedString(string: "\(title)\n", attributes: [
-            .font: UIFont.appFont(withSize: 15, weight: .bold),
-            .foregroundColor: UIColor.foreground5,
+            .font: UIFont.appFont(withSize: 20, weight: .bold),
+            .foregroundColor: UIColor.foreground,
             .paragraphStyle: paragraphStyle
         ])
         descText.append(.init(string: description, attributes: [
             .font: UIFont.appFont(withSize: 15, weight: .regular),
-            .foregroundColor: UIColor.foreground5,
+            .foregroundColor: UIColor.foreground3,
             .paragraphStyle: paragraphStyle
         ]))
 

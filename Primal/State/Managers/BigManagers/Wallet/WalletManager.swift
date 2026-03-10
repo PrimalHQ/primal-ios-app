@@ -284,8 +284,12 @@ final class WalletManager {
         // Wallet initialization via WalletSessionProvider
         walletSessionProvider.setActiveUserId(userId: pubkey)
 
-        // Detect UI states WalletSessionProvider skips
-        Task { await detectWalletSetupState(pubkey: pubkey) }
+        Task {
+            // call ensure primal wallet exists will have no action if it shouldn't do anything
+            _ = try? await EnsurePrimalWalletExistsUseCase(primalWalletAccountRepository: primalWalletRepo, walletAccountRepository: walletAccountRepo)
+                .invoke(userId: pubkey, setAsActive: true)
+            await detectWalletSetupState(pubkey: pubkey)
+        }
 
         DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
             self.refreshPremiumState()
