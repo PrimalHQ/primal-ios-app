@@ -20,6 +20,7 @@ struct PollStats: Equatable {
 
     var maxVotes: Int { options.values.map({ $0.votes }).max() ?? -1 }
     var totalVotes: Int { options.values.reduce(0) { $0 + $1.votes } }
+    var maxSatsZapped: Int { options.values.map({ $0.satszapped }).max() ?? -1 }
     var totalSatsZapped: Int { options.values.reduce(0) { $0 + $1.satszapped } }
 }
 

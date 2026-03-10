@@ -9,8 +9,8 @@ import UIKit
 
 enum PollVotesTableCellType: Hashable {
     case option(ParsedPoll.Option, PollOptionStats, isSelected: Bool)
-    case optionsDetails(totalCount: Int, message: String)
-    case voteTitle(String, count: Int)
+    case optionsDetails(totalCount: Int, isZapPoll: Bool, message: String)
+    case voteTitle(String, count: Int, isZapPoll: Bool)
     case vote(ParsedUser)
 }
 
@@ -35,19 +35,22 @@ class PollVotesDatasource: UITableViewDiffableDataSource<SingleSection, PollVote
                         stats: stats,
                         totalVotes: delegate.totalVotes,
                         maxVotes: delegate.maxVotes,
+                        totalSatsZapped: delegate.totalSatsZapped,
+                        maxSatsZapped: delegate.maxSatsZapped,
+                        isZapPoll: delegate.isZapPoll,
                         isSelected: isSelected,
                         userVote: delegate.userVote,
                         didEnd: delegate.didEnd
                     )
                 }
                 return cell
-            case let .optionsDetails(totalCount, message):
+            case let .optionsDetails(totalCount, isZapPoll, message):
                 let cell = tableView.dequeueReusableCell(withIdentifier: "details", for: indexPath)
-                (cell as? PollVoteDetailsCell)?.configure(totalCount: totalCount, message: message)
+                (cell as? PollVoteDetailsCell)?.configure(totalCount: totalCount, isZapPoll: isZapPoll, message: message)
                 return cell
-            case let .voteTitle(title, count):
+            case let .voteTitle(title, count, isZapPoll):
                 let cell = tableView.dequeueReusableCell(withIdentifier: "title", for: indexPath)
-                (cell as? PollVoteTitleCell)?.configure(title: title, count: count)
+                (cell as? PollVoteTitleCell)?.configure(title: title, count: count, isZapPoll: isZapPoll)
                 return cell
             case let .vote(user):
                 let cell = tableView.dequeueReusableCell(withIdentifier: "vote", for: indexPath)
@@ -70,6 +73,9 @@ class PollVotesDatasource: UITableViewDiffableDataSource<SingleSection, PollVote
 protocol PollVotesDatasourceDelegate: AnyObject {
     var totalVotes: Int { get }
     var maxVotes: Int { get }
+    var totalSatsZapped: Int { get }
+    var maxSatsZapped: Int { get }
+    var isZapPoll: Bool { get }
     var userVote: String? { get }
     var didEnd: Bool { get }
 }

@@ -37,19 +37,26 @@ final class PollVoteTitleCell: UITableViewCell, Themeable {
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
-    func configure(title: String, count: Int) {
+    func configure(title: String, count: Int, isZapPoll: Bool = false) {
         titleLabel.text = title
-        
+
+        let unit: String
+        if isZapPoll {
+            unit = " sats"
+        } else {
+            unit = " vote\(count == 1 ? "" : "s")"
+        }
+
         let countText = NSMutableAttributedString(string: count.localized(), attributes: [
             .font: UIFont.appFont(withSize: 14, weight: .semibold),
             .foregroundColor: UIColor.foreground
         ])
-        countText.append(.init(string: " vote\(count == 1 ? "" : "s")", attributes: [
+        countText.append(.init(string: unit, attributes: [
             .font: UIFont.appFont(withSize: 14, weight: .regular),
             .foregroundColor: UIColor.foreground3
         ]))
         countLabel.attributedText = countText
-        
+
         updateTheme()
     }
 

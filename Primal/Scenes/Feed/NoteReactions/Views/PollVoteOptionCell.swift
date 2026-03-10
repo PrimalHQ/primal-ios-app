@@ -81,21 +81,26 @@ final class PollVoteOptionCell: UITableViewCell, Themeable {
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
-    func configure(option: ParsedPoll.Option, stats: PollOptionStats, totalVotes: Int, maxVotes: Int, isSelected: Bool, userVote: String?, didEnd: Bool) {
+    func configure(option: ParsedPoll.Option, stats: PollOptionStats, totalVotes: Int, maxVotes: Int, totalSatsZapped: Int = 0, maxSatsZapped: Int = 0, isZapPoll: Bool = false, isSelected: Bool, userVote: String?, didEnd: Bool) {
         isVotedOption = userVote == option.id
-        percentage = totalVotes > 0 ? Double(stats.votes) / Double(totalVotes) : 0
 
-        checkIcon.isHidden = !(didEnd && stats.votes == maxVotes && stats.votes > 0)
+        if isZapPoll {
+            percentage = totalSatsZapped > 0 ? Double(stats.satszapped) / Double(totalSatsZapped) : 0
+            checkIcon.isHidden = !(didEnd && stats.satszapped == maxSatsZapped && stats.satszapped > 0)
+            percentLabel.text = "\(stats.satszapped.localized()) sats"
+        } else {
+            percentage = totalVotes > 0 ? Double(stats.votes) / Double(totalVotes) : 0
+            checkIcon.isHidden = !(didEnd && stats.votes == maxVotes && stats.votes > 0)
+            let pct = percentage * 100
+            if pct == floor(pct) {
+                percentLabel.text = "\(Int(pct))%"
+            } else {
+                percentLabel.text = String(format: "%.1f%%", pct)
+            }
+        }
 
         label.text = option.label
         label.font = .appFont(withSize: 15, weight: isVotedOption ? .bold : .regular)
-
-        let pct = percentage * 100
-        if pct == floor(pct) {
-            percentLabel.text = "\(Int(pct))%"
-        } else {
-            percentLabel.text = String(format: "%.1f%%", pct)
-        }
 
         progressConstraint = progressBar.widthAnchor.constraint(equalTo: progressParent.widthAnchor, multiplier: max(percentage, 0.001))
         progressBar.layer.cornerRadius = 300 * percentage > 12 ? 6 : 3

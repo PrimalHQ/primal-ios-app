@@ -52,6 +52,9 @@ class PollVotesViewController: UIViewController, Themeable {
 extension PollVotesViewController: PollVotesDatasourceDelegate {
     var totalVotes: Int { pollStats?.totalVotes ?? 0 }
     var maxVotes: Int { pollStats?.maxVotes ?? 0 }
+    var totalSatsZapped: Int { pollStats?.totalSatsZapped ?? 0 }
+    var maxSatsZapped: Int { pollStats?.maxSatsZapped ?? 0 }
+    var isZapPoll: Bool { poll.isZapPoll }
     var userVote: String? { PollManager.instance.userVotes[eventId] }
     var didEnd: Bool { poll.didEnd }
 }
@@ -89,18 +92,19 @@ private extension PollVotesViewController {
             items.append(.option(option, stats, isSelected: index == selectedOptionIndex))
         }
 
-        let totalVotes = pollStats?.totalVotes ?? 0
+        let totalCount = poll.isZapPoll ? (pollStats?.totalSatsZapped ?? 0) : (pollStats?.totalVotes ?? 0)
         let message: String
         if let endsAt = poll.endsAt {
             message = endsAt > .now ? endsAt.timeLeftDisplay() : "Final results"
         } else {
             message = ""
         }
-        items.append(.optionsDetails(totalCount: totalVotes, message: message))
+        items.append(.optionsDetails(totalCount: totalCount, isZapPoll: poll.isZapPoll, message: message))
 
         if let selectedOption = poll.options[safe: selectedOptionIndex] {
-            let optionVotes = pollStats?.options[selectedOption.id]?.votes ?? 0
-            items.append(.voteTitle(selectedOption.label, count: optionVotes))
+            let optionStats = pollStats?.options[selectedOption.id]
+            let count = poll.isZapPoll ? (optionStats?.satszapped ?? 0) : (optionStats?.votes ?? 0)
+            items.append(.voteTitle(selectedOption.label, count: count, isZapPoll: poll.isZapPoll))
         }
         
         let users = users ?? feedManager?.users ?? []
