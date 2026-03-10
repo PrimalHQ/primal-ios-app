@@ -78,20 +78,29 @@ private extension PollView {
 
         optionsStack.arrangedSubviews.forEach { $0.removeFromSuperview() }
 
-        let totalVotes = stats?.totalVotes ?? 0
+        let total = poll.isZapPoll ? (stats?.totalSatsZapped ?? 0) : (stats?.totalVotes ?? 0)
+        let maxValue = poll.isZapPoll ? (stats?.maxSatsZapped ?? 0) : (stats?.maxVotes ?? 0)
 
         for option in poll.options {
             if showResults {
                 let row = PollResultOptionView()
-                let optionVotes = stats?.options[option.id]?.votes ?? 0
+                let optionStats = stats?.options[option.id]
+                let optionValue = poll.isZapPoll ? (optionStats?.satszapped ?? 0) : (optionStats?.votes ?? 0)
+                let valueLabel: String
+                if poll.isZapPoll {
+                    valueLabel = "\(optionValue.localized()) sats"
+                } else {
+                    let pct = total > 0 ? Double(optionValue) / Double(total) * 100 : 0
+                    valueLabel = pct == floor(pct) ? "\(Int(pct))%" : String(format: "%.1f%%", pct)
+                }
                 let didEnd = poll.didEnd
-                let maxVotes = stats?.totalVotes
                 row.configure(
                     text: option.label,
-                    votes: optionVotes,
-                    totalVotes: totalVotes,
+                    optionValue: optionValue,
+                    total: total,
+                    valueLabel: valueLabel,
                     isSelected: userVote == option.id,
-                    didWin: didEnd && optionVotes == maxVotes
+                    didWin: didEnd && optionValue == maxValue && optionValue > 0
                 )
                 optionsStack.addArrangedSubview(row)
             } else {
@@ -109,8 +118,15 @@ private extension PollView {
             }
         }
 
+        let totalVotes = stats?.totalVotes ?? 0
         if totalVotes > 0 {
-            var config = UIButton.Configuration.accent(totalVotes == 1 ? "1 vote" : "\(totalVotes) votes", font: .appFont(withSize: 12, weight: .regular))
+            let buttonText: String
+            if poll.isZapPoll {
+                buttonText = "\(total.localized()) sats"
+            } else {
+                buttonText = totalVotes == 1 ? "1 vote" : "\(totalVotes) votes"
+            }
+            var config = UIButton.Configuration.accent(buttonText, font: .appFont(withSize: 12, weight: .regular))
             config.contentInsets = .zero
             totalVotesButton.configuration = config
             totalVotesButton.isHidden = false
@@ -278,21 +294,16 @@ final class PollResultOptionView: UIView, Themeable {
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
-    func configure(text: String, votes: Int, totalVotes: Int, isSelected: Bool, didWin: Bool) {
+    func configure(text: String, optionValue: Int, total: Int, valueLabel: String, isSelected: Bool, didWin: Bool) {
         self.isSelected = isSelected
-        percentage = totalVotes > 0 ? Double(votes) / Double(totalVotes) : 0
-        
+        percentage = total > 0 ? Double(optionValue) / Double(total) : 0
+
         checkIcon.isHidden = !didWin
 
         label.text = text
         label.font = .appFont(withSize: 15, weight: isSelected ? .bold : .regular)
 
-        let pct = percentage * 100
-        if pct == floor(pct) {
-            percentLabel.text = "\(Int(pct))%"
-        } else {
-            percentLabel.text = String(format: "%.1f%%", pct)
-        }
+        percentLabel.text = valueLabel
 
         progressConstraint = progressBar.widthAnchor.constraint(equalTo: progressParent.widthAnchor, multiplier: max(percentage, 0.001))
         progressBar.layer.cornerRadius = 300 * percentage > 12 ? 6 : 3
