@@ -15,10 +15,11 @@ class PollVotesFeedManager: BaseFeedManager {
 
     private var cancellables: Set<AnyCancellable> = []
 
-    init(eventId: String, optionId: String) {
+    init(eventId: String, optionId: String, isZapPoll: Bool) {
+        let optionKey = isZapPoll ? "poll_option" : "option"
         super.init(request: FeedManagerRequest(name: "poll_votes", body: [
             "event_id": .string(eventId),
-            "option": .string(optionId),
+            optionKey: .string(optionId),
             "user_pubkey": .string(IdentityManager.instance.userHexPubkey)
         ]))
 
@@ -29,13 +30,21 @@ class PollVotesFeedManager: BaseFeedManager {
 
                 PollManager.instance.processPollVotesResponse(result)
 
-                var newUsers = result.getSortedUsers()
+                let newUsers = result.getSortedUsers()
                 
-                let votingUsers = result.events
-                    .filter({ Int($0["kind"]?.doubleValue ?? 0) == NostrKind.pollVote.rawValue })
-                    .compactMap({ $0["pubkey"]?.stringValue })
-                    .unique()
-                    .map { pubkey in newUsers.first(where: { $0.data.pubkey == pubkey }) ?? ParsedUser(data: .init(pubkey: pubkey)) }
+                let votingUsers: [ParsedUser]
+                
+                if isZapPoll {
+                    votingUsers = result.zapReceipts.values
+                        .compactMap { $0["pubkey"]?.stringValue }
+                        .map { pubkey in newUsers.first(where: { $0.data.pubkey == pubkey }) ?? ParsedUser(data: .init(pubkey: pubkey)) }
+                } else {
+                    votingUsers = result.events
+                        .filter({ Int($0["kind"]?.doubleValue ?? 0) == NostrKind.pollVote.rawValue })
+                        .compactMap({ $0["pubkey"]?.stringValue })
+                        .unique()
+                        .map { pubkey in newUsers.first(where: { $0.data.pubkey == pubkey }) ?? ParsedUser(data: .init(pubkey: pubkey)) }
+                }
                 
                 if votingUsers.isEmpty {
                     didReachEnd = true

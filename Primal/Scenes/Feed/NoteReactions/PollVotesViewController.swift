@@ -118,7 +118,7 @@ private extension PollVotesViewController {
         if let cachedFeed = cachedFeedManagers[option.id] {
             feedManager = cachedFeed
         } else {
-            let newFeed = PollVotesFeedManager(eventId: eventId, optionId: option.id)
+            let newFeed = PollVotesFeedManager(eventId: eventId, optionId: option.id, isZapPoll: poll.isZapPoll)
             cachedFeedManagers[option.id] = newFeed
             feedManager = newFeed
         }

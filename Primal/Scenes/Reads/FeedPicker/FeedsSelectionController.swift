@@ -65,6 +65,7 @@ enum PrimalFeedType {
 
 extension PrimalFeed {
     static func setServerFeeds(_ feeds: [PrimalFeed], type: PrimalFeedType) {
+        let feeds = feeds.map { $0.migratingToMultiKind() }
         var allFeeds = getAllFeeds(type)
 
         allFeeds.removeAll(where: { feed in

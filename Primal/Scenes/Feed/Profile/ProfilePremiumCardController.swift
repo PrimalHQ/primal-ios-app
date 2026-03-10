@@ -239,7 +239,11 @@ private extension ProfilePremiumCardController {
                 
                 let formatter = DateFormatter()
                 formatter.dateFormat = "MMMM d, yyyy"
-                sinceLabel.text = "\(custom.cohort_1) since \(formatter.string(from: Date(timeIntervalSince1970: custom.premium_since)))"
+                if let since = custom.premium_since {
+                    sinceLabel.text = "\(custom.cohort_1) since \(formatter.string(from: Date(timeIntervalSince1970: since)))"
+                } else {
+                    sinceLabel.text = custom.cohort_1
+                }
                  
                 otherLegendsButton.configuration = .coloredButton("See other Primal OGs", color: .accent)
                 becomeLegendParent.alpha = 0.001

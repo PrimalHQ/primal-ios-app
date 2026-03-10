@@ -112,8 +112,9 @@ extension PostRequestResult {
         guard let event = events.first(where: {
             Int($0["kind"]?.doubleValue ?? 0) == NostrKind.feedsSettings.rawValue
         }) else { return [] }
-        
-        return event["content"]?.stringValue?.decode() ?? []
+
+        let feeds: [PrimalFeed] = event["content"]?.stringValue?.decode() ?? []
+        return feeds.map { $0.migratingToMultiKind() }
     }
 }
 
