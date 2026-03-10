@@ -16,10 +16,9 @@ class PollVotesFeedManager: BaseFeedManager {
     private var cancellables: Set<AnyCancellable> = []
 
     init(eventId: String, optionId: String, isZapPoll: Bool) {
-        let optionKey = isZapPoll ? "poll_option" : "option"
         super.init(request: FeedManagerRequest(name: "poll_votes", body: [
             "event_id": .string(eventId),
-            optionKey: .string(optionId),
+            "option": .string(optionId),
             "user_pubkey": .string(IdentityManager.instance.userHexPubkey)
         ]))
 

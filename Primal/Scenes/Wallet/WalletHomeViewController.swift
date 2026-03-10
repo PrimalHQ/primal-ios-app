@@ -29,10 +29,12 @@ final class WalletHomeViewController: UIViewController, Themeable {
         case loading
         case upgradeWallet
         case backupWallet
+        case walletDetected
+        case walletDiscontinued
         case buySats
         case error(String)
         case transaction(PrimalShared.Transaction)
-        
+
         var transaction: PrimalShared.Transaction? {
             if case let .transaction(trans) = self {
                 return trans
@@ -178,6 +180,22 @@ extension WalletHomeViewController: UITableViewDataSource {
                 cell.delegate = self
             }
             return cell
+        case .walletDetected:
+            let cell = tableView.dequeueReusableCell(withIdentifier: "walletDetected", for: indexPath)
+            if let cell = cell as? WalletDetectedCell {
+                cell.configure(isDiscontinued: false)
+                cell.delegate = self
+                cell.updateTheme()
+            }
+            return cell
+        case .walletDiscontinued:
+            let cell = tableView.dequeueReusableCell(withIdentifier: "walletDetected", for: indexPath)
+            if let cell = cell as? WalletDetectedCell {
+                cell.configure(isDiscontinued: true)
+                cell.delegate = self
+                cell.updateTheme()
+            }
+            return cell
         case .loading:
             let cell = tableView.dequeueReusableCell(withIdentifier: "loading", for: indexPath)
             (cell as? ChatLoadingCell)?.updateTheme()
@@ -267,7 +285,7 @@ extension WalletHomeViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch tableData[indexPath.section].cells[indexPath.row] {
-        case .loading, .error:
+        case .loading, .error, .walletDetected, .walletDiscontinued:
             break
         case .buySats:
             buySatsPressed()
@@ -282,7 +300,15 @@ extension WalletHomeViewController: UITableViewDelegate {
     }
 }
 
-extension WalletHomeViewController: BuySatsCellDelegate, UpgradeWalletCellDelegate, BackupWalletCellDelegate {
+extension WalletHomeViewController: BuySatsCellDelegate, UpgradeWalletCellDelegate, BackupWalletCellDelegate, WalletDetectedCellDelegate {
+    func restoreWalletPressed() {
+        show(RestoreWalletController(), sender: nil)
+    }
+
+    func createNewWalletPressed() {
+        WalletManager.instance.newWalletSpark(IdentityManager.instance.userHexPubkey)
+    }
+
     func upgradeWalletPressed() {
         present(UpgradeWalletController(), animated: true)
     }
@@ -330,6 +356,7 @@ private extension WalletHomeViewController {
         table.register(BuySatsCell.self, forCellReuseIdentifier: "buySats")
         table.register(UpgradeWalletCell.self, forCellReuseIdentifier: "upgradeWallet")
         table.register(BackupWalletCell.self, forCellReuseIdentifier: "backupWallet")
+        table.register(WalletDetectedCell.self, forCellReuseIdentifier: "walletDetected")
         table.register(ChatLoadingCell.self, forCellReuseIdentifier: "loading")
         table.register(ErrorMessageCell.self, forCellReuseIdentifier: "error")
         table.contentInset = .init(top: 0, left: 0, bottom: 186, right: 0)
@@ -354,29 +381,36 @@ private extension WalletHomeViewController {
             .assign(to: \.title, onWeak: self)
             .store(in: &cancellables)
         
-        Publishers.CombineLatest(WalletManager.instance.$activeWallet, transactionsPublisher)
+        Publishers.CombineLatest3(WalletManager.instance.$activeWallet, transactionsPublisher, WalletManager.instance.$walletSetupState)
         .receive(on: DispatchQueue.main)
-        .sink { [weak self] wallet, transactions in
+        .sink { [weak self] wallet, transactions, setupState in
             guard let self else { return }
-            
+
             let grouping = Dictionary(grouping: transactions) {
                 Calendar.current.dateComponents([.day, .year, .month], from: Date(timeIntervalSince1970: TimeInterval($0.createdAt)))
             }
-            
+
             table.refreshControl?.endRefreshing()
             var firstSection = Section(cells: [])
-            
+
             guard LoginManager.instance.method() == .nsec else {
                 tableData = [firstSection, Section(cells: [.error("Primal is in read only mode because you are signed in via your public key. To enable all options, please sign in with your private key, starting with 'nsec...")])]
                 return
             }
-            
-            if wallet == nil {
-                firstSection.cells += [.loading]
-            } else if let primal = wallet as? Wallet.Primal {
-                firstSection.cells += [.upgradeWallet]
-            } else if let spark = wallet as? Wallet.Spark, let balance = spark.balanceInBtc?.doubleValue, balance > 0, !spark.isBackedUp {
-                firstSection.cells += [.backupWallet]
+
+            switch setupState {
+            case .walletDetected:
+                firstSection.cells += [.walletDetected]
+            case .walletDiscontinued:
+                firstSection.cells += [.walletDiscontinued]
+            case .normal:
+                if wallet == nil {
+                    firstSection.cells += [.loading]
+                } else if let primal = wallet as? Wallet.Primal {
+                    firstSection.cells += [.upgradeWallet]
+                } else if let spark = wallet as? Wallet.Spark, let balance = spark.balanceInBtc?.doubleValue, balance > 0, !spark.isBackedUp {
+                    firstSection.cells += [.backupWallet]
+                }
             }
             
             var tableData = [Section]()

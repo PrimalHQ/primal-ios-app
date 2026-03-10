@@ -160,10 +160,17 @@ class MediaCacher: CachingMediaCacher {
     func preCacheUserAvatars(urls: [String]) { }
 }
 
+enum WalletSetupState {
+    case normal
+    case walletDetected
+    case walletDiscontinued
+}
+
 final class WalletManager {
     static let instance = WalletManager()
-    
+
     @Published private(set) var activeWallet: Wallet?
+    @Published private(set) var walletSetupState: WalletSetupState = .normal
     @Published private(set) var premiumState: PremiumState?
     @Published private(set) var btcToUsd: Double = UserDefaults.standard.btcToUsd
     @Published private(set) var balance: Int = 0
@@ -208,6 +215,11 @@ final class WalletManager {
     private lazy var primalWalletRepo = WalletRepositoryFactory.shared.createPrimalWalletAccountRepository(primalWalletApiClient: walletConnection, nostrEventSignatureHandler: SigningManager.instance)
     private lazy var sparkWalletManager = WalletRepositoryFactory.shared.createSparkWalletManager()
     lazy var sparkWalletAccountRepository = WalletRepositoryFactory.shared.createSparkWalletAccountRepository(primalWalletApiClient: walletConnection, nostrEventSignatureHandler: SigningManager.instance)
+    private lazy var walletSessionProvider = WalletRepositoryFactory.shared.createWalletSessionProvider(
+        primalWalletApiClient: walletConnection,
+        nostrEventSignatureHandler: SigningManager.instance,
+        profileRepository: profileRepo
+    )
     private var transactionsSnapshot: IosPagingSnapshot<Transaction>?
     
     private init() {
@@ -226,7 +238,8 @@ final class WalletManager {
         zapFactory = NostrZapperFactoryProvider.shared.createNostrZapperFactory(walletRepository: walletRepo, nostrEventSignatureHandler: SigningManager.instance, primalWalletApiClient: walletConnection, eventRepository: eventRepo)
         
         setupPublishers()
-        
+        walletSessionProvider.start()
+
         DispatchQueue.main.async {
             self.loadNewExchangeRate()
         }
@@ -234,28 +247,30 @@ final class WalletManager {
     
     func reset(_ pubkey: String) {
         guard oldPubkey != pubkey else { return }
-        
-        Task {
-            // We have to disconnect old user Spark wallet to kill the connection
-            guard let oldPubkey, let oldWallet = try await walletAccountRepo.getActiveWallet(userId: oldPubkey) as? Wallet.Spark else { return }
-            _ = try await sparkWalletManager.disconnectWallet(walletId: oldWallet.walletId)
-        }
-        
+
         self.oldPubkey = pubkey
         userZapped = [:]
         premiumState = nil
         activeWallet = nil
+        walletSetupState = .normal
         updateCancellables = []
         balance = 0
         parsedTransactions = []
         transactionsSnapshot?.dispose()
         transactionsSnapshot = nil
-        
+
+        guard !pubkey.isEmpty else {
+            walletSessionProvider.setActiveUserId(userId: nil)
+            pendingDepositsSyncer = nil
+            balanceSyncer = nil
+            return
+        }
+
         pendingDepositsSyncer = SyncerFactory.shared.createPendingDepositsSyncer(userId: pubkey, walletAccountRepository: walletAccountRepo, sparkWalletManager: sparkWalletManager)
         balanceSyncer = SyncerFactory.shared.createActiveWalletBalanceSyncer(userId: pubkey, walletRepository: walletRepo, walletAccountRepository: walletAccountRepo)
-        
+
         balanceSyncer?.start()
-        
+
         walletAccountRepo.observeActiveWallet(userId: pubkey)
             .toPublisher()
             .receive(on: DispatchQueue.main)
@@ -265,28 +280,13 @@ final class WalletManager {
                 balance = Int((wallet.balanceInBtc?.doubleValue ?? 0) * Double(SAT_PER_BTC))
             }
             .store(in: &updateCancellables)
-        
-        Task {
-            let wallet = try await walletAccountRepo.getActiveWallet(userId: pubkey)
-            guard wallet == nil else {
-                if wallet is Wallet.Spark {
-                    _ = try await EnsureSparkWalletExistsUseCase(sparkWalletManager: sparkWalletManager, sparkWalletAccountRepository: sparkWalletAccountRepository, walletAccountRepository: walletAccountRepo, seedPhraseGenerator: RecoveryPhraseGenerator())
-                        .invoke(userId: pubkey, register: false)
-                }
-                return
-            }
-            
-            _ = try await EnsurePrimalWalletExistsUseCase(primalWalletAccountRepository: primalWalletRepo, walletAccountRepository: walletAccountRepo)
-                .invoke(userId: pubkey, setAsActive: true).getOrNull()
-            
-            let newWallet = try await walletAccountRepo.getActiveWallet(userId: pubkey)
-            
-            guard newWallet == nil else { return }
-            
-            let newResult = try await EnsureSparkWalletExistsUseCase(sparkWalletManager: sparkWalletManager, sparkWalletAccountRepository: sparkWalletAccountRepository, walletAccountRepository: walletAccountRepo, seedPhraseGenerator: RecoveryPhraseGenerator())
-                .invoke(userId: pubkey, register: true)
-        }
-        
+
+        // Wallet initialization via WalletSessionProvider
+        walletSessionProvider.setActiveUserId(userId: pubkey)
+
+        // Detect UI states WalletSessionProvider skips
+        Task { await detectWalletSetupState(pubkey: pubkey) }
+
         DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
             self.refreshPremiumState()
             self.refresh()
@@ -294,6 +294,7 @@ final class WalletManager {
     }
     
     func newWalletSpark(_ pubkey: String) {
+        walletSetupState = .normal
         Task { await createSparkWallet(pubkey) }
     }
 
@@ -566,6 +567,7 @@ final class WalletManager {
 
 extension WalletManager {
     func restoreWalletFromSeed(_ phrase: String) {
+        walletSetupState = .normal
         Task {
             try await RestoreSparkWalletUseCase(
                 sparkWalletManager: sparkWalletManager,
@@ -655,6 +657,29 @@ enum WalletMigrationStep {
 }
 
 private extension WalletManager {
+    func detectWalletSetupState(pubkey: String) async {
+        do {
+            let hasLocal = try await sparkWalletAccountRepository
+                .findPersistedWalletId(userId: pubkey) != nil
+            guard !hasLocal else { return }
+
+            guard let status = try await primalWalletRepo
+                .fetchWalletStatus(userId: pubkey).getOrNull() else { return }
+
+            let state: WalletSetupState
+            if status.hasMigratedToSparkWallet {
+                state = .walletDetected
+            } else if status.hasCustodialWallet, status.primalWalletDeprecated {
+                state = .walletDiscontinued
+            } else {
+                return
+            }
+            await MainActor.run { self.walletSetupState = state }
+        } catch {
+            // Detection failure is non-fatal
+        }
+    }
+
     func setupPublishers() {
         let pubkeyPublisher = ICloudKeychainManager.instance.$userPubkey.removeDuplicates()
         let onlyPubkey = pubkeyPublisher.filter({ !$0.isEmpty })
