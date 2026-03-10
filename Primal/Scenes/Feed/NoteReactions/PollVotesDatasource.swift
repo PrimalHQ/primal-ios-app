@@ -7,11 +7,16 @@
 
 import UIKit
 
+enum PollResultsVote: Hashable {
+    case user(ParsedUser)
+    case zap(ParsedUser, amount: Int)
+}
+
 enum PollVotesTableCellType: Hashable {
     case option(ParsedPoll.Option, PollOptionStats, isSelected: Bool)
     case optionsDetails(totalCount: Int, message: String)
     case voteTitle(String, count: Int)
-    case vote(ParsedUser)
+    case vote(PollResultsVote)
 }
 
 class PollVotesDatasource: UITableViewDiffableDataSource<SingleSection, PollVotesTableCellType> {
@@ -64,9 +69,14 @@ class PollVotesDatasource: UITableViewDiffableDataSource<SingleSection, PollVote
                 let cell = tableView.dequeueReusableCell(withIdentifier: "title", for: indexPath)
                 (cell as? PollVoteTitleCell)?.configure(title: title, count: count)
                 return cell
-            case let .vote(user):
+            case let .vote(vote):
                 let cell = tableView.dequeueReusableCell(withIdentifier: "vote", for: indexPath)
-                (cell as? PollVoteUserCell)?.updateForUser(user)
+                switch vote {
+                case let .user(user):
+                    (cell as? PollVoteUserCell)?.updateForUser(user)
+                case let .zap(user, amount):
+                    (cell as? PollVoteUserCell)?.updateForUser(user)
+                }
                 return cell
             }
         }

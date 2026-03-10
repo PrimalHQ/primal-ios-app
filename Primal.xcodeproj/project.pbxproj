@@ -87,7 +87,7 @@
 		93F27DAA2A27FB41004ADA55 /* PostingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93F27DA92A27FB41004ADA55 /* PostingManager.swift */; };
 		93F27DAC2A27FC47004ADA55 /* FeedManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93F27DAB2A27FC47004ADA55 /* FeedManager.swift */; };
 		93F27DAF2A280F4C004ADA55 /* PostRequestResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93F27DAE2A280F4C004ADA55 /* PostRequestResult.swift */; };
-		9D0C1431EB7AE3C05CE1B6FB /* PollVotesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2BF0F83E0F616FCB6C4AB48 /* PollVotesViewController.swift */; };
+		9D0C1431EB7AE3C05CE1B6FB /* PollResultsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2BF0F83E0F616FCB6C4AB48 /* PollResultsViewController.swift */; };
 		9E0DEAED29FD2F6900145E08 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 9E0DEAEC29FD2F6900145E08 /* Lottie */; };
 		9E0DEAF429FD35A000145E08 /* iconZap.json in Resources */ = {isa = PBXBuildFile; fileRef = 9E0DEAF329FD35A000145E08 /* iconZap.json */; };
 		9E0DEAF629FD437300145E08 /* OnboardingFollowSuggestionsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E0DEAF529FD437300145E08 /* OnboardingFollowSuggestionsController.swift */; };
@@ -218,6 +218,7 @@
 		9EF4BFCC2A8E57EF003396AA /* VerifiedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EF4BFCB2A8E57EF003396AA /* VerifiedView.swift */; };
 		9EF4BFCE2A93CE1B003396AA /* loadingSpinnerBlue.json in Resources */ = {isa = PBXBuildFile; fileRef = 9EF4BFCD2A93CE1B003396AA /* loadingSpinnerBlue.json */; };
 		9EF4BFD02A955FB5003396AA /* NewPostButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EF4BFCF2A955FB5003396AA /* NewPostButton.swift */; };
+		A1B2C3D4E5F6A7B8C9D0E1F3 /* WalletDetectedPopupController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6A7B8C9D0E1F2 /* WalletDetectedPopupController.swift */; };
 		AA9CF3DB44709B5BC13CA5A8 /* GenerateAmountsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD61E893F7939D2AC33A6A4C /* GenerateAmountsTests.swift */; };
 		B90032852BD0183600ADD2E5 /* NoteZapsRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90032842BD0183600ADD2E5 /* NoteZapsRequest.swift */; };
 		B90032882BD11DEA00ADD2E5 /* NoteReactionsParentController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90032872BD11DEA00ADD2E5 /* NoteReactionsParentController.swift */; };
@@ -249,7 +250,6 @@
 		B9031D502AC2075E00C7489F /* ChatLoadingCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9031D4F2AC2075E00C7489F /* ChatLoadingCell.swift */; };
 		B9031D522ACDDD4200C7489F /* ReplyingToView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9031D512ACDDD4200C7489F /* ReplyingToView.swift */; };
 		B904E9A32F042BFD006D195C /* MigrateWalletPopupController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B904E9A22F042BDD006D195C /* MigrateWalletPopupController.swift */; };
-		A1B2C3D4E5F6A7B8C9D0E1F3 /* WalletDetectedPopupController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6A7B8C9D0E1F2 /* WalletDetectedPopupController.swift */; };
 		B904EA1A2F23B559006D195C /* HTMLGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B904EA192F23B559006D195C /* HTMLGenerator.swift */; };
 		B904EA1D2F23B895006D195C /* Markdown in Frameworks */ = {isa = PBXBuildFile; productRef = B904EA1C2F23B895006D195C /* Markdown */; };
 		B904EAA42F2D2E42006D195C /* BreezSdkSpark in Frameworks */ = {isa = PBXBuildFile; productRef = B904EAA32F2D2E42006D195C /* BreezSdkSpark */; };
@@ -751,7 +751,7 @@
 		C1AF0260998E17001EF1988C /* MuteManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AF0026036532D4652C7322 /* MuteManager.swift */; };
 		C1AF0E7F59461BB9839F1D44 /* NostrScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AF0C03B5BEAE4C6902AD25 /* NostrScheme.swift */; };
 		D5A4266E6F84FB8044839C0E /* PollVoteDetailsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDBBAA6B683A9D0CB02B7060 /* PollVoteDetailsCell.swift */; };
-		E365D8456ACE78BF9DE4C077 /* WalletDetectedCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5764AD3FE766D500CBC6420 /* WalletDetectedCell.swift */; };
+		E365D8456ACE78BF9DE4C077 /* OldWalletDetectedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5764AD3FE766D500CBC6420 /* OldWalletDetectedView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1059,8 +1059,9 @@
 		9EF4BFCB2A8E57EF003396AA /* VerifiedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedView.swift; sourceTree = "<group>"; };
 		9EF4BFCD2A93CE1B003396AA /* loadingSpinnerBlue.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = loadingSpinnerBlue.json; sourceTree = "<group>"; };
 		9EF4BFCF2A955FB5003396AA /* NewPostButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewPostButton.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6A7B8C9D0E1F2 /* WalletDetectedPopupController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletDetectedPopupController.swift; sourceTree = "<group>"; };
 		A23B4E5D450372ED459567FF /* PollVotesFeedManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollVotesFeedManager.swift; sourceTree = "<group>"; };
-		A5764AD3FE766D500CBC6420 /* WalletDetectedCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletDetectedCell.swift; sourceTree = "<group>"; };
+		A5764AD3FE766D500CBC6420 /* OldWalletDetectedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OldWalletDetectedView.swift; sourceTree = "<group>"; };
 		B90032842BD0183600ADD2E5 /* NoteZapsRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteZapsRequest.swift; sourceTree = "<group>"; };
 		B90032872BD11DEA00ADD2E5 /* NoteReactionsParentController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteReactionsParentController.swift; sourceTree = "<group>"; };
 		B90032892BD266FF00ADD2E5 /* NoteZapsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteZapsViewController.swift; sourceTree = "<group>"; };
@@ -1091,7 +1092,6 @@
 		B9031D4F2AC2075E00C7489F /* ChatLoadingCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatLoadingCell.swift; sourceTree = "<group>"; };
 		B9031D512ACDDD4200C7489F /* ReplyingToView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReplyingToView.swift; sourceTree = "<group>"; };
 		B904E9A22F042BDD006D195C /* MigrateWalletPopupController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigrateWalletPopupController.swift; sourceTree = "<group>"; };
-		A1B2C3D4E5F6A7B8C9D0E1F2 /* WalletDetectedPopupController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletDetectedPopupController.swift; sourceTree = "<group>"; };
 		B904EA192F23B559006D195C /* HTMLGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTMLGenerator.swift; sourceTree = "<group>"; };
 		B90585372C9DDFD600FC4108 /* SettingsDevModeController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsDevModeController.swift; sourceTree = "<group>"; };
 		B906AAD72C91C46D0089813F /* smallPillLoaderLight.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = smallPillLoaderLight.json; sourceTree = "<group>"; };
@@ -1583,7 +1583,7 @@
 		C1AF0C03B5BEAE4C6902AD25 /* NostrScheme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NostrScheme.swift; sourceTree = "<group>"; };
 		C1AF0E693616ED45B0E46466 /* PrimalScheme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PrimalScheme.swift; sourceTree = "<group>"; };
 		EC1B50E71AC4CB3BACD02E0A /* PollVoteOptionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollVoteOptionCell.swift; sourceTree = "<group>"; };
-		F2BF0F83E0F616FCB6C4AB48 /* PollVotesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollVotesViewController.swift; sourceTree = "<group>"; };
+		F2BF0F83E0F616FCB6C4AB48 /* PollResultsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollResultsViewController.swift; sourceTree = "<group>"; };
 		FDBBAA6B683A9D0CB02B7060 /* PollVoteDetailsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollVoteDetailsCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -2553,7 +2553,7 @@
 				B90032892BD266FF00ADD2E5 /* NoteZapsViewController.swift */,
 				B900328E2BD26F4D00ADD2E5 /* NoteLikesViewController.swift */,
 				B90032942BD2742900ADD2E5 /* NoteRepostsViewController.swift */,
-				F2BF0F83E0F616FCB6C4AB48 /* PollVotesViewController.swift */,
+				F2BF0F83E0F616FCB6C4AB48 /* PollResultsViewController.swift */,
 				661FE298A909D88F0B34B14F /* PollVotesDatasource.swift */,
 			);
 			path = NoteReactions;
@@ -3044,7 +3044,7 @@
 				B94F2BD92ADDC1440041181B /* BuySatsCell.swift */,
 				B928F8692F30BF9A00DBD9D0 /* UpgradeWalletCell.swift */,
 				B928F86B2F30BFA300DBD9D0 /* BackupWalletCell.swift */,
-				A5764AD3FE766D500CBC6420 /* WalletDetectedCell.swift */,
+				A5764AD3FE766D500CBC6420 /* OldWalletDetectedView.swift */,
 				B91BB95C2B3B3854003F6B2A /* ErrorMessageCell.swift */,
 			);
 			path = Cells;
@@ -4440,7 +4440,7 @@
 				B9B290572B4DB2950069C87F /* SettingsWalletViewController.swift in Sources */,
 				B9B9E56B2CB44E710065DD7C /* ExplorePeopleCell.swift in Sources */,
 				B928F86C2F30BFA300DBD9D0 /* BackupWalletCell.swift in Sources */,
-				E365D8456ACE78BF9DE4C077 /* WalletDetectedCell.swift in Sources */,
+				E365D8456ACE78BF9DE4C077 /* OldWalletDetectedView.swift in Sources */,
 				B91EF0B02CE3BE4B00299ECF /* PremiumBecomeLegendController.swift in Sources */,
 				B94F2BCD2AD868770041181B /* WalletTransferSummaryController.swift in Sources */,
 				B914CD7B2AA8A23700CD0BD1 /* ChatManager.swift in Sources */,
@@ -4728,7 +4728,7 @@
 				B9DF8EB02F4C61F600A3FA21 /* KlipyManager.swift in Sources */,
 				B928F6642B51D52B00B2273E /* ViewAnimations.swift in Sources */,
 				B900328A2BD266FF00ADD2E5 /* NoteZapsViewController.swift in Sources */,
-				9D0C1431EB7AE3C05CE1B6FB /* PollVotesViewController.swift in Sources */,
+				9D0C1431EB7AE3C05CE1B6FB /* PollResultsViewController.swift in Sources */,
 				67660C24AE98ABAD92103321 /* PollVotesDatasource.swift in Sources */,
 				B9FAC6522D3A98EF00B57EF6 /* ThreadElementWebkitLinkPreviewCell.swift in Sources */,
 				C1AF0E7F59461BB9839F1D44 /* NostrScheme.swift in Sources */,

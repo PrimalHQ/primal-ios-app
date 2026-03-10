@@ -1,5 +1,5 @@
 //
-//  WalletDetectedCell.swift
+//  OldWalletDetectedView.swift
 //  Primal
 //
 //  Created by Pavle Stevanović on 10. 3. 2026..
@@ -7,40 +7,24 @@
 
 import UIKit
 
-protocol WalletDetectedCellDelegate: AnyObject {
-    func restoreWalletPressed()
-    func createNewWalletPressed()
-}
-
-final class WalletDetectedCell: UITableViewCell, Themeable {
+final class OldWalletDetectedView: UIView, Themeable {
     let descLabel = UILabel()
     let restoreButton = LargeRoundedButton(title: "Restore Existing Wallet")
     let createButton = UIButton(configuration: .accent18("Create New Wallet"))
-    
-    weak var delegate: WalletDetectedCellDelegate?
 
     private var isDiscontinued = false
 
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
-        selectionStyle = .none
+    init() {
+        super.init(frame: .zero)
 
-        let stack = UIStackView(axis: .vertical, [descLabel, SpacerView(height: 50), restoreButton, createButton])
+        let stack = UIStackView(axis: .vertical, [SpacerView(height: 200), descLabel, SpacerView(height: 150), restoreButton, createButton])
         stack.spacing = 14
 
-        contentView.addSubview(stack)
-        stack.pinToSuperview(edges: .horizontal, padding: 30).pinToSuperview(edges: .vertical, padding: 0)
+        addSubview(stack)
+        stack.pinToSuperview(edges: .horizontal, padding: 30).centerToSuperview(axis: .vertical)
 
         descLabel.textAlignment = .center
         descLabel.numberOfLines = 0
-
-        restoreButton.addAction(.init(handler: { [weak self] _ in
-            self?.delegate?.restoreWalletPressed()
-        }), for: .touchUpInside)
-
-        createButton.addAction(.init(handler: { [weak self] _ in
-            self?.delegate?.createNewWalletPressed()
-        }), for: .touchUpInside)
 
         updateTheme()
     }
@@ -55,7 +39,7 @@ final class WalletDetectedCell: UITableViewCell, Themeable {
     }
 
     func updateTheme() {
-        contentView.backgroundColor = .background
+        backgroundColor = .background
 
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.alignment = .center

@@ -1,5 +1,5 @@
 //
-//  PollVotesViewController.swift
+//  PollResultsViewController.swift
 //  Primal
 //
 //  Created by Pavle Stevanović on 6.3.26..
@@ -8,7 +8,7 @@
 import Combine
 import UIKit
 
-class PollVotesViewController: UIViewController, Themeable {
+class PollResultsViewController: UIViewController, Themeable {
     private let table = UITableView()
     private lazy var datasource = PollVotesDatasource(tableView: table, delegate: self)
 
@@ -34,8 +34,8 @@ class PollVotesViewController: UIViewController, Themeable {
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
     func updateTheme() {
-        view.backgroundColor = .background
-        table.backgroundColor = .background
+        view.backgroundColor = .background2
+        table.backgroundColor = .background2
         navigationItem.leftBarButtonItem = customBackButton
         table.reloadData()
     }
@@ -49,7 +49,7 @@ class PollVotesViewController: UIViewController, Themeable {
 
 // MARK: - PollVotesDatasourceDelegate
 
-extension PollVotesViewController: PollVotesDatasourceDelegate {
+extension PollResultsViewController: PollVotesDatasourceDelegate {
     var total: Int { poll.isZapPoll ? (pollStats?.totalSatsZapped ?? 0) : (pollStats?.totalVotes ?? 0) }
     var maxValue: Int { poll.isZapPoll ? (pollStats?.maxSatsZapped ?? 0) : (pollStats?.maxVotes ?? 0) }
     var isZapPoll: Bool { poll.isZapPoll }
@@ -59,7 +59,7 @@ extension PollVotesViewController: PollVotesDatasourceDelegate {
 
 // MARK: - Private
 
-private extension PollVotesViewController {
+private extension PollResultsViewController {
     func setup() {
         title = "Votes"
         updateTheme()
@@ -81,7 +81,7 @@ private extension PollVotesViewController {
         selectOption(0)
     }
 
-    func reloadData(users: [ParsedUser]? = nil, stats: PollStats? = nil) {
+    func reloadData(votes: [PollResultsVote]? = nil, stats: PollStats? = nil) {
         var items: [PollVotesTableCellType] = []
         let stats = stats ?? self.pollStats
 
@@ -101,9 +101,9 @@ private extension PollVotesViewController {
             items.append(.voteTitle(selectedOption.label, count: count))
         }
         
-        let users = users ?? feedManager?.users ?? []
-        for user in users {
-            items.append(.vote(user))
+        let votes = votes ?? feedManager?.votes ?? []
+        for vote in votes {
+            items.append(.vote(vote))
         }
 
         datasource.setItems(items)
@@ -121,22 +121,25 @@ private extension PollVotesViewController {
             feedManager = newFeed
         }
         
-        feedUpdate = feedManager?.$users
+        feedUpdate = feedManager?.$votes
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] users in self?.reloadData(users: users) }
+            .sink { [weak self] votes in self?.reloadData(votes: votes) }
     }
 }
 
 // MARK: - UITableViewDelegate
 
-extension PollVotesViewController: UITableViewDelegate {
+extension PollResultsViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         guard let item = datasource.itemIdentifier(for: indexPath) else { return }
         switch item {
         case .option(_, _, _):
             selectOption(indexPath.row)
-        case .vote(let user):
-            show(ProfileViewController(profile: user), sender: nil)
+        case .vote(let vote):
+            switch vote {
+            case .user(let user), .zap(let user, _):
+                show(ProfileViewController(profile: user), sender: nil)
+            }
         default:
             break
         }

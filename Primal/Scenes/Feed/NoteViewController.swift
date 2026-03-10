@@ -436,7 +436,7 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
         case .pollVotesDetails:
             guard let poll = post.poll else { return }
             
-            show(PollVotesViewController(eventId: post.post.id, poll: poll), sender: nil)
+            show(PollResultsViewController(eventId: post.post.id, poll: poll), sender: nil)
         case .share:
             let activityViewController = UIActivityViewController(activityItems: [post.webURL()], applicationActivities: nil)
             present(activityViewController, animated: true, completion: nil)

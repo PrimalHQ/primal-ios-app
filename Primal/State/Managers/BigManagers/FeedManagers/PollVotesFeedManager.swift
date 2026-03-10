@@ -10,8 +10,8 @@ import Foundation
 import GenericJSON
 
 class PollVotesFeedManager: BaseFeedManager {
-    @Published private var usersTmp: [ParsedUser] = []
-    @Published var users: [ParsedUser] = []
+    @Published private var votesTmp: [PollResultsVote] = []
+    @Published var votes: [PollResultsVote] = []
 
     private var cancellables: Set<AnyCancellable> = []
 
@@ -31,27 +31,28 @@ class PollVotesFeedManager: BaseFeedManager {
 
                 let newUsers = result.getSortedUsers()
                 
-                let votingUsers: [ParsedUser]
-                
+                let newVotes: [PollResultsVote]
                 if isZapPoll {
-                    votingUsers = result.zapReceipts.values
+                    newVotes = result.zapReceipts.values
                         .compactMap { $0["pubkey"]?.stringValue }
                         .map { pubkey in newUsers.first(where: { $0.data.pubkey == pubkey }) ?? ParsedUser(data: .init(pubkey: pubkey)) }
+                        .map { .user($0) }
                 } else {
-                    votingUsers = result.events
+                    newVotes = result.events
                         .filter({ Int($0["kind"]?.doubleValue ?? 0) == NostrKind.pollVote.rawValue })
                         .compactMap({ $0["pubkey"]?.stringValue })
                         .unique()
                         .map { pubkey in newUsers.first(where: { $0.data.pubkey == pubkey }) ?? ParsedUser(data: .init(pubkey: pubkey)) }
+                        .map { .user($0) }
                 }
                 
-                if votingUsers.isEmpty {
+                if newVotes.isEmpty {
                     didReachEnd = true
                 } else {
-                    let existingPubkeys = Set(users.map { $0.data.pubkey })
-                    let filtered = votingUsers.filter { !existingPubkeys.contains($0.data.pubkey) }
-                    usersTmp += filtered
-                    users = usersTmp
+//                    let existingPubkeys = Set(users.map { $0.data.pubkey })
+//                    let filtered = votingUsers.filter { !existingPubkeys.contains($0.data.pubkey) }
+                    votesTmp += newVotes
+                    votes = votesTmp
                 }
             }
             .store(in: &cancellables)
@@ -60,7 +61,7 @@ class PollVotesFeedManager: BaseFeedManager {
     }
 
     override func refresh() {
-        usersTmp = []
+        votesTmp = []
         super.refresh()
     }
 }

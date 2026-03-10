@@ -54,7 +54,7 @@ final class PollVoteTitleCell: UITableViewCell, Themeable {
     }
 
     func updateTheme() {
-        contentView.backgroundColor = .background
+        contentView.backgroundColor = .background2
         titleLabel.textColor = .foreground
         topBorder.backgroundColor = .background3
     }

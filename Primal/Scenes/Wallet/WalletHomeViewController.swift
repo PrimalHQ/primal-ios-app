@@ -29,8 +29,6 @@ final class WalletHomeViewController: UIViewController, Themeable {
         case loading
         case upgradeWallet
         case backupWallet
-        case walletDetected
-        case walletDiscontinued
         case buySats
         case error(String)
         case transaction(PrimalShared.Transaction)
@@ -52,6 +50,7 @@ final class WalletHomeViewController: UIViewController, Themeable {
     
     private let navBar = WalletNavView()
     let table = UITableView()
+    private let walletDetectedView = OldWalletDetectedView()
     
     private var cancellables: Set<AnyCancellable> = []
     private var foregroundUpdate: AnyCancellable?
@@ -180,22 +179,6 @@ extension WalletHomeViewController: UITableViewDataSource {
                 cell.delegate = self
             }
             return cell
-        case .walletDetected:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "walletDetected", for: indexPath)
-            if let cell = cell as? WalletDetectedCell {
-                cell.configure(isDiscontinued: false)
-                cell.delegate = self
-                cell.updateTheme()
-            }
-            return cell
-        case .walletDiscontinued:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "walletDetected", for: indexPath)
-            if let cell = cell as? WalletDetectedCell {
-                cell.configure(isDiscontinued: true)
-                cell.delegate = self
-                cell.updateTheme()
-            }
-            return cell
         case .loading:
             let cell = tableView.dequeueReusableCell(withIdentifier: "loading", for: indexPath)
             (cell as? ChatLoadingCell)?.updateTheme()
@@ -285,7 +268,7 @@ extension WalletHomeViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch tableData[indexPath.section].cells[indexPath.row] {
-        case .loading, .error, .walletDetected, .walletDiscontinued:
+        case .loading, .error:
             break
         case .buySats:
             buySatsPressed()
@@ -300,15 +283,7 @@ extension WalletHomeViewController: UITableViewDelegate {
     }
 }
 
-extension WalletHomeViewController: BuySatsCellDelegate, UpgradeWalletCellDelegate, BackupWalletCellDelegate, WalletDetectedCellDelegate {
-    func restoreWalletPressed() {
-        show(RestoreWalletController(), sender: nil)
-    }
-
-    func createNewWalletPressed() {
-        WalletManager.instance.newWalletSpark(IdentityManager.instance.userHexPubkey)
-    }
-
+extension WalletHomeViewController: BuySatsCellDelegate, UpgradeWalletCellDelegate, BackupWalletCellDelegate {
     func upgradeWalletPressed() {
         present(UpgradeWalletController(), animated: true)
     }
@@ -356,7 +331,6 @@ private extension WalletHomeViewController {
         table.register(BuySatsCell.self, forCellReuseIdentifier: "buySats")
         table.register(UpgradeWalletCell.self, forCellReuseIdentifier: "upgradeWallet")
         table.register(BackupWalletCell.self, forCellReuseIdentifier: "backupWallet")
-        table.register(WalletDetectedCell.self, forCellReuseIdentifier: "walletDetected")
         table.register(ChatLoadingCell.self, forCellReuseIdentifier: "loading")
         table.register(ErrorMessageCell.self, forCellReuseIdentifier: "error")
         table.contentInset = .init(top: 0, left: 0, bottom: 186, right: 0)
@@ -366,7 +340,19 @@ private extension WalletHomeViewController {
             WalletManager.instance.refresh()
         }), for: .valueChanged)
         table.refreshControl = refresh
-        
+
+        walletDetectedView.isHidden = true
+        view.addSubview(walletDetectedView)
+        walletDetectedView.pinToSuperview()
+
+        walletDetectedView.restoreButton.addAction(.init(handler: { [weak self] _ in
+            self?.show(RestoreWalletController(), sender: nil)
+        }), for: .touchUpInside)
+
+        walletDetectedView.createButton.addAction(.init(handler: { _ in
+            WalletManager.instance.newWalletSpark(IdentityManager.instance.userHexPubkey)
+        }), for: .touchUpInside)
+
         updateTheme()
         
         let transactionsPublisher = Publishers.Merge(
@@ -400,10 +386,13 @@ private extension WalletHomeViewController {
 
             switch setupState {
             case .walletDetected:
-                firstSection.cells += [.walletDetected]
+                walletDetectedView.configure(isDiscontinued: false)
+                walletDetectedView.isHidden = false
             case .walletDiscontinued:
-                firstSection.cells += [.walletDiscontinued]
+                walletDetectedView.configure(isDiscontinued: true)
+                walletDetectedView.isHidden = false
             case .normal:
+                walletDetectedView.isHidden = true
                 if wallet == nil {
                     firstSection.cells += [.loading]
                 } else if let primal = wallet as? Wallet.Primal {
