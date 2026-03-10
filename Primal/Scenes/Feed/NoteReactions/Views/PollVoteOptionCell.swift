@@ -81,7 +81,7 @@ final class PollVoteOptionCell: UITableViewCell, Themeable {
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
-    func configure(option: ParsedPoll.Option, optionValue: Int, total: Int, maxValue: Int, valueLabel: String, isSelected: Bool, userVote: String?, didEnd: Bool) {
+    func configure(option: ParsedPoll.Option, optionValue: Int, total: Int, maxValue: Int, valueLabel: NSAttributedString, isSelected: Bool, userVote: String?, didEnd: Bool) {
         isVotedOption = userVote == option.id
         percentage = total > 0 ? Double(optionValue) / Double(total) : 0
 
@@ -90,7 +90,7 @@ final class PollVoteOptionCell: UITableViewCell, Themeable {
         label.text = option.label
         label.font = .appFont(withSize: 15, weight: isVotedOption ? .bold : .regular)
 
-        percentLabel.text = valueLabel
+        percentLabel.attributedText = valueLabel
 
         progressConstraint = progressBar.widthAnchor.constraint(equalTo: progressParent.widthAnchor, multiplier: max(percentage, 0.001))
         progressBar.layer.cornerRadius = 300 * percentage > 12 ? 6 : 3
@@ -102,7 +102,6 @@ final class PollVoteOptionCell: UITableViewCell, Themeable {
     func updateTheme() {
         contentView.backgroundColor = .background2
         label.textColor = .foreground
-        percentLabel.textColor = .foreground3
         seeVotesLabel.textColor = .accent2
         progressBar.backgroundColor = isVotedOption ? .accent : UIColor.foreground6
         progressBar.alpha = Theme.current.isLightTheme ? 0.5 : 1

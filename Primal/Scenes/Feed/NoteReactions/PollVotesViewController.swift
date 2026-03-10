@@ -97,9 +97,8 @@ private extension PollVotesViewController {
         items.append(.optionsDetails(totalCount: pollStats?.totalVotes ?? 0, message: message))
 
         if let selectedOption = poll.options[safe: selectedOptionIndex] {
-            let optionStats = pollStats?.options[selectedOption.id]
-            let count = poll.isZapPoll ? (optionStats?.satszapped ?? 0) : (optionStats?.votes ?? 0)
-            items.append(.voteTitle(selectedOption.label, count: count, isZapPoll: poll.isZapPoll))
+            let count = pollStats?.options[selectedOption.id]?.votes ?? 0
+            items.append(.voteTitle(selectedOption.label, count: count))
         }
         
         let users = users ?? feedManager?.users ?? []

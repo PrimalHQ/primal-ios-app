@@ -10,7 +10,7 @@ import UIKit
 enum PollVotesTableCellType: Hashable {
     case option(ParsedPoll.Option, PollOptionStats, isSelected: Bool)
     case optionsDetails(totalCount: Int, message: String)
-    case voteTitle(String, count: Int, isZapPoll: Bool)
+    case voteTitle(String, count: Int)
     case vote(ParsedUser)
 }
 
@@ -31,12 +31,18 @@ class PollVotesDatasource: UITableViewDiffableDataSource<SingleSection, PollVote
                 let cell = tableView.dequeueReusableCell(withIdentifier: "option", for: indexPath)
                 if let cell = cell as? PollVoteOptionCell, let delegate {
                     let optionValue = delegate.isZapPoll ? stats.satszapped : stats.votes
-                    let valueLabel: String
+                    let didWin = optionValue == delegate.maxValue
+                    let didEnd = delegate.didEnd
+                    let valueLabel: NSAttributedString
                     if delegate.isZapPoll {
-                        valueLabel = "\(stats.satszapped.localized()) sats"
+                        valueLabel = .satsString(optionValue, fontSize: 15)
                     } else {
                         let pct = delegate.total > 0 ? Double(stats.votes) / Double(delegate.total) * 100 : 0
-                        valueLabel = pct == floor(pct) ? "\(Int(pct))%" : String(format: "%.1f%%", pct)
+                        let pctText = pct == floor(pct) ? "\(Int(pct))%" : String(format: "%.1f%%", pct)
+                        valueLabel = .init(string: pctText, attributes: [
+                            .font: UIFont.appFont(withSize: 15, weight: .semibold),
+                            .foregroundColor: didEnd && !didWin ? UIColor.foreground3 : UIColor.foreground
+                        ])
                     }
                     cell.configure(
                         option: option,
@@ -46,7 +52,7 @@ class PollVotesDatasource: UITableViewDiffableDataSource<SingleSection, PollVote
                         valueLabel: valueLabel,
                         isSelected: isSelected,
                         userVote: delegate.userVote,
-                        didEnd: delegate.didEnd
+                        didEnd: didEnd
                     )
                 }
                 return cell
@@ -54,9 +60,9 @@ class PollVotesDatasource: UITableViewDiffableDataSource<SingleSection, PollVote
                 let cell = tableView.dequeueReusableCell(withIdentifier: "details", for: indexPath)
                 (cell as? PollVoteDetailsCell)?.configure(totalCount: totalCount, message: message)
                 return cell
-            case let .voteTitle(title, count, isZapPoll):
+            case let .voteTitle(title, count):
                 let cell = tableView.dequeueReusableCell(withIdentifier: "title", for: indexPath)
-                (cell as? PollVoteTitleCell)?.configure(title: title, count: count, isZapPoll: isZapPoll)
+                (cell as? PollVoteTitleCell)?.configure(title: title, count: count)
                 return cell
             case let .vote(user):
                 let cell = tableView.dequeueReusableCell(withIdentifier: "vote", for: indexPath)

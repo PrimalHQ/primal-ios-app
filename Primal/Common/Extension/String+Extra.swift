@@ -7,6 +7,7 @@
 
 import Foundation
 import NostrSDK
+import UIKit
 
 extension Character {
     /// A simple emoji is one scalar and presented to the user as an Emoji
@@ -274,6 +275,20 @@ extension String : Identifiable {
 }
 
 extension NSAttributedString {
+    static func satsString(_ sats: Int, fontSize: CGFloat) -> NSAttributedString {
+        let boldFont = UIFont.appFont(withSize: fontSize, weight: .bold)
+        let regularFont = UIFont.appFont(withSize: fontSize, weight: .regular)
+        let result = NSMutableAttributedString(
+            string: sats.localized(),
+            attributes: [.font: boldFont, .foregroundColor: UIColor.foreground]
+        )
+        result.append(NSAttributedString(
+            string: " sats",
+            attributes: [.font: regularFont, .foregroundColor: UIColor.foreground3]
+        ))
+        return result
+    }
+
     func heightForWidth(_ width: CGFloat) -> CGFloat {
         let size = CGSize(width: width, height: .greatestFiniteMagnitude)
         let rect = boundingRect(
