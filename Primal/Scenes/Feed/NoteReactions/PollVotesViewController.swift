@@ -92,14 +92,11 @@ private extension PollVotesViewController {
             items.append(.option(option, stats, isSelected: index == selectedOptionIndex))
         }
 
-        let totalCount = poll.isZapPoll ? (pollStats?.totalSatsZapped ?? 0) : (pollStats?.totalVotes ?? 0)
-        let message: String
+        var message: String = ""
         if let endsAt = poll.endsAt {
             message = endsAt > .now ? endsAt.timeLeftDisplay() : "Final results"
-        } else {
-            message = ""
         }
-        items.append(.optionsDetails(totalCount: totalCount, isZapPoll: poll.isZapPoll, message: message))
+        items.append(.optionsDetails(totalCount: pollStats?.totalVotes ?? 0, message: message))
 
         if let selectedOption = poll.options[safe: selectedOptionIndex] {
             let optionStats = pollStats?.options[selectedOption.id]

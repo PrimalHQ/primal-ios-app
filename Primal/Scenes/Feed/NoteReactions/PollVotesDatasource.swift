@@ -9,7 +9,7 @@ import UIKit
 
 enum PollVotesTableCellType: Hashable {
     case option(ParsedPoll.Option, PollOptionStats, isSelected: Bool)
-    case optionsDetails(totalCount: Int, isZapPoll: Bool, message: String)
+    case optionsDetails(totalCount: Int, message: String)
     case voteTitle(String, count: Int, isZapPoll: Bool)
     case vote(ParsedUser)
 }
@@ -44,9 +44,9 @@ class PollVotesDatasource: UITableViewDiffableDataSource<SingleSection, PollVote
                     )
                 }
                 return cell
-            case let .optionsDetails(totalCount, isZapPoll, message):
+            case let .optionsDetails(totalCount, message):
                 let cell = tableView.dequeueReusableCell(withIdentifier: "details", for: indexPath)
-                (cell as? PollVoteDetailsCell)?.configure(totalCount: totalCount, isZapPoll: isZapPoll, message: message)
+                (cell as? PollVoteDetailsCell)?.configure(totalCount: totalCount, message: message)
                 return cell
             case let .voteTitle(title, count, isZapPoll):
                 let cell = tableView.dequeueReusableCell(withIdentifier: "title", for: indexPath)

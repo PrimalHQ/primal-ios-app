@@ -33,12 +33,8 @@ final class PollVoteDetailsCell: UITableViewCell, Themeable {
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
-    func configure(totalCount: Int, isZapPoll: Bool = false, message: String) {
-        if isZapPoll {
-            countLabel.text = "\(totalCount.localized()) sats"
-        } else {
-            countLabel.text = totalCount == 1 ? "1 vote" : "\(totalCount.localized()) votes"
-        }
+    func configure(totalCount: Int, message: String) {
+        countLabel.text = totalCount == 1 ? "1 vote" : "\(totalCount.localized()) votes"
         messageLabel.text = message
         messageLabel.isHidden = message.isEmpty
         separatorDot.isHidden = message.isEmpty
