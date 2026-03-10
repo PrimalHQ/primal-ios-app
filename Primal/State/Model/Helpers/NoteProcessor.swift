@@ -450,7 +450,15 @@ class NoteProcessor: MetadataCoding {
         
         let nsText = text as NSString
         
-        p.zaps = parsedZaps.filter { $0.postId == post.id || $0.postId == post.universalID }
+        p.zaps = parsedZaps.filter { zap in
+            guard zap.postId == post.id || zap.postId == post.universalID else { return false }
+            // Exclude poll vote zaps from the top zaps gallery on zap polls
+            if post.kind == NostrKind.zapPoll.rawValue {
+                let tags = response.zapReceipts[zap.receiptId]?["tags"]?.arrayValue
+                if tags?.tagValueForKey("poll_option") != nil { return false }
+            }
+            return true
+        }
         p.hashtags = hashtags.flatMap { nsText.positions(of: $0, reference: $0) }
         p.mentions = markedMentions.flatMap { nsText.positions(of: $0.0, reference: $0.ref) }
 //        p.notes = referencedPosts.flatMap { nsText.positions(of: $0.0, reference: $0.1.post.id) }
