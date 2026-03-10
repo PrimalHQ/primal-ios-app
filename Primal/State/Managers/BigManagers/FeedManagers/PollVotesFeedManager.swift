@@ -34,9 +34,16 @@ class PollVotesFeedManager: BaseFeedManager {
                 let newVotes: [PollResultsVote]
                 if isZapPoll {
                     newVotes = result.zapReceipts.values
-                        .compactMap { $0["pubkey"]?.stringValue }
-                        .map { pubkey in newUsers.first(where: { $0.data.pubkey == pubkey }) ?? ParsedUser(data: .init(pubkey: pubkey)) }
-                        .map { .user($0) }
+                        .compactMap { (json: JSON) -> (String, Int)? in
+                            guard let pubkey = json["pubkey"]?.stringValue else { return nil }
+                            let amountString = json["tags"]?.arrayValue?.tagValueForKey("amount") ?? ""
+                            let amount = Int(amountString) ?? 0
+                            return (pubkey, amount)
+                        }
+                        .map { (pubkey, amount) -> (ParsedUser, Int) in
+                            (newUsers.first(where: { $0.data.pubkey == pubkey }) ?? ParsedUser(data: .init(pubkey: pubkey)), amount)
+                        }
+                        .map { PollResultsVote.zap($0.0, amount: $0.1) }
                 } else {
                     newVotes = result.events
                         .filter({ Int($0["kind"]?.doubleValue ?? 0) == NostrKind.pollVote.rawValue })

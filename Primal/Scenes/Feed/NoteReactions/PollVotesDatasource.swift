@@ -75,7 +75,7 @@ class PollVotesDatasource: UITableViewDiffableDataSource<SingleSection, PollVote
                 case let .user(user):
                     (cell as? PollVoteUserCell)?.updateForUser(user)
                 case let .zap(user, amount):
-                    (cell as? PollVoteUserCell)?.updateForUser(user)
+                    (cell as? PollVoteUserCell)?.updateForZap(user: user, sats: amount)
                 }
                 return cell
             }
