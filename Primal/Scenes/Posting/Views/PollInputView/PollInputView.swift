@@ -204,14 +204,14 @@ class PollInputView: UIView {
             }
         }
         
-        if hours > 1 {
+        if hours > 0 {
             string += " \(hours) hour"
             if hours > 1 {
                 string += "s"
             }
         }
-        
-        if minutes > 1 {
+
+        if minutes > 0 {
             string += " \(minutes) minute"
             if minutes > 1 {
                 string += "s"
