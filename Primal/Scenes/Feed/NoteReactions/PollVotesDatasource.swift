@@ -30,14 +30,20 @@ class PollVotesDatasource: UITableViewDiffableDataSource<SingleSection, PollVote
             case let .option(option, stats, isSelected):
                 let cell = tableView.dequeueReusableCell(withIdentifier: "option", for: indexPath)
                 if let cell = cell as? PollVoteOptionCell, let delegate {
+                    let optionValue = delegate.isZapPoll ? stats.satszapped : stats.votes
+                    let valueLabel: String
+                    if delegate.isZapPoll {
+                        valueLabel = "\(stats.satszapped.localized()) sats"
+                    } else {
+                        let pct = delegate.total > 0 ? Double(stats.votes) / Double(delegate.total) * 100 : 0
+                        valueLabel = pct == floor(pct) ? "\(Int(pct))%" : String(format: "%.1f%%", pct)
+                    }
                     cell.configure(
                         option: option,
-                        stats: stats,
-                        totalVotes: delegate.totalVotes,
-                        maxVotes: delegate.maxVotes,
-                        totalSatsZapped: delegate.totalSatsZapped,
-                        maxSatsZapped: delegate.maxSatsZapped,
-                        isZapPoll: delegate.isZapPoll,
+                        optionValue: optionValue,
+                        total: delegate.total,
+                        maxValue: delegate.maxValue,
+                        valueLabel: valueLabel,
                         isSelected: isSelected,
                         userVote: delegate.userVote,
                         didEnd: delegate.didEnd
@@ -71,10 +77,8 @@ class PollVotesDatasource: UITableViewDiffableDataSource<SingleSection, PollVote
 }
 
 protocol PollVotesDatasourceDelegate: AnyObject {
-    var totalVotes: Int { get }
-    var maxVotes: Int { get }
-    var totalSatsZapped: Int { get }
-    var maxSatsZapped: Int { get }
+    var total: Int { get }
+    var maxValue: Int { get }
     var isZapPoll: Bool { get }
     var userVote: String? { get }
     var didEnd: Bool { get }

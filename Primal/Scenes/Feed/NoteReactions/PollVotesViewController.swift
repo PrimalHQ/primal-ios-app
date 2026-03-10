@@ -50,10 +50,8 @@ class PollVotesViewController: UIViewController, Themeable {
 // MARK: - PollVotesDatasourceDelegate
 
 extension PollVotesViewController: PollVotesDatasourceDelegate {
-    var totalVotes: Int { pollStats?.totalVotes ?? 0 }
-    var maxVotes: Int { pollStats?.maxVotes ?? 0 }
-    var totalSatsZapped: Int { pollStats?.totalSatsZapped ?? 0 }
-    var maxSatsZapped: Int { pollStats?.maxSatsZapped ?? 0 }
+    var total: Int { poll.isZapPoll ? (pollStats?.totalSatsZapped ?? 0) : (pollStats?.totalVotes ?? 0) }
+    var maxValue: Int { poll.isZapPoll ? (pollStats?.maxSatsZapped ?? 0) : (pollStats?.maxVotes ?? 0) }
     var isZapPoll: Bool { poll.isZapPoll }
     var userVote: String? { PollManager.instance.userVotes[eventId] }
     var didEnd: Bool { poll.didEnd }
