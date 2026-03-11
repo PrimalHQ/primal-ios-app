@@ -27,7 +27,7 @@ final class OnboardingFollowSuggestionsController: OnboardingBaseViewController 
     
     var cancellables: Set<AnyCancellable> = []
 
-    init(data: AccountCreationData, session: OnboardingSession, backgroundIndex: CGFloat) {
+    init(data: AccountCreationData, session: OnboardingSession, backgroundIndex: Int) {
         self.oldData = data
         self.session = session
         super.init(backgroundIndex: backgroundIndex)

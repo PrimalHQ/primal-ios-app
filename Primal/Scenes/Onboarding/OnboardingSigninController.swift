@@ -23,7 +23,7 @@ final class OnboardingSigninController: OnboardingBaseViewController {
     lazy var confirmButton = OnboardingMainButton("Paste Your Key")
     
     let iCloudSwitch = UISwitch()
-    lazy var iCloudStack = UIStackView([SpacerView(width: 9), UILabel("Save login in iCloud Keychain", color: .white, font: .appFont(withSize: 16, weight: .regular)), iCloudSwitch])
+    lazy var iCloudStack = UIStackView([SpacerView(width: 9), UILabel("Save login in iCloud Keychain", color: UIColor(rgb: 0x111111), font: .appFont(withSize: 16, weight: .regular)), iCloudSwitch])
     
     var cancellables = Set<AnyCancellable>()
     
@@ -136,7 +136,7 @@ private extension OnboardingSigninController {
         infoView.isHidden = true
         
         instruction.font = .appFont(withSize: 16, weight: .semibold)
-        instruction.textColor = .white
+        instruction.textColor = UIColor(rgb: 0x111111)
         instruction.textAlignment = .center
         instruction.numberOfLines = 0
         instruction.text = "Enter your Nostr key to sign in:"

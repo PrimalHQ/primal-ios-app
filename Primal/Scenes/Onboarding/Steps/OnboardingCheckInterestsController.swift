@@ -21,7 +21,7 @@ final class OnboardingCheckInterestsController: OnboardingBaseViewController {
     
     var cancellables: Set<AnyCancellable> = []
     
-    init(data: AccountCreationData, session: OnboardingSession, backgroundIndex: CGFloat) {
+    init(data: AccountCreationData, session: OnboardingSession, backgroundIndex: Int) {
         self.oldData = data
         self.session = session
         super.init(backgroundIndex: backgroundIndex)
@@ -94,9 +94,9 @@ class OnboardingOptionSelectionView: UIView {
         
         layer.cornerRadius = 12
         backgroundColor = .init(rgb: 0x222222).withAlphaComponent(0.4)
-        let titleLabel = UILabel(title, color: .white, font: .appFont(withSize: 16, weight: .semibold))
+        let titleLabel = UILabel(title, color: UIColor(rgb: 0x111111), font: .appFont(withSize: 16, weight: .semibold))
         titleLabel.adjustsFontSizeToFitWidth = true
-        let titleStack = UIStackView(axis: .vertical, [titleLabel, UILabel(subtitle, color: .white, font: .appFont(withSize: 16, weight: .regular))])
+        let titleStack = UIStackView(axis: .vertical, [titleLabel, UILabel(subtitle, color: UIColor(rgb: 0x111111), font: .appFont(withSize: 16, weight: .regular))])
         let titleStackParent = UIView()
         titleStackParent.addSubview(titleStack)
         titleStack.pinToSuperview(edges: .vertical).pinToSuperview(edges: .horizontal, padding: -7)

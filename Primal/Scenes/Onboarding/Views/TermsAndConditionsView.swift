@@ -9,7 +9,7 @@ import UIKit
 import SafariServices
 
 final class TermsAndConditionsView: UIStackView, Themeable {
-    private let whiteOverride: Bool
+    private let darkOverride: Bool
     
     private let firstRow = UILabel()
     private let and = UILabel()
@@ -19,8 +19,8 @@ final class TermsAndConditionsView: UIStackView, Themeable {
     static let termsURL = URL(string: "https://primal.net/terms")!
     static let privacyURL = URL(string: "https://primal.net/privacy")!
     
-    init(whiteOverride: Bool = false) {
-        self.whiteOverride = whiteOverride
+    init(darkOverride: Bool = false) {
+        self.darkOverride = darkOverride
         let secondRow = UIStackView([termsButton, and, privacyButton])
         super.init(frame: .zero)
         
@@ -56,7 +56,7 @@ final class TermsAndConditionsView: UIStackView, Themeable {
     required init(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
     func updateTheme() {
-        let color = whiteOverride ? UIColor.white : .foreground3
+        let color = darkOverride ? IceWave.instance.foreground : .foreground3
         
         firstRow.textColor = color
         and.textColor = color

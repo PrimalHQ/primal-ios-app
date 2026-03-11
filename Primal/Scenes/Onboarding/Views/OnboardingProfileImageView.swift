@@ -43,8 +43,8 @@ final class OnboardingProfileInfoView: UIStackView {
         
         name.font = .appFont(withSize: 24, weight: .bold)
         address.font = .appFont(withSize: 18, weight: .regular)
-        name.textColor = .white
-        address.textColor = .white
+        name.textColor = UIColor(rgb: 0x111111)
+        address.textColor = UIColor(rgb: 0x111111)
         
         [name, address].forEach { $0.setContentCompressionResistancePriority(.required, for: .vertical) }
     }

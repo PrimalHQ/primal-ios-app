@@ -29,12 +29,12 @@ class CloudRemoveLoginView: UIView {
         
         constrainToSize(height: 56)
         layer.cornerRadius = 12
-        backgroundColor = .black.withAlphaComponent(0.4)
+        backgroundColor = IceWave.instance.foreground
         
         var config = UIButton.Configuration.filled()
         config.cornerStyle = .capsule
         config.attributedTitle = .init("remove", attributes: .init([.font: UIFont.appFont(withSize: 14, weight: .semibold)]))
-        config.baseForegroundColor = .init(rgb: 0x111111)
+        config.baseForegroundColor = IceWave.instance.foreground
         config.baseBackgroundColor = .white.withAlphaComponent(0.8)
         removeButton.configuration = config
         removeButton.setContentHuggingPriority(.required, for: .horizontal)

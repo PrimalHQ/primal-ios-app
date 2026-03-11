@@ -53,7 +53,7 @@ final class OnboardingPreviewController: OnboardingBaseViewController {
     
     var session: OnboardingSession
     
-    init(data: AccountCreationData, session: OnboardingSession, backgroundIndex: CGFloat) {
+    init(data: AccountCreationData, session: OnboardingSession, backgroundIndex: Int) {
         self.oldData = data
         self.session = session
         super.init(backgroundIndex: backgroundIndex)
@@ -230,7 +230,7 @@ private extension OnboardingPreviewController {
         let nameLabel = UILabel()
         nameLabel.font = .appFont(withSize: 24, weight: .bold)
         nameLabel.text = profile.displayname
-        nameLabel.textColor = .white
+        nameLabel.textColor = UIColor(rgb: 0x111111)
         
         [avatarView, SpacerView(height: 12), nameLabel, SpacerView(height: 36), infoView].forEach { secondScreen.addArrangedSubview($0) }
         secondScreen.alignment = .center
@@ -322,7 +322,7 @@ final class KeyKeychainInfoView: UIView {
         vStack.spacing = 12
 
         titleLabel.text = "Account created!"
-        titleLabel.textColor = .white.withAlphaComponent(0.8)
+        titleLabel.textColor = UIColor(rgb: 0x111111).withAlphaComponent(0.8)
         titleLabel.font = .appFont(withSize: 16, weight: .semibold)
         titleLabel.numberOfLines = 0
 
@@ -333,7 +333,7 @@ final class KeyKeychainInfoView: UIView {
         let botContent = UIView()
         botContent.backgroundColor = .black.withAlphaComponent(0.2)
         
-        let descLabel = UILabel("Save account in iCloud Keychain", color: .white, font: .appFont(withSize: 16, weight: .regular))
+        let descLabel = UILabel("Save account in iCloud Keychain", color: UIColor(rgb: 0x111111), font: .appFont(withSize: 16, weight: .regular))
         descLabel.adjustsFontSizeToFitWidth = true
         
         let botStack = UIStackView([descLabel, onlineSwitch])

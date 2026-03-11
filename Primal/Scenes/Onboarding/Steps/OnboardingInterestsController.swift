@@ -34,7 +34,7 @@ final class OnboardingInterestsController: OnboardingBaseViewController {
     
     var cancellables: Set<AnyCancellable> = []
     
-    init(data: AccountCreationData, session: OnboardingSession, backgroundIndex: CGFloat) {
+    init(data: AccountCreationData, session: OnboardingSession, backgroundIndex: Int) {
         oldData = data
         self.session = session
         super.init(backgroundIndex: backgroundIndex)
@@ -66,14 +66,14 @@ private extension OnboardingInterestsController {
         infoLabel.text = "Tells us about your interests and we will create your initial follow list:"
         infoLabel.textAlignment = .center
         infoLabel.font = .appFont(withSize: 16, weight: .regular)
-        infoLabel.textColor = .white
+        infoLabel.textColor = UIColor(rgb: 0x111111)
         infoLabel.numberOfLines = 0
         
         collectionView.alignment = .center
         collectionView.spacing = 16
         
         countLabel.font = .appFont(withSize: 16, weight: .regular)
-        countLabel.textColor = .white.withAlphaComponent(0.75)
+        countLabel.textColor = UIColor(rgb: 0x111111).withAlphaComponent(0.75)
         countLabel.textAlignment = .center
         
         continueButton.addTarget(self, action: #selector(continuePressed), for: .touchUpInside)

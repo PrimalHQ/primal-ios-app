@@ -15,7 +15,7 @@ extension UIButton.Configuration {
         config.attributedTitle = .init(title, attributes: .init([.font: UIFont.appFont(withSize: 16, weight: .bold)]))
         config.baseForegroundColor = .white
         
-        config.baseBackgroundColor = .black.withAlphaComponent(0.4)
+        config.baseBackgroundColor = IceWave.instance.foreground
         config.background.cornerRadius = 12
         
         return config
@@ -25,8 +25,8 @@ extension UIButton.Configuration {
         var config = UIButton.Configuration.plain()
         
         config.attributedTitle = .init(title, attributes: .init([.font: UIFont.appFont(withSize: 16, weight: .semibold)]))
-        config.baseForegroundColor = .white
-        
+        config.baseForegroundColor = UIColor(rgb: 0x111111)
+
         return config
     }
 }
@@ -94,7 +94,7 @@ private extension OnboardingCloudSigninController {
         buttonStack.spacing = 12
         
         let contentStack = UIStackView(axis: .vertical, [
-            UILabel("Use a previous login:", color: .white, font: .appFont(withSize: 16, weight: .semibold), multiline: true),
+            UILabel("Use a previous login:", color: UIColor(rgb: 0x111111), font: .appFont(withSize: 16, weight: .semibold), multiline: true),
             scrollView,
             OrSeparatorView(),
             manualInputButton

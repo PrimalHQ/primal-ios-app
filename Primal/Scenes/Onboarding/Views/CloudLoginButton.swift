@@ -35,7 +35,7 @@ class CloudLoginButton: MyButton {
         
         constrainToSize(height: 56)
         layer.cornerRadius = 12
-        backgroundColor = .black.withAlphaComponent(0.4)
+        backgroundColor = IceWave.instance.foreground
     }
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }

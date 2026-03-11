@@ -306,7 +306,7 @@ class UserImageLivePill: UIView {
         
         updateHeight()
         
-        backgroundColor = .init(rgb: 0x111111)
+        backgroundColor = IceWave.instance.foreground
         dotView.backgroundColor = .live
         
         addSubview(stack)
