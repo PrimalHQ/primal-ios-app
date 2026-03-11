@@ -18,7 +18,7 @@ final class OnboardingDisplayNameController: OnboardingBaseViewController {
     
     let nextButton = OnboardingMainButton("Next")
     
-    let progressView = PrimalProgressView(progress: 0, total: 4, markProgress: true)
+    let progressView = OnboardingProgressView(progress: 0, total: 4)
     let descLabel = UILabel()
     
     let session = OnboardingSession()

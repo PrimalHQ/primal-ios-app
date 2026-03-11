@@ -21,7 +21,7 @@ struct AccountCreationData {
 }
 
 class OnboardingSession {
-    typealias Group = FollowSuggestionsRequest.Response.SuggestionGroup
+    typealias Group = FollowSuggestions2Request.Response.SuggestionGroup
     typealias Metadata = FollowSuggestionsRequest.Response.Metadata
     
     var avatarURL = "" {
@@ -68,7 +68,7 @@ class OnboardingSession {
             .assign(to: \.isUploading, onWeak: self)
             .store(in: &cancellables)
         
-        FollowSuggestionsRequest().publisher()
+        FollowSuggestions2Request().publisher()
             .receive(on: DispatchQueue.main)
             .sink(receiveCompletion: { completion  in
                 print(completion)

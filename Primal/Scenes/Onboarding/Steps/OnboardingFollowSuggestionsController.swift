@@ -13,7 +13,7 @@ final class OnboardingFollowSuggestionsController: OnboardingBaseViewController 
     let oldData: AccountCreationData
     var session: OnboardingSession
     
-    typealias Group = FollowSuggestionsRequest.Response.SuggestionGroup
+    typealias Group = FollowSuggestions2Request.Response.SuggestionGroup
     
     lazy var table = UITableView()
     lazy var continueButton = OnboardingMainButton("Next")
@@ -89,8 +89,8 @@ extension OnboardingFollowSuggestionsController: UITableViewDelegate {
         let header = tableView.dequeueReusableHeaderFooterView(withIdentifier: "header")
         header?.tag = section
         if let header = header as? FollowSectionHeader {
-            header.title.text = suggestionGroups[section].group
-            let group = suggestionGroups[section].members.map { $0.pubkey }
+            header.title.text = suggestionGroups[section].name
+            let group = suggestionGroups[section].people.map { $0.pubkey }
             header.followAll.isFollowing = session.usersToFollow.isSuperset(of: group)
             header.delegate = self
         }
@@ -101,7 +101,7 @@ extension OnboardingFollowSuggestionsController: UITableViewDelegate {
 extension OnboardingFollowSuggestionsController: FollowSectionHeaderDelegate, FollowProfileCellDelegate {
     func followButtonPressed(_ cell: FollowProfileCell) {
         guard let index = table.indexPath(for: cell) else { return }
-        let key = suggestionGroups[index.section].members[index.row].pubkey
+        let key = suggestionGroups[index.section].people[index.row].pubkey
         if cell.followButton.isFollowing {
             session.usersToFollow.insert(key)
         } else {
@@ -109,14 +109,14 @@ extension OnboardingFollowSuggestionsController: FollowSectionHeaderDelegate, Fo
         }
         
         if let header = table.headerView(forSection: index.section) as? FollowSectionHeader {
-            let group = suggestionGroups[index.section].members.map { $0.pubkey }
+            let group = suggestionGroups[index.section].people.map { $0.pubkey }
             header.followAll.isFollowing = session.usersToFollow.isSuperset(of: group)
         }
     }
     
     func headerTappedFollowAll(_ header: FollowSectionHeader) {
         let section = header.tag
-        let group = suggestionGroups[section].members.map { $0.pubkey }
+        let group = suggestionGroups[section].people.map { $0.pubkey }
         if header.followAll.isFollowing {
             session.usersToFollow.formUnion(group)
         } else {
@@ -132,13 +132,13 @@ extension OnboardingFollowSuggestionsController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        suggestionGroups[section].members.count
+        suggestionGroups[section].people.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
         if let cell = cell as? FollowProfileCell {
-            let suggestion = suggestionGroups[indexPath.section].members[indexPath.row]
+            let suggestion = suggestionGroups[indexPath.section].people[indexPath.row]
             if let data = session.userMetadata[suggestion.pubkey], let nostrData = NostrMetadata.from(data.content) {
                 cell.profileImage.setUserImage(.init(imageURL: nostrData.picture ?? ""), feed: false)
                 cell.nameLabel.text = nostrData.name

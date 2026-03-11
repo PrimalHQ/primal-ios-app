@@ -216,7 +216,7 @@ extension OnboardingViewController {
         view.addSubview(titleLabel)
         titleLabel.centerToSuperview(axis: .horizontal).centerToView(backButton, axis: .vertical)
         titleLabel.text = title
-        titleLabel.font = .appFont(withSize: 24, weight: .regular)
+        titleLabel.font = .appFont(withSize: 20, weight: .regular)
         titleLabel.textColor = UIColor(rgb: 0x111111)
     }
     

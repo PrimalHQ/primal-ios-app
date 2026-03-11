@@ -34,7 +34,7 @@ final class OnboardingPreviewController: OnboardingBaseViewController {
     
     let profileView = LargeProfileView()
     let instructionLabel = UILabel()
-    let progressView = PrimalProgressView(progress: 2, total: 4, markProgress: true)
+    let progressView = OnboardingProgressView(progress: 3, total: 4)
     let continueButton = OnboardingMainButton("Create Account Now")
     let secondScreen = UIStackView(axis: .vertical, [])
     let loadingSpinner = LoadingSpinnerView().constrainToSize(height: 70)
