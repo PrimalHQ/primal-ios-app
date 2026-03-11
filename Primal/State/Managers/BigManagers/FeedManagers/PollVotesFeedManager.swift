@@ -37,7 +37,7 @@ class PollVotesFeedManager: BaseFeedManager {
                         .compactMap { (json: JSON) -> (String, Int)? in
                             guard let pubkey = json["pubkey"]?.stringValue else { return nil }
                             let amountString = json["tags"]?.arrayValue?.tagValueForKey("amount") ?? ""
-                            let amount = Int(amountString) ?? 0
+                            let amount = (Int(amountString) ?? 0) / 1000
                             return (pubkey, amount)
                         }
                         .map { (pubkey, amount) -> (ParsedUser, Int) in

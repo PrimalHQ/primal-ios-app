@@ -86,7 +86,7 @@ final class PollVoteUserCell: UITableViewCell, Themeable {
         }
 
         zapStack.isHidden = false
-        zapAmountLabel.text = sats.shortenedLocalized()
+        zapAmountLabel.text = sats < 100_000 ? sats.localized() : sats.shortenedLocalized()
         zapAmountLabel.isHidden = sats <= 0
 
         updateTheme()
