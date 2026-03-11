@@ -13,6 +13,7 @@ extension UIColor {
     static let gold = UIColor(rgb: 0xFFA02F)
     static let live = UIColor(rgb: 0xEE0000)
     static let delete = UIColor(rgb: 0xFA3C3C)
+    static let onboarding = UIColor(rgb: 0x252628)
     
     convenience init(rgb: UInt) {
         self.init(

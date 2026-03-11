@@ -24,7 +24,7 @@ class QRCopyView: MyButton {
         }
     }
     
-    private let copy = UIImageView(image: UIImage(named: "whiteCopy"))
+    private let copy = UIImageView(image: .whiteCopy)
     private let label = UILabel()
     
     weak var dimmingView: UIView?
@@ -37,7 +37,9 @@ class QRCopyView: MyButton {
         stack.alignment = .center
         
         label.font = .appFont(withSize: 16, weight: .regular)
-        label.textColor = .white
+        label.textColor = .onboarding
+        
+        copy.tintColor = .onboarding
         
         addSubview(stack)
         stack.pinToSuperview()

@@ -15,7 +15,7 @@ extension UIButton.Configuration {
         configuration.attributedTitle = .init(text, attributes: AttributeContainer([
             .font: UIFont.appFont(withSize: 14, weight: .regular)
         ]))
-        configuration.baseForegroundColor = .white
+        configuration.baseForegroundColor = .onboarding
         return configuration
     }
     
@@ -24,7 +24,7 @@ extension UIButton.Configuration {
         configuration.attributedTitle = .init(text, attributes: AttributeContainer([
             .font: UIFont.appFont(withSize: 14, weight: .semibold)
         ]))
-        configuration.baseForegroundColor = .white
+        configuration.baseForegroundColor = .onboarding
         return configuration
     }
 }
@@ -60,7 +60,7 @@ final class ProfileShowQRController: UIViewController, OnboardingViewController 
     let userInfo = OnboardingProfileInfoView()
     let qrCodeView = UIImageView()
     let copyView = QRCopyView()
-    let action = QRCodeActionButton("Scan QR Code")
+    let action = OnboardingMainButton("Scan QR Code")
     let tabParent = UIView()
     
     lazy var scanController = ProfileScanQRController(backgroundIndex: 1)
@@ -163,7 +163,7 @@ private extension ProfileShowQRController {
         
         let buttons = options.map { (UIButton(configuration: .whiteProfileQR($0.name)), UIButton(configuration: .whiteProfileQRSelected($0.name))) }
         
-        let indicatorView = SpacerView(height: 4, color: .white)
+        let indicatorView = SpacerView(height: 4, color: .onboarding)
         indicatorView.layer.cornerRadius = 2
         tabParent.addSubview(indicatorView)
         

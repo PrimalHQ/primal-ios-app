@@ -11,8 +11,8 @@ class OrSeparatorView: UIStackView {
     init() {
         super.init(frame: .zero)
         
-        let border1 = SpacerView(height: 1, color: UIColor(rgb: 0x111111).withAlphaComponent(0.4))
-        let border2 = SpacerView(height: 1, color: UIColor(rgb: 0x111111).withAlphaComponent(0.4))
+        let border1 = SpacerView(height: 1, color: UIColor(rgb: 0x111111).withAlphaComponent(0.25))
+        let border2 = SpacerView(height: 1, color: UIColor(rgb: 0x111111).withAlphaComponent(0.25))
         let orLabel = UILabel("or", color: UIColor(rgb: 0x111111), font: .appFont(withSize: 16, weight: .semibold))
         
         [border1, orLabel, border2].forEach { addArrangedSubview($0) }

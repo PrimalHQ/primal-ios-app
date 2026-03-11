@@ -20,10 +20,21 @@ struct AccountCreationData {
     var website: String = ""
 }
 
+struct ParsedSuggestionGroup {
+    var name: String
+    var coverUrl: String
+    var people: [ParsedSuggestionPerson]
+}
+
+struct ParsedSuggestionPerson {
+    var pubkey: String
+    var user: ParsedUser
+}
+
 class OnboardingSession {
-    typealias Group = FollowSuggestions2Request.Response.SuggestionGroup
+    typealias Group = FollowSuggestionsRequest.Response.SuggestionGroup
     typealias Metadata = FollowSuggestionsRequest.Response.Metadata
-    
+
     var avatarURL = "" {
         didSet {
             if let url = URL(string: avatarURL) {
@@ -31,6 +42,7 @@ class OnboardingSession {
             }
         }
     }
+    
     var bannerURL = "https://m.primal.net/HQTd.jpg"
     
     @Published var isUploadingAvatar = false
@@ -40,8 +52,7 @@ class OnboardingSession {
     @Published var bannerImage: UIImage?
     @Published var isUploading = false
     
-    @Published var suggestionGroups: [OnboardingSession.Group] = []
-    var userMetadata: [String: Metadata] = [:]
+    @Published var parsedGroups: [ParsedSuggestionGroup] = []
     
     @Published var defaultRelays: [String] = bootstrap_relays
     
@@ -68,13 +79,24 @@ class OnboardingSession {
             .assign(to: \.isUploading, onWeak: self)
             .store(in: &cancellables)
         
-        FollowSuggestions2Request().publisher()
+        FollowSuggestionsRequest().publisher()
             .receive(on: DispatchQueue.main)
             .sink(receiveCompletion: { completion  in
                 print(completion)
             }, receiveValue: { [weak self] response in
-                self?.suggestionGroups = response.suggestions
-                self?.userMetadata = response.metadata
+                self?.parsedGroups = response.suggestions.map { group in
+                    ParsedSuggestionGroup(
+                        name: group.name,
+                        coverUrl: group.coverUrl,
+                        people: group.people.map { person in
+                            let nostrContent = response.metadata[person.pubkey].flatMap {
+                                NostrContent(kind: Int32($0.kind), content: $0.content, id: $0.id, created_at: Double($0.created_at), pubkey: $0.pubkey, sig: "", tags: [])
+                            }
+                            let primalUser = PrimalUser(nostrUser: nostrContent) ?? PrimalUser(pubkey: person.pubkey)
+                            return ParsedSuggestionPerson(pubkey: person.pubkey, user: ParsedUser(data: primalUser))
+                        }
+                    )
+                }
             })
             .store(in: &cancellables)
         

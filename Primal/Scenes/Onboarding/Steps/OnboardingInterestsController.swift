@@ -14,7 +14,7 @@ final class OnboardingInterestsController: OnboardingBaseViewController {
     let countBadge = UILabel("0", color: .white, font: .appFont(withSize: 12, weight: .regular))
     lazy var continueButton = OnboardingMainButton("Next")
 
-    var suggestionGroups: [OnboardingSession.Group] = [] {
+    var parsedGroups: [ParsedSuggestionGroup] = [] {
         didSet {
             tableView.reloadData()
             continueButton.isHidden = false
@@ -42,6 +42,8 @@ final class OnboardingInterestsController: OnboardingBaseViewController {
     func updateCountBadge() {
         countBadge.text = "\(session.usersToFollow.count)"
         countBadge.alpha = session.usersToFollow.isEmpty ? 0.2 : 1
+        
+        continueButton.isEnabled = !session.usersToFollow.isEmpty
     }
 }
 
@@ -83,7 +85,7 @@ private extension OnboardingInterestsController {
 
         continueButton.addTarget(self, action: #selector(continuePressed), for: .touchUpInside)
         
-        session.$suggestionGroups.assign(to: \.suggestionGroups, onWeak: self).store(in: &cancellables)
+        session.$parsedGroups.assign(to: \.parsedGroups, onWeak: self).store(in: &cancellables)
         updateCountBadge()
     }
 
@@ -96,28 +98,28 @@ private extension OnboardingInterestsController {
 
 extension OnboardingInterestsController: UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
-        suggestionGroups.count
+        parsedGroups.count
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        expandedSections.contains(section) ? 1 + suggestionGroups[section].people.count : 1
+        expandedSections.contains(section) ? 1 + parsedGroups[section].people.count : 1
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if indexPath.row == 0 {
             let cell = tableView.dequeueReusableCell(withIdentifier: "header", for: indexPath) as! SuggestionGroupHeaderCell
-            let group = suggestionGroups[indexPath.section]
+            let group = parsedGroups[indexPath.section]
             let allPubkeys = Set(group.people.map { $0.pubkey })
             let isFollowingAll = session.usersToFollow.isSuperset(of: allPubkeys)
             let isExpanded = expandedSections.contains(indexPath.section)
-            cell.configure(group: group, metadata: session.userMetadata, isExpanded: isExpanded, isFollowingAll: isFollowingAll)
+            cell.configure(group: group, isExpanded: isExpanded, isFollowingAll: isFollowingAll)
             cell.delegate = self
             return cell
         } else {
             let cell = tableView.dequeueReusableCell(withIdentifier: "user", for: indexPath) as! SuggestionGroupUserCell
-            let person = suggestionGroups[indexPath.section].people[indexPath.row - 1]
+            let person = parsedGroups[indexPath.section].people[indexPath.row - 1]
             let isFollowing = session.usersToFollow.contains(person.pubkey)
-            cell.configure(person: person, metadata: session.userMetadata, isFollowing: isFollowing)
+            cell.configure(person: person, isFollowing: isFollowing)
             cell.delegate = self
             return cell
         }
@@ -151,7 +153,7 @@ extension OnboardingInterestsController: SuggestionGroupHeaderCellDelegate {
 
     func headerCellDidTapFollowAll(_ cell: SuggestionGroupHeaderCell) {
         guard let indexPath = tableView.indexPath(for: cell) else { return }
-        let group = suggestionGroups[indexPath.section]
+        let group = parsedGroups[indexPath.section]
         let allPubkeys = Set(group.people.map { $0.pubkey })
 
         if session.usersToFollow.isSuperset(of: allPubkeys) {
@@ -170,7 +172,7 @@ extension OnboardingInterestsController: SuggestionGroupHeaderCellDelegate {
 extension OnboardingInterestsController: SuggestionGroupUserCellDelegate {
     func userCellDidTapFollow(_ cell: SuggestionGroupUserCell) {
         guard let indexPath = tableView.indexPath(for: cell) else { return }
-        let person = suggestionGroups[indexPath.section].people[indexPath.row - 1]
+        let person = parsedGroups[indexPath.section].people[indexPath.row - 1]
 
         if session.usersToFollow.contains(person.pubkey) {
             session.usersToFollow.remove(person.pubkey)
@@ -211,8 +213,7 @@ final class SuggestionGroupHeaderCell: UITableViewCell {
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
     func configure(
-        group: FollowSuggestions2Request.Response.SuggestionGroup,
-        metadata: [String: FollowSuggestionsRequest.Response.Metadata],
+        group: ParsedSuggestionGroup,
         isExpanded: Bool,
         isFollowingAll: Bool
     ) {
@@ -236,10 +237,8 @@ final class SuggestionGroupHeaderCell: UITableViewCell {
         let count = min(5, group.people.count)
         for i in 0..<count {
             let imageView = UserImageView(height: avatarSize)
-            if let meta = metadata[group.people[i].pubkey],
-               let nostrData = NostrMetadata.from(meta.content) {
-                imageView.setUserImage(.init(imageURL: nostrData.picture ?? ""), feed: false)
-            }
+            imageView.setUserImage(group.people[i].user, feed: false)
+
             let imageViewParent = UIView().constrainToSize(avatarSize + 2)
             imageViewParent.layer.cornerRadius = (avatarSize + 2) / 2
             imageViewParent.backgroundColor = .white
@@ -348,24 +347,23 @@ final class SuggestionGroupUserCell: UITableViewCell {
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
     func configure(
-        person: FollowSuggestions2Request.Response.Person,
-        metadata: [String: FollowSuggestionsRequest.Response.Metadata],
+        person: ParsedSuggestionPerson,
         isFollowing: Bool
     ) {
-        if let meta = metadata[person.pubkey],
-           let nostrData = NostrMetadata.from(meta.content) {
-            profileImageView.setUserImage(.init(imageURL: nostrData.picture ?? ""), feed: false)
-            nameLabel.text = nostrData.display_name ?? nostrData.name ?? person.name
-            descLabel.isHidden = false
-            descLabel.text = nostrData.about
-        } else {
-            nameLabel.text = person.name
-            descLabel.isHidden = true
-        }
+        let data = person.user.data
+        profileImageView.setUserImage(person.user, feed: false)
+        nameLabel.text = data.firstIdentifier
 
-        followButton.configuration = isFollowing ?
+        let about = data.about
+        descLabel.text = about
+        descLabel.isHidden = about.isEmpty
+        
+        var config: UIButton.Configuration = isFollowing ?
             .pill(text: "Following", foregroundColor: IceWave.instance.foreground, backgroundColor: IceWave.instance.background3, font: .appFont(withSize: 12, weight: .regular)) :
             .pill(text: "Follow", foregroundColor: .white, backgroundColor: IceWave.instance.foreground, font: .appFont(withSize: 12, weight: .regular))
+        
+        config.contentInsets = .zero
+        followButton.configuration = config
     }
 
     private func setupViews() {

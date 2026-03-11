@@ -9,18 +9,6 @@ import Combine
 import UIKit
 
 extension UIButton.Configuration {
-    static func newOnboardingButton(title: String) -> UIButton.Configuration {
-        var config = UIButton.Configuration.filled()
-        
-        config.attributedTitle = .init(title, attributes: .init([.font: UIFont.appFont(withSize: 16, weight: .bold)]))
-        config.baseForegroundColor = .white
-        
-        config.baseBackgroundColor = IceWave.instance.foreground
-        config.background.cornerRadius = 12
-        
-        return config
-    }
-    
     static func onboardingSimpleButton(title: String) -> UIButton.Configuration {
         var config = UIButton.Configuration.plain()
         
@@ -86,7 +74,7 @@ private extension OnboardingCloudSigninController {
         addBackground()
         addNavigationBar("Sign In")
         
-        let manualInputButton = UIButton(configuration: .newOnboardingButton(title: "Enter your Nostr key to sign in")).constrainToSize(height: 60)
+        let manualInputButton = UIButton(configuration: .pill(text: "Enter your Nostr key to sign in", foregroundColor: .white, backgroundColor: .onboarding, font: .appFont(withSize: 16, weight: .semibold))).constrainToSize(height: 60)
         let scrollView = UIScrollView()
         scrollView.addSubview(buttonStack)
         buttonStack.pinToSuperview()

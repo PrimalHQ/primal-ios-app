@@ -36,8 +36,9 @@ class OnboardingParentViewController: UIPageViewController, UIPageViewController
     
     var viewControllerStack: [UIViewController]
     
-    override var preferredStatusBarStyle: UIStatusBarStyle { .lightContent }
+    override var preferredStatusBarStyle: UIStatusBarStyle { .darkContent }
     
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     init(_ start: StartScreen = .start) {
         switch start {
         case .start:
@@ -54,10 +55,6 @@ class OnboardingParentViewController: UIPageViewController, UIPageViewController
         super.init(transitionStyle: .scroll, navigationOrientation: .horizontal)
         dataSource = self
         delegate = self
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
     }
     
     override func viewDidLoad() {
@@ -194,8 +191,8 @@ extension OnboardingViewController {
         return NSAttributedString(
             string: string,
             attributes: [
-                .foregroundColor:   UIColor(rgb: 0x111111).withAlphaComponent(0.75),
-                .font:              UIFont.appFont(withSize: 16, weight: .semibold),
+                .foregroundColor:   UIColor(rgb: 0x111111).withAlphaComponent(0.8),
+                .font:              UIFont.appFont(withSize: 16, weight: .regular),
                 .paragraphStyle:    paragraph
             ]
         )

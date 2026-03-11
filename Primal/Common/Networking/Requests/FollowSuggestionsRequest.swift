@@ -24,7 +24,7 @@ struct FollowSuggestionsRequest: Request {
     typealias ResponseData = Response
 
     let body: Any? = nil
-    var url: URL { URL(string: "https://media.primal.net/api/suggestions")! }
+    var url: URL { URL(string: "https://media.primal.net/api/suggestions_2")! }
 
     struct Response: Codable {
         var metadata: [String: Metadata]
@@ -38,29 +38,7 @@ struct FollowSuggestionsRequest: Request {
             var pubkey: String
             var sig: String
         }
-
-        struct SuggestionGroup: Codable {
-            var group: String
-            var members: [Suggestion]
-        }
-
-        struct Suggestion: Codable {
-            var name: String
-            var pubkey: String
-        }
-    }
-}
-
-struct FollowSuggestions2Request: Request {
-    typealias ResponseData = Response
-
-    let body: Any? = nil
-    var url: URL { URL(string: "https://media.primal.net/api/suggestions_2")! }
-
-    struct Response: Codable {
-        var metadata: [String: FollowSuggestionsRequest.Response.Metadata]
-        var suggestions: [SuggestionGroup]
-
+        
         struct SuggestionGroup: Codable {
             var name: String
             var coverUrl: String

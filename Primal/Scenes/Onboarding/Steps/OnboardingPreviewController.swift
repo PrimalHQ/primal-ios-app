@@ -311,6 +311,7 @@ final class KeyKeychainInfoView: UIView {
 
     func setup() {
         let keyIcon = UIImageView(image: .onboardingCheckTransparent)
+        keyIcon.tintColor = UIColor(rgb: 0x111111).withAlphaComponent(0.75)
         let titleLabel = UILabel()
         let vStack = UIStackView(axis: .vertical, [keyIcon, titleLabel])
 
@@ -322,22 +323,22 @@ final class KeyKeychainInfoView: UIView {
         vStack.spacing = 12
 
         titleLabel.text = "Account created!"
-        titleLabel.textColor = UIColor(rgb: 0x111111).withAlphaComponent(0.8)
+        titleLabel.textColor = UIColor(rgb: 0x111111).withAlphaComponent(0.75)
         titleLabel.font = .appFont(withSize: 16, weight: .semibold)
         titleLabel.numberOfLines = 0
 
-        backgroundColor = .black.withAlphaComponent(0.25)
+        backgroundColor = .white.withAlphaComponent(0.6)
         layer.cornerRadius = 16
         clipsToBounds = true
         
         let botContent = UIView()
-        botContent.backgroundColor = .black.withAlphaComponent(0.2)
+        botContent.backgroundColor = .white.withAlphaComponent(0.6)
         
         let descLabel = UILabel("Save account in iCloud Keychain", color: UIColor(rgb: 0x111111), font: .appFont(withSize: 16, weight: .regular))
         descLabel.adjustsFontSizeToFitWidth = true
         
         let botStack = UIStackView([descLabel, onlineSwitch])
-        botStack.spacing = 10
+        botStack.spacing = 8
         
         botContent.addSubview(botStack)
         botStack.centerToSuperview(axis: .vertical).pinToSuperview(edges: .leading, padding: 18).pinToSuperview(edges: .trailing, padding: 14)

@@ -22,7 +22,7 @@ final class OnboardingMainButton: UIButton {
         setTitleColor(.white, for: .normal)
         setTitleColor(.white.withAlphaComponent(0.5), for: .highlighted)
         titleLabel?.font = .appFont(withSize: 18, weight: .semibold)
-        backgroundColor = UIColor(rgb: 0x252628)
+        backgroundColor = .onboarding
         layer.cornerRadius = 28
         constrainToSize(height: 56)
     }
