@@ -14,7 +14,15 @@ class EncryptionServiceHandler: NipsNostrEncryptionService, NIP44v2Encrypting, N
     static let instance = EncryptionServiceHandler()
     
     func getPrivkeyForUserId(_ userId: String) -> String? {
-        guard let npub = userId.hexToNpub(), let nsec = ICloudKeychainManager.instance.nsec(npub) else { return nil }
+        guard
+            let npub = userId.hexToNpub(),
+            let nsec = ICloudKeychainManager.instance.nsec(npub)
+        else {
+            if let keypair = OnboardingSession.instance?.newUserKeypair, keypair.hexVariant.pubkey == userId {
+                return keypair.hexVariant.privkey
+            }
+            return nil
+        }
         return Keypair(nsec: nsec)?.privateKey.hex
     }
     

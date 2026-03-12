@@ -295,13 +295,12 @@ extension PostRequestResult {
             }
             userStats = nostrUserProfileInfo
         case .popular_hashtags:
-            guard let contentArray: [[String: Double]] = contentString.decode() else {
+            guard let contentDic: [String: Double] = contentString.decode() else {
                 print("Error decoding popular hashtags")
                 return
             }
             
-            for object in contentArray {
-                guard let (name, count) = object.first else { continue }
+            for (name, count) in contentDic {
                 popularHashtags.append(.init(title: name, appearances: count))
             }
         case .timestamp:

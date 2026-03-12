@@ -24,12 +24,7 @@ final class ExploreTopicsViewController: UIViewController, Themeable {
         
         setup()
         
-        SocketRequest.init(name: "trending_hashtags_7d", payload: nil).publisher()
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] result in
-                self?.hashtags  = result.popularHashtags
-            }
-            .store(in: &cancellables)
+        refresh()
     }
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
@@ -53,10 +48,10 @@ final class ExploreTopicsViewController: UIViewController, Themeable {
     }
     
     func refresh() {
-        SocketRequest.init(name: "trending_hashtags_7d", payload: nil).publisher()
+        SocketRequest.init(name: "explore_topics", payload: nil).publisher()
             .receive(on: DispatchQueue.main)
             .sink { [weak self] result in
-                self?.hashtags  = result.popularHashtags
+                self?.hashtags  = result.popularHashtags.sorted(by: { $0.appearances > $1.appearances })
                 self?.collectionView.refreshControl?.endRefreshing()
             }
             .store(in: &cancellables)

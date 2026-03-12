@@ -157,9 +157,14 @@ final class ICloudKeychainManager {
         return keypair
     }
     
-    func nsec(_ npub: String) -> String? { keychain.getSavedNsec(npub) }
+    func nsec(_ npub: String) -> String? {
+        keychain.getSavedNsec(npub) ?? {
+            guard let keypair = OnboardingSession.instance?.newUserKeypair, keypair.nVariant.npub == npub else { return nil }
+            return keypair.nVariant.nsec
+        }()
+    }
     
-    func hasNsec(_ npub: String) -> Bool { keychain.getSavedNsec(npub) != nil }
+    func hasNsec(_ npub: String) -> Bool { nsec(npub) != nil }
     
     @discardableResult
     func logoutCurrentUser() -> Bool {

@@ -305,17 +305,11 @@ final class WalletManager {
     func createSparkWallet(_ pubkey: String) async -> String? {
         let ensureSpark = EnsureSparkWalletExistsUseCase(sparkWalletManager: sparkWalletManager, sparkWalletAccountRepository: sparkWalletAccountRepository, walletAccountRepository: walletAccountRepo, seedPhraseGenerator: RecoveryPhraseGenerator())
 
-        let _ = try? await ensureSpark.invoke(userId: pubkey, register: true)
+        let res = try? await ensureSpark.invoke(userId: pubkey, register: true)
 
-        guard let wallet = try? await walletAccountRepo.getActiveWallet(userId: pubkey) else { return nil }
+        guard let walletId = res?.getOrNull() as? String else { return nil }
 
-        let address = try? await sparkWalletAccountRepository.getLightningAddress(walletId: wallet.walletId)
-        
-        guard address == nil else { return address }
-        
-        try? await Task.sleep(nanoseconds: 5_000_000_000)
-        
-        return try? await sparkWalletAccountRepository.getLightningAddress(walletId: wallet.walletId)
+        return try? await sparkWalletAccountRepository.getLightningAddress(walletId: walletId)
     }
     
     func seedPhrase() async throws -> [String] {

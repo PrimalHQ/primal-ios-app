@@ -43,7 +43,7 @@ class OnboardingSession {
         }
     }
     
-    var bannerURL = "https://m.primal.net/HQTd.jpg"
+    var bannerURL = "https://blossom.primal.net/c15e22a2a8d1c7971f86adc758f944f3cbec6ef791fafd2604d85ee6beadaabb.png"
     
     @Published var isUploadingAvatar = false
     @Published var isUploadingBanner = false
