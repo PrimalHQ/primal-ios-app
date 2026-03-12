@@ -359,6 +359,7 @@
 		B91EF0D32CEB830600299ECF /* PremiumManageSubscriptionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91EF0D22CEB830600299ECF /* PremiumManageSubscriptionController.swift */; };
 		B91EF0D52CEB8C5B00299ECF /* PremiumManageSubscriptionHeaderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91EF0D42CEB8C5B00299ECF /* PremiumManageSubscriptionHeaderCell.swift */; };
 		B91EF0D72CEB8D4200299ECF /* PremiumManageSubscriptionDataCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91EF0D62CEB8D4200299ECF /* PremiumManageSubscriptionDataCell.swift */; };
+		C7F8A2B3D4E5061798A3B1C2 /* PrimalPremiumLogoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7F8A2B3D4E5061798A3B1C3 /* PrimalPremiumLogoView.swift */; };
 		B91EF0D92CEBA10B00299ECF /* PremiumManageLegendController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91EF0D82CEBA10B00299ECF /* PremiumManageLegendController.swift */; };
 		B91EF0DD2CEBA30400299ECF /* LegendTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91EF0DC2CEBA30400299ECF /* LegendTheme.swift */; };
 		B91EF0E02CEBA70200299ECF /* LegendThemeSelectionTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91EF0DF2CEBA70200299ECF /* LegendThemeSelectionTable.swift */; };
@@ -1191,6 +1192,7 @@
 		B91EF0D22CEB830600299ECF /* PremiumManageSubscriptionController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumManageSubscriptionController.swift; sourceTree = "<group>"; };
 		B91EF0D42CEB8C5B00299ECF /* PremiumManageSubscriptionHeaderCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumManageSubscriptionHeaderCell.swift; sourceTree = "<group>"; };
 		B91EF0D62CEB8D4200299ECF /* PremiumManageSubscriptionDataCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumManageSubscriptionDataCell.swift; sourceTree = "<group>"; };
+		C7F8A2B3D4E5061798A3B1C3 /* PrimalPremiumLogoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimalPremiumLogoView.swift; sourceTree = "<group>"; };
 		B91EF0D82CEBA10B00299ECF /* PremiumManageLegendController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumManageLegendController.swift; sourceTree = "<group>"; };
 		B91EF0DC2CEBA30400299ECF /* LegendTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegendTheme.swift; sourceTree = "<group>"; };
 		B91EF0DF2CEBA70200299ECF /* LegendThemeSelectionTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegendThemeSelectionTable.swift; sourceTree = "<group>"; };
@@ -2837,6 +2839,7 @@
 				B91EF0CE2CEA1B6F00299ECF /* PremiumManageContentDataCell.swift */,
 				B91EF0D42CEB8C5B00299ECF /* PremiumManageSubscriptionHeaderCell.swift */,
 				B91EF0D62CEB8D4200299ECF /* PremiumManageSubscriptionDataCell.swift */,
+				C7F8A2B3D4E5061798A3B1C3 /* PrimalPremiumLogoView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -4346,6 +4349,7 @@
 				B914CD692A9E6B4A00CD0BD1 /* VideoPlaybackManager.swift in Sources */,
 				B9B1ABA92B3336EC00837312 /* TransactionExpandInfoCell.swift in Sources */,
 				B91EF0D52CEB8C5B00299ECF /* PremiumManageSubscriptionHeaderCell.swift in Sources */,
+				C7F8A2B3D4E5061798A3B1C2 /* PrimalPremiumLogoView.swift in Sources */,
 				B9CE4DB52B6AC7750060A1B8 /* WalletReceiveTransitionAnimator.swift in Sources */,
 				9E83DF6E2A573E2300F2C379 /* UIButtons.swift in Sources */,
 				B9C5A07D2F36258E007CB5D3 /* UgradeWalletFaqController.swift in Sources */,

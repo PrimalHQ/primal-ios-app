@@ -61,7 +61,7 @@ class PremiumManageSubscriptionHeaderCell: UITableViewCell {
         }
         
         let topStack = UIStackView(axis: .vertical, [
-            UIImageView(image: .primalPremiumSmall), SpacerView(height: 4),
+            PrimalPremiumLogoView(), SpacerView(height: 4),
             UILabel("Primal Premium valid until:", color: .foreground3, font: .appFont(withSize: 18, weight: .regular)),
             UILabel(expireString, color: .foreground, font: .appFont(withSize: 24, weight: .regular)),
             UILabel(renewsString, color: .foreground3, font: .appFont(withSize: 14, weight: .regular))
