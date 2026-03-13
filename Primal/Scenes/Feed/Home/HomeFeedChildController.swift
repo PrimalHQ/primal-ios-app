@@ -134,7 +134,7 @@ class HomeFeedChildController: PostFeedViewController {
     
     weak var parentHomeVC: HomeFeedViewController?
     override func setBarsToTransform(_ transform: CGFloat) {
-        guard menuContainer?.isOpen == false else { return }
+        guard menuContainer?.isOpen != true, view.window != nil else { return }
         
         super.setBarsToTransform(transform)
         

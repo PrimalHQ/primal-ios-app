@@ -467,6 +467,7 @@
 		B981E0A22D6F6F0C002B9729 /* TripleImageGalleryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B981E0A12D6F6F0C002B9729 /* TripleImageGalleryCell.swift */; };
 		B981E0A42D6F72F5002B9729 /* QuadrupleImageGalleryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B981E0A32D6F72F5002B9729 /* QuadrupleImageGalleryCell.swift */; };
 		B9856EA32ED8B56100B21500 /* RemoteSignerRootController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9856EA22ED8B24E00B21500 /* RemoteSignerRootController.swift */; };
+		833EA0C20D72C751D9F90AF4 /* RemoteSignerSignInViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1A609C097C4C1C66B1ED84C /* RemoteSignerSignInViews.swift */; };
 		B9856EA52ED9C92B00B21500 /* RemoteSignerSignInController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9856EA42ED9C92300B21500 /* RemoteSignerSignInController.swift */; };
 		B98B78732EC20844006134F9 /* OnboardingCloudSigninController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98B78722EC20824006134F9 /* OnboardingCloudSigninController.swift */; };
 		B98B78752EC209C7006134F9 /* OrSeparatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98B78742EC209BE006134F9 /* OrSeparatorView.swift */; };
@@ -1302,6 +1303,7 @@
 		B981E0A32D6F72F5002B9729 /* QuadrupleImageGalleryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuadrupleImageGalleryCell.swift; sourceTree = "<group>"; };
 		B9856EA22ED8B24E00B21500 /* RemoteSignerRootController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSignerRootController.swift; sourceTree = "<group>"; };
 		B9856EA42ED9C92300B21500 /* RemoteSignerSignInController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSignerSignInController.swift; sourceTree = "<group>"; };
+		C1A609C097C4C1C66B1ED84C /* RemoteSignerSignInViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSignerSignInViews.swift; sourceTree = "<group>"; };
 		B98B78722EC20824006134F9 /* OnboardingCloudSigninController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingCloudSigninController.swift; sourceTree = "<group>"; };
 		B98B78742EC209BE006134F9 /* OrSeparatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrSeparatorView.swift; sourceTree = "<group>"; };
 		B98B78762EC21730006134F9 /* CloudLoginButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudLoginButton.swift; sourceTree = "<group>"; };
@@ -3553,6 +3555,7 @@
 			children = (
 				B95677832F02E85400B8166C /* EventDetailsView.swift */,
 				B9E0E6252EEAC86100F48B2A /* CheckboxRadioButton.swift */,
+				C1A609C097C4C1C66B1ED84C /* RemoteSignerSignInViews.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -4520,6 +4523,7 @@
 				93906B942A55B5D000962A94 /* NostrObject.swift in Sources */,
 				B90EF0ED2AFC08E000A7CD65 /* ProfileTabSelectionView.swift in Sources */,
 				B9856EA52ED9C92B00B21500 /* RemoteSignerSignInController.swift in Sources */,
+				833EA0C20D72C751D9F90AF4 /* RemoteSignerSignInViews.swift in Sources */,
 				B9C5A0B42F3E5DB6007CB5D3 /* NwcServiceManager.swift in Sources */,
 				B9EDA5882E4CABE1003262E4 /* LivePopupDismissGesture.swift in Sources */,
 				9E8834A82A2775FF005DB548 /* RepostedIndicatorView.swift in Sources */,

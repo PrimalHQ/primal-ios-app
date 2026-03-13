@@ -159,15 +159,15 @@ class RemoteSignerManager {
             .store(in: &self.cancellables)
     }
     
-    func initializeConnection(url: String, userPubKey: String, trustLevel: TrustLevel) async throws -> RemoteAppConnection? {
+    func initializeConnection(url: String, userPubKey: String, trustLevel: TrustLevel, nwcConnectionString: String? = nil) async throws -> RemoteAppConnection? {
         let signerConnectionInit = AccountRepositoryFactory.shared.createSignerConnectionInitializer(connectionRepository: connectionRepo, sessionRepository: sessionRepo)
-        
+
         return try await signerConnectionInit.initialize(
             signerPubKey: signerPubkey,
             userPubKey: userPubKey,
             connectionUrl: url,
             trustLevel: trustLevel,
-            nwcConnectionString: nil,
+            nwcConnectionString: nwcConnectionString,
         ).getOrNull()
     }
     

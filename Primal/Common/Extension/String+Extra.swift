@@ -275,8 +275,8 @@ extension String : Identifiable {
 }
 
 extension NSAttributedString {
-    static func satsString(_ sats: Int, fontSize: CGFloat) -> NSAttributedString {
-        let boldFont = UIFont.appFont(withSize: fontSize, weight: .bold)
+    static func satsString(_ sats: Int, fontSize: CGFloat, weight: UIFont.Weight = .bold) -> NSAttributedString {
+        let boldFont = UIFont.appFont(withSize: fontSize, weight: weight)
         let regularFont = UIFont.appFont(withSize: fontSize, weight: .regular)
         let result = NSMutableAttributedString(
             string: sats.localized(),
