@@ -182,10 +182,14 @@ private extension KlipyGifController {
         manager.$results.withPrevious()
             .receive(on: DispatchQueue.main)
             .sink { [weak self] (old, new) in
-                if old.count < new.count {
-                    self?.gifCollectionView.insertItems(at: (old.count..<new.count).map { IndexPath(row: $0, section: 0) })
+                guard let self else { return }
+                let collectionView = self.gifCollectionView
+                if old.count < new.count, collectionView.numberOfItems(inSection: 0) == old.count {
+                    collectionView.performBatchUpdates {
+                        collectionView.insertItems(at: (old.count..<new.count).map { IndexPath(row: $0, section: 0) })
+                    }
                 } else {
-                    self?.gifCollectionView.reloadData()
+                    collectionView.reloadData()
                 }
             }
             .store(in: &cancellables)

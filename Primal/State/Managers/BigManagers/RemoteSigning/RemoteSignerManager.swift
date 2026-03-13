@@ -180,32 +180,6 @@ class RemoteSignerManager {
             try? await sessionRepo.endSessions(sessionIds: sessions.map { $0.sessionId })
         }
     }
-    
-    func checkDeliveredNotifications() {
-        RemoteSignerManager.instance.processMissedEvents()
-        
-        UNUserNotificationCenter.current().getDeliveredNotifications  { notifications in
-            // Background thread
-            DispatchQueue.main.async {
-                RemoteSignerManager.instance.dismissRemoteSignerNotifications(notifications)
-            }
-        }
-    }
-    
-    private func dismissRemoteSignerNotifications(_ notifications: [UNNotification]) {
-        let remoteSignerNotifications: [UNNotification] = notifications.compactMap {
-            guard
-                let extra = $0.request.content.userInfo["extra"] as? [String: Any],
-                let event = extra["nip46_event"] as? [String: Any],
-                let eventPubkey = extra["nip46_event_pubkey"] as? String,
-                let eventId = event["id"] as? String
-            else { return nil }
-            
-            return $0
-        }
-        
-        PushNotificationsManager.instance.dismissNotifications(remoteSignerNotifications)
-    }
 }
 
 extension RemoteSignerManager: Nip46EventsHandler {

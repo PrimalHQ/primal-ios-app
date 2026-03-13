@@ -30,6 +30,18 @@ class PushNotificationsManager {
         updateNotificationsSettings()
     }
     
+    func checkDeliveredNotifications() {
+        RemoteSignerManager.instance.processMissedEvents()
+
+        UNUserNotificationCenter.current().getDeliveredNotifications  { notifications in
+            // Background thread
+            DispatchQueue.main.async {
+                self.dismissRemoteSignerNotifications(notifications)
+                self.handleNwcNotifications(notifications)
+            }
+        }
+    }
+    
     func updateNotificationsSettings() {
         guard let deviceToken = pushNotificationsToken else { return }
         
@@ -55,6 +67,26 @@ class PushNotificationsManager {
                 .store(in: &cancellables)
         }
         
+        let nwcEvents = UserDefaults.standard.nwcNotificationEnableEvents
+        if !nwcEvents.isEmpty {
+            var nwcPayload: [String: JSON] = [
+                "events_from_users": .array(nwcEvents.map { $0.toJSON() }),
+                "platform": "iOS",
+                "token": .string(currentToken),
+                "scope": "nip47"
+            ]
+            #if DEBUG
+            nwcPayload["environment"] = "sandbox"
+            #endif
+
+            SocketRequest(name: "update_push_notification_token_for_nip46", payload: .object(nwcPayload))
+                .publisher()
+                .sink { res in
+                    print(res.message)
+                }
+                .store(in: &cancellables)
+        }
+
         let pubkeys = LoginManager.instance.loggedInNpubs().compactMap { $0.npubToPubkey() }
         let oldEvents = UserDefaults.standard.notificationEnableEvents
         let filteredEvents = oldEvents.filter {
@@ -102,5 +134,38 @@ class PushNotificationsManager {
                 }
             }
         }
+    }
+}
+
+private extension PushNotificationsManager {
+    func dismissRemoteSignerNotifications(_ notifications: [UNNotification]) {
+        let remoteSignerNotifications: [UNNotification] = notifications.compactMap {
+            guard
+                let extra = $0.request.content.userInfo["extra"] as? [String: Any],
+                let event = extra["nip46_event"] as? [String: Any],
+                let eventPubkey = extra["nip46_event_pubkey"] as? String,
+                let eventId = event["id"] as? String
+            else { return nil }
+            
+            return $0
+        }
+        
+        dismissNotifications(remoteSignerNotifications)
+    }
+
+    func handleNwcNotifications(_ notifications: [UNNotification]) {
+        let nwcNotifications = notifications.filter {
+            guard
+                let extra = $0.request.content.userInfo["extra"] as? [String: Any],
+                let eventKind = extra["event_kind"] as? Int,
+                eventKind == 23194
+            else { return false }
+            return true
+        }
+
+        guard !nwcNotifications.isEmpty, NwcServiceManager.shared.autoStartService else { return }
+
+        NwcServiceManager.shared.startService()
+        dismissNotifications(nwcNotifications)
     }
 }
