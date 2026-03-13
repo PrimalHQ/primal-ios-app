@@ -5,23 +5,33 @@
 //  Created by Pavle Stevanović on 16. 12. 2025..
 //
 
+import Foundation
+
 @available(iOS 16.1, *)
 class WidgetMainAppBridge: WidgetMainAppBridgeProtocol {
     func endAllSessions() {
-        RemoteSignerActivityManager.instance.endSignerActivity()
-        RemoteSignerManager.instance.endAllSessions()
-        NwcServiceManager.shared.endService()
+        DispatchQueue.main.async {
+            RemoteSignerActivityManager.instance.endSignerActivity()
+            RemoteSignerManager.instance.endAllSessions()
+            NwcServiceManager.shared.endService()
+        }
     }
     
     func nextSong() {
-        RemoteSignerActivityManager.instance.nextSong()
+        DispatchQueue.main.async {
+            RemoteSignerActivityManager.instance.nextSong()
+        }
     }
     
     func prevSong() {
-        RemoteSignerActivityManager.instance.prevSong()
+        DispatchQueue.main.async {
+            RemoteSignerActivityManager.instance.prevSong()
+        }
     }
     
     func toggleMute() {
-        RemoteSignerActivityManager.instance.toggleMute()
+        DispatchQueue.main.async {
+            RemoteSignerActivityManager.instance.toggleMute()
+        }
     }
 }
