@@ -23,6 +23,7 @@ final class PollView: UIView, Themeable {
     
     private var content: ParsedContent?
     private var showResults: Bool?
+    private var votingShownForPollId: String?
     private var cancellables: Set<AnyCancellable> = []
 
     init() {
@@ -38,15 +39,20 @@ final class PollView: UIView, Themeable {
         self.content = content
         self.showResults = showResults
 
+        let currentUserVote = PollManager.instance.userVotes[content.post.id]
+        let currentlyShowingResults = isExpired || currentUserVote != nil
+        votingShownForPollId = currentlyShowingResults ? nil : content.post.id
+
         cancellables = []
 
         updateExpiration(poll)
 
         Publishers.CombineLatest(
-            PollManager.instance.statsPublisher(content.post.id),
-            PollManager.instance.userVotePublisher(content.post.id)
+            PollManager.instance.statsPublisher(content.post.id).removeDuplicates(),
+            PollManager.instance.userVotePublisher(content.post.id).removeDuplicates()
         )
-        .receive(on: DispatchQueue.main)
+        // we must debounce for the animation because we are updating both stats at the same time
+        .debounce(for: 0.05, scheduler: DispatchQueue.main)
         .sink { [weak self] stats, userVote in
             self?.render(poll: poll, stats: stats, userVote: userVote, showResults: showResults)
         }
@@ -75,6 +81,8 @@ private extension PollView {
 
     func render(poll: ParsedPoll, stats: PollStats?, userVote: String?, showResults: Bool?) {
         let showResults = isExpired || userVote != nil
+        let shouldAnimate = showResults && votingShownForPollId == content?.post.id
+        if showResults { votingShownForPollId = nil }
 
         optionsStack.arrangedSubviews.forEach { $0.removeFromSuperview() }
 
@@ -121,6 +129,11 @@ private extension PollView {
                 }), for: .touchUpInside)
                 optionsStack.addArrangedSubview(row)
             }
+        }
+
+        if shouldAnimate {
+            layoutIfNeeded()
+            optionsStack.arrangedSubviews.forEach { ($0 as? PollResultOptionView)?.animateIn() }
         }
 
         let totalVotes = stats?.totalVotes ?? 0
@@ -309,6 +322,31 @@ final class PollResultOptionView: UIView, Themeable {
         progressBar.layer.cornerRadius = 300 * percentage > 12 ? 6 : 3
 
         updateTheme()
+    }
+
+    func animateIn() {
+        // Bar: scale from left edge
+        let barWidth = progressBar.bounds.width
+        if barWidth > 0 {
+            progressBar.transform = CGAffineTransform(translationX: -barWidth / 2, y: 0).scaledBy(x: 0.01, y: 1)
+        }
+
+        // Label: offset toward center of parent
+        let parentWidth = progressParent.bounds.width
+        let labelX = label.frame.minX
+        let centerX = (parentWidth - label.bounds.width) / 2
+        label.transform = CGAffineTransform(translationX: centerX - labelX, y: 0)
+
+        // Fade in secondary elements
+        percentLabel.alpha = 0
+        checkIcon.alpha = 0
+
+        UIView.animate(withDuration: 0.4, delay: 0, usingSpringWithDamping: 0.85, initialSpringVelocity: 0, options: []) {
+            self.progressBar.transform = .identity
+            self.label.transform = .identity
+            self.percentLabel.alpha = 1
+            self.checkIcon.alpha = 1
+        }
     }
 
     func updateTheme() {

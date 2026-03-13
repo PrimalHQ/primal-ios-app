@@ -14,7 +14,7 @@ struct PollOptionStats: Codable, Hashable {
     let satszapped: Int
 }
 
-struct PollStats: Equatable {
+struct PollStats: Hashable, Equatable {
     let eventId: String
     let options: [String: PollOptionStats]
 
@@ -99,13 +99,11 @@ final class PollManager {
         userVotes[pollEventId] = optionId
 
         // Optimistic update: increment the local stats
-        if var stats = pollStats[pollEventId] {
-            var options = stats.options
-            var optionStats = options[optionId] ?? PollOptionStats(votes: 0, satszapped: 0)
-            optionStats = PollOptionStats(votes: optionStats.votes + 1, satszapped: optionStats.satszapped)
-            options[optionId] = optionStats
-            pollStats[pollEventId] = PollStats(eventId: stats.eventId, options: options)
-        }
+        var options = pollStats[pollEventId]?.options ?? [:]
+        var optionStats = options[optionId] ?? PollOptionStats(votes: 0, satszapped: 0)
+        optionStats = PollOptionStats(votes: optionStats.votes + 1, satszapped: optionStats.satszapped)
+        options[optionId] = optionStats
+        pollStats[pollEventId] = PollStats(eventId: pollEventId, options: options)
 
         guard let ev = NostrObject.pollVote(pollEventId: pollEventId, pollAuthorPubkey: pollAuthorPubkey, optionId: optionId) else {
             userVotes[pollEventId] = nil
