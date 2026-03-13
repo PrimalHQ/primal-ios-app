@@ -124,6 +124,7 @@ final class PostingManager {
     
     var cancellables: Set<AnyCancellable> = []
     var attemptToPostCancellable: AnyCancellable?
+    private var inFlightDrafts: Set<String> = []
     
     func hasReposted(_ eventId: String) -> Bool { userReposts.contains(eventId) }
     func hasReplied(_ eventId: String) -> Bool { userReplied.contains(eventId) }
@@ -261,34 +262,32 @@ final class PostingManager {
 
 private extension PostingManager {
     func postDraft(_ draft: NoteDraft) {
+        // Prevent double-posting: skip if this draft is already in-flight
+        guard !inFlightDrafts.contains(draft.id) else { return }
+
         let numberOfTries = attemptAmount[draft.id, default: 0]
-        
-        print("\(draft.id) POST ATTEMPT \(Date())")
-        
+
         if numberOfTries > 5 {
             RootViewController.instance.showToast("Couldn't publish your note", icon: UIImage(named: "toastX"))
-            
+
             draftsToPost.removeAll(where: { $0.preparedEvent?.id == draft.preparedEvent?.id })
             var draft = draft
             draft.preparedEvent = nil
             DatabaseManager.instance.saveDraft(draft)
             return
         }
-        
+
         guard let ev = draft.preparedEvent else { return }
-        
+
+        inFlightDrafts.insert(draft.id)
         attemptAmount[draft.id, default: 0] += 1
-        
-        sendEvent(ev) { completed in
+
+        sendEvent(ev) { [weak self] completed in
+            self?.inFlightDrafts.remove(draft.id)
             if completed {
-                print("\(draft.id) POST ATTEMPT SUCCESS")
-                self.draftsToPost.removeAll(where: { $0.preparedEvent?.id == draft.preparedEvent?.id })
-                
-                self.attemptAmount[draft.id] = nil
-                
+                self?.draftsToPost.removeAll(where: { $0.preparedEvent?.id == draft.preparedEvent?.id })
+                self?.attemptAmount[draft.id] = nil
                 DatabaseManager.instance.deleteDraft(draft)
-            } else {
-                print("\(draft.id) POST ATTEMPT FAILED")
             }
         }
     }

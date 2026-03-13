@@ -63,6 +63,7 @@ private extension SettingsZapsViewController {
         let infoLabel = ThemeableLabel().setTheme { $0.textColor = .foreground4 }
         infoLabel.font = .appFont(withSize: 14, weight: .regular)
         infoLabel.numberOfLines = 0
+        infoLabel.text = "Customize the default zap amount and quick-select options that appear when you zap a note."
         
         let stack = UIStackView(axis: .vertical, [
             defaultZapInfo, SpacerView(height: 8),
@@ -82,7 +83,7 @@ private extension SettingsZapsViewController {
         
         restore.addAction(.init(handler: { _ in
             IdentityManager.instance.requestDefaultSettings { defaultS in
-                guard var settings = IdentityManager.instance.userSettings else { return }
+                var settings = IdentityManager.instance.userSettings ?? defaultS
 
                 settings.zapDefault = defaultS.zapDefault
                 settings.zapConfig = defaultS.zapConfig

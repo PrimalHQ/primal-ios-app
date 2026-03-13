@@ -170,7 +170,8 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
             
             if let url = extra["link"] as? String, let url = URL(string: url) {
                 if waitForOpen {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
+                    // Wait for reset animation (1s) + quickReset + feed init to complete
+                    DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(3)) {
                         PrimalWebsiteScheme.shared.openURL(url)
                     }
                 } else {
@@ -179,8 +180,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
             }
         }
         
-        print("Notification payload: \(userInfo)")
-        // Handle the notification tap (e.g., navigate to a specific screen)
+        // Handle the notification tap
         completionHandler()
     }
 }

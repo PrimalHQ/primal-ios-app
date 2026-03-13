@@ -175,9 +175,8 @@ struct PrimalWalletRequest {
             Future { promise in
                 Connection.wallet.requestWallet(type.requestContent) { result in
                     
-                    if case .isUser = type {
-                        print(result)
-                    }
+
+
                     
                     result.compactMap { $0.objectValue } .forEach { pendingResult.handleWalletEvent($0) }
                     result.compactMap { $0.stringValue } .forEach { pendingResult.handleMessage($0) }
@@ -210,7 +209,23 @@ private extension WalletRequestResult {
         
         switch kind {
         case .WALLET_OPERATION:
-            print("UNHANDLED KIND: \(kind)")
+            guard let data = contentString.data(using: .utf8),
+                  let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
+            else { return }
+
+            let preimage = json["preimage"] as? String
+                ?? json["payment_preimage"] as? String
+            let paymentHash = json["payment_hash"] as? String
+            let status = json["status"] as? String
+            let transactionId = json["id"] as? String
+                ?? json["transaction_id"] as? String
+
+            paymentResult = PaymentResult(
+                preimage: preimage,
+                paymentHash: paymentHash,
+                status: status,
+                transactionId: transactionId
+            )
         case .WALLET_BALANCE:
             balance = contentString.decode()
         case .WALLET_DEPOSIT_INVOICE:
@@ -244,7 +259,7 @@ private extension WalletRequestResult {
             }
             self.kycLevel = kycLevel
         case .WALLET_USER_INFO:
-            print("UNHANDLED KIND: \(kind)")
+            break // User info is handled elsewhere
         case .WALLET_IN_APP_PURCHASE_QUOTE:
             guard let quote = try? JSONDecoder().decode(WalletQuote.self, from: Data(contentString.utf8)) else {
                 print("Unable to handle WALLET_QUOTE")

@@ -111,10 +111,7 @@ class NWCWalletManager {
             .toPublisher()
             .receive(on: DispatchQueue.main)
             .sink { [weak self] walletId in
-                print("WALLET ID \(walletId ?? "nil")")
-                guard
-                    let id = walletId
-                else { return }
+                guard let id = walletId else { return }
                 
                 self?.walletID = id
             }
@@ -132,7 +129,7 @@ class NWCWalletManager {
         Task {
             let res = try await ConnectNwcUseCase(walletRepository: walletRepo, walletAccountRepository: walletAccountRepo).invoke(userId: pubkey, nwcUrl: url, autoSetAsDefaultWallet: true)
             
-            print("WALLET SUCCES \(res)")
+            _ = res
             
             guard let walletID = try await walletAccountRepo.getActiveWallet(userId: pubkey)?.walletId else { return }
             
@@ -186,26 +183,32 @@ extension NWCWalletManager: WalletImplementation {
         }
     }
     
-    func sendLNInvoice(_ lninvoice: String, satsOverride: Int?, messageOverride: String?) async throws {
+    @discardableResult
+    func sendLNInvoice(_ lninvoice: String, satsOverride: Int?, messageOverride: String?) async throws -> PaymentResult? {
         guard let walletID else { throw WalletError.noWallet }
         let res = try await walletRepo.pay(walletId: walletID, request: .LightningLnInvoice(amountSats: String(satsOverride ?? 0), noteRecipient: messageOverride, noteSelf: messageOverride, lnInvoice: lninvoice))
-        print(res)
+        // NWC pay responses may include preimage in the result
+        if let payResult = res as? [String: Any] {
+            return PaymentResult(
+                preimage: payResult["preimage"] as? String,
+                paymentHash: payResult["payment_hash"] as? String,
+                status: "success",
+                transactionId: nil
+            )
+        }
+        return nil
     }
     
     func sendLNURL(lnurl: String, pubkey: String?, sats: Int, note: String) async throws {
         guard let walletID else { throw WalletError.noWallet }
-        let res = try await walletRepo.pay(walletId: walletID, request: .LightningLnUrl(amountSats: String(sats), noteRecipient: note, noteSelf: note, lnUrl: lnurl, lud16: nil))
-        print(res)
-        // TODO: Ask alex about
-        // lud16: nil
+        _ = try await walletRepo.pay(walletId: walletID, request: .LightningLnUrl(amountSats: String(sats), noteRecipient: note, noteSelf: note, lnUrl: lnurl, lud16: nil))
     }
     
     func sendLud16(_ lud: String, sats: Int, note: String, pubkey: String?, zap: NostrObject?) async throws {
         guard let walletID else { throw WalletError.noWallet }
         guard let decoded = lud.lud16ToDecodedLNURL else { throw WalletError.noLud }
         
-        let res = try await walletRepo.pay(walletId: walletID, request: .LightningLnUrl(amountSats: String(sats), noteRecipient: note, noteSelf: note, lnUrl: decoded, lud16: lud))
-        print(res)
+        _ = try await walletRepo.pay(walletId: walletID, request: .LightningLnUrl(amountSats: String(sats), noteRecipient: note, noteSelf: note, lnUrl: decoded, lud16: lud))
 //        try await sendInvoice(lud, satsOverride: sats, messageOverride: note)
     }
     

@@ -202,7 +202,15 @@ private extension FeedManager {
             
             DispatchQueue.global(qos: .background).async {
                 var sorted = result.process(contentStyle: contentStyle)
-                
+
+                // Filter out muted users, muted threads, and muted words
+                sorted = sorted.filter { post in
+                    let pubkey = post.user.data.pubkey
+                    if MuteManager.instance.isMutedUser(pubkey) { return false }
+                    if let repostedPubkey = post.reposted?.user?.data.pubkey, MuteManager.instance.isMutedUser(repostedPubkey) { return false }
+                    return true
+                }
+
                 if (!isOldEmpty || !sorted.isEmpty) && oldLastId == sorted.first?.post.id {
                     sorted.removeFirst()
                 }
@@ -325,7 +333,9 @@ private extension FeedManager {
         var sorted = sorted.filter { post in
             !post.post.id.isEmpty &&
             !parsedPosts.contains(where: { $0.post.id == post.post.id }) &&
-            !newPostObjects.contains(where: { $0.post.id == post.post.id })
+            !newPostObjects.contains(where: { $0.post.id == post.post.id }) &&
+            !MuteManager.instance.isMutedUser(post.user.data.pubkey) &&
+            !((post.reposted?.user?.data.pubkey).map(MuteManager.instance.isMutedUser) ?? false)
         }
         
         let repostsGrouping = Dictionary(grouping: sorted.filter { $0.reposted != nil }, by: { $0.post.id })

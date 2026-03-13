@@ -132,7 +132,8 @@ class PrimalWalletManager {
             .store(in: &cancellables)
     }
     
-    private func requestAsync(_ request: PrimalWalletRequest.RequestType) async throws {
+    @discardableResult
+    private func requestAsync(_ request: PrimalWalletRequest.RequestType) async throws -> WalletRequestResult {
         return try await withCheckedThrowingContinuation({ continuation in
             PrimalWalletRequest(type: request).publisher()
                 .receive(on: DispatchQueue.main)
@@ -140,15 +141,17 @@ class PrimalWalletManager {
                     if let errorMessage = res.message {
                         continuation.resume(throwing: WalletError.serverError(errorMessage))
                     } else {
-                        continuation.resume()
+                        continuation.resume(returning: res)
                     }
                 }
                 .store(in: &cancellables)
         })
     }
     
-    func sendLNInvoice(_ lninvoice: String, satsOverride: Int?, messageOverride: String?) async throws {
-        try await requestAsync(.payInvoice(lnInvoice: lninvoice, amountOverride: satsOverride?.satsToBitcoinString(), noteOverride: messageOverride))
+    @discardableResult
+    func sendLNInvoice(_ lninvoice: String, satsOverride: Int?, messageOverride: String?) async throws -> PaymentResult? {
+        let result = try await requestAsync(.payInvoice(lnInvoice: lninvoice, amountOverride: satsOverride?.satsToBitcoinString(), noteOverride: messageOverride))
+        return result.paymentResult
     }
     
     func sendLNURL(lnurl: String, pubkey: String?, sats: Int, note: String) async throws {
@@ -166,7 +169,8 @@ class PrimalWalletManager {
             
             if lud06.isEmpty { throw WalletError.noLud }
             
-            return try await requestAsync(.send(.lud06, target: lud06, pubkey: user.pubkey, amount: sats.satsToBitcoinString(), note: note, zap: zap))
+            try await requestAsync(.send(.lud06, target: lud06, pubkey: user.pubkey, amount: sats.satsToBitcoinString(), note: note, zap: zap))
+            return
         }
             
         try await sendLud16(lud16, sats: sats, note: note, pubkey: user.pubkey, zap: zap)

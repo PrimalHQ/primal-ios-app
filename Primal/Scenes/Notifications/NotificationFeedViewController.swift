@@ -376,10 +376,7 @@ extension PostRequestResult {
                     
                     notificationPost?.text = highlight.content
                     notificationPost?.highlights = [.init(position: 0, length: highlight.content.count, text: highlight.content, reference: highlight.id)]
-                    notificationPost?.article = processor.articles.first(where: { article in
-                        print(highlight)
-                        return true
-                    })
+                    notificationPost?.article = processor.articles.first
                 } else {
                     let split = postId.split(separator: ":")
 

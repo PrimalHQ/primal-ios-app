@@ -20,8 +20,8 @@ extension WalletSearchController {
     func search(_ text: String) {
         guard textSearch == nil else { return }
         
-        var text = text
-        
+        var text = text.trimmingCharacters(in: .whitespacesAndNewlines)
+
         if text.hasPrefix("nostr:") {
             text = text.replacingOccurrences(of: "nostr:", with: "")
         } else if text.hasPrefix("bitcoin:") {

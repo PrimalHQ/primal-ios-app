@@ -132,6 +132,12 @@ extension WalletReceiveViewController: WalletReceiveDetailsControllerDelegate {
 
 private extension WalletReceiveViewController {
     func requestInfo() {
+        // When using NWC wallet, show the NWC wallet's lightning address instead of the old Primal address
+        if let nwc = WalletManager.instance.nwc, let nwcAddress = nwc.address {
+            depositInfo = DepositInfo(lnurl: nwcAddress, lud16: nwcAddress)
+            return
+        }
+
         let network = activeButton == lightningButton ? WalletTransactionNetwork.lightning : .onchain
         PrimalWalletRequest(type: .deposit(network, additionalInfo)).publisher().receive(on: DispatchQueue.main).sink { [weak self] res in
             if let data = res.depositInfo {

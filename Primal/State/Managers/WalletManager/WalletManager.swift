@@ -50,7 +50,7 @@ extension UserDefaults {
             let double = double(forKey: .btcExchangeRateKey)
             
             if double < 1 {
-                return 90000
+                return 100000 // Fallback to a reasonable default until exchange rate is fetched
             }
             
             return double
@@ -132,7 +132,8 @@ protocol WalletImplementation {
     var userHasWalletPublisher: AnyPublisher<Bool?, Never> { get }
     var isLoadingWalletPublisher: AnyPublisher<Bool, Never> { get }
     
-    func sendLNInvoice(_ lninvoice: String, satsOverride: Int?, messageOverride: String?) async throws
+    @discardableResult
+    func sendLNInvoice(_ lninvoice: String, satsOverride: Int?, messageOverride: String?) async throws -> PaymentResult?
     func sendLNURL(lnurl: String, pubkey: String?, sats: Int, note: String) async throws
     func sendLud16(_ lud: String, sats: Int, note: String, pubkey: String?, zap: NostrObject?) async throws
     func send(user: PrimalUser, sats: Int, note: String, zap: NostrObject?) async throws
@@ -249,14 +250,13 @@ final class WalletManager {
     }
     
     func refresh() {
-        // TODO: resolve refresh
         impl.refreshBalance()
         primal?.refreshTransactions()
+        nwc?.refreshBalance()
     }
-    
+
     func recheck() {
-        // TODO: resolve recheck
-        primal?.refreshBalance()
+        impl.refreshBalance()
         primal?.recheckTransactions()
     }
     
@@ -288,10 +288,7 @@ final class WalletManager {
             .sink { [weak self] res in
                 guard
                     let state: PremiumState = res.events.first(where: { Int($0["kind"]?.doubleValue ?? 0) == NostrKind.premiumState.rawValue })?["content"]?.stringValue?.decode()
-                else {
-                    print("FAILED")
-                    return
-                }
+                else { return }
                 
                 self?.premiumState = state
             }
@@ -309,7 +306,8 @@ final class WalletManager {
             .store(in: &cancellables)
     }
     
-    func sendLNInvoice(_ lninvoice: String, satsOverride: Int?, messageOverride: String?) async throws {
+    @discardableResult
+    func sendLNInvoice(_ lninvoice: String, satsOverride: Int?, messageOverride: String?) async throws -> PaymentResult? {
         try await impl.sendLNInvoice(lninvoice, satsOverride: satsOverride, messageOverride: messageOverride)
     }
     
@@ -380,24 +378,25 @@ private extension WalletManager {
 }
 
 class DummyWalletImplementation: WalletImplementation {
-    
+
     var balance: Int = 0
-    
+
     var userHasWallet: Bool? = false
-    
+
     var maxBalance: Int = 0
-    
+
     var transactions: [WalletTransaction] = []
-    
+
     var balancePublisher: AnyPublisher<Int, Never> { Just(0).eraseToAnyPublisher() }
-    
+
     var userHasWalletPublisher: AnyPublisher<Bool?, Never> { Just(false).eraseToAnyPublisher() }
-    
+
     var isLoadingWalletPublisher: AnyPublisher<Bool, Never> { Just(false).eraseToAnyPublisher() }
-    
+
     var transactionsPublisher: AnyPublisher<[WalletTransaction], Never> { Just([]).eraseToAnyPublisher() }
-    
-    func sendLNInvoice(_ lninvoice: String, satsOverride: Int?, messageOverride: String?) async throws {
+
+    @discardableResult
+    func sendLNInvoice(_ lninvoice: String, satsOverride: Int?, messageOverride: String?) async throws -> PaymentResult? {
         throw WalletError.noWallet
     }
     

@@ -7,7 +7,6 @@
 
 import Combine
 import UIKit
-import Combine
 import Kingfisher
 import AVKit
 
@@ -366,13 +365,12 @@ extension WalletHomeViewController: AnimatableFirstViewController {
 
 private extension RootViewController {
     func animateFromIntro() {
-        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) {
-            if self.introVC != nil {
-                print("ERROR")
-                self.introVC!.willMove(toParent: nil)
-                self.introVC!.view.removeFromSuperview()
-                self.introVC!.removeFromParent()
-            }
+        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) { [weak self] in
+            guard let self, let intro = self.introVC else { return }
+            intro.willMove(toParent: nil)
+            intro.view.removeFromSuperview()
+            intro.removeFromParent()
+            self.introVC = nil
         }
         
         guard !didAnimate, let introVC else { return }

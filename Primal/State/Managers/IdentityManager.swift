@@ -162,14 +162,16 @@ final class IdentityManager {
         }
         
         Connection.regular.request(request) { res in
+            var didParseSettings = false
             for response in res {
                 let kind = NostrKind.fromGenericJSON(response)
-                
+
                 switch kind {
                 case .settings:
                     fallthrough
                 case .defaultSettings:
-                    guard var settings = PrimalSettings(json: response) else { return }
+                    guard var settings = PrimalSettings(json: response) else { continue }
+                    didParseSettings = true
                     // There were breaking changes to how settings work over the time
                     // So if someone somehow has broken settings request, merge and replace what's broken with default values seamlessly
                     if settings.content.isBorked() {
@@ -182,9 +184,17 @@ final class IdentityManager {
                         self.userSettings = settings.content
                     }
                 default:
-                        print("IdentityManager: requestUserSettings: Got unexpected event kind in response: \(String(describing: kind))")
+                    break
                 }
             }
+
+            // If no settings could be parsed, fall back to defaults so UI is never empty
+            if !didParseSettings && self.userSettings == nil {
+                self.requestDefaultSettings { defaultSettings in
+                    self.userSettings = defaultSettings
+                }
+            }
+
             self.didFinishInit = true
         }
     }

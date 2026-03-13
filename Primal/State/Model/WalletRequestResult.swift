@@ -7,6 +7,14 @@
 
 import Foundation
 
+/// Result of a Lightning payment, including the preimage needed for L402 authentication.
+struct PaymentResult {
+    let preimage: String?
+    let paymentHash: String?
+    let status: String?
+    let transactionId: String?
+}
+
 class WalletRequestResult {
     var kycLevel: KYCLevel?
     var balance: WalletBalance?
@@ -31,6 +39,7 @@ class WalletRequestResult {
     
     var newNWC: PrimalWalletNewNWCResponse?
     var nwcs: [PrimalWalletNWCConnection] = []
+    var paymentResult: PaymentResult?
 }
 
 enum WalletResponseType: Int {
