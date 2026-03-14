@@ -203,7 +203,7 @@ private extension FeedManager {
             DispatchQueue.global(qos: .background).async {
                 var sorted = result.process(contentStyle: contentStyle)
 
-                // Filter out muted users, muted threads, and muted words
+                // Filter out muted users and their reposts
                 sorted = sorted.filter { post in
                     let pubkey = post.user.data.pubkey
                     if MuteManager.instance.isMutedUser(pubkey) { return false }

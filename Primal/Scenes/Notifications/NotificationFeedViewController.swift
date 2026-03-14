@@ -376,7 +376,19 @@ extension PostRequestResult {
                     
                     notificationPost?.text = highlight.content
                     notificationPost?.highlights = [.init(position: 0, length: highlight.content.count, text: highlight.content, reference: highlight.id)]
-                    notificationPost?.article = processor.articles.first
+                    if let aTag = highlight.tags.first(where: { $0.first == "a" })?[safe: 1] {
+                        let parts = aTag.split(separator: ":")
+                        if parts.count >= 3 {
+                            let pubkey = String(parts[1])
+                            let identifier = String(parts[2])
+                            notificationPost?.article = processor.articles.first(where: {
+                                $0.event.pubkey == pubkey && $0.identifier == identifier
+                            })
+                        }
+                    }
+                    if notificationPost?.article == nil {
+                        notificationPost?.article = processor.articles.first
+                    }
                 } else {
                     let split = postId.split(separator: ":")
 

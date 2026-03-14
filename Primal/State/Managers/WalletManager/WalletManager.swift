@@ -308,7 +308,7 @@ final class WalletManager {
     
     @discardableResult
     func sendLNInvoice(_ lninvoice: String, satsOverride: Int?, messageOverride: String?) async throws -> PaymentResult? {
-        try await impl.sendLNInvoice(lninvoice, satsOverride: satsOverride, messageOverride: messageOverride)
+        return try await impl.sendLNInvoice(lninvoice, satsOverride: satsOverride, messageOverride: messageOverride)
     }
     
     func sendLNURL(lnurl: String, pubkey: String?, sats: Int, note: String) async throws {

@@ -132,9 +132,10 @@ extension WalletReceiveViewController: WalletReceiveDetailsControllerDelegate {
 
 private extension WalletReceiveViewController {
     func requestInfo() {
-        // When using NWC wallet, show the NWC wallet's lightning address instead of the old Primal address
+        // When using NWC wallet, show the NWC wallet's lightning address for display
         if let nwc = WalletManager.instance.nwc, let nwcAddress = nwc.address {
-            depositInfo = DepositInfo(lnurl: nwcAddress, lud16: nwcAddress)
+            let lnurl = nwcAddress.lud16ToDecodedLNURL ?? nwcAddress
+            depositInfo = DepositInfo(lnurl: lnurl, lud16: nwcAddress)
             return
         }
 
