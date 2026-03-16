@@ -16,6 +16,7 @@
 		67660C24AE98ABAD92103321 /* PollVotesDatasource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661FE298A909D88F0B34B14F /* PollVotesDatasource.swift */; };
 		833EA0C20D72C751D9F90AF4 /* RemoteSignerSignInViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1A609C097C4C1C66B1ED84C /* RemoteSignerSignInViews.swift */; };
 		83A815477F4C2E72C62D6EBD /* PollVotesFeedManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A23B4E5D450372ED459567FF /* PollVotesFeedManager.swift */; };
+		7166BBD72F679D4A00CC17BF /* DirectMessageListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7166BBD62F679D4A00CC17BF /* DirectMessageListener.swift */; };
 		930497A329FAD69B003938F2 /* Mentions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 930497A229FAD69B003938F2 /* Mentions.swift */; };
 		930497A929FAD7C3003938F2 /* NostrResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 930497A829FAD7C3003938F2 /* NostrResponse.swift */; };
 		9309B4FC2A5D957B0088C1E8 /* CryptoHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9309B4FB2A5D957B0088C1E8 /* CryptoHelpers.swift */; };
@@ -825,6 +826,7 @@
 		32167054FC4146F3845A370A /* ThreadElementPollCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadElementPollCell.swift; sourceTree = "<group>"; };
 		661FE298A909D88F0B34B14F /* PollVotesDatasource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollVotesDatasource.swift; sourceTree = "<group>"; };
 		731729354B231F6AE303270F /* PollVoteTitleCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollVoteTitleCell.swift; sourceTree = "<group>"; };
+		7166BBD62F679D4A00CC17BF /* DirectMessageListener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectMessageListener.swift; sourceTree = "<group>"; };
 		930497A229FAD69B003938F2 /* Mentions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mentions.swift; sourceTree = "<group>"; };
 		930497A829FAD7C3003938F2 /* NostrResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NostrResponse.swift; sourceTree = "<group>"; };
 		9309B4FB2A5D957B0088C1E8 /* CryptoHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CryptoHelpers.swift; sourceTree = "<group>"; };
@@ -2296,6 +2298,7 @@
 		9E83DF752A573F1C00F2C379 /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
+				7166BBD62F679D4A00CC17BF /* DirectMessageListener.swift */,
 				9E83DF762A573F2E00F2C379 /* ImagePickerManager.swift */,
 				B94F2BEC2AE6C7BA0041181B /* BindableTapGestureRecognizer.swift */,
 			);
@@ -4249,6 +4252,7 @@
 				B918A3612EA0FA560003683D /* LiveChatDatasource.swift in Sources */,
 				9E9D46FA2A0A7F9B00D4837B /* GradientView.swift in Sources */,
 				B9B9E5742CB57DCD0065DD7C /* ZapFeedManager.swift in Sources */,
+				7166BBD72F679D4A00CC17BF /* DirectMessageListener.swift in Sources */,
 				B98B78772EC2176A006134F9 /* CloudLoginButton.swift in Sources */,
 				B99E038F2C05756F006CCECB /* ArticleCell.swift in Sources */,
 				B9B290532B45C77E0069C87F /* NumberKeyboardView.swift in Sources */,

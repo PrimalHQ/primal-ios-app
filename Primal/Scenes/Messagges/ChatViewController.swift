@@ -74,10 +74,12 @@ final class ChatViewController: UIViewController, Themeable, WalletSearchControl
     var shouldNotifyReadStatus = true
     
     let user: ParsedUser
-    
+	private let dmListener: DirectMessageListener
+
     init(user: ParsedUser, chatManager: ChatManager) {
         self.user = user
         self.chatManager = chatManager
+        self.dmListener = DirectMessageListener(chatPartnerPubkey: user.data.pubkey)
         super.init(nibName: nil, bundle: nil)
         setup()
         
@@ -92,6 +94,8 @@ final class ChatViewController: UIViewController, Themeable, WalletSearchControl
         }
         
         addPublishers()
+
+        dmListener.connect()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -408,16 +412,15 @@ private extension ChatViewController {
             self.isLoadingFuture = true
             self.chatManager.getChatMessages(pubkey: self.user.data.pubkey, since: self.messages.dropLast(5).last?.date.timeIntervalSince1970 ?? 0) { [weak self] newMessages in
                 guard let self else { return }
-                
-                let newMessages = newMessages.filter { nm in !self.messages.contains(where: { $0.id == nm.id })}
-                
-                if !newMessages.isEmpty {
-                    self.messages = self.messages + newMessages
-                    self.shouldNotifyReadStatus = true
-                }
-                
+                self.appendNewMessages(newMessages)
                 self.isLoadingFuture = false
             }
+        }
+        .store(in: &cancellables)
+
+        dmListener.newMessages.receive(on: DispatchQueue.main).sink { [weak self] newMessages in
+            guard let self else { return }
+            self.appendNewMessages(newMessages)
         }
         .store(in: &cancellables)
     }
@@ -467,6 +470,20 @@ private extension ChatViewController {
         }
     }
     
+    private func appendNewMessages(_ newMessages: [ProcessedMessage]) {
+        let filtered = newMessages.filter { nm in
+            !messages.contains(where: {
+                $0.id == nm.id ||
+                ($0.message.text == nm.message.text && $0.user.data.pubkey == nm.user.data.pubkey && abs($0.date.timeIntervalSince(nm.date)) < 60)
+            })
+        }
+
+        if !filtered.isEmpty {
+            messages = messages + filtered
+            shouldNotifyReadStatus = true
+        }
+    }
+
     func notifyReadStatus() {
         guard shouldNotifyReadStatus else { return }
         shouldNotifyReadStatus = false
