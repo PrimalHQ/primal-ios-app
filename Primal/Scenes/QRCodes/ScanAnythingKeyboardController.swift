@@ -107,8 +107,9 @@ class ScanAnythingKeyboardController: UIViewController, WalletSearchController {
         input.addAction(.init(handler: { [weak self] _ in
             guard let self else { return }
             
-            let isEmpty = input.text?.isEmpty == true
-            
+            let trimmed = input.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+            let isEmpty = trimmed.isEmpty
+
             placeholderLabel.isHidden = true
             acceptButton.isEnabled = !isEmpty
             acceptButton.configuration = .pill(
@@ -117,8 +118,8 @@ class ScanAnythingKeyboardController: UIViewController, WalletSearchController {
                 backgroundColor: isEmpty ? .background3 : .accent,
                 font: .appFont(withSize: 16, weight: .semibold)
             )
-            
-            guard let url = URL(string: input.text ?? ""), DeeplinkCoordinator.shared.canHandleURL(url) else {
+
+            guard let url = URL(string: trimmed), DeeplinkCoordinator.shared.canHandleURL(url) else {
                 check.isHidden = true
                 inputParent.layer.borderWidth = 0
                 return
@@ -156,7 +157,7 @@ class ScanAnythingKeyboardController: UIViewController, WalletSearchController {
     }
     
     func doSearch() {
-        guard let text = input.text, !text.isEmpty else { return }
+        guard let text = input.text?.trimmingCharacters(in: .whitespacesAndNewlines), !text.isEmpty else { return }
         
         // Try to parse as URL using deeplink handlers first
         if let url = URL(string: text), DeeplinkCoordinator.shared.canHandleURL(url) {
@@ -177,7 +178,7 @@ extension ScanAnythingKeyboardController: UITextFieldDelegate {
     }
     
     func textFieldDidEndEditing(_ textField: UITextField) {
-        placeholderLabel.isHidden = !(textField.text?.isEmpty ?? true)
+        placeholderLabel.isHidden = !(textField.text?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ?? true)
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
