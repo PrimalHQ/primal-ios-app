@@ -1,0 +1,53 @@
+# SwiftLint Configuration for Primal iOS App
+# All rules produce warnings only — the build never fails from lint.
+
+excluded:
+  - NostrTools
+  - Primal/Supporting Files
+  - PrimalTests
+  - PrimalUITests
+  - RemoteSignerWidget      # Widget extension legitimately uses SwiftUI
+
+# Disabled rules — too noisy to enable today, re-enable as code gets cleaned up
+disabled_rules:
+  - line_length          # 386 lines exceed 160 chars
+  - force_cast           # KMP/ObjC bridging requires force casts
+  - identifier_name      # Idiomatic short names in closures ($0, ev, f)
+  - type_body_length
+  - file_length
+  - function_body_length
+  - cyclomatic_complexity
+  - nesting
+  - large_tuple
+  - todo
+  - trailing_whitespace  # 13k violations — bulk-fix later with `swiftlint --fix`
+
+# All built-in rules that remain enabled produce warnings, never errors
+warning_threshold: 999999
+
+# Custom rules — project-specific "taste invariants"
+custom_rules:
+  singleton_shared_not_instance:
+    name: "Singleton Access Pattern"
+    regex: '(?:static\s+let\s+shared\b)'
+    message: "Use `static let instance` instead of `static let shared`. Primal convention is `.instance` for all singletons. See CLAUDE.md Golden Principle #3."
+    severity: warning
+
+  no_print_statements:
+    name: "No Print Statements"
+    regex: '(?<!\w)print\s*\('
+    message: "Remove `print()` — use structured logging or remove debug output before committing."
+    severity: warning
+
+  no_swiftui_views:
+    name: "No SwiftUI Views"
+    regex: ':\s*(?:some\s+)?View\s*\{'
+    excluded: '.*\.swiftlint\.yml'
+    message: "SwiftUI is not used in this project. All UI must be programmatic UIKit. See CLAUDE.md Golden Principle #4."
+    severity: warning
+
+  no_notification_center_for_state:
+    name: "Prefer Combine Over NotificationCenter"
+    regex: 'NotificationCenter\.default\.(addObserver|post)\b'
+    message: "Use Combine publishers (`@Published` + `.sink`) instead of NotificationCenter for app state. See CLAUDE.md Golden Principle #2."
+    severity: warning
