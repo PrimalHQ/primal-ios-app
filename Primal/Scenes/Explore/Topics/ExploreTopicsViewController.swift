@@ -124,7 +124,7 @@ extension ExploreTopicsViewController: UICollectionViewDataSource, UICollectionV
         
         let text = hashtags[indexPath.item].title as NSString
         
-        let textWidth = text.size(withAttributes: [.font : UIFont.appFont(withSize: 18, weight: .medium)]).width
+        let textWidth = text.size(withAttributes: [.font: UIFont.appFont(withSize: 18, weight: .medium)]).width
         
         return .init(width: textWidth + 41, height: 36)
     }

@@ -55,7 +55,7 @@ final class AvatarView: UIView {
             view.kf.setImage(with: url, placeholder: UIImage.profile, options: [
                 .processor(DownsamplingImageProcessor(size: CGSize(width: size, height: size))),
                 .scaleFactor(UIScreen.main.scale),
-                .cacheOriginalImage,
+                .cacheOriginalImage
             ])
         }
         

@@ -23,7 +23,7 @@ class ArticleFeedManager: BaseFeedManager {
         super.init(request: FeedManagerRequest(name: "multi_kind_mega_feed_directive", body: [
             "spec": .string(feed.spec),
             "kinds": PrimalFeedType.article.kindsJSON,
-            "user_pubkey": .string(IdentityManager.instance.userHexPubkey),
+            "user_pubkey": .string(IdentityManager.instance.userHexPubkey)
         ]))
 
         baseDelegate = self

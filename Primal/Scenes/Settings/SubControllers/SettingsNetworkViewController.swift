@@ -136,7 +136,7 @@ private extension SettingsNetworkViewController {
         enhancedPrivacy = NetworkSettings.enhancedPrivacy
         
         Publishers.CombineLatest($enhancedPrivacy, IdentityManager.instance.$userRelays)
-            .receive(on: DispatchQueue.main).sink { [weak self] enhancedPrivacy, relays in
+            .receive(on: DispatchQueue.main).sink { [weak self] _, relays in
                 guard let self else { return }
                 
                 self.relayStack.subviews.forEach { $0.removeFromSuperview() }
@@ -220,7 +220,7 @@ private extension SettingsNetworkViewController {
             restoreRelaysButton, SpacerView(height: 24),
             SettingsBorder(), SpacerView(height: 24),
             enhancedPrivacySwitch, SpacerView(height: 10),
-            descLabel("When enabled, your IP address will be visible to the caching service, but not to relays. Your content will be published to your specified relays using the caching service as a proxy."), SpacerView(height: 24),
+            descLabel("When enabled, your IP address will be visible to the caching service, but not to relays. Your content will be published to your specified relays using the caching service as a proxy."), SpacerView(height: 24)
         ])
         
         let scroll = UIScrollView()

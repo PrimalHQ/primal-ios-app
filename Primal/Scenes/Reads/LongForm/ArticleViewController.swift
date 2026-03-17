@@ -93,10 +93,6 @@ class ArticleViewController: UIViewController, Themeable, AnimatedChromeControll
         navigationController?.setNavigationBarHidden(false, animated: true)
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-    }
-    
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
@@ -143,7 +139,7 @@ private extension ArticleViewController {
     }
     
     func reloadHighlights(_ callback: (([Highlight], [String: [ParsedContent]]) -> Void)? = nil) {
-        //get_highlights(pubkey, identifier, user_pubkey=nothing)
+        // get_highlights(pubkey, identifier, user_pubkey=nothing)
         SocketRequest(name: "get_highlights", payload: [
             "pubkey": .string(content.event.pubkey),
             "identifier": .string(content.identifier),
@@ -380,18 +376,17 @@ private extension ArticleViewController {
             case .image(let url):
                 let imageView = ArticleImageView(url: url, delegate: self)
                 contentStack.addArrangedSubview(imageView)
-            case .post(let post):
+                case .post(let post):
                 let embedded = ArticleEmbeddedPostController(content: post, allowAdvancedInteraction: true)
-                
+
                 let embeddedParent = UIView()
                 embeddedParent.addSubview(embedded.view)
                 embedded.view.pinToSuperview(edges: .horizontal, padding: 20).pinToSuperview(edges: .vertical, padding: 5)
-                
+
                 embeddedPostControllers.append(embedded)
                 addChild(embedded)
                 contentStack.addArrangedSubview(embeddedParent)
                 embedded.didMove(toParent: self)
-                break
             case .text(let text):
                 let webView = ArticleWebViewCache.getWebView()
                 webViews.append(webView)
@@ -564,7 +559,7 @@ enum ArticleMenuAction {
 
 extension ArticleViewController: HighlightViewControllerDelegate {
     func highlightControllerDidAddComment(_ controller: HighlightViewController) {
-        reloadHighlights() { [weak controller] highlights, comments in
+        reloadHighlights { [weak controller] highlights, comments in
             guard let controller else { return }
             controller.highlights = highlights.filter { $0.content == controller.content }
             controller.comments = comments[controller.content] ?? []

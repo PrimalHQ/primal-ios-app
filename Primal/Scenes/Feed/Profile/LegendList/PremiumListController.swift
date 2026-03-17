@@ -29,7 +29,7 @@ class PremiumListController: PrimalPageController {
         
         super.init(
             tabs: [
-                ("LATEST", { PremiumListTableController() }),
+                ("LATEST", { PremiumListTableController() })
             ],
             extraViews: [aboutParent]
         )
@@ -53,7 +53,6 @@ class PremiumListController: PrimalPageController {
         navigationItem.leftBarButtonItem = customBackButton
     }
 }
-
 
 class PremiumListTableController: UITableViewController, Themeable {
     var legends: [PremiumListItem] = [] { didSet { tableView.reloadData() } }
@@ -122,7 +121,6 @@ class PremiumListTableController: UITableViewController, Themeable {
         tableView.reloadData()
     }
 }
-
 
 class PremiumListTableViewCell: UITableViewCell, Themeable {
     let userImage = UserImageView(height: 36)
@@ -198,4 +196,3 @@ class PremiumListTableViewCell: UITableViewCell, Themeable {
         borderView.backgroundColor = .background3
     }
 }
-

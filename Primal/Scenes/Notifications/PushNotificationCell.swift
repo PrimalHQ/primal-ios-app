@@ -73,7 +73,7 @@ class PushNotificationCell: UITableViewCell, Themeable {
         }
         
         enableButton.addAction(.init(handler: { _ in
-            UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { [weak self] granted, error in
+            UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { [weak self] granted, _ in
                 DispatchQueue.main.async {
                     if granted {
                         UIApplication.shared.registerForRemoteNotifications()

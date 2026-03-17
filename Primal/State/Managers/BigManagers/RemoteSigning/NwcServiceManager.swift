@@ -21,7 +21,6 @@ class NwcServiceManager {
     
     @Published private(set) var autoStartService: Bool = UserDefaults.standard.bool(forKey: .autoStartNWCServiceKey)
     
-    
     var isServiceActive: Bool { !activeServices.isEmpty }
     
     var isServiceActivePublisher: AnyPublisher<Bool, Never> {

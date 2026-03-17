@@ -33,7 +33,7 @@ class PushNotificationsManager {
     func checkDeliveredNotifications() {
         RemoteSignerManager.instance.processMissedEvents()
 
-        UNUserNotificationCenter.current().getDeliveredNotifications  { notifications in
+        UNUserNotificationCenter.current().getDeliveredNotifications { notifications in
             // Background thread
             DispatchQueue.main.async {
                 self.dismissRemoteSignerNotifications(notifications)

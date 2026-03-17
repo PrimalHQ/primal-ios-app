@@ -49,7 +49,6 @@ class WalletSendTransitionAnimator: NSObject, UIViewControllerAnimatedTransition
                 backgroundAnimatingView?.alpha = 0
             }
             
-            
             userController.searchBackground.setAnchorPoint(.init(x: 0, y: 0.5))
             userController.searchBackground.transform = .init(scaleX: 0, y: 1)
             userController.searchInput.alpha = 0

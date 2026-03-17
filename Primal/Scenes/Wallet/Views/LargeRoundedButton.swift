@@ -56,7 +56,6 @@ private extension LargeRoundedButton {
     }
 }
 
-
 final class SimpleRoundedButton: UIButton {
     init(title: String, accent: Bool = false) {
         super.init(frame: .zero)

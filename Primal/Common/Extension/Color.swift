@@ -32,7 +32,7 @@ extension UIColor {
     ) -> UIColor? {
         let gradient = CAGradientLayer()
         gradient.frame = .init(origin: .zero, size: bounds)
-        //order of gradient colors
+        // order of gradient colors
         gradient.colors = colors.map { $0.cgColor }
         
         gradient.startPoint = startPoint

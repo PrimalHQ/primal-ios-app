@@ -27,7 +27,7 @@ final class FollowSectionHeader: UITableViewHeaderFooterView {
     }
     
     func setup() {
-        contentView.backgroundColor = .init(rgb: 0xDDC5DF)//.withAlphaComponent(0.9)
+        contentView.backgroundColor = .init(rgb: 0xDDC5DF)// .withAlphaComponent(0.9)
         backgroundConfiguration = .clear()
         
         let stack = UIStackView(arrangedSubviews: [title, followAll])

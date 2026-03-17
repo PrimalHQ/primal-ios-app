@@ -42,7 +42,6 @@ class AdvancedSearchController: UIViewController {
     }
 }
 
-
 class AdvancedSearchNavigationController: MainNavigationController {
     let manager: AdvancedSearchManager
     

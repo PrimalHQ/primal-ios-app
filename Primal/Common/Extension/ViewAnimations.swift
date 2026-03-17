@@ -45,7 +45,7 @@ extension UILabel {
         }
         otherAnimatingLabel.textAlignment = otherLabel.textAlignment
         otherAnimatingLabel.numberOfLines = otherLabel.numberOfLines
-        otherAnimatingLabel.anchorPoint = .zero //init(x: 0, y: 1)
+        otherAnimatingLabel.anchorPoint = .zero // init(x: 0, y: 1)
         otherAnimatingLabel.frame = otherLabel.bounds
         otherAnimatingLabel.alpha = 0
         otherAnimatingLabel.transform = .init(scaleX: 1 / scale, y: 1 / scale)

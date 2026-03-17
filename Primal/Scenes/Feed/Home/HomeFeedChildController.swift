@@ -9,7 +9,7 @@ import Combine
 import UIKit
 
 class HomeFeedChildController: PostFeedViewController {
-    var onLoad: (() -> ())? { didSet { callOnLoad() } }
+    var onLoad: (() -> Void)? { didSet { callOnLoad() } }
     
     let newPostsViewParent = UIView()
     let newPostsView = NewPostsButton()
@@ -221,7 +221,7 @@ private extension HomeFeedChildController {
         
         Publishers.CombineLatest3($cachedPosts, $isScrolling.removeDuplicates(), $didReachEnd.removeDuplicates())
             .filter({ !$0.isEmpty && (!$1 || $2) })
-            .sink { [weak self] posts, isS, didR in
+            .sink { [weak self] posts, _, _ in
                 self?.cachedPosts = []
                 self?.posts = posts
             }

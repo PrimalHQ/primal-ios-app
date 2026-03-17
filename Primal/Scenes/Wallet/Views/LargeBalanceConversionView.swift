@@ -76,7 +76,7 @@ class LargeBalanceConversionView: UIStackView, Themeable {
     }
     
     var isAnimating = false
-    var onAnimationEnd: (() -> ())?
+    var onAnimationEnd: (() -> Void)?
     
     func setLargeLabel(_ text: String, complexAnimation: Bool) {
         if isAnimating {

@@ -39,7 +39,7 @@ private extension PopupAccountSwitchingController {
         buttonStack.layoutIfNeeded()
         
         if let pc = presentationController as? UISheetPresentationController {
-            pc.detents = [.custom(resolver: { context in
+            pc.detents = [.custom(resolver: { _ in
                 let count = npubs.count
                 
                 return 220 + CGFloat(count) * 60
@@ -137,9 +137,9 @@ private extension PopupAccountSwitchingController {
         scrollView.showsVerticalScrollIndicator = false
         
         let stack = UIStackView(arrangedSubviews: [
-            pullBarParent,      SpacerView(height: 20),
-            titleView,          SpacerView(height: 26),
-            scrollView,         UIView()
+            pullBarParent, SpacerView(height: 20),
+            titleView, SpacerView(height: 26),
+            scrollView, UIView()
         ])
         
         view.addSubview(stack)

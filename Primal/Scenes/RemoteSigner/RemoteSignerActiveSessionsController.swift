@@ -151,7 +151,7 @@ class RemoteSignerActiveSessionsController: UIViewController {
             .store(in: &cancellables)
         
         NSLayoutConstraint.activate([
-            contentStack.widthAnchor.constraint(equalTo: contentParent.widthAnchor, constant: -48),
+            contentStack.widthAnchor.constraint(equalTo: contentParent.widthAnchor, constant: -48)
         ])
         
         $selectedSessions.sink { selected in

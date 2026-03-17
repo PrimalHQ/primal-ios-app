@@ -162,7 +162,7 @@ extension VideoCell: UIContextMenuInteractionDelegate {
                 urlData?.write(toFile: filePath, atomically: true)
                 PHPhotoLibrary.shared().performChanges({
                     PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: URL(fileURLWithPath: filePath))
-                }) { completed, error in
+                }) { completed, _ in
                     if completed {
                         DispatchQueue.main.async {
                             RootViewController.instance.view?.showToast("Saved!", extraPadding: 0)

@@ -229,7 +229,7 @@ private extension AdvancedEmbedPostViewController {
         }), for: .touchUpInside)
         
         clearButton.addAction(.init(handler: { [weak self] _ in
-            if self?.manager.postingText.isEmpty == true  { return }
+            if self?.manager.postingText.isEmpty == true { return }
             
             let alert = UIAlertController(title: "Are you sure?", message: "Clear everything?", preferredStyle: .alert)
             alert.addAction(.init(title: "Cancel", style: .cancel))
@@ -310,7 +310,7 @@ private extension AdvancedEmbedPostViewController {
         manager.$embeddedElements.sink { [weak self] elements in
             guard let self else { return }
             
-            embeddedPreviewStack.arrangedSubviews.forEach{ $0.removeFromSuperview() }
+            embeddedPreviewStack.arrangedSubviews.forEach { $0.removeFromSuperview() }
             
             elements.enumerated().forEach { index, item in
                 let view = item.makeView()

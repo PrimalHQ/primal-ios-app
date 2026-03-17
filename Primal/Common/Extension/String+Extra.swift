@@ -42,7 +42,7 @@ extension URL {
     var isVideoURL: Bool { lastPathComponent.isVideoButNotYoutubePathComponent || absoluteString.isVideoButNotYoutubePathComponent }
 }
 
-extension String : Identifiable {
+extension String: Identifiable {
     public var id: String {
         return UUID().uuidString
     }
@@ -64,7 +64,7 @@ extension String : Identifiable {
     
     var isEmail: Bool {
         let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
-        return NSPredicate(format:"SELF MATCHES %@", emailRegEx).evaluate(with: self)
+        return NSPredicate(format: "SELF MATCHES %@", emailRegEx).evaluate(with: self)
     }
     
     var isValidURLAndIsImage: Bool {
@@ -187,7 +187,7 @@ extension String : Identifiable {
     
     func lud16toLNUrl() -> String? {
         let parts = split(separator: "@")
-        if (parts.count != 2) { return nil }
+        if parts.count != 2 { return nil }
 
         let host = parts[1]
         let lnurlp = parts[0]

@@ -8,8 +8,6 @@
 import Foundation
 
 import Combine
-import Foundation
-
 final class HighlightManager {
     private init() {}
     

@@ -172,7 +172,7 @@ final class PostThreadCell: ThreadCell {
         contentView.addSubview(bottomButtonStack)
         bottomButtonStack
             .centerToView(actionButtonStandin)
-            .pin(to: actionButtonStandin, edges: .horizontal)//, padding: -16)
+            .pin(to: actionButtonStandin, edges: .horizontal)// , padding: -16)
         
         contentView.addSubview(bookmarkButton)
         bookmarkButton

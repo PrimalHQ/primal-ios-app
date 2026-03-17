@@ -75,7 +75,7 @@ class PremiumLegendPayController: UIViewController {
                                 self?.present(WalletTransferSummaryController(.successOld(title: "Success, payment received!", description: "You are now a Primal Legend")), animated: true) {
                                     guard let navigationController = self?.navigationController else { return }
                                     
-                                    guard let rootVC = navigationController.viewControllers.first(where: { $0 as? PremiumViewController != nil }) else {
+                                    guard let rootVC = navigationController.viewControllers.first(where: { $0 is PremiumViewController }) else {
                                         navigationController.popToRootViewController(animated: false)
                                         return
                                     }
@@ -114,7 +114,7 @@ class PremiumLegendPayController: UIViewController {
             UILabel("Pay this on-chain invoice to", color: .foreground3, font: .appFont(withSize: 16, weight: .regular)),
             UILabel("complete your purchase.", color: .foreground3, font: .appFont(withSize: 16, weight: .regular)),
             UILabel("Your legendary status will be", color: .foreground3, font: .appFont(withSize: 16, weight: .regular)),
-            UILabel("active immediately.", color: .foreground3, font: .appFont(withSize: 16, weight: .regular)),
+            UILabel("active immediately.", color: .foreground3, font: .appFont(withSize: 16, weight: .regular))
         ])
         infoStack.alignment = .center
         infoStack.spacing = 4
@@ -143,4 +143,3 @@ class PremiumLegendPayController: UIViewController {
         balanceView.balance = amount
     }
 }
-

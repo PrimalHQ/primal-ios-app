@@ -8,7 +8,7 @@
 import UIKit
 
 /// LIGHT DEFAULT THEME
-//class SunriseWave: AppTheme {
+// class SunriseWave: AppTheme {
 //    static let instance = SunriseWave()
 //    
 //    let kind: Theme = .iceWave //.sunriseWave
@@ -45,4 +45,4 @@ import UIKit
 //    
 //    var shortTitle: String { "sunrise" }
 //    var settingsImage: UIImage? { UIImage(named: "themeImageDark") }
-//}
+// }

@@ -69,7 +69,7 @@ final class PostingTextViewManager: TextViewManager, MetadataCoding {
             let entireRange = NSRange(location: 0, length: string.length)
             
             var tokens: [UserToken] = []
-            string.enumerateAttribute(.link, in: entireRange) { (value, linkRange, stop) in
+            string.enumerateAttribute(.link, in: entireRange) { (value, linkRange, _) in
                 guard let user = value as? PrimalUser else { return }
                 
                 tokens.append(.init(range: linkRange, text: string.attributedSubstring(from: linkRange).string, user: user))
@@ -202,7 +202,7 @@ final class PostingTextViewManager: TextViewManager, MetadataCoding {
         var shouldAllowChange = true
         var performEditActionManually = false
 
-        attributedString.enumerateAttribute(.link, in: entireRange, options: []) { (value, linkRange, stop) in
+        attributedString.enumerateAttribute(.link, in: entireRange, options: []) { (value, linkRange, _) in
             guard value != nil else {
                 return  // This range is not a link. Skip checking.
             }
@@ -211,16 +211,14 @@ final class PostingTextViewManager: TextViewManager, MetadataCoding {
                 // Edit range engulfs all of this link's range.
                 // This link will naturally disappear, so no work needs to be done in this range.
                 return
-            }
-            else if linkRange.intersection(range) != nil {
+            } else if linkRange.intersection(range) != nil {
                 // If user tries to change an existing link directly, remove the link attribute
                 mutable.removeAttribute(.link, range: linkRange)
                 mutable.addAttribute(.foregroundColor, value: UIColor.foreground, range: linkRange)
                 // Perform action manually to flush above changes to the view, and to prevent the character being added from having an attributed link property
                 performEditActionManually = true
                 return
-            }
-            else if range.location == linkRange.location + linkRange.length && range.length == 0 {
+            } else if range.location == linkRange.location + linkRange.length && range.length == 0 {
                 // If we are inserting a character at the right edge of a link, UITextInput tends to include the new character inside the link.
                 // Therefore, we need to manually append that character outside of the link
                 performEditActionManually = true
@@ -507,8 +505,7 @@ private extension PostingTextViewManager {
            let charBeforePosition = textView.position(from: startPosition, offset: -1),
            let charBeforeRange = textView.textRange(from: charBeforePosition, to: startPosition),
            let charBefore = textView.text(in: charBeforeRange),
-           charBefore.first?.isWhitespace == false && charBefore.first != "("
-        {
+           charBefore.first?.isWhitespace == false && charBefore.first != "(" {
             currentlyEditingToken = nil
             return
         }

@@ -64,7 +64,7 @@ final class TemporaryConnection {
     }
     
     func requestCache(_ cacheRequest: JSON, _ handler: @escaping (_ result: [JSON]) -> Void) {
-        request(.object(["cache" : cacheRequest]), handler)
+        request(.object(["cache": cacheRequest]), handler)
     }
     
     func request(_ request: JSON, _ handler: @escaping (_ result: [JSON]) -> Void) {

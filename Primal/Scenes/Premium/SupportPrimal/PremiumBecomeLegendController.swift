@@ -12,9 +12,9 @@ class PremiumBecomeLegendController: UIViewController {
         super.viewDidLoad()
         
         let descStack = UIStackView(axis: .vertical, [
-            UILabel("The Legend tier was created to recognize",color: .foreground, font: .appFont(withSize: 15, weight: .regular)),
-            UILabel("users who have made a significant",color: .foreground, font: .appFont(withSize: 15, weight: .regular)),
-            UILabel("contribution to Primal.",color: .foreground, font: .appFont(withSize: 15, weight: .regular))
+            UILabel("The Legend tier was created to recognize", color: .foreground, font: .appFont(withSize: 15, weight: .regular)),
+            UILabel("users who have made a significant", color: .foreground, font: .appFont(withSize: 15, weight: .regular)),
+            UILabel("contribution to Primal.", color: .foreground, font: .appFont(withSize: 15, weight: .regular))
         ])
         descStack.alignment = .center
         descStack.spacing = 6
@@ -27,7 +27,7 @@ class PremiumBecomeLegendController: UIViewController {
         let infoStack = UIStackView(axis: .vertical, [
             BecomeLegendTitledParagraph(title: "Forever Premium", paragraph: "Primal Premium subscription never expires for legends."),
             privateBetaTitle,
-            legendaryTitle,
+            legendaryTitle
         ])
         infoStack.spacing = 50
         infoStack.isLayoutMarginsRelativeArrangement = true

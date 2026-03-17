@@ -73,7 +73,6 @@ extension SettingsNWCQRScanController: AVCaptureMetadataOutputObjectsDelegate {
     }
 }
 
-
 private extension SettingsNWCQRScanController {
     func setup() {
         addBackground()

@@ -37,7 +37,6 @@ class FeedElementLivePreviewCell: FeedElementBaseCell, RegularFeedElementCell {
     }
 }
 
-
 class LivePreviewView: UIView, Themeable {
     let userImage = UserImageView(height: 40)
     
@@ -85,7 +84,6 @@ class LivePreviewView: UIView, Themeable {
     }
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
-    
     
     func updateTheme() {
         backgroundColor = .background5

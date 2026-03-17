@@ -18,9 +18,9 @@ class AdvancedSearchTimeRangeController: UIViewController {
         }
     }
     
-    let callback: ((Date, Date)) -> (Void)
+    let callback: ((Date, Date)) -> Void
     
-    init(startingValue: (Date, Date), callback: @escaping ((Date, Date)) -> (Void)) {
+    init(startingValue: (Date, Date), callback: @escaping ((Date, Date)) -> Void) {
         self.currentValue = startingValue
         self.callback = callback
         super.init(nibName: nil, bundle: nil)
@@ -60,7 +60,7 @@ class AdvancedSearchTimeRangeController: UIViewController {
         stack.pinToSuperview(edges: .top, safeArea: true).pinToSuperview(edges: .horizontal, padding: 20)
         
         view.addSubview(applyButton)
-        applyButton.pinToSuperview(edges: [.bottom, .horizontal], padding: 20, safeArea: true)//.pinToSuperview(edges: 20, padding: )
+        applyButton.pinToSuperview(edges: [.bottom, .horizontal], padding: 20, safeArea: true)// .pinToSuperview(edges: 20, padding: )
         applyButton.isHidden = true
         applyButton.addAction(.init(handler: { [weak self] _ in
             guard let self else { return }

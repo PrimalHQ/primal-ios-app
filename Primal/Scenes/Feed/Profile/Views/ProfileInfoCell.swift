@@ -94,7 +94,7 @@ class ProfileInfoCell: UITableViewCell {
                 } else {
                     premiumBadge.isHidden = true
                 }
-            } else if (custom.tier == "premium" && Date(timeIntervalSince1970: custom.expires_on ?? 0).timeIntervalSinceNow > 0) {
+            } else if custom.tier == "premium" && Date(timeIntervalSince1970: custom.expires_on ?? 0).timeIntervalSinceNow > 0 {
                 premiumBadge.isHidden = false
                 premiumBadge.theme = nil
             }

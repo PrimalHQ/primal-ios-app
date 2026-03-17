@@ -90,7 +90,7 @@ private extension WalletOnchainTierPickController {
         
         let mainStack = UIStackView(axis: .vertical, [
             miningFeeLabel, SpacerView(height: 36),
-            itemStack,      SpacerView(height: 24),
+            itemStack, SpacerView(height: 24),
             aboutButton
         ])
         

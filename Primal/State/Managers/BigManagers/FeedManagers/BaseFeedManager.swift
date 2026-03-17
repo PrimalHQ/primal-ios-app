@@ -23,7 +23,7 @@ protocol FeedManagerRequestProtocol {
 
 struct FeedManagerRequest: FeedManagerRequestProtocol {
     var name: String
-    var body: [String : GenericJSON.JSON]
+    var body: [String: GenericJSON.JSON]
 }
 
 class BaseFeedManager {

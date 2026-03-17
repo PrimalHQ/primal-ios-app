@@ -40,7 +40,7 @@ extension DeeplinkCoordinator: DeeplinkCoordinatorProtocol {
     }
     
     @discardableResult
-    func handleURL(_ url: URL) -> Bool{
+    func handleURL(_ url: URL) -> Bool {
         guard let handler = handlers.first(where: { $0.canOpenURL(url) }) else {
             return false
         }

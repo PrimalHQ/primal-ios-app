@@ -25,8 +25,8 @@ final class WalletSpinnerViewController: UIViewController {
         view.backgroundColor = Theme.current.isDarkTheme ? .black : .white
         
         let stack = UIStackView(axis: .vertical, [
-            navTitle,   SpacerView(height: 100),
-            spinner,    SpacerView(height: 80),
+            navTitle, SpacerView(height: 100),
+            spinner, SpacerView(height: 80),
             infoLabel, UIView()
         ])
         stack.alignment = .center
@@ -73,7 +73,7 @@ final class WalletSpinnerViewController: UIViewController {
     }
     
     private var didAppear = false
-    var onAppearCallback: () -> () = { } {
+    var onAppearCallback: () -> Void = { } {
         didSet {
             spinner.stopLooping()
             if didAppear {

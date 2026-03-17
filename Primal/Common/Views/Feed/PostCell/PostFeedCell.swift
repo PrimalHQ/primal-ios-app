@@ -148,5 +148,3 @@ private extension PostFeedCell {
         }), for: .touchUpInside)
     }
 }
-
-

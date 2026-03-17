@@ -80,7 +80,7 @@ extension PrimalFeed {
     
     static var lastTimeFeedsFetched: [PrimalFeedType: Date] = [:]
     
-    static func setAllFeeds(_ feeds: [PrimalFeed], type: PrimalFeedType, notifyBackend: Bool = false)  {
+    static func setAllFeeds(_ feeds: [PrimalFeed], type: PrimalFeedType, notifyBackend: Bool = false) {
         let encodedToString = feeds.encodeToString()
         switch type {
         case .article:

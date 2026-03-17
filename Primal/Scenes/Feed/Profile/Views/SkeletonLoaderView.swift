@@ -77,4 +77,3 @@ class SkeletonLoaderView: UIView, Themeable {
 //        animationViews.forEach { $0.updateTheme() }
     }
 }
-

@@ -26,7 +26,7 @@ extension SimpleRequest {
         Future { promise in
             var request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalAndRemoteCacheData)
             
-            URLSession.shared.dataTask(with: request) { data, response, error in
+            URLSession.shared.dataTask(with: request) { _, response, _ in
                 if let statusCode = (response as? HTTPURLResponse)?.statusCode, statusCode == 200 {
                     promise(.success(true))
                 } else {

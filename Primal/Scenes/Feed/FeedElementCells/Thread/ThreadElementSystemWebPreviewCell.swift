@@ -54,7 +54,7 @@ class ThreadElementSystemWebPreviewCell: ThreadElementBaseCell, RegularFeedEleme
         guard let url: URL = URL(string: url) else { return }
         
         metadataProvider = LPMetadataProvider()
-        metadataProvider?.startFetchingMetadata(for: url) { [weak self] (metadata, error) in
+        metadataProvider?.startFetchingMetadata(for: url) { [weak self] (metadata, _) in
             guard let metadata, let self else { return }
             DispatchQueue.main.async {
                 self.linkPresentation.metadata = metadata

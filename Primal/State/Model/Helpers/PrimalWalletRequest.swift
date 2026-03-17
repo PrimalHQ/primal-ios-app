@@ -15,7 +15,7 @@ struct AdditionalDepositInfo {
   var description: String
 }
 
-struct PrimalPaymentTransaction : Encodable {
+struct PrimalPaymentTransaction: Encodable {
   let transactionId: String
   let productId: String
   let date: Date
@@ -228,7 +228,7 @@ private extension WalletRequestResult {
         case .WALLET_TRANSACTIONS:
             transactions = contentString.decode() ?? transactions
         case .WALLET_EXCHANGE_RATE:
-            guard let dic:[String:String] = contentString.decode(), let rateString = dic["rate"], let rate = Double(rateString) else {
+            guard let dic: [String: String] = contentString.decode(), let rateString = dic["rate"], let rate = Double(rateString) else {
                 print("Error decoding: \(kind)")
                 return
             }

@@ -73,7 +73,6 @@ class UsersTableView: UIView {
     
 }
 
-
 extension UsersTableView: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         guard let data = users[safe: indexPath.row] else { return }

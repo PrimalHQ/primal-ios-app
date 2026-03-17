@@ -19,7 +19,6 @@ struct UserRequest: Request {
     var pubkey: String
 }
 
-
 struct UsersRequest: Request {
     typealias ResponseData = [JSON]
     

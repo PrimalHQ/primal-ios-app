@@ -170,7 +170,7 @@ final class PostingManager {
             return
         }
         
-        RelaysPostbox.instance.request(ev) { result in
+        RelaysPostbox.instance.request(ev) { _ in
             callback(true)
         } errorHandler: {
             callback(false)

@@ -23,7 +23,6 @@ extension LargeWalletButton: WalletHomeTransitionButton {
     var imageView: UIImageView? { iconView }
 }
 
-
 final class WalletHomeViewController: UIViewController, Themeable {
     enum Cell {
         case loading
@@ -464,7 +463,6 @@ private extension WalletHomeViewController {
 //            .store(in: &cancellables)
     }
     
-    
     @objc func headerPanned(_ sender: UIPanGestureRecognizer) {
         if case .began = sender.state {
             contentOffsetStart = table.contentOffset
@@ -473,7 +471,6 @@ private extension WalletHomeViewController {
         let translation = sender.translation(in: view).y
         table.contentOffset.y = max(5, contentOffsetStart.y - translation)
     }
-    
     
     func animateCellsAppear(_ count: Int) {
         guard count > 0 else { return }

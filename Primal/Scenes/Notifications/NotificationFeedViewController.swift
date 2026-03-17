@@ -120,7 +120,6 @@ final class NotificationFeedViewController: NoteViewController {
         }), for: .valueChanged)
     }
     
-    
     var lastRefresh = Date.distantPast
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -161,7 +160,7 @@ final class NotificationFeedViewController: NoteViewController {
             "pubkey": idJsonID,
             "limit": .number(20),
             "type_group": .string(tab.apiName),
-            "user_pubkey": idJsonID,
+            "user_pubkey": idJsonID
         ])
         
         Publishers.CombineLatest(
@@ -368,7 +367,7 @@ extension PostRequestResult {
                         parsedUsers.append(post.user)
                     }
                     notificationPost = post
-                } else if let highlight = highlights.first(where: { $0.id == postId }){
+                } else if let highlight = highlights.first(where: { $0.id == postId }) {
                     notificationPost = .init(.init(
                         post: .init(nostrPost: highlight, nostrPostStats: .empty(postId)),
                         user: createParsedUser(users[highlight.pubkey] ?? .init(pubkey: highlight.pubkey))
@@ -376,7 +375,7 @@ extension PostRequestResult {
                     
                     notificationPost?.text = highlight.content
                     notificationPost?.highlights = [.init(position: 0, length: highlight.content.count, text: highlight.content, reference: highlight.id)]
-                    notificationPost?.article = processor.articles.first(where: { article in
+                    notificationPost?.article = processor.articles.first(where: { _ in
                         print(highlight)
                         return true
                     })

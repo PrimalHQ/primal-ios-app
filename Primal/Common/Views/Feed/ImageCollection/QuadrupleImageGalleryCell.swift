@@ -67,7 +67,6 @@ final class QuadrupleImageGalleryCell: UICollectionViewCell, MultipleImageGaller
         fatalError("init(coder:) has not been implemented")
     }
     
-    
     func setup(resources: [MediaMetadata.Resource], thumbnails: [String: String], downsampling: DownsamplingOption, userPubkey: String, delegate: ImageCellDelegate?) {
         
         let size = frame.size
@@ -98,4 +97,3 @@ final class QuadrupleImageGalleryCell: UICollectionViewCell, MultipleImageGaller
         extraLabel.text = "+\(resources.count - 4)"
     }
 }
-

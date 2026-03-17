@@ -40,7 +40,6 @@ extension SettingsController {
     }
 }
 
-
 class SettingsMainViewController: UIViewController, Themeable {
     let versionLabel = UILabel()
     

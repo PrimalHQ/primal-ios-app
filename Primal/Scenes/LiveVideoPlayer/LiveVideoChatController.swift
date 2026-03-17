@@ -24,7 +24,7 @@ extension Connection {
                         callback(event)
                     }
                 }
-                let _ = continuousConnection // This is necessary to suppress a warning
+                _ = continuousConnection // This is necessary to suppress a warning
             }
     }
 }
@@ -69,7 +69,7 @@ class LiveVideoChatController: UIViewController, Themeable {
     lazy var topStack = UIStackView(axis: .vertical, [
         header,
         infoParent,
-        SpacerView(height: 1, color: .background3),
+        SpacerView(height: 1, color: .background3)
     ])
     
     lazy var helperPopup = PopupInfoBubbleView(title: "You can control live stream notifications and chat settings") { [weak self] in
@@ -176,7 +176,7 @@ class LiveVideoChatController: UIViewController, Themeable {
             helperPopup.topAnchor.constraint(equalTo: header.configButton.bottomAnchor),
             helperPopup.triangleView.centerXAnchor.constraint(equalTo: header.configButton.centerXAnchor),
             usersTable.topAnchor.constraint(greaterThanOrEqualTo: commentsTable.topAnchor),
-            input.bottomAnchor.constraint(lessThanOrEqualTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 12),
+            input.bottomAnchor.constraint(lessThanOrEqualTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 12)
         ])
         
         if UserDefaults.standard.bool(forKey: .livePopupShouldHideKey) {
@@ -396,7 +396,7 @@ private extension LiveVideoChatController {
                     acc.append(next).eraseToAnyPublisher()
                 }
                 .collect()
-                .map { $0.reduce(Array<ParsedUser>(), +) }
+                .map { $0.reduce([ParsedUser](), +) }
             
             DispatchQueue.main.async {
                 sequenced
@@ -560,7 +560,7 @@ extension LiveVideoChatController: MetadataCoding {
                 .foregroundColor: isZap ? UIColor.foreground : UIColor.foreground3,
                 .paragraphStyle: paragraph
             ],
-            specialAttributes:  [
+            specialAttributes: [
                 .font: UIFont.appFont(withSize: 15, weight: .regular),
                 .foregroundColor: isZap ? UIColor.foreground : UIColor.foreground3,
                 .underlineStyle: NSUnderlineStyle.single.rawValue,
@@ -603,7 +603,7 @@ extension LiveVideoChatController: MetadataCoding {
 }
 
 extension LiveVideoChatController: LiveChatTextViewManagerDelegate {
-    func newEventSent(_ event: [String : GenericJSON.JSON]) {
+    func newEventSent(_ event: [String: GenericJSON.JSON]) {
         processNewEvent(event)
     }
 }

@@ -24,7 +24,7 @@ enum MediaPickerResultThumbnailSource {
     case remote(URL)
 }
 
-protocol ImagePickerResult {  //TODO: Rename MediaPickerResult
+protocol ImagePickerResult {  // TODO: Rename MediaPickerResult
     var thumbnailSource: MediaPickerResultThumbnailSource? { get }
     func metaTagsWithURL(uploadURL: String) async -> [String]
     func uploadURL() async throws -> URL
@@ -61,7 +61,7 @@ class ImageMediaPickerResult: ImagePickerResult {
             "imeta",
             "url \(uploadURL)",
             "m \(type)",
-            "dim \(image.size.width)x\(image.size.height)",
+            "dim \(image.size.width)x\(image.size.height)"
         ]
     }
     
@@ -149,7 +149,7 @@ final class ImagePickerManager: NSObject {
     var imagePicker = UIImagePickerController()
     
     weak var viewController: UIViewController?
-    let pickImageCallback: (ImagePickerResult) -> ()
+    let pickImageCallback: (ImagePickerResult) -> Void
     
     // Hold a strong reference to self during the picker presentation.
     var strongSelf: ImagePickerManager?
@@ -160,7 +160,7 @@ final class ImagePickerManager: NSObject {
     }
     
     @discardableResult
-    init(_ vc: UIViewController, mode: Mode = .dialog, allowVideo: Bool = false, _ callback: @escaping (ImagePickerResult) -> ()) {
+    init(_ vc: UIViewController, mode: Mode = .dialog, allowVideo: Bool = false, _ callback: @escaping (ImagePickerResult) -> Void) {
         viewController = vc
         pickImageCallback = callback
         super.init()
@@ -239,7 +239,7 @@ extension ImagePickerManager: UIImagePickerControllerDelegate, UINavigationContr
     }
     
     func imagePickerController(_ picker: UIImagePickerController,
-                               didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+                               didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
         picker.dismiss(animated: true, completion: nil)
         strongSelf = nil
         

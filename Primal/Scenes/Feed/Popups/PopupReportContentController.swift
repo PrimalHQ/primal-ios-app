@@ -63,7 +63,7 @@ class PopupReportContentController: UIViewController {
         
         let stack = UIStackView(axis: .vertical, [
             UILabel("Report abuse", color: .foreground, font: .appFont(withSize: 22, weight: .regular)), SpacerView(height: 8),
-            subtitle, SpacerView(height: 8),
+            subtitle, SpacerView(height: 8)
         ] + optionViews + [UIStackView([UIView(), cancelButton, reportButton])])
         
         mainView.addSubview(stack)
@@ -127,7 +127,6 @@ class ReportPickerSelectionView: MyButton {
         let border = SpacerView(height: 1, color: .background3)
         addSubview(border)
         border.pinToSuperview(edges: [.bottom, .horizontal])
-        
         
     }
     

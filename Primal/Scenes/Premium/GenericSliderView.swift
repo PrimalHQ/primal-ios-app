@@ -64,7 +64,7 @@ class GenericSliderView: UIControl {
     }
     
     override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-        if gestureRecognizer.view as? UIScrollView != nil {
+        if gestureRecognizer.view is UIScrollView {
             return true
         }
         return false

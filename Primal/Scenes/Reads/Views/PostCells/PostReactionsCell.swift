@@ -203,7 +203,6 @@ extension PostReactionsCell: ZapGalleryViewDelegate {
     }
 }
 
-
 class SatoshiInfoView: UIView {
     var sats: Int = 0 {
         didSet {
@@ -221,10 +220,10 @@ class SatoshiInfoView: UIView {
         image.transform = .init(translationX: 0, y: -2)
         
         let stack = UIStackView([
-            image,                                                  SpacerView(width: 4),
-            satLabel,                                               SpacerView(width: 6),
-            SpacerView(width: 1, height: 20, color: .foreground6),  SpacerView(width: 6),
-            dollarLabel,                                            UIView()
+            image, SpacerView(width: 4),
+            satLabel, SpacerView(width: 6),
+            SpacerView(width: 1, height: 20, color: .foreground6), SpacerView(width: 6),
+            dollarLabel, UIView()
         ])
         
         addSubview(stack)

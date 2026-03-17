@@ -53,4 +53,3 @@ class AdvancedSearchTimePickerController: AdvancedSearchEnumPickerController<Tim
         }
     }
 }
-

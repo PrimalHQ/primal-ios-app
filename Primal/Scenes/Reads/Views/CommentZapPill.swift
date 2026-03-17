@@ -52,7 +52,6 @@ class CommentZapPill: UIView, Themeable {
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
-    
     func updateTheme() {
         commentButton.configuration = .longFormEventButton(image: UIImage(named: "feedComment"), title: comments.localized())
         zapButton.configuration = .longFormEventButton(image: UIImage(named: "feedZap"), title: sats.localized())

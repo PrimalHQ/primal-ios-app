@@ -560,14 +560,14 @@ extension ChatViewController: ChatMessageCellDelegate {
         else { return nil }
         
         var items: [UIAction] = [
-            UIAction(title: NSLocalizedString("Copy text", comment: ""), image: UIImage(named: "MenuCopyText")) { [weak self] action in
+            UIAction(title: NSLocalizedString("Copy text", comment: ""), image: UIImage(named: "MenuCopyText")) { [weak self] _ in
                 UIPasteboard.general.string = message.message.text
                 self?.showToast("Copied!")
             }
         ]
         
         if !message.id.isEmpty {
-            items.append(UIAction(title: NSLocalizedString("Copy note ID", comment: ""), image: UIImage(named: "MenuCopyText")) { [weak self] action in
+            items.append(UIAction(title: NSLocalizedString("Copy note ID", comment: ""), image: UIImage(named: "MenuCopyText")) { [weak self] _ in
                 UIPasteboard.general.string = message.id
                 self?.showToast("Copied!")
             })
@@ -575,7 +575,7 @@ extension ChatViewController: ChatMessageCellDelegate {
         
         if message.user.data.pubkey != IdentityManager.instance.userHexPubkey {
             items.append(contentsOf: [
-                UIAction(title: NSLocalizedString("Copy user pubkey", comment: ""), image: UIImage(named: "MenuCopyText")) { [weak self] action in
+                UIAction(title: NSLocalizedString("Copy user pubkey", comment: ""), image: UIImage(named: "MenuCopyText")) { [weak self] _ in
                     UIPasteboard.general.string = message.user.data.pubkey
                     self?.showToast("Copied!")
                 },

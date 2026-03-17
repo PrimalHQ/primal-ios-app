@@ -35,7 +35,7 @@ class PremiumManageContentController: UITableViewController {
         ("Notes", NostrKind.text),
         ("Reactions", NostrKind.reaction),
         ("DMs", NostrKind.encryptedDirectMessage),
-        ("Articles", NostrKind.longForm),
+        ("Articles", NostrKind.longForm)
     ]
     
     private var stats: EventBackupStats? { didSet { tableView.reloadData() } }

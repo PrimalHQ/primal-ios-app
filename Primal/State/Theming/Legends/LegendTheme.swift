@@ -98,7 +98,6 @@ extension GradientView {
     }
 }
 
-
 extension UIImage {
     func applyGradientTint(colors: [UIColor], locations: [NSNumber]? = nil, startPoint: CGPoint, endPoint: CGPoint) -> UIImage? {
         let size = size

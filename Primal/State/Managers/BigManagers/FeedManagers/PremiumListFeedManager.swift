@@ -30,7 +30,7 @@ class PremiumListFeedManager: BaseFeedManager {
                 
                 let users = res.getSortedUsers()
                 
-                let premiumUsers: [PremiumListItem] = items.enumerated().map { (index, item) in
+                let premiumUsers: [PremiumListItem] = items.enumerated().map { (_, item) in
                     .init(
                         index: Int(item.index),
                         user: users.first(where: { $0.data.pubkey == item.pubkey }) ?? .init(data: .init(pubkey: item.pubkey)),

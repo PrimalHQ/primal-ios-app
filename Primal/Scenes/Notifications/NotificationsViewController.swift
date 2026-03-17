@@ -18,7 +18,7 @@ final class NotificationsViewController: PrimalPageController {
             ("ALL", { NotificationFeedViewController(tab: .all) }),
             ("ZAPS", { NotificationFeedViewController(tab: .zaps) }),
             ("REPLIES", { NotificationFeedViewController(tab: .replies) }),
-            ("MENTIONS", { NotificationFeedViewController(tab: .mentions) }),
+            ("MENTIONS", { NotificationFeedViewController(tab: .mentions) })
         ])
     }
     

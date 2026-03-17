@@ -9,7 +9,6 @@ import Foundation
 import PrimalShared
 import NostrSDK
 
-
 class EncryptionServiceHandler: NipsNostrEncryptionService, NIP44v2Encrypting, NostrEncryptionHandler {
     static let instance = EncryptionServiceHandler()
     

@@ -172,7 +172,7 @@ class LiveEventManager {
     func addLiveEvent(_ event: [String: JSON]) {
         guard let processed = ProcessedLiveEvent.fromEvent(event) else { return }
         
-        if let oldEvent = liveEvents[processed.pubkey],  oldEvent.eventDate > processed.eventDate {
+        if let oldEvent = liveEvents[processed.pubkey], oldEvent.eventDate > processed.eventDate {
             return // Ignore older live events
         }
         

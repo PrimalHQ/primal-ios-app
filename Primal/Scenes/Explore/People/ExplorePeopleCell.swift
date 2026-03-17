@@ -57,7 +57,7 @@ final class ExplorePeopleCell: UITableViewCell, Themeable {
         largeImageView.kf.setImage(with: userList.imageData.url(for: .medium), options: [
             .cacheOriginalImage,
             .processor(DownsamplingImageProcessor(size: CGSize(width: contentView.frame.width - 56, height: 120))),
-            .scaleFactor(UIScreen.main.scale),
+            .scaleFactor(UIScreen.main.scale)
         ])
         
         titleLabel.text = userList.name
@@ -91,7 +91,7 @@ private extension ExplorePeopleCell {
         
         let inlineVStack = UIStackView(axis: .vertical, [
             titleLabel, SpacerView(height: 10),
-            nameRow,    SpacerView(height: 20),
+            nameRow, SpacerView(height: 20),
             secondRow
         ])
         inlineVStack.isLayoutMarginsRelativeArrangement = true

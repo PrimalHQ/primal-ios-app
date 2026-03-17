@@ -22,7 +22,6 @@ class ShareViewController: SLComposeServiceViewController {
         return []
     }
     
-
     override func didSelectPost() {
         // Ensure you have at least one extension item
         guard let extensionItem = extensionContext?.inputItems.first as? NSExtensionItem,

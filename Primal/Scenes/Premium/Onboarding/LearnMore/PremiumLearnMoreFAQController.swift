@@ -24,7 +24,6 @@ class PremiumLearnMoreFAQController: UIViewController {
         ("I’d like to support Primal. Can I do more?", "At Primal, we don’t rely on advertising. We don’t monetize user data. We open source all our work to help the Nostr ecosystem flourish. If you wish to help us continue doing this work, you can purchase a Premium or Pro subscription, or simply leave a 5-star review in the app store. Thank you from the entire Primal Team! 🙏❤️")
     ]
     
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         

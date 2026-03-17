@@ -37,8 +37,6 @@ extension UIButton.Configuration {
     }
 }
 
-
-
 class PremiumManageLegendController: UIViewController {
     
     var cancellables: Set<AnyCancellable> = []

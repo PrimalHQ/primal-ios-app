@@ -74,4 +74,3 @@ private extension SettingsEditConnectionName {
         }))
     }
 }
-

@@ -52,7 +52,7 @@ final class TransactionCell: UITableViewCell, Themeable {
         fatalError("init(coder:) has not been implemented")
     }
  
-    var oldWasBtc: Bool? = nil
+    var oldWasBtc: Bool?
     func setup(with transaction: PrimalShared.Transaction, showBTC: Bool) {
         profileCancellable = nil
         let isDeposit = transaction.type == .deposit

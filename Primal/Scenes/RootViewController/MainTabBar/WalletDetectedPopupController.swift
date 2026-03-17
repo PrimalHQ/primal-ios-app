@@ -67,7 +67,7 @@ class WalletDetectedPopupController: UIViewController {
         descLabel.attributedText = NSAttributedString(string: descriptionText, attributes: [
             .foregroundColor: UIColor.foreground3,
             .font: UIFont.appFont(withSize: 15, weight: .regular),
-            .paragraphStyle: paragraph,
+            .paragraphStyle: paragraph
         ])
 
         let restoreButton = UIButton(configuration: .accentPill(text: "Restore Existing Wallet", font: .appFont(withSize: 18, weight: .semibold))).constrainToSize(height: 52)

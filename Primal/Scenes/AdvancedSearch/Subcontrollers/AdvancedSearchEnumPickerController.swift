@@ -7,7 +7,7 @@
 
 import UIKit
 
-class AdvancedSearchEnumPickerController<T: PickableEnum> : UIViewController {
+class AdvancedSearchEnumPickerController<T: PickableEnum>: UIViewController {
     var currentValue: T
     
     var currentlySelectedView: EnumPickerSelectionView? {
@@ -21,8 +21,8 @@ class AdvancedSearchEnumPickerController<T: PickableEnum> : UIViewController {
     
     let stack = UIStackView(axis: .vertical, [])
     
-    let callback: (T) -> (Void)
-    init(currentValue: T, callback: @escaping (T) -> (Void)) {
+    let callback: (T) -> Void
+    init(currentValue: T, callback: @escaping (T) -> Void) {
         self.currentValue = currentValue
         self.callback = callback
         super.init(nibName: nil, bundle: nil)
@@ -55,7 +55,7 @@ class AdvancedSearchEnumPickerController<T: PickableEnum> : UIViewController {
         stack.pinToSuperview(edges: .top, safeArea: true).pinToSuperview(edges: .horizontal, padding: 20)
         
         view.addSubview(applyButton)
-        applyButton.pinToSuperview(edges: [.bottom, .horizontal], padding: 20, safeArea: true)//.pinToSuperview(edges: 20, padding: )
+        applyButton.pinToSuperview(edges: [.bottom, .horizontal], padding: 20, safeArea: true)// .pinToSuperview(edges: 20, padding: )
         applyButton.isHidden = true
         applyButton.addAction(.init(handler: { [weak self] _ in
             guard let self else { return }

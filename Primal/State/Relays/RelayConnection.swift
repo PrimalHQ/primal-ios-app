@@ -17,7 +17,7 @@ enum RelayConnectionState {
     case connecting
 }
 
-enum RelayConnectionError : Error {
+enum RelayConnectionError: Error {
     case error
 }
 
@@ -129,19 +129,19 @@ final class RelayConnection {
     }
 }
 
-extension RelayConnection : Hashable {
+extension RelayConnection: Hashable {
     func hash(into hasher: inout Hasher) {
         hasher.combine(identity)
     }
 }
 
-extension RelayConnection : Equatable {
+extension RelayConnection: Equatable {
     static func == (lhs: RelayConnection, rhs: RelayConnection) -> Bool {
         return lhs.identity == rhs.identity
     }
 }
 
-extension RelayConnection : WebSocketConnectionDelegate {
+extension RelayConnection: WebSocketConnectionDelegate {
     func webSocketDidConnect(connection: WebSocketConnection) {
         state.send(.connected)
         timeOut = 1

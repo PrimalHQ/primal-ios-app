@@ -248,7 +248,6 @@ final class PollVotingOptionView: UIButton, Themeable {
     }
 }
 
-
 // MARK: - PollResultOptionView
 
 final class PollResultOptionView: UIView, Themeable {

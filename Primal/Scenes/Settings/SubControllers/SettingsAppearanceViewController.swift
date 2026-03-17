@@ -78,17 +78,17 @@ private extension SettingsAppearanceViewController {
         
         let mainStack = UIStackView(axis: .vertical, [
             SpacerView(height: 12, priority: .defaultLow),
-            SettingsTitleViewVibrant(title: "THEME"),       SpacerView(height: 12, priority: .defaultLow),
-            themeStack,                                     SpacerView(height: 20, priority: .defaultLow),
-            themeExplanation,                               SpacerView(height: 20, priority: .defaultHigh),
-            BorderView(),                                   SpacerView(height: 16, priority: .defaultHigh),
-            SettingsTitleViewVibrant(title: "FONT"),        SpacerView(height: 22, priority: .defaultLow),
-            slider,                                         SpacerView(height: 20, priority: .defaultHigh),
-            BorderView(),                                   SpacerView(height: 16, priority: .defaultHigh),
+            SettingsTitleViewVibrant(title: "THEME"), SpacerView(height: 12, priority: .defaultLow),
+            themeStack, SpacerView(height: 20, priority: .defaultLow),
+            themeExplanation, SpacerView(height: 20, priority: .defaultHigh),
+            BorderView(), SpacerView(height: 16, priority: .defaultHigh),
+            SettingsTitleViewVibrant(title: "FONT"), SpacerView(height: 22, priority: .defaultLow),
+            slider, SpacerView(height: 20, priority: .defaultHigh),
+            BorderView(), SpacerView(height: 16, priority: .defaultHigh),
 //            SettingsTitleViewVibrant(title: "LAYOUT"),      SpacerView(height: 12, priority: .defaultLow),
 //            toggle,                                         SpacerView(height: 16, priority: .defaultHigh),
 //            BorderView(),                                   SpacerView(height: 16, priority: .defaultHigh),
-            SettingsTitleViewVibrant(title: "PREVIEW"),     SpacerView(height: 12, priority: .defaultLow),
+            SettingsTitleViewVibrant(title: "PREVIEW"), SpacerView(height: 12, priority: .defaultLow),
             previewParent
         ])
         mainParent.addSubview(mainStack)

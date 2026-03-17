@@ -16,9 +16,9 @@ final class SignInInputField: UIView {
     
     private var fixHeightConstraint: NSLayoutConstraint?
     
-    var didBeginEditing: (UITextView) -> () = { _ in }
-    var didEndEditing: (UITextView) -> () = { _ in }
-    var didChange: (UITextView) -> () = { _ in }
+    var didBeginEditing: (UITextView) -> Void = { _ in }
+    var didEndEditing: (UITextView) -> Void = { _ in }
+    var didChange: (UITextView) -> Void = { _ in }
     
     var text: String {
         get { textView.text ?? "" }

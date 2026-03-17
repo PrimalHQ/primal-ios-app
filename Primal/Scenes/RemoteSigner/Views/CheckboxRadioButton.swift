@@ -38,7 +38,6 @@ class CheckboxRadioButton: MyButton, Themeable {
         imageView.centerToSuperview()
     }
     
-    
     func updateTheme() {
         
         if isSelected {

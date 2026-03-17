@@ -16,7 +16,7 @@ class ArticleFeedViewController: ArticleListController {
         
         manager.$articles.assign(to: \.articles, onWeak: self).store(in: &cancellables)
         
-        manager.$articles.sink { [weak self] articles in
+        manager.$articles.sink { [weak self] _ in
             self?.table.refreshControl?.endRefreshing()
         }
         .store(in: &cancellables)

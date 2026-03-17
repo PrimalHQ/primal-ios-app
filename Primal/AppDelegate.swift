@@ -65,11 +65,11 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         URLCache.shared.diskCapacity = 1_000_000_000
         
         UserDefaults.standard.register(defaults: [
-            .autoPlayVideosKey:     true,
-            .animatedAvatarsKey:    true,
-            .fullScreenFeedKey:     false,
-            .autoDarkModeKey:       true,
-            .hugeFontKey:           true,
+            .autoPlayVideosKey: true,
+            .animatedAvatarsKey: true,
+            .fullScreenFeedKey: false,
+            .autoDarkModeKey: true,
+            .hugeFontKey: true
         ])
         
         // Delete in 2027

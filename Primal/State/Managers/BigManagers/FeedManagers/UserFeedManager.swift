@@ -29,7 +29,7 @@ class UserList {
     
     var baseEvent: [String: JSON]
     
-    init(id: String, dTag: String, name: String, description: String, imageData: MediaMetadata.Resource, updatedAt: Date, user: ParsedUser, list: [ParsedUser], baseEvent: [String : JSON]) {
+    init(id: String, dTag: String, name: String, description: String, imageData: MediaMetadata.Resource, updatedAt: Date, user: ParsedUser, list: [ParsedUser], baseEvent: [String: JSON]) {
         self.id = id
         self.dTag = dTag
         self.name = name
@@ -81,7 +81,6 @@ class UserFeedManager: BaseFeedManager {
                             users.first(where: { $0.data.pubkey == pubkey }) ?? .init(data: .init(pubkey: pubkey))
                         })
                         .sorted(by: { $0.followers ?? 0 > $1.followers ?? 0 })
-                    
                     
                     return UserList(
                         id: id,

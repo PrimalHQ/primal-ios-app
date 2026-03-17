@@ -55,7 +55,6 @@ class TransactionUserInfoCell: UITableViewCell {
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 }
 
-
 extension TransactionUserInfoCell: TransactionPartialCell {
     func setupWithCellInfo(_ info: TransactionCellType) {
         profileCancellable = nil

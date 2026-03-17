@@ -127,7 +127,7 @@ class RemoteSignerPendingEventsController: UIViewController {
             }
             .store(in: &cancellables)
         
-        Publishers.CombineLatest($selectedEvents, $allEvents.map { $0.map{ $0.eventId } })
+        Publishers.CombineLatest($selectedEvents, $allEvents.map { $0.map { $0.eventId } })
             .debounce(for: 0.1, scheduler: DispatchQueue.main)
             .sink { [weak self] selected, all in
                 self?.table.reloadData()

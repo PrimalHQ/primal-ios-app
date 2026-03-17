@@ -46,7 +46,6 @@ class BackupWalletConfirmController: UIViewController {
             .pinToSuperview(edges: .bottom, padding: 20, safeArea: true)
             .pinToSuperview(edges: .horizontal, padding: 24)
         
-        
         for view in checkViews {
             view.$isChecked.removeDuplicates().dropFirst().sink { [weak self] new in
                 self?.checkedCount += new ? 1 : -1
@@ -63,7 +62,6 @@ class BackupWalletConfirmController: UIViewController {
             }
             .store(in: &cancellables)
 
-        
         finishButton.addAction(.init(handler: { [weak self] _ in
             WalletManager.instance.markWalletAsBackedUp()
             
@@ -71,7 +69,6 @@ class BackupWalletConfirmController: UIViewController {
         }), for: .touchUpInside)
     }
 }
-
 
 class BackupWalletCheckView: UIStackView {
     @Published var isChecked = false

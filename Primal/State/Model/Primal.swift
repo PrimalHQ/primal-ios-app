@@ -164,7 +164,7 @@ struct PrimalSettings: Codable, Identifiable, Hashable {
     }
 }
 
-struct PrimalUser : Codable, Identifiable, Hashable {
+struct PrimalUser: Codable, Identifiable, Hashable {
     let id: String
     let pubkey: String
     let npub: String
@@ -254,7 +254,7 @@ struct PrimalUser : Codable, Identifiable, Hashable {
     }
 }
 
-struct PrimalFeedPost : Codable, Identifiable, Hashable {
+struct PrimalFeedPost: Codable, Identifiable, Hashable {
     let id: String
     let kind: Int
     let pubkey: String
@@ -311,7 +311,7 @@ struct PrimalFeedPost : Codable, Identifiable, Hashable {
     }
 }
 
-struct PrimalPost : Codable, Hashable, Identifiable {
+struct PrimalPost: Codable, Hashable, Identifiable {
     let id: String
     let user: PrimalUser
     let post: PrimalFeedPost

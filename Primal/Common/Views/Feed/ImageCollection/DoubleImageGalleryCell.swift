@@ -41,7 +41,6 @@ class InteractiveImageView: UIView, ImageMenuHandler, UIContextMenuInteractionDe
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
-    
     func contextMenuInteraction(_ interaction: UIContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> UIContextMenuConfiguration? {
         let image = self.image
         
@@ -159,7 +158,6 @@ final class DoubleImageGalleryCell: UICollectionViewCell, MultipleImageGalleryCe
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
     
     func setup(resources: [MediaMetadata.Resource], thumbnails: [String: String], downsampling: DownsamplingOption, userPubkey: String, delegate: ImageCellDelegate?) {
         

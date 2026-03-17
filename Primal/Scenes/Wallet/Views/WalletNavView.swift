@@ -155,7 +155,7 @@ final class WalletNavView: UIView, Themeable {
         if shouldExpand {
             oldAnimViews = [
                 balanceConversionView.largeAmountLabel.animateTransitionTo(largeView.balanceConversionView.largeAmountLabel, duration: 13 / 30, in: self),
-                balanceConversionView.largeCurrencyLabel.animateTransitionTo(largeView.balanceConversionView.largeCurrencyLabel, duration: 13 / 30, in: self),
+                balanceConversionView.largeCurrencyLabel.animateTransitionTo(largeView.balanceConversionView.largeCurrencyLabel, duration: 13 / 30, in: self)
             ]
             if !balanceConversionView.isBitcoinPrimary {
                 oldAnimViews.append(
@@ -183,7 +183,6 @@ final class WalletNavView: UIView, Themeable {
             }
         }
         
-        
         CATransaction.begin()
         CATransaction.setAnimationTimingFunction(.easeInOutQuart)
         
@@ -193,7 +192,7 @@ final class WalletNavView: UIView, Themeable {
             self.largeView.actionStack.transform = shouldExpand ? .identity : .init(translationX: actionTranslation.x, y: actionTranslation.y - 7).scaledBy(x: scale, y: scale)
             
             self.superview?.layoutIfNeeded()
-        } completion: { completed in
+        } completion: { _ in
             self.smallView.isHidden = shouldExpand
             self.largeView.isHidden = !shouldExpand
             self.setToDefaults()

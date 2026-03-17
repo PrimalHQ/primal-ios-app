@@ -21,7 +21,7 @@ class DatabaseManager {
         try migrator.migrate(dbWriter)
     }
     
-    func performUpdates(_ updates: @escaping (Database) throws -> (Void)) {
+    func performUpdates(_ updates: @escaping (Database) throws -> Void) {
         DispatchQueue.global(qos: .userInitiated).async {
             do {
                 try self.dbWriter.write { db in

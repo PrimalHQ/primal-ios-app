@@ -204,7 +204,7 @@ final class BalanceInputAccessoryView: UIView, Themeable {
             groupingButton.titleLabel?.font = .appFont(withSize: 18, weight: .regular)
             groupingButton.setTitle(groupingSeparator, for: .normal)
             
-            //actionStack.addArrangedSubview(groupingButton)
+            // actionStack.addArrangedSubview(groupingButton)
         }
         
         if let decimalSeparator = formatter.decimalSeparator {

@@ -17,7 +17,7 @@ extension PostRequestResult: MetadataCoding {
             ($0.followers ?? 0) != ($1.followers ?? 0) ? 
                 ($0.followers ?? 0) > ($1.followers ?? 0) :
                 ($0.data.firstIdentifier > $1.data.firstIdentifier)
-        } )
+        })
     }
     
     func createPrimalPost(content: NostrContent) -> (PrimalFeedPost, ParsedUser)? {
@@ -156,7 +156,7 @@ extension String {
                         nsRange = match.range(at: 2)
                     }
                     
-                    if nsRange.location != NSNotFound , let urlRange = Range(nsRange, in: text) {
+                    if nsRange.location != NSNotFound, let urlRange = Range(nsRange, in: text) {
                         var url = String(text[urlRange])
                         
                         if url.contains(" \""), let first = url.split(separator: " \"").first {

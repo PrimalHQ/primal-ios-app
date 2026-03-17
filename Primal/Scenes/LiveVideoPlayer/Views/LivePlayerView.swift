@@ -13,7 +13,7 @@ import Lottie
 enum LivePlayerViewAction {
     case dismiss, fullscreen
     case quote, share, copyLink, copyID, copyRawData
-    case mute, report//, requestDelete
+    case mute, report// , requestDelete
     case playReplay
 }
 
@@ -59,7 +59,7 @@ class LivePlayerView: UIView {
         .constrainToSize(height: 26)
     
     let dismissButton = UIButton(configuration: .simpleImage(.liveMinimize))
-    let airplayButton = AVRoutePickerView() //UIButton(configuration: .simpleImage(.airPlay))
+    let airplayButton = AVRoutePickerView() // UIButton(configuration: .simpleImage(.airPlay))
     let threeDotsButton = UIButton(configuration: .simpleImage(.threeDots))
     
     let playPauseButton = UIButton(configuration: .simpleImage(.videoPlay))

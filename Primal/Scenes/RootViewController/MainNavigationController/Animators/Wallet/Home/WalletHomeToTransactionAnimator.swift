@@ -92,7 +92,7 @@ final class WalletHomeToTransactionAnimator: NSObject, UIViewControllerAnimatedT
                     }
                     otherAnimatingLabel.textAlignment = amountCell.label.textAlignment
                     otherAnimatingLabel.numberOfLines = amountCell.label.numberOfLines
-                    otherAnimatingLabel.anchorPoint = .zero //init(x: 0, y: 1)
+                    otherAnimatingLabel.anchorPoint = .zero // init(x: 0, y: 1)
                     otherAnimatingLabel.frame = amountCell.label.convert(amountCell.label.bounds, to: container)
                     
                     container.addSubview(otherAnimatingLabel)

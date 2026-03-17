@@ -28,7 +28,7 @@ class PremiumManageController: UIViewController {    let state: PremiumState
                 nav.pushViewController(PremiumSearchNameController(title: "Find Primal Name", callback: { name in
                     nav.pushViewController(PremiumManageNameController(pickedName: name), animated: true)
                 }), animated: true)
-            }),
+            })
         ]
         
         if state.isLegend {
@@ -45,20 +45,20 @@ class PremiumManageController: UIViewController {    let state: PremiumState
                 }),
                 .init(title: "Become a Legend", handler: { [weak self] _ in
                     self?.show(PremiumBecomeLegendController(), sender: nil)
-                }),
+                })
             ])
         } else {
             bottomOptions.append(contentsOf: [
                 .init(title: "Become a Legend", handler: { [weak self] _ in
                     self?.show(PremiumBecomeLegendController(), sender: nil)
-                }),
+                })
             ])
         }
         
         let faqStack = UIStackView([
         //    Question? Check FAQ
             UILabel("Have a question?", color: .foreground3, font: .appFont(withSize: 16, weight: .regular)),
-            UILabel("Check our FAQ", color: .accent2, font: .appFont(withSize: 16, weight: .regular)),
+            UILabel("Check our FAQ", color: .accent2, font: .appFont(withSize: 16, weight: .regular))
         ])
         faqStack.spacing = 6
         let faqStackParent = UIView()
@@ -79,7 +79,7 @@ class PremiumManageController: UIViewController {    let state: PremiumState
                 }),
                 .init(title: "Content Backup", handler: { [weak self] _ in
                     self?.show(PremiumManageContentController(), sender: nil)
-                }),
+                })
             ]), SpacerView(height: 20),
             UILabel("Primal Account", color: .foreground, font: .appFont(withSize: 18, weight: .bold)), SpacerView(height: 16),
             PremiumManageTableView(options: bottomOptions), SpacerView(height: 20),

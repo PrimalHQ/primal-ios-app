@@ -69,5 +69,3 @@ private extension HighlightCommentCell {
         mainStack.pinToSuperview(edges: .vertical, padding: 12).pinToSuperview(edges: .horizontal, padding: 20)
     }
 }
-
-

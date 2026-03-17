@@ -88,8 +88,8 @@ class CircularProgressView: UIView {
         let animation = CABasicAnimation(keyPath: "strokeEnd")
         animation.duration = duration
         
-        animation.fromValue = progressLayer.strokeEnd //start animation at old point
-        animation.toValue = value //end animation at point specified
+        animation.fromValue = progressLayer.strokeEnd // start animation at old point
+        animation.toValue = value // end animation at point specified
         animation.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.linear)
         progressLayer.strokeEnd = value
         progressLayer.add(animation, forKey: "animateCircle")

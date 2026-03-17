@@ -80,7 +80,7 @@ class PremiumManageMediaStatsCell: UITableViewCell {
         graphConstraints = [
             widthAnchor.constraint(equalTo: graphViewImages.widthAnchor, multiplier: 1 / max(0.001, imagesRatio), constant: 3),
             widthAnchor.constraint(equalTo: graphViewVideos.widthAnchor, multiplier: 1 / max(0.001, videoRatio), constant: 3),
-            widthAnchor.constraint(equalTo: graphViewOther.widthAnchor, multiplier: 1 / max(0.001, otherRatio), constant: 3),
+            widthAnchor.constraint(equalTo: graphViewOther.widthAnchor, multiplier: 1 / max(0.001, otherRatio), constant: 3)
         ]
         NSLayoutConstraint.activate(graphConstraints)
         
@@ -96,7 +96,6 @@ class PremiumManageMediaStatsCell: UITableViewCell {
         freeLabel.text = "\(freeGB.localized()) GB free"
     }
 }
-
 
 class DotView: UIView {
     init(color: UIColor) {

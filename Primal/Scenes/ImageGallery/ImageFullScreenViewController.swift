@@ -374,7 +374,7 @@ extension ImageFullScreenViewController: ImageMenuHandler, UIContextMenuInteract
     var image: UIImage? { imageView.image }
     
     func contextMenuInteraction(_ interaction: UIContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> UIContextMenuConfiguration? {
-        .init(actionProvider:  { [weak self] suggested in
+        .init(actionProvider: { [weak self] suggested in
             .init(children: self?.imageMenuActions ?? [] + suggested)
         })
     }

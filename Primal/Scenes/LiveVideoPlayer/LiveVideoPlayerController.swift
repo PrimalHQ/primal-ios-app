@@ -19,7 +19,7 @@ struct ParsedLiveComment: Hashable {
     let zapAmount: Int
     let createdAt: Double
     
-    init(user: ParsedUser, comment: NSAttributedString, event: [String : JSON], zapAmount: Int = 0) {
+    init(user: ParsedUser, comment: NSAttributedString, event: [String: JSON], zapAmount: Int = 0) {
         self.user = user
         self.text = comment
         self.event = event
@@ -173,7 +173,7 @@ class LiveVideoPlayerController: UIViewController {
         NSLayoutConstraint.activate([
             heightC,
             horizontalVideoPlayer.heightAnchor.constraint(equalTo: view.widthAnchor),
-            liveVideoPlayer.heightAnchor.constraint(lessThanOrEqualTo: liveVideoPlayer.widthAnchor),
+            liveVideoPlayer.heightAnchor.constraint(lessThanOrEqualTo: liveVideoPlayer.widthAnchor)
         ])
         
         safeAreaConstraint = safeAreaSpacer.heightAnchor.constraint(equalToConstant: RootViewController.instance.view.window?.safeAreaInsets.top ?? 0)
@@ -469,7 +469,6 @@ private extension LiveVideoPlayerController {
         
         guard let dgs = dismissGestureState else { return }
         
-        
         let delta = touchPoint.y - dgs.initialTouchPoint.y
         
         var percent = delta / (dgs.totalVerticalDistance)
@@ -592,7 +591,7 @@ extension LiveVideoPlayerController: LivePlayerViewDelegate {
 extension LiveVideoPlayerController: AVPlayerViewControllerDelegate {
     func playerViewController(_ playerViewController: AVPlayerViewController, willEndFullScreenPresentationWithAnimationCoordinator coordinator: UIViewControllerTransitionCoordinator) {
         // The system pauses when returning from full screen, we need to 'resume' manually.
-        coordinator.animate(alongsideTransition: nil) { [weak self] transitionContext in
+        coordinator.animate(alongsideTransition: nil) { [weak self] _ in
             self?.player?.play()
         }
     }

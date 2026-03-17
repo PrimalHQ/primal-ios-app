@@ -152,9 +152,9 @@ final class Connection {
                     return
                 }
                 messageReceived.send(())
-            case .disconnected(_, _):
+            case .disconnected:
                 isConnected = false
-            case .error(_):
+            case .error:
                 isConnected = false
             }
         }
@@ -184,9 +184,9 @@ final class Connection {
     
     func requestCache(name: String, payload: JSON?, _ handler: @escaping (_ result: [JSON]) -> Void) {
         if let payload {
-            request(.object(["cache" : .array([.string(name), payload])]), handler)
+            request(.object(["cache": .array([.string(name), payload])]), handler)
         } else {
-            request(.object(["cache" : .array([.string(name)])]), handler)
+            request(.object(["cache": .array([.string(name)])]), handler)
         }
     }
     
@@ -207,17 +207,16 @@ final class Connection {
         }
     }
     
-    
     func requestCacheContinous(name: String, request: JSON?, _ handler: @escaping (JSON) -> Void) -> ContinuousConnection {
         if let request {
             return requestContinous(.object([
-                "cache" : .array(
+                "cache": .array(
                     [.string(name), request]
                 )
             ]), subId: "\(name)-\(UUID().uuidString)", handler)
         } else {
             return requestContinous(.object([
-                "cache" : .array([.string(name)])
+                "cache": .array([.string(name)])
             ]), subId: "\(name)-\(UUID().uuidString)", handler)
         }
     }

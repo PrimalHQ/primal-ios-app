@@ -29,7 +29,7 @@ class LinkPreviewManager {
         
         let metadataProvider = LPMetadataProvider()
         preloading[url.absoluteString] = metadataProvider
-        metadataProvider.startFetchingMetadata(for: url) { [weak self] (metadata, error) in
+        metadataProvider.startFetchingMetadata(for: url) { [weak self] (metadata, _) in
             guard let metadata, let self else { return }
             DispatchQueue.main.async {
                 self.preloading[urlStr] = nil

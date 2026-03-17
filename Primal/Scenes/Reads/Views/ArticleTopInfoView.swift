@@ -18,7 +18,7 @@ class ArticleTopInfoView: UIView, Themeable {
         $0.attributedText = NSAttributedString(string: self?.title ?? "", attributes: [
             .paragraphStyle: paragraphStyle,
             .font: UIFont.appFont(withSize: 26, weight: .bold),
-            .foregroundColor: UIColor.foreground,
+            .foregroundColor: UIColor.foreground
 //            .kern: -0.58 / 1.4176
         ])
     }

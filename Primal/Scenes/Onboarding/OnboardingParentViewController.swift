@@ -140,7 +140,7 @@ class OnboardingBaseGradientView: UIView {
     private func setup() {
         gradientLayer.colors = [
             UIColor.white.cgColor,
-            UIColor(rgb: 0xE5E5E5).cgColor,
+            UIColor(rgb: 0xE5E5E5).cgColor
         ]
         gradientLayer.locations = [0.1, 0.501]
         
@@ -168,7 +168,7 @@ class OnboardingOverlayGradientView: UIView {
             UIColor(rgb: 0x2586ED).withAlphaComponent(0.12).cgColor,
             UIColor(rgb: 0x2572ED).cgColor,
             UIColor(rgb: 0x2572ED).cgColor,
-            UIColor(rgb: 0x5B09AD).cgColor,
+            UIColor(rgb: 0x5B09AD).cgColor
         ]
         gradientLayer.locations = [0.0, 0.566, 0.713, 1.0]
         gradientLayer.startPoint = reversed ? CGPoint(x: 1, y: 0) : CGPoint(x: 0, y: 0)
@@ -191,9 +191,9 @@ extension OnboardingViewController {
         return NSAttributedString(
             string: string,
             attributes: [
-                .foregroundColor:   UIColor(rgb: 0x111111).withAlphaComponent(0.8),
-                .font:              UIFont.appFont(withSize: 16, weight: .regular),
-                .paragraphStyle:    paragraph
+                .foregroundColor: UIColor(rgb: 0x111111).withAlphaComponent(0.8),
+                .font: UIFont.appFont(withSize: 16, weight: .regular),
+                .paragraphStyle: paragraph
             ]
         )
     }

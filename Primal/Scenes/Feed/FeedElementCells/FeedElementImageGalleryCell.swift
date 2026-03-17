@@ -8,7 +8,6 @@
 import UIKit
 import Kingfisher
 
-
 extension Array where Element == MediaMetadata.Resource {
     func aspectForGallery() -> CGFloat {
         if count == 2 { return 0.5 }

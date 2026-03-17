@@ -7,7 +7,6 @@
 
 import Combine
 import UIKit
-import Combine
 import Kingfisher
 import AVKit
 
@@ -186,7 +185,7 @@ final class RootViewController: UIViewController {
     }
     
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-        if presentedViewController as? ImageGalleryController != nil || presentedViewController?.presentedViewController as? AVPlayerViewController != nil {
+        if presentedViewController is ImageGalleryController || presentedViewController?.presentedViewController is AVPlayerViewController {
             return .allButUpsideDown
         }
         return .portrait
@@ -308,7 +307,6 @@ final class RootViewController: UIViewController {
         }
     }
     
-    
     var previousTime: Date?
     @objc func updateScroll() {
         guard let scrollView = smoothScrollingScrollView else {
@@ -318,7 +316,7 @@ final class RootViewController: UIViewController {
         }
         
         let maxOffset = scrollView.contentSize.height - scrollView.bounds.height
-        let newOffset:CGFloat
+        let newOffset: CGFloat
         
         if let previousTime {
             let delta = previousTime.timeIntervalSinceNow * CGFloat(smoothScrollSpeed)
@@ -342,12 +340,12 @@ final class RootViewController: UIViewController {
 
 protocol AnimatableFirstViewController: UIViewController {
     var tableView: UITableView? { get }
-    var onLoad: (() -> ())? { get set }
+    var onLoad: (() -> Void)? { get set }
 }
 
 extension HomeFeedViewController: AnimatableFirstViewController {
     var tableView: UITableView? { firstFeedVC?.table }
-    var onLoad: (() -> ())? {
+    var onLoad: (() -> Void)? {
         get { firstFeedVC?.onLoad }
         set { firstFeedVC?.onLoad = newValue }
     }
@@ -355,7 +353,7 @@ extension HomeFeedViewController: AnimatableFirstViewController {
 extension WalletHomeViewController: AnimatableFirstViewController {
     var tableView: UITableView? { table }
     
-    var onLoad: (() -> ())? {
+    var onLoad: (() -> Void)? {
         get { nil }
         set {
             newValue?()

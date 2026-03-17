@@ -174,8 +174,6 @@ private extension PremiumBuySubscriptionController {
                         let object = NostrObject.purchasePrimalPremium(pickedName: self.pickedName, transaction: transaction, verification: jws)
                     else { return }
                     
-                    
-                    
                     Connection.wallet.requestCache(name: "membership_purchase_product", payload: ["event_from_user": object.toJSON()]) { result in
                         DispatchQueue.main.async {
                             print("MEMBERSHIP_PURCHASE_PRODUCT RESPONSE\n" + (result.encodeToString() ?? ""))
@@ -192,7 +190,7 @@ private extension PremiumBuySubscriptionController {
                             
                             self.present(WalletTransferSummaryController(.successOld(title: "Success, payment received!", description: "Your subscription is now active.")), animated: true) {
                                 
-                                guard let premium = self.navigationController?.viewControllers.first(where: { $0 as? PremiumViewController != nil }) as? PremiumViewController else {
+                                guard let premium = self.navigationController?.viewControllers.first(where: { $0 is PremiumViewController }) as? PremiumViewController else {
                                     self.navigationController?.popViewController(animated: false)
                                     self.navigationController?.popViewController(animated: false)
                                     return

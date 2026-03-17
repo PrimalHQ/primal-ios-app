@@ -55,7 +55,6 @@ final class WalletReceiveDetailsController: UIViewController, Themeable, Keyboar
     var maxInputAmountUSD: Double { 99999 }
 }
 
-
 private extension WalletReceiveDetailsController {
     func setup() {
         updateTheme()

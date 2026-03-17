@@ -14,7 +14,7 @@ enum IAPHandlerAlertType {
     case purchased
     case failed
     
-    var message: String{
+    var message: String {
         switch self {
         case .disabled:     return "Purchases are disabled in your device!"
         case .purchased:    return "You've successfully bought this purchase!"
@@ -31,7 +31,6 @@ final class InAppPurchaseManager: NSObject {
         
         print(transactions)
     
-        
         Task { @MainActor in
             
             for await transaction in Transaction.currentEntitlements {
@@ -44,12 +43,10 @@ final class InAppPurchaseManager: NSObject {
                 switch result {
                 case .verified(let transaction):
                     print(transaction)
-                    break
-                    // Deliver the purchased content
-                case .unverified(let transaction, let error):
+// Deliver the purchased content
+                                    case .unverified(let transaction, let error):
                     print(transaction)
                     print(error)
-                    break
                     // Handle the error
                 }
             }
@@ -61,20 +58,20 @@ final class InAppPurchaseManager: NSObject {
     static let monthlyProId = "monthlyProSub"
     static let yearlyProId = "yearlyProSub"
     
-    //MARK: - Private
+    // MARK: - Private
     fileprivate let productIds: Set<String> = ["MINSATS"]
 
     fileprivate var productID = ""
     fileprivate var productsRequest = SKProductsRequest()
-    fileprivate var fetchProductCompletion: (([SKProduct])->Void)?
+    fileprivate var fetchProductCompletion: (([SKProduct]) -> Void)?
     
     fileprivate var productToPurchase: SKProduct?
-    fileprivate var purchaseProductCompletion: ((IAPHandlerAlertType, SKProduct?, SKPaymentTransaction?)->Void)?
+    fileprivate var purchaseProductCompletion: ((IAPHandlerAlertType, SKProduct?, SKPaymentTransaction?) -> Void)?
     
-    //MARK: - Public
+    // MARK: - Public
     func canMakePurchases() -> Bool {  return SKPaymentQueue.canMakePayments()  }
     
-    func purchase(product: SKProduct, completion: @escaping ((IAPHandlerAlertType, SKProduct?, SKPaymentTransaction?)->Void)) {
+    func purchase(product: SKProduct, completion: @escaping ((IAPHandlerAlertType, SKProduct?, SKPaymentTransaction?) -> Void)) {
         purchaseProductCompletion = completion
         productToPurchase = product
 
@@ -126,7 +123,7 @@ final class InAppPurchaseManager: NSObject {
         }
     }
     
-    func fetchWalletProducts(completion: @escaping (([SKProduct])->Void)){
+    func fetchWalletProducts(completion: @escaping (([SKProduct]) -> Void)) {
         fetchProductCompletion = completion
                 
         productsRequest = SKProductsRequest(productIdentifiers: productIds)
@@ -146,7 +143,7 @@ final class InAppPurchaseManager: NSObject {
 //        }
     }
     
-    func fetchPremiumSubscriptions(completion: @escaping (([StoreKit.Product])->Void)) {
+    func fetchPremiumSubscriptions(completion: @escaping (([StoreKit.Product]) -> Void)) {
         let productIds = [Self.monthlyPremiumId, Self.yearlyPremiumId, Self.monthlyProId, Self.yearlyProId]
         
         Task { @MainActor in
@@ -172,8 +169,8 @@ final class InAppPurchaseManager: NSObject {
     }
 }
 
-extension InAppPurchaseManager: SKProductsRequestDelegate, SKPaymentTransactionObserver{
-    func productsRequest (_ request:SKProductsRequest, didReceive response:SKProductsResponse) {
+extension InAppPurchaseManager: SKProductsRequestDelegate, SKPaymentTransactionObserver {
+    func productsRequest(_ request: SKProductsRequest, didReceive response: SKProductsResponse) {
         for invalidIdentifier in response.invalidProductIdentifiers {
             print("Invalid identifier: \(invalidIdentifier)")
         }

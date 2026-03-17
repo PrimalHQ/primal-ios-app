@@ -74,7 +74,7 @@ class SettingsNewNwcQRController: UIViewController {
         }), for: .touchUpInside)
         
         doneButton.addAction(.init(handler: { [weak self] _ in
-            guard let settingsVC = self?.navigationController?.viewControllers.first(where: { $0 as? SettingsWalletViewController != nil }) else {
+            guard let settingsVC = self?.navigationController?.viewControllers.first(where: { $0 is SettingsWalletViewController }) else {
                 self?.navigationController?.popViewController(animated: true)
                 return
             }
