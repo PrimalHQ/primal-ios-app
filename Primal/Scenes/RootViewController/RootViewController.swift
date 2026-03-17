@@ -363,13 +363,15 @@ extension WalletHomeViewController: AnimatableFirstViewController {
 
 private extension RootViewController {
     func animateFromIntro() {
-        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) {
-            if self.introVC != nil {
-                print("ERROR")
-                self.introVC!.willMove(toParent: nil)
-                self.introVC!.view.removeFromSuperview()
-                self.introVC!.removeFromParent()
-            }
+        // Capture the current instance so a rapid reset() won't cause this
+        // block to remove a different (newly added) intro controller.
+        let scheduledIntro = introVC
+        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) { [weak self] in
+            guard let self, let intro = scheduledIntro, self.introVC === intro else { return }
+            intro.willMove(toParent: nil)
+            intro.view.removeFromSuperview()
+            intro.removeFromParent()
+            self.introVC = nil
         }
         
         guard !didAnimate, let introVC else { return }
