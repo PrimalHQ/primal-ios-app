@@ -9,7 +9,7 @@ import Foundation
 
 final class RemoteSigningDeeplingHandler: DeeplinkHandlerProtocol {
     func canOpenURL(_ url: URL) -> Bool {
-        return url.scheme?.lowercased() == "nostrconnect"
+        return url.scheme?.lowercased() == "nostrconnect" || url.scheme?.lowercased() == "primalconnect"
     }
 
     func openURL(_ url: URL) {

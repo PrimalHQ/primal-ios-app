@@ -54,6 +54,7 @@
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>nostrconnect</string>
+				<string>primalconnect</string>
 			</array>
 		</dict>
 	</array>
