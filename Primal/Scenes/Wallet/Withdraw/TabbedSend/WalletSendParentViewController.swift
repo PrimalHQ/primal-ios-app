@@ -33,7 +33,7 @@ extension WalletSearchController {
         textSearch = text
         
         if text.isEmail {
-            SocketRequest(name: "user_of_ln_address", payload: ["ln_address" : .string(text)]).publisher()
+            SocketRequest(name: "user_of_ln_address", payload: ["ln_address": .string(text)]).publisher()
                 .receive(on: DispatchQueue.main)
                 .sink { [weak self] res in
                     guard let self else { return }

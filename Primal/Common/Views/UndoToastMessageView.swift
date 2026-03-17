@@ -8,7 +8,7 @@
 import UIKit
 
 extension UIView {
-    func showUndoToast(_ text: String, durationSeconds: Int = 3, extraPadding: Bool = true, undoCallback: @escaping () -> ()) {
+    func showUndoToast(_ text: String, durationSeconds: Int = 3, extraPadding: Bool = true, undoCallback: @escaping () -> Void) {
         let view = UndoToastMessageView(text: text)
         addSubview(view)
         

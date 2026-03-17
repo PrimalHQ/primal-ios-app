@@ -102,7 +102,7 @@ enum WalletError: Error {
 struct PremiumState: Codable {
     var pubkey: String
     var tier: String
-    var name:  String
+    var name: String
     var nostr_address: String
     var lightning_address: String
     var primal_vip_profile: String
@@ -116,7 +116,6 @@ struct PremiumState: Codable {
     var class_id: String?
     var donated_btc: String?
 }
-
 
 extension String {
     var lud16ToDecodedLNURL: String? {
@@ -384,10 +383,10 @@ final class WalletManager {
         Task { @MainActor in
             _ = try await walletRepo.fetchWalletBalance(walletId: walletID)
             
-            for await items in snapshot.items where !items.isEmpty{
+            for await items in snapshot.items where !items.isEmpty {
                 print("Got \(items.count) transactions on this page")
                 
-                if walletID != self.walletID || snapshot != self.transactionsSnapshot  { return } // If we changed the wallet stop updating from this snapshot
+                if walletID != self.walletID || snapshot != self.transactionsSnapshot { return } // If we changed the wallet stop updating from this snapshot
                 
                 parsedTransactions = (parsedTransactions + items).unique()
                 
@@ -646,7 +645,6 @@ enum MigrationStepName: String {
           }
       }
   }
-
 
 enum WalletMigrationStep {
     case inProgress(String)

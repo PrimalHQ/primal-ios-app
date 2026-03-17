@@ -37,7 +37,6 @@ extension ProfileCount: Codable, FetchableRecord, MutablePersistableRecord {
     
     static let profile = belongsTo(Profile.self)
     
-    
     init(row: Row) {
         // Use default values if columns are NULL
         profilePubkey = row[Columns.profilePubkey] ?? ""

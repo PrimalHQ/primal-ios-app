@@ -60,7 +60,7 @@ private extension WalletInAppPurchaseController {
     func setup() {
         updateTheme()
         if let presentationController = presentationController as? UISheetPresentationController {
-            presentationController.detents = [.custom(resolver: { context in
+            presentationController.detents = [.custom(resolver: { _ in
                 400
             })]
         }
@@ -177,7 +177,7 @@ private extension WalletInAppPurchaseController {
             mainLoadingParent.isHidden = false
             smallLoading.play()
             
-            InAppPurchaseManager.shared.purchase(product: product) { type, product, transaction in
+            InAppPurchaseManager.shared.purchase(product: product) { type, _, transaction in
                 switch type {
                 case .disabled, .failed:
                     self?.view.isUserInteractionEnabled = false

@@ -39,9 +39,9 @@ final class PlaceholderTextView: SelfSizingTextView {
     
     @Published private(set) var isEmpty = true
     
-    var didBeginEditing: (UITextView) -> () = { _ in }
-    var didEndEditing: (UITextView) -> () = { _ in }
-    var didChange: (UITextView) -> () = { _ in }
+    var didBeginEditing: (UITextView) -> Void = { _ in }
+    var didEndEditing: (UITextView) -> Void = { _ in }
+    var didChange: (UITextView) -> Void = { _ in }
     
     override var text: String! {
         set {

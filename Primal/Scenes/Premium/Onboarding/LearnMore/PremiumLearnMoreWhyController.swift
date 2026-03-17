@@ -33,7 +33,7 @@ class PremiumLearnMoreWhyController: UIViewController {
         descLabel.numberOfLines = 0
         
         let stack = UIStackView(axis: .vertical, [
-            descLabel,
+            descLabel
         ])
         stack.spacing = 10
         view.addSubview(stack)
@@ -101,7 +101,7 @@ class PremiumLearnMoreProController: UIViewController {
         secondDescLabel.numberOfLines = 0
         let secondVStack = UIStackView(axis: .vertical, [
             UILabel("Legend Status", color: .foreground, font: .appFont(withSize: 16, weight: .semibold)),
-            secondDescLabel,
+            secondDescLabel
         ])
         
         let secondStack = UIStackView([UIImageView(image: .legendPreston), secondVStack])

@@ -80,7 +80,6 @@ private extension SettingsNsecViewController {
         let secLabelDesc = ThemeableLabel().setTheme { $0.textColor = .foreground4 }
         let dangerDesc = ThemeableLabel().setTheme { $0.textColor = .foreground4 }
         
-        
         pubLabelParent.addSubview(pubStack)
         pubStack.pinToSuperview(edges: .horizontal, padding: 12).centerToSuperview(axis: .vertical)
         pubLabelParent.constrainToSize(height: 64)
@@ -108,19 +107,19 @@ private extension SettingsNsecViewController {
         iCloudSwitch.isOn = ICloudKeychainManager.instance.hasSavedNpubOnline(npub)
         
         let stack = UIStackView(arrangedSubviews: [
-            pubTitle,       SpacerView(height: 16),
+            pubTitle, SpacerView(height: 16),
             pubLabelParent, SpacerView(height: 22),
-            copyPubButton,  SpacerView(height: 16),
-            pubLabelDesc,   SpacerView(height: 20),
-            border,         SpacerView(height: 26),
-            titleStack,     SpacerView(height: 8),
+            copyPubButton, SpacerView(height: 16),
+            pubLabelDesc, SpacerView(height: 20),
+            border, SpacerView(height: 26),
+            titleStack, SpacerView(height: 8),
             secLabelParent, SpacerView(height: 22),
-            iCloudStack,    SpacerView(height: 22),
-            copySecButton,  SpacerView(height: 16),
-            secLabelDesc,   SpacerView(height: 20),
-            border2,        SpacerView(height: 32),
-            dangerStack,    SpacerView(height: 12),
-            dangerDesc,     SpacerView(height: 16),
+            iCloudStack, SpacerView(height: 22),
+            copySecButton, SpacerView(height: 16),
+            secLabelDesc, SpacerView(height: 20),
+            border2, SpacerView(height: 32),
+            dangerStack, SpacerView(height: 12),
+            dangerDesc, SpacerView(height: 16),
             deleteButton
         ])
         
@@ -264,7 +263,7 @@ private extension SettingsNsecViewController {
                 return
             }
             
-            context.evaluatePolicy(.deviceOwnerAuthentication, localizedReason: "Authenticate with passcode") { success, authError in
+            context.evaluatePolicy(.deviceOwnerAuthentication, localizedReason: "Authenticate with passcode") { success, _ in
                 DispatchQueue.main.async {
                     completion(success)
                     if success {

@@ -197,7 +197,7 @@ class SmallZapGalleryView: UIView, ZapGallery {
     func animateStacks() {
         layoutIfNeeded()
         
-        var zapAnimations: [String: () -> ()] = [:]
+        var zapAnimations: [String: () -> Void] = [:]
         
         let animationZapViews: [ZapGalleryChildView] = animationStack.findAllSubviews()
         for zapView in animationZapViews {
@@ -248,7 +248,7 @@ class SmallZapGalleryView: UIView, ZapGallery {
                         animatingPill.zapIcon.alpha = 0
                         animatingPill.zapIcon.isHidden = true
                         
-                        if newPill as? ZapAvatarView != nil {
+                        if newPill is ZapAvatarView {
                             animatingPill.amountLabel.alpha = 0
                             animatingPill.amountLabel.isHidden = true
                         }
@@ -256,7 +256,7 @@ class SmallZapGalleryView: UIView, ZapGallery {
                     
                     UIView.animate(withDuration: 12 / 30) {
                         animatingPill.label.isHidden = true
-                        if newPill as? ZapAvatarView != nil {
+                        if newPill is ZapAvatarView {
                             animatingPill.endSpacer.isHidden = true
                             animatingPill.transform = .init(translationX: newOrigin.x - oldOrigin.x - 6, y: deltaY)
                         } else {
@@ -289,7 +289,6 @@ class SmallZapGalleryView: UIView, ZapGallery {
                 }
             }
         }
-        
         
         let regularZapViews: [ZapPillView] = stack.findAllSubviews()
         for pill in regularZapViews where zapAnimations[pill.zap.receiptId] == nil {

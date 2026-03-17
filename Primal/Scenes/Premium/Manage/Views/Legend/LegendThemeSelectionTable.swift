@@ -54,7 +54,6 @@ class LegendThemeSelectionTable: UIStackView {
     }
 }
 
-
 private class LegendThemeView: MyButton {
     var isCurrent: Bool = false {
         didSet {

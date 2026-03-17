@@ -80,7 +80,7 @@ final class NotificationCell: PostCell, ElementReactionsCell {
             if titleLabel.superview != auxParent {
                 titleLabel.removeFromSuperview()
                 auxParent.addSubview(titleLabel)
-                titleLabel.pinToSuperview()//edges: .horizontal).centerToSuperview(axis: .vertical)
+                titleLabel.pinToSuperview()// edges: .horizontal).centerToSuperview(axis: .vertical)
             }
         } else {
             auxParent.isHidden = true
@@ -110,7 +110,6 @@ final class NotificationCell: PostCell, ElementReactionsCell {
         
         seeMoreLabel.isHidden = !mainLabel.isTruncated()
     }
-    
     
 }
 

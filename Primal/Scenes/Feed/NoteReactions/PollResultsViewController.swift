@@ -133,7 +133,7 @@ extension PollResultsViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         guard let item = datasource.itemIdentifier(for: indexPath) else { return }
         switch item {
-        case .option(_, _, _):
+        case .option:
             selectOption(indexPath.row)
         case .vote(let vote):
             switch vote {

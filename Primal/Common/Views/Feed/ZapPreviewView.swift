@@ -30,7 +30,6 @@ final class ZapPreviewView: UIView, Themeable {
     let zapAmount = UILabel()
     let zapText = UILabel()
     
-    
     init() {
         super.init(frame: .zero)
         setup()

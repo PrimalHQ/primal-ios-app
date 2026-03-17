@@ -8,8 +8,8 @@
 import Foundation
 import UIKit
 
-fileprivate let nwcDeeplinkPrefix = "nostrnwc:"
-fileprivate let nwcPrimalDeeplinkPrefix = "nostrnwc+primal:"
+private let nwcDeeplinkPrefix = "nostrnwc:"
+private let nwcPrimalDeeplinkPrefix = "nostrnwc+primal:"
 
 final class NWCSchemeDeeplinkHandler: DeeplinkHandlerProtocol {
     func canOpenURL(_ url: URL) -> Bool {

@@ -20,7 +20,7 @@ extension UIView {
 
     func takeScreenshot() -> UIImage? {
         let renderer = UIGraphicsImageRenderer(bounds: bounds)
-        return renderer.image { context in
+        return renderer.image { _ in
             drawHierarchy(in: bounds, afterScreenUpdates: true)
         }
     }
@@ -66,7 +66,7 @@ extension UIView {
     
     func setAnchorPoint(_ point: CGPoint) {
         var newPoint = CGPoint(x: bounds.size.width * point.x, y: bounds.size.height * point.y)
-        var oldPoint = CGPoint(x: bounds.size.width * layer.anchorPoint.x, y: bounds.size.height * layer.anchorPoint.y);
+        var oldPoint = CGPoint(x: bounds.size.width * layer.anchorPoint.x, y: bounds.size.height * layer.anchorPoint.y)
 
         newPoint = newPoint.applying(transform)
         oldPoint = oldPoint.applying(transform)

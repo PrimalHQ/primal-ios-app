@@ -102,10 +102,10 @@ private extension ProfileShowQRController {
         
         let stack = UIStackView(axis: .vertical, [
             SpacerView(height: 70, priority: .init(1)),
-            userInfo,   SpacerView(height: 26),
+            userInfo, SpacerView(height: 26),
             tabParent,
-            qrParent,   SpacerView(height: 20),
-            copyView,  SpacerView(height: 12),
+            qrParent, SpacerView(height: 20),
+            copyView, SpacerView(height: 12),
             UIView(),
             action
         ])
@@ -189,7 +189,7 @@ private extension ProfileShowQRController {
             button.addAction(.init(handler: { [weak self] _ in
                 guard let self else { return }
                 
-                zip(buttons, options).forEach { (buttonTuple, option) in
+                zip(buttons, options).forEach { (buttonTuple, _) in
                     buttonTuple.0.isHidden = buttonTuple.0 == button
                     buttonTuple.1.isHidden = buttonTuple.0 != button
                 }

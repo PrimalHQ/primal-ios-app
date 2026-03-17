@@ -9,12 +9,12 @@ import UIKit
 
 final class ThemeableLabel: UILabel, Themeable {
     @discardableResult
-    func setTheme(_ theme: @escaping (ThemeableLabel) -> ()) -> Self {
+    func setTheme(_ theme: @escaping (ThemeableLabel) -> Void) -> Self {
         self.theme = theme
         return self
     }
     
-    var theme: (ThemeableLabel) -> () = { _ in } {
+    var theme: (ThemeableLabel) -> Void = { _ in } {
         didSet {
             theme(self)
         }
@@ -35,12 +35,12 @@ final class ThemeableLabel: UILabel, Themeable {
 }
 
 final class ThemeableView: UIView, Themeable {
-    func setTheme(_ theme: @escaping (ThemeableView) -> ()) -> Self {
+    func setTheme(_ theme: @escaping (ThemeableView) -> Void) -> Self {
         self.theme = theme
         return self
     }
     
-    var theme: (ThemeableView) -> () = { _ in } {
+    var theme: (ThemeableView) -> Void = { _ in } {
         didSet {
             theme(self)
         }
@@ -51,15 +51,14 @@ final class ThemeableView: UIView, Themeable {
     }
 }
 
-
 final class ThemeableImageView: UIImageView, Themeable {
     @discardableResult
-    func setTheme(_ theme: @escaping (ThemeableImageView) -> ()) -> Self {
+    func setTheme(_ theme: @escaping (ThemeableImageView) -> Void) -> Self {
         self.theme = theme
         return self
     }
     
-    var theme: (ThemeableImageView) -> () = { _ in } {
+    var theme: (ThemeableImageView) -> Void = { _ in } {
         didSet {
             theme(self)
         }
@@ -71,12 +70,12 @@ final class ThemeableImageView: UIImageView, Themeable {
 }
 
 final class ThemeableButton: UIButton, Themeable {
-    func setTheme(_ theme: @escaping (ThemeableButton) -> ()) -> Self {
+    func setTheme(_ theme: @escaping (ThemeableButton) -> Void) -> Self {
         self.theme = theme
         return self
     }
     
-    var theme: (ThemeableButton) -> () = { _ in } {
+    var theme: (ThemeableButton) -> Void = { _ in } {
         didSet {
             theme(self)
         }

@@ -37,7 +37,7 @@ extension NKeypair {
             return nil
         }
 
-        var hexPrivkey: String? = nil
+        var hexPrivkey: String?
         if let n = nsec {
             guard
                 let decodedHexPrivkey = try? bech32_decode(n)
@@ -107,7 +107,7 @@ extension HexKeypair {
             return nil
         }
         
-        var nsec: String? = nil
+        var nsec: String?
         
         if let h = hexPrivkey {
             guard let n = bech32_privkey(h) else {

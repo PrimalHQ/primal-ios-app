@@ -73,7 +73,7 @@ final class BookmarkManager {
                 
                 if datedBookmarks.array == bookmarks { return } // Don't update if same
                 
-                self.sendBatchEvent(bookmarks, errorHandler:  {
+                self.sendBatchEvent(bookmarks, errorHandler: {
                     self.tagsToBookmark.insert(contentsOf: hexesB, at: 0)
                     self.tagsToUnbookmark = self.tagsToUnbookmark.union(hexesU)
                 })

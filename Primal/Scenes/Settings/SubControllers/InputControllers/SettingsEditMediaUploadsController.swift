@@ -85,7 +85,7 @@ private extension SettingsEditMediaUploadsController {
         let stack = UIStackView(axis: .vertical, [
             titleView, SpacerView(height: 8),
             blossomServerInput, SpacerView(height: 30),
-            titleLabel("Suggested media servers"), SpacerView(height: 8),
+            titleLabel("Suggested media servers"), SpacerView(height: 8)
         ])
         
         let scroll = UIScrollView()

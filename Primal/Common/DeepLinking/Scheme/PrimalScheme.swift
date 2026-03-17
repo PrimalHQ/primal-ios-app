@@ -4,7 +4,7 @@
 
 import Foundation
 
-fileprivate let primalDeeplinkPrefix = "primal:"
+private let primalDeeplinkPrefix = "primal:"
 
 final class PrimalSchemeDeeplinkHandler: DeeplinkHandlerProtocol {
     func canOpenURL(_ url: URL) -> Bool {

@@ -67,7 +67,7 @@ class ProfileFeedDatasource: UITableViewDiffableDataSource<TwoSectionFeed, Profi
     
     var cancellables: Set<AnyCancellable> = []
     
-    init(profile: ParsedUser, tableView: UITableView, delegate: FeedElementCellDelegate & ArticleCellDelegate & MediaTripleCellDelegate & ProfileInfoCellDelegate & MutedUserCellDelegate & LivePreviewFeedCellDelegate, refreshCallback: @escaping () -> ()) {
+    init(profile: ParsedUser, tableView: UITableView, delegate: FeedElementCellDelegate & ArticleCellDelegate & MediaTripleCellDelegate & ProfileInfoCellDelegate & MutedUserCellDelegate & LivePreviewFeedCellDelegate, refreshCallback: @escaping () -> Void) {
         self.profile = profile
         parsedDescription = NSAttributedString(string: profile.data.about.trimmingCharacters(in: .whitespacesAndNewlines), attributes: aboutTextAttributes)
         
@@ -272,7 +272,7 @@ private extension ProfileFeedDatasource {
                         let range = (aboutText as NSString).range(of: replacementString)
                         if range.location != NSNotFound {
                             attributedString.addAttributes([
-                                .link : URL(string: "mention://\(profile.data.pubkey)") ?? .homeDirectory,
+                                .link: URL(string: "mention://\(profile.data.pubkey)") ?? .homeDirectory,
                                 .foregroundColor: UIColor.accent2
                             ], range: range)
                         }

@@ -59,8 +59,7 @@ final class PrimalEndpointsManager {
         if  NetworkSettings.cacheServerOverrideURL == nil,
             let urlString = result.mobile_cache_server_v1.first,
             let url = URL(string: urlString),
-            Connection.regular.socketURL.absoluteString != url.absoluteString
-        {
+            Connection.regular.socketURL.absoluteString != url.absoluteString {
             Connection.regular.socketURL = url
         }
         

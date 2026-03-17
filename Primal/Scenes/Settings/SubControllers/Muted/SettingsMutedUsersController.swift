@@ -129,7 +129,6 @@ extension SettingsMutedUsersController: UnmuteUserCellDelegate {
     }
 }
 
-
 final class EmptyMuteListCell: UITableViewCell, Themeable {
     let label = UILabel()
     

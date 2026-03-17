@@ -65,7 +65,7 @@ final class VideoPlaybackManager: NSObject {
                 guard let live = self?.currentlyPlayingVideo?.live, !isMuted else {
                     MPNowPlayingInfoCenter.default().nowPlayingInfo = nil
                     UIApplication.shared.endReceivingRemoteControlEvents()
-                    if currentlyPlaying as? VideoPlayer != nil {
+                    if currentlyPlaying is VideoPlayer {
                         self?.avCategory = isMuted ? .ambient : .playback
                     }
                     return

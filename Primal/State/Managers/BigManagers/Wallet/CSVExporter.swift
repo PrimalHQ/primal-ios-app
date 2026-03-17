@@ -20,7 +20,7 @@ class CSVExporter {
 
     // MARK: - CSV headers
     private static let csvHeaders = [
-        "Type", "Amount", "Fee", "State", "TransactionDate", "Note", "TransactionId", "Invoice",
+        "Type", "Amount", "Fee", "State", "TransactionDate", "Note", "TransactionId", "Invoice"
     ]
 
     // MARK: - CSV building
@@ -45,7 +45,7 @@ class CSVExporter {
             tx.completedAt.map { dateFormatter.string(from: Date(timeIntervalSince1970: TimeInterval($0.int64Value))) },
             tx.note,
             tx.transactionId,
-            tx.invoice,
+            tx.invoice
         ]
 
         return values.map(csvEscaped).joined(separator: ",")

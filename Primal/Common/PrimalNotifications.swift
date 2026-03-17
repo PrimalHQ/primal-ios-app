@@ -23,6 +23,6 @@ extension Notification.Name {
     static let userMuted = Notification.Name("userMutedNotification")
 }
 
-func notify(_ name: Notification.Name, _ object: Any? = nil, userInfo: [AnyHashable : Any]? = nil) {
+func notify(_ name: Notification.Name, _ object: Any? = nil, userInfo: [AnyHashable: Any]? = nil) {
     NotificationCenter.default.post(name: name, object: object, userInfo: userInfo)
 }

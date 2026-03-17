@@ -83,7 +83,6 @@ class TransactionViewDatasource: UITableViewDiffableDataSource<TwoSectionFeed, T
     
     private var cancellables: Set<AnyCancellable> = []
     
-    
     let transaction: PrimalShared.Transaction
     init(transaction: PrimalShared.Transaction, tableView: UITableView, delegate: FeedElementCellDelegate) {
         self.transaction = transaction
@@ -192,7 +191,7 @@ class TransactionViewDatasource: UITableViewDiffableDataSource<TwoSectionFeed, T
         
         var cells: [TransactionCellType] = [
             .amount(Int((btcAmount * .BTC_TO_SAT).rounded()), incoming: isDeposit),
-            .title(isDeposit ? "RECEIVED FROM" : "SENT TO"),
+            .title(isDeposit ? "RECEIVED FROM" : "SENT TO")
         ]
         
         if let zap = transaction as? Transaction.Zap, let user = zap.otherUserProfile {
@@ -237,7 +236,6 @@ class TransactionViewDatasource: UITableViewDiffableDataSource<TwoSectionFeed, T
                 .article(article)
             ]
         }
-        
         
         if !noteSectionCells.isEmpty {
             cells += [.title("ZAPPED NOTE")]

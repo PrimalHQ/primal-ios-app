@@ -32,7 +32,7 @@ class LargeZapGalleryView: UIView, ZapGallery {
     let stack = UIStackView()
     let animationStack = UIStackView()
     
-    var zapPillTapCallback: () -> ()
+    var zapPillTapCallback: () -> Void
     
     var zappingType = "article"
     
@@ -50,7 +50,7 @@ class LargeZapGalleryView: UIView, ZapGallery {
     
     var lastShownZapIds: [String] = []
     
-    init(zapTapCallback: @escaping () -> ()) {
+    init(zapTapCallback: @escaping () -> Void) {
         zapPillTapCallback = zapTapCallback
         super.init(frame: .zero)
         [animationStack, stack].forEach {
@@ -163,7 +163,7 @@ class LargeZapGalleryView: UIView, ZapGallery {
         layoutIfNeeded()
         animationStack.layoutIfNeeded()
         
-        var zapAnimations: [String: () -> ()] = [:]
+        var zapAnimations: [String: () -> Void] = [:]
 
         for view in animationStack.arrangedSubviews {
             guard let stack = view as? UIStackView else { continue }

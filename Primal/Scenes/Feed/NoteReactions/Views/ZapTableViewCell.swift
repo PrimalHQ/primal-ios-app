@@ -84,7 +84,7 @@ final class ZapTableViewCell: UITableViewCell, Themeable, UIContextMenuInteracti
     }
     
     func contextMenuInteraction(_ interaction: UIContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> UIContextMenuConfiguration? {
-        .init(identifier: nil, previewProvider: nil) { [weak self] suggestedActions in
+        .init(identifier: nil, previewProvider: nil) { [weak self] _ in
             guard let self else { return nil }
             return delegate?.contextMenuForZapCell(self)
         }

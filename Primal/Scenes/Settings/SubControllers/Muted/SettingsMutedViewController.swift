@@ -30,7 +30,7 @@ class SettingsMutedViewController: PrimalPageController {
             ("USERS", { SettingsMutedUsersController() }),
             ("WORDS", { SettingsMutedWordsController(option: .word) }),
             ("HASHTAGS", { SettingsMutedWordsController(option: .hashtag) }),
-            ("THREADS", { SettingsMutedFeedController() }),
+            ("THREADS", { SettingsMutedFeedController() })
         ], extraViews: [])
     }
     

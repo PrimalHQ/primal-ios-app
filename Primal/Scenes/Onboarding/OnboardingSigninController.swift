@@ -50,7 +50,7 @@ final class OnboardingSigninController: OnboardingBaseViewController {
             self?.validateAndProcessKey()
         }
 
-        foregroundObserver = NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main) { [weak self] notification in
+        foregroundObserver = NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main) { [weak self] _ in
             self?.validateAndProcessKey()
         }
     }
@@ -102,9 +102,9 @@ private extension OnboardingSigninController {
         addBackground()
         
         let textStack = UIStackView(arrangedSubviews: [
-            infoView,    SpacerView(height: 12, priority: .required), SpacerView(height: 16, priority: .defaultLow),
+            infoView, SpacerView(height: 12, priority: .required), SpacerView(height: 16, priority: .defaultLow),
             instruction, SpacerView(height: 12, priority: .defaultHigh),
-            input,       SpacerView(height: 12, priority: .required),
+            input, SpacerView(height: 12, priority: .required),
             iCloudStack
         ])
         iCloudStack.alignment = .center
@@ -260,8 +260,7 @@ private extension OnboardingSigninController {
         if iCloudSwitch.isOn {
             if let hexPrivkey = HexKeypair.nsecToHexPrivkey(nsec),
                let hexPubkey = HexKeypair.privkeyToPubkey(hexPrivkey),
-               let keypair = HexKeypair.nostrKeypair(hexPubkey: hexPubkey, hexPrivkey: hexPrivkey)
-            {
+               let keypair = HexKeypair.nostrKeypair(hexPubkey: hexPubkey, hexPrivkey: hexPrivkey) {
                 let npub = keypair.nVariant.npub
                 let nsec = keypair.nVariant.nsec
                 _ = ICloudKeychainManager.instance.onlineSaveNpub(npub, nsec: nsec)

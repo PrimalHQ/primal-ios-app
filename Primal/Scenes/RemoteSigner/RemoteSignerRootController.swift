@@ -80,7 +80,7 @@ class RemoteSignerRootController: UIViewController {
         super.init(nibName: nil, bundle: nil)
         
         if let sheet = sheetPresentationController {
-            sheet.detents = [.custom(resolver: { [weak self] context in
+            sheet.detents = [.custom(resolver: { [weak self] _ in
                 return self?.child.preferredContentSize.height ?? 600
             }), .large()]
             sheet.prefersGrabberVisible = true // Add a grabber for resizing

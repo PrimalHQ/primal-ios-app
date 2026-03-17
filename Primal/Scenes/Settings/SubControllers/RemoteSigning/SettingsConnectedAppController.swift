@@ -29,7 +29,7 @@ class SettingsConnectedAppController: UIViewController {
             case .mainInfo:         return RemoteSignerConnectionInfoActionCell.reuseID
             case .autoStart:        return RemoteSignerConnectionAutostartCell.reuseID
             case .trust:            return RemoteSignerConnectionTrustCell.reuseID
-            case .permissionDetails:return RemoteSignerConnectionSimpleAccentCell.reuseID
+            case .permissionDetails: return RemoteSignerConnectionSimpleAccentCell.reuseID
             case .session:          return RemoteSignerConnectionSessionCell.reuseID
             }
         }

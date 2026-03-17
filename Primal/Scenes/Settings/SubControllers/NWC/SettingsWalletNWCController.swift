@@ -145,7 +145,7 @@ final class SettingsConnectedAppsView: UIView, Themeable {
     let nameLabel: UILabel
     let budgetLabel: UILabel
     
-    init(name: String, budget: String, deleteCallback: @escaping () -> ()) {
+    init(name: String, budget: String, deleteCallback: @escaping () -> Void) {
         nameLabel = UILabel(name, color: .foreground, font: .appFont(withSize: 15, weight: .regular))
         budgetLabel = UILabel(budget, color: .foreground, font: .appFont(withSize: 15, weight: .regular))
         

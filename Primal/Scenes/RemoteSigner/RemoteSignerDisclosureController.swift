@@ -92,7 +92,7 @@ class RemoteSignerDisclosureController: UIViewController {
             SpacerView(height: 20),
             UILabel("Sound settings are adjustable in the dynamic island and on the lock screen.", color: .foreground3, font: .appFont(withSize: 16, weight: .regular), multiline: true),
             SpacerView(height: 6),
-            SpacerView(height: 6),
+            SpacerView(height: 6)
         ])
         contentStack.distribution = .equalSpacing
         contentStack.isLayoutMarginsRelativeArrangement = true
@@ -110,7 +110,6 @@ class RemoteSignerDisclosureController: UIViewController {
         view.addSubview(contentView)
         contentView.centerToSuperview()
         contentView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 375 / realWidth).isActive = true
-        
         
         switchView.switchView.addAction(.init(handler: { [weak switchView, weak self] _ in
             if switchView?.switchView.isOn == false {

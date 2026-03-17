@@ -55,6 +55,6 @@ class WalletSpinnerView: PlayerView {
     }
     
     func stopLooping() {
-        //looper?.disableLooping()§
+        // looper?.disableLooping()§
     }
 }

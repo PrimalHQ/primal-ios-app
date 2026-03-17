@@ -209,7 +209,7 @@ extension ParsedContent {
             ("Copy Note Link", .menuCopyLink, .copy(.link), []),
             ("Copy Note Text", .menuCopyText, .copy(.content), []),
             ("Copy Note ID", .menuCopyNoteID, .copy(.noteID), []),
-            ("Copy Raw Data", .menuCopyData, .copy(.rawData), []),
+            ("Copy Raw Data", .menuCopyData, .copy(.rawData), [])
         ]
         actionsData.append(contentsOf: mainData)
         

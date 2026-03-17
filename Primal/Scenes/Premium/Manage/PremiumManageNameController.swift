@@ -106,8 +106,8 @@ private extension PremiumManageNameController {
                     
                     WalletManager.instance.refreshPremiumState()
                     
-                    guard let premium = navigationController?.viewControllers.first(where: { $0 as? PremiumViewController != nil }) else {
-                        navigationController?.viewControllers.removeAll(where: { $0 as? PremiumSearchNameController != nil })
+                    guard let premium = navigationController?.viewControllers.first(where: { $0 is PremiumViewController }) else {
+                        navigationController?.viewControllers.removeAll(where: { $0 is PremiumSearchNameController })
                         return
                     }
                     navigationController?.popToViewController(premium, animated: true)

@@ -94,7 +94,6 @@ extension ProfileScanQRController: AVCaptureMetadataOutputObjectsDelegate {
     }
 }
 
-
 private extension ProfileScanQRController {
     func setup() {
         addBackground()
@@ -149,7 +148,6 @@ extension QRCaptureController {
         }
     }
 
-
     func setUpCaptureSession() async {
         guard await isAuthorized else {
             Task { @MainActor in
@@ -157,7 +155,7 @@ extension QRCaptureController {
                 info.addAction(.init(title: "OK", style: .cancel))
                 info.addAction(.init(title: "Go To Settings", style: .default) { _ in
                     guard
-                        let url = URL(string:UIApplication.openSettingsURLString),
+                        let url = URL(string: UIApplication.openSettingsURLString),
                         UIApplication.shared.canOpenURL(url)
                     else { return }
 

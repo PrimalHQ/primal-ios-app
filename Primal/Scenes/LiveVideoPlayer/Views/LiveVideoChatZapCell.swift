@@ -33,7 +33,6 @@ class LiveVideoChatZapCell: UITableViewCell {
     }
 }
 
-
 class LiveVideoChatZapView: UIView {
     let userImage = UserImageView(height: 24)
     let userNameLabel = UILabel("", color: .gold, font: .appFont(withSize: 16, weight: .bold))

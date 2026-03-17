@@ -58,7 +58,7 @@ class LegendListController: PrimalPageController {
         
         SocketRequest(name: "membership_legends_leaderboard", payload: [
             "limit": 1000,
-            "order_by": "donated_btc",
+            "order_by": "donated_btc"
         ])
         .publisher()
         .receive(on: DispatchQueue.main)
@@ -95,7 +95,6 @@ class LegendListController: PrimalPageController {
         navigationItem.leftBarButtonItem = customBackButton
     }
 }
-
 
 class LegendListTableController: UITableViewController, Themeable {
     var legends: [LegendListItem] = [] { didSet { tableView.reloadData() } }
@@ -138,7 +137,6 @@ class LegendListTableController: UITableViewController, Themeable {
         tableView.reloadData()
     }
 }
-
 
 class LegendListTableViewCell: UITableViewCell, Themeable {
     let indexLabel = UILabel()
@@ -219,4 +217,3 @@ class LegendListTableViewCell: UITableViewCell, Themeable {
         borderView.backgroundColor = .background3
     }
 }
-

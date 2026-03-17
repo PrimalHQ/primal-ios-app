@@ -65,7 +65,7 @@ final class ExplorePeopleHeaderCell: UITableViewCell, Themeable {
         largeImageView.kf.setImage(with: userList.imageData.url(for: .medium), options: [
             .cacheOriginalImage,
             .processor(DownsamplingImageProcessor(size: CGSize(width: contentView.frame.width - 56, height: 130))),
-            .scaleFactor(UIScreen.main.scale),
+            .scaleFactor(UIScreen.main.scale)
         ])
         
         titleLabel.text = userList.name
@@ -108,10 +108,10 @@ private extension ExplorePeopleHeaderCell {
         actionStack.spacing = 12
         
         let mainStack = UIStackView(axis: .vertical, [
-            largeImageView,     SpacerView(height: 12),
-            titleLabel,         SpacerView(height: 8),
-            descLabel,          SpacerView(height: 14),
-            userRow,            SpacerView(height: 14),
+            largeImageView, SpacerView(height: 12),
+            titleLabel, SpacerView(height: 8),
+            descLabel, SpacerView(height: 14),
+            userRow, SpacerView(height: 14),
             actionStack
         ])
         

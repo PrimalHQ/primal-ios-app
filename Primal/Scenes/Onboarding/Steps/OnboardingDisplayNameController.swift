@@ -119,11 +119,11 @@ private extension OnboardingDisplayNameController {
         
         aboutInput.attributedPlaceholder = NSAttributedString(string: "About You", attributes: [
             .font: UIFont.appFont(withSize: 16, weight: .semibold),
-            .foregroundColor: UIColor.black.withAlphaComponent(0.5),
+            .foregroundColor: UIColor.black.withAlphaComponent(0.5)
         ])
         displayNameInput.attributedPlaceholder = NSAttributedString(string: "Display Name", attributes: [
             .font: UIFont.appFont(withSize: 16, weight: .semibold),
-            .foregroundColor: UIColor.black.withAlphaComponent(0.5),
+            .foregroundColor: UIColor.black.withAlphaComponent(0.5)
         ])
         
         textFields.forEach {

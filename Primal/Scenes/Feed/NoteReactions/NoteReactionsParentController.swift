@@ -35,7 +35,6 @@ class NoteReactionsParentController: UIViewController, Themeable {
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
-    
     func updateTheme() {
         view.backgroundColor = .background
      
@@ -78,7 +77,7 @@ private extension NoteReactionsParentController {
                 case .zaps:
                     pageVC.setViewControllers([zapsVC], direction: .reverse, animated: false)
                 case .likes:
-                    pageVC.setViewControllers([likesVC], direction: .forward , animated: false)
+                    pageVC.setViewControllers([likesVC], direction: .forward, animated: false)
                 case .reposts:
                     pageVC.setViewControllers([repostsVC], direction: .forward, animated: false)
                 }

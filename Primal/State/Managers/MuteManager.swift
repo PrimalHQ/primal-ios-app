@@ -37,7 +37,7 @@ final class MuteManager {
         let complexPublisher = Publishers.Merge(pubkeyPublisher.first(), onlyPubkey.debounce(for: 1, scheduler: RunLoop.main)).removeDuplicates()
         
         complexPublisher
-            .sink(receiveValue: { [weak self] pubkey in
+            .sink(receiveValue: { [weak self] _ in
                 self?.muteTags = []
                 self?.requestMuteList()
             })

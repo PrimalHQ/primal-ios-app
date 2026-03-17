@@ -7,7 +7,6 @@
 
 import UIKit
 
-
 final class BindableTapGestureRecognizer: UITapGestureRecognizer {
     private let action: () -> Void
 

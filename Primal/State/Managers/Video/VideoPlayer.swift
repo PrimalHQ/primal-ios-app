@@ -80,7 +80,7 @@ class VideoPlayer: NSObject, PlayerProtocol {
         player.actionAtItemEnd = .none
         player.isMuted = true
         
-        playerItemObserver = item.observe(\.status, options: [.new, .initial]) { [weak self] player, value in
+        playerItemObserver = item.observe(\.status, options: [.new, .initial]) { [weak self] _, value in
             guard case .failed = value.newValue else { return }
             
             self?.attemptBlossomLoad()
@@ -123,7 +123,7 @@ class VideoPlayer: NSObject, PlayerProtocol {
         let item = AVPlayerItem(url: finalURL)
         avPlayer = .init(playerItem: item)
         url = finalURL.absoluteString
-        playerItemObserver = item.observe(\.status, options: [.new, .initial]) { [weak self] player, value in
+        playerItemObserver = item.observe(\.status, options: [.new, .initial]) { [weak self] _, value in
             guard case .failed = value.newValue else { return }
             
             self?.attemptBlossomLoad()

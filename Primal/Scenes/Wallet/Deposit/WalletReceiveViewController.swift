@@ -316,17 +316,17 @@ private extension WalletReceiveViewController {
         actionStack.distribution = .fillEqually
         
         [
-            amountParent,               SpacerView(height: 26),
-            ludDescLabel,               SpacerView(height: 4, priority: .required),
-            ludLabel,                   SpacerView(height: 20), SpacerView(height: 8, priority: .required),
+            amountParent, SpacerView(height: 26),
+            ludDescLabel, SpacerView(height: 4, priority: .required),
+            ludLabel, SpacerView(height: 20), SpacerView(height: 8, priority: .required),
             descDescLabel, descLabel
         ].forEach { infoStack.addArrangedSubview($0) }
         
         [
             SpacerView(height: 44),
-            parentParent,               SpacerView(height: 18), SpacerView(height: 8, priority: .required),
-            infoStack,                  SpacerView(height: 20), SpacerView(height: 8, priority: .required),
-            actionStack,                SpacerView(height: 30, priority: .required),
+            parentParent, SpacerView(height: 18), SpacerView(height: 8, priority: .required),
+            infoStack, SpacerView(height: 20), SpacerView(height: 8, priority: .required),
+            actionStack, SpacerView(height: 30, priority: .required),
             UIView()
         ].forEach { mainStack.addArrangedSubview($0) }
         
@@ -419,7 +419,6 @@ final class WalletActionButton: UIButton, Themeable {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
     
     func updateTheme() {
         setTitleColor(.foreground, for: .normal)

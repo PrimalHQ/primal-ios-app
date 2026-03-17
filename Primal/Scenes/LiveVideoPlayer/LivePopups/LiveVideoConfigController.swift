@@ -73,11 +73,6 @@ class LiveVideoConfigController: UIViewController, Themeable {
         view.addGestureRecognizer(LivePopupDismissGesture(vc: self))
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
-    }
-    
     func updateTheme() {
         view.backgroundColor = .background4
         backgroundExtender.backgroundColor = .background4

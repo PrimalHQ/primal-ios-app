@@ -122,7 +122,6 @@ final class ICloudKeychainManager {
             return false
         }
         
-        
         if online {
             return onlineSaveNpub(npub, nsec: nsec)
         }

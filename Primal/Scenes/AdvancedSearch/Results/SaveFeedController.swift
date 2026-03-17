@@ -14,9 +14,9 @@ class SaveFeedController: UIViewController {
     lazy var nameInput = inputView(feed.name)
     lazy var descInput = inputView(feed.description)
     
-    let callback: () -> ()
+    let callback: () -> Void
     
-    init(feedType: PrimalFeedType, feed: PrimalFeed, callback: @escaping () -> ()) {
+    init(feedType: PrimalFeedType, feed: PrimalFeed, callback: @escaping () -> Void) {
         self.feedType = feedType
         self.feed = feed
         self.callback = callback
@@ -32,9 +32,9 @@ class SaveFeedController: UIViewController {
         
         if let sheetPresentationController {
             sheetPresentationController.detents = [
-                .custom(resolver: { context in
+                .custom(resolver: { _ in
                     return 355
-                }),
+                })
             ]
         }
         

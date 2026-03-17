@@ -39,12 +39,6 @@ class MainThreadElementTextCell: ThreadElementBaseCell, RegularFeedElementCell {
         
         updateTheme()
     }
-    
-    override func updateTheme() {
-        super.updateTheme()
-        
-//        mainLabel.font = UIFont.appFont(withSize: FontSizeSelection.current.contentFontSize, weight: .regular)
-    }
 }
 
 private extension MainThreadElementTextCell {

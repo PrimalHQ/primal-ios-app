@@ -201,7 +201,7 @@ class UserImageView: UIView, Themeable {
         self.url = originalURL
         
         animatedImageView.kf.setImage(with: url, placeholder: UIImage.profile, options: [
-            .processor(DownsamplingImageProcessor(size:  .init(width: height, height: height))),
+            .processor(DownsamplingImageProcessor(size: .init(width: height, height: height))),
             .transition(.fade(0.2)),
             .scaleFactor(UIScreen.main.scale),
             .cacheOriginalImage
@@ -215,7 +215,7 @@ class UserImageView: UIView, Themeable {
     func attemptOriginalLoad(originalURL: String, userPubkey: String) {
         guard url == originalURL else { return }
         animatedImageView.kf.setImage(with: URL(string: originalURL), placeholder: UIImage.profile, options: [
-            .processor(DownsamplingImageProcessor(size:  .init(width: height, height: height))),
+            .processor(DownsamplingImageProcessor(size: .init(width: height, height: height))),
             .transition(.fade(0.2)),
             .scaleFactor(UIScreen.main.scale),
             .cacheOriginalImage
@@ -244,7 +244,7 @@ class UserImageView: UIView, Themeable {
         }
         
         animatedImageView.kf.setImage(with: finalURL, placeholder: UIImage.profile, options: [
-            .processor(DownsamplingImageProcessor(size:  .init(width: height, height: height))),
+            .processor(DownsamplingImageProcessor(size: .init(width: height, height: height))),
             .transition(.fade(0.2)),
             .scaleFactor(UIScreen.main.scale),
             .cacheOriginalImage

@@ -23,7 +23,7 @@ class SearchFeedDatasource: UITableViewDiffableDataSource<TwoSectionFeed, Search
     var cellCount: Int { cells.count }
     
     let showPremiumCard: Bool
-    init(showPremiumCard: Bool, tableView: UITableView, delegate: FeedElementCellDelegate & SearchPremiumCellDelegate, refreshCallback: @escaping () -> ()) {
+    init(showPremiumCard: Bool, tableView: UITableView, delegate: FeedElementCellDelegate & SearchPremiumCellDelegate, refreshCallback: @escaping () -> Void) {
         self.showPremiumCard = showPremiumCard
         super.init(tableView: tableView) { [weak delegate] tableView, indexPath, item in
             let cell: UITableViewCell

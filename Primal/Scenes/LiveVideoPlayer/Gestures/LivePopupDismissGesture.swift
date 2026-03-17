@@ -34,13 +34,12 @@ class LivePopupDismissGesture: UIPanGestureRecognizer {
                     self.view?.transform = .identity
                 }
             }
-        default:
+            default:
             var y = trans.y
             if y < 0 {
                 y = -sqrt(-y) * 3
             }
             self.view?.transform = .init(translationX: 0, y: y)
-            break
         }
     }
 }

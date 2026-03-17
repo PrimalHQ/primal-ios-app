@@ -196,7 +196,7 @@ private extension NewPostViewController {
         
         NSLayoutConstraint.activate([
             keyboardConstraint,
-            textView.heightAnchor.constraint(greaterThanOrEqualToConstant: 90),
+            textView.heightAnchor.constraint(greaterThanOrEqualToConstant: 90)
         ])
         
         cancel.addAction(.init(handler: { [weak self] _ in
@@ -224,7 +224,7 @@ private extension NewPostViewController {
         imageButton.addTarget(self, action: #selector(galleryButtonPressed), for: .touchUpInside)
         cameraButton.addTarget(self, action: #selector(cameraButtonPressed), for: .touchUpInside)
         clearButton.addAction(.init(handler: { [weak self] _ in
-            if self?.manager.postingText.isEmpty == true  { return }
+            if self?.manager.postingText.isEmpty == true { return }
             
             let alert = UIAlertController(title: "Are you sure?", message: "Clear everything?", preferredStyle: .alert)
             alert.addAction(.init(title: "Cancel", style: .cancel))
@@ -293,4 +293,3 @@ extension NewPostViewController: UIAdaptivePresentationControllerDelegate {
         false
     }
 }
-

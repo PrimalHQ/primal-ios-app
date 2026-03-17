@@ -7,7 +7,7 @@
 
 import UIKit
 
-//class SunsetWave: AppTheme {
+// class SunsetWave: AppTheme {
 //    static let instance = SunsetWave()
 //    
 //    let kind: Theme = .midnightWave // .sunsetWave
@@ -44,4 +44,4 @@ import UIKit
 //    
 //    var shortTitle: String { "sunset" }
 //    var settingsImage: UIImage? { UIImage(named: "themeImageDark") }
-//}
+// }

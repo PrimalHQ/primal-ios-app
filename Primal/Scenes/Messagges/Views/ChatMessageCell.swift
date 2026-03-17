@@ -66,7 +66,7 @@ class ChatMessageCell: UITableViewCell, Themeable {
             if isMine {
                 labelBackground.layer.maskedCorners = [/*.layerMaxXMaxYCorner,*/ .layerMaxXMinYCorner, .layerMinXMaxYCorner, .layerMinXMinYCorner]
             } else {
-                labelBackground.layer.maskedCorners = [.layerMaxXMaxYCorner, .layerMaxXMinYCorner,/* .layerMinXMaxYCorner,*/ .layerMinXMinYCorner]
+                labelBackground.layer.maskedCorners = [.layerMaxXMaxYCorner, .layerMaxXMinYCorner, .layerMinXMinYCorner]
             }
         } else {
             if isMine {
@@ -113,7 +113,7 @@ class ChatMessageCell: UITableViewCell, Themeable {
 
 extension ChatMessageCell: UIContextMenuInteractionDelegate {
     func contextMenuInteraction(_ interaction: UIContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> UIContextMenuConfiguration? {
-        .init(identifier: nil, previewProvider: nil) { [weak self] suggestedActions in
+        .init(identifier: nil, previewProvider: nil) { [weak self] _ in
             guard let self else { return nil }
             return delegate?.contextMenuForMessageCell(self)
         }

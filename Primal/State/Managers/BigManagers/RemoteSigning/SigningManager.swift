@@ -16,7 +16,6 @@ enum SigningError: Error {
     case noNsec
 }
 
-
 extension SigningManager: NostrEventSignatureHandler {
     func __signNostrEvent(unsignedNostrEvent: NostrUnsignedEvent, completionHandler: @escaping @Sendable (SignResult?, (any Error)?) -> Void) {
         guard

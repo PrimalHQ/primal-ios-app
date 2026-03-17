@@ -54,7 +54,6 @@ class VideoPreviewController: UIViewController {
     }
 }
 
-
 protocol MenuImageViewDelegate: AnyObject {
     func imagePreviewTappedFromImageView(_ imageView: MenuImageView)
 }

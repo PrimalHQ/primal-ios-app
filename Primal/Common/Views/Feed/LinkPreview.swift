@@ -101,8 +101,8 @@ extension LinkPreview: UIContextMenuInteractionDelegate {
         return UIContextMenuConfiguration(identifier: nil, previewProvider: { [weak self] in
             guard let url = self?.data?.url else { return nil }
             return SFSafariViewController(url: url)
-        }, actionProvider: { [weak self] suggestedActions in
-            let share = UIAction(title: "Share", image: .menuShare) { action in
+        }, actionProvider: { [weak self] _ in
+            let share = UIAction(title: "Share", image: .menuShare) { _ in
                 guard let url = self?.data?.url else { return }
                 let activityViewController = UIActivityViewController(activityItems: [url], applicationActivities: nil)
                 RootViewController.instance.present(activityViewController, animated: true, completion: nil)

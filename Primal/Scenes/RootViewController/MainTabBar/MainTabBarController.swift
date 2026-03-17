@@ -451,7 +451,7 @@ private extension MainTabBarController {
                     guard let self, let to else { return }
                     RootViewController.instance.navigateTo = nil
                     
-                    let (vc, tab) : (UIViewController?, MainTab?) = {
+                    let (vc, tab): (UIViewController?, MainTab?) = {
                         switch to {
                         case .profile(let pubkey):
                             return (ProfileViewController(profile: .init(data: .init(pubkey: pubkey))), .home)

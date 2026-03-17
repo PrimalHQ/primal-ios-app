@@ -116,8 +116,7 @@ final class EditProfileViewController: UIViewController, Themeable {
 private extension EditProfileViewController {
     func updateIsUploading() {
         if  (isUploadingAvatar && avatarURL.isEmpty) ||
-            (didUploadBanner && bannerURL.isEmpty)
-        {
+            (didUploadBanner && bannerURL.isEmpty) {
             isUploading = true
             return
         }
@@ -155,7 +154,7 @@ private extension EditProfileViewController {
             FormHeaderView(title: "BITCOIN LIGHTNING ADDRESS", required: false),
             OnboardingInputParent(input: bitcoinInput).constrainToSize(height: 48), SpacerView(height: 12),
             FormHeaderView(title: "VERIFIED NOSTR ADDRESS (NIP-05)", required: false),
-            OnboardingInputParent(input: nip05Input).constrainToSize(height: 48), SpacerView(height: 12),
+            OnboardingInputParent(input: nip05Input).constrainToSize(height: 48), SpacerView(height: 12)
         ])
         formParent.addSubview(formStack)
         formStack.pinToSuperview(edges: .horizontal, padding: 35).pinToSuperview(edges: .vertical)

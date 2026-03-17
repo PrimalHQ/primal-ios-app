@@ -40,7 +40,7 @@ final class FollowManager {
                         
                         if responseContacts == contacts { return } // Don't update if same
                         
-                        self.sendBatchEvent(contacts, errorHandler:  {
+                        self.sendBatchEvent(contacts, errorHandler: {
                             self.pubkeysToFollow = self.pubkeysToFollow.union(pubkeysF)
                             self.pubkeysToUnfollow = self.pubkeysToUnfollow.union(pubkeysUF)
                         })
@@ -91,7 +91,7 @@ final class FollowManager {
     }
     
     func addRelay(url: String) {
-        IdentityManager.instance.requestUserContactsAndRelays() {
+        IdentityManager.instance.requestUserContactsAndRelays {
             var relays = IdentityManager.instance.userRelays ?? [:]
             relays[url] = .init(read: true, write: true)
             IdentityManager.instance.userRelays = relays

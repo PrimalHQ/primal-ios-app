@@ -119,7 +119,7 @@ final class KlipyManager {
         components?.queryItems = [
             URLQueryItem(name: "key", value: apiKey),
             URLQueryItem(name: "client_key", value: Self.clientKey),
-            URLQueryItem(name: "id", value: gif.id),
+            URLQueryItem(name: "id", value: gif.id)
         ]
 
         if let query = currentQuery {
@@ -153,7 +153,7 @@ final class KlipyManager {
             URLQueryItem(name: "client_key", value: Self.clientKey),
             URLQueryItem(name: "contentfilter", value: Self.contentFilter),
             URLQueryItem(name: "media_filter", value: Self.mediaFilter),
-            URLQueryItem(name: "limit", value: "30"),
+            URLQueryItem(name: "limit", value: "30")
         ]
         if let query {
             items.append(URLQueryItem(name: "q", value: query))

@@ -57,7 +57,7 @@ final class PublicBookmarksViewController: PrimalPageController {
 class EmptyTableViewCell: UITableViewCell {
     let view = EmptyTableView()
     
-    var refreshCallback: (() -> ())?
+    var refreshCallback: (() -> Void)?
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)

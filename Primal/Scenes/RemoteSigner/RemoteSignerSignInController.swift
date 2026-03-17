@@ -217,7 +217,7 @@ class RemoteSignerSignInController: UIViewController {
             contentStack.heightAnchor.constraint(equalTo: contentParent.heightAnchor),
             contentStack.widthAnchor.constraint(equalTo: contentParent.widthAnchor, multiplier: 2),
             leftContentStack.widthAnchor.constraint(equalTo: leftContentParent.widthAnchor, constant: -48),
-            rightContentStack.widthAnchor.constraint(equalTo: rightContentParent.widthAnchor, constant: -48),
+            rightContentStack.widthAnchor.constraint(equalTo: rightContentParent.widthAnchor, constant: -48)
         ])
 
         cancelButton.addAction(.init(handler: { [weak self] _ in

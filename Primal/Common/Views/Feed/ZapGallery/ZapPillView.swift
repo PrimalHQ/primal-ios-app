@@ -80,7 +80,6 @@ class ZapPillView: ZapGalleryChildView {
     }
 }
 
-
 class ZapPillTextView: ZapPillView {
     let label = UILabel()
     let zapIcon = UIImageView(image: UIImage(named: "topZapGalleryIcon"))

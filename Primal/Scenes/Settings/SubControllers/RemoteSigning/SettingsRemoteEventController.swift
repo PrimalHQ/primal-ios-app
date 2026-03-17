@@ -75,7 +75,6 @@ class SettingsRemoteEventController: UIViewController {
     }
 }
 
-
 // MARK: - Theme
 extension SettingsRemoteEventController: Themeable {
     func updateTheme() {

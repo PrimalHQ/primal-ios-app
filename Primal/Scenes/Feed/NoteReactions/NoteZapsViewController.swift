@@ -104,13 +104,12 @@ extension NoteZapsViewController: ZapTableViewCellDelegate {
             !zap.message.isEmpty
         else { return nil }
         
-        
         var items: [UIAction] = [
             UIAction(title: NSLocalizedString("Copy text", comment: ""), image: UIImage(named: "MenuCopyText")) { [weak self] _ in
                 UIPasteboard.general.string = zap.message
                 
                 self?.view.showToast("Copied!", extraPadding: 0)
-            },
+            }
         ]
         
         if zap.message.isValidURL, let url = URL(string: zap.message) {
@@ -128,4 +127,3 @@ extension NoteZapsViewController: UITableViewDelegate {
         show(ProfileViewController(profile: zaps[indexPath.row].user), sender: nil)
     }
 }
-

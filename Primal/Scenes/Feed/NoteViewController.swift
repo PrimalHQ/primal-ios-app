@@ -536,7 +536,7 @@ private extension NoteViewController {
         
         updateTheme()
         
-        barForegroundObserver = NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main) { [weak self] notification in
+        barForegroundObserver = NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main) { [weak self] _ in
             // This is the only way it works, otherwise it gets stuck
             DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
                 guard let self else { return }
@@ -757,8 +757,7 @@ extension NoteViewController: PostCellDelegate {
         }
         if let multiCell = current as? MultipleImageGalleryCell,
                   let index = post.mediaResources.firstIndex(where: { $0.url == resource.url }),
-                  let imageView = multiCell.imageViews[safe: index]?.display
-        {
+                  let imageView = multiCell.imageViews[safe: index]?.display {
             ImageGalleryController(current: resource, all: allImages).present(from: self, imageView: imageView)
             return
         }
@@ -780,8 +779,7 @@ extension NoteViewController: PostCellDelegate {
             return
         } else if let multiCell = current as? MultipleImageGalleryCell,
                   let index = embeddedPost.mediaResources.firstIndex(where: { $0.url == resource.url }),
-                  let imageView = multiCell.imageViews[safe: index]?.display
-        {
+                  let imageView = multiCell.imageViews[safe: index]?.display {
             ImageGalleryController(current: resource, all: allImages).present(from: self, imageView: imageView)
             return
         }

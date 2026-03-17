@@ -67,8 +67,7 @@ open class AnimatedImageCache {
 
     public init(
         memoryStorage: MemoryStorage.Backend<FLAnimatedImage>,
-        diskStorage: DiskStorage.Backend<Data>)
-    {
+        diskStorage: DiskStorage.Backend<Data>) {
         self.memoryStorage = memoryStorage
         self.diskStorage = diskStorage
         let ioQueueName = "com.AnimatedImageCache.ioQueue.\(UUID().uuidString)"
@@ -89,8 +88,7 @@ open class AnimatedImageCache {
         name: String,
         cacheDirectoryURL: URL? = nil,
         diskCachePathClosure: DiskCachePathClosure? = nil
-    ) throws
-    {
+    ) throws {
         if name.isEmpty {
             fatalError("[Kingfisher] You should specify a name for the cache. A cache with empty name is not permitted.")
         }
@@ -116,8 +114,7 @@ open class AnimatedImageCache {
         name: String,
         cacheDirectoryURL: URL?,
         diskCachePathClosure: DiskCachePathClosure? = nil
-    ) -> DiskStorage.Config
-    {
+    ) -> DiskStorage.Config {
         var diskConfig = DiskStorage.Config(
             name: name,
             sizeLimit: 0,
@@ -139,8 +136,7 @@ open class AnimatedImageCache {
                     original: Data? = nil,
                     forKey key: String,
                     toDisk: Bool = true,
-                    completionHandler: ((CacheStoreResult) -> Void)? = nil)
-    {
+                    completionHandler: ((CacheStoreResult) -> Void)? = nil) {
         let callbackQueue = CallbackQueue.mainCurrentOrAsync
         
         // Memory storage should not throw.
@@ -180,8 +176,7 @@ open class AnimatedImageCache {
         forKey key: String,
         expiration: StorageExpiration? = nil,
         callbackQueue: CallbackQueue = .untouch,
-        completionHandler: ((CacheStoreResult) -> Void)? = nil)
-    {
+        completionHandler: ((CacheStoreResult) -> Void)? = nil) {
         ioQueue.async {
             self.syncStoreToDisk(
                 data,
@@ -198,8 +193,7 @@ open class AnimatedImageCache {
         callbackQueue: CallbackQueue = .untouch,
         expiration: StorageExpiration? = nil,
         writeOptions: Data.WritingOptions = [],
-        completionHandler: ((CacheStoreResult) -> Void)? = nil)
-    {
+        completionHandler: ((CacheStoreResult) -> Void)? = nil) {
         let result: CacheStoreResult
         do {
             try self.diskStorage.store(value: data, forKey: key, expiration: expiration, writeOptions: writeOptions)
@@ -228,8 +222,7 @@ open class AnimatedImageCache {
                           fromMemory: Bool = true,
                           fromDisk: Bool = true,
                           callbackQueue: CallbackQueue = .untouch,
-                          completionHandler: (() -> Void)? = nil)
-    {
+                          completionHandler: (() -> Void)? = nil) {
         let computedKey = key.computedKey(with: identifier)
 
         if fromMemory {
@@ -237,7 +230,7 @@ open class AnimatedImageCache {
         }
         
         if fromDisk {
-            ioQueue.async{
+            ioQueue.async {
                 try? self.diskStorage.remove(forKey: computedKey)
                 if let completionHandler = completionHandler {
                     callbackQueue.execute { completionHandler() }
@@ -253,8 +246,7 @@ open class AnimatedImageCache {
     open func retrieveImage(
         forKey key: String,
         callbackQueue: CallbackQueue = .mainCurrentOrAsync,
-        completionHandler: ((Result<AnimatedImageCacheResult, KingfisherError>) -> Void)?)
-    {
+        completionHandler: ((Result<AnimatedImageCacheResult, KingfisherError>) -> Void)?) {
         // No completion handler. No need to start working and early return.
         guard let completionHandler = completionHandler else { return }
 
@@ -290,7 +282,7 @@ open class AnimatedImageCache {
         let loadingQueue: CallbackQueue = .dispatch(ioQueue)
         loadingQueue.execute {
             do {
-                var image: FLAnimatedImage? = nil
+                var image: FLAnimatedImage?
                 if let data = try self.diskStorage.value(forKey: key, extendingExpiration: .expirationTime(.never)) {
                     image = FLAnimatedImage(gifData: data)
                 }
@@ -390,8 +382,7 @@ open class AnimatedImageCache {
         }
     }
 
-    func imageCachedType(forKey key: String) -> CacheType
-    {
+    func imageCachedType(forKey key: String) -> CacheType {
         if memoryStorage.isCached(forKey: key) { return .memory }
         if diskStorage.isCached(forKey: key) { return .disk }
         return .none

@@ -79,7 +79,6 @@ final class NumberKeyboardIconButton: NumberKeyboardButton {
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 }
 
-
 final class NumberKeyboardSymbolButton: NumberKeyboardButton {
     init(_ symbol: String) {
         super.init()
@@ -91,7 +90,6 @@ final class NumberKeyboardSymbolButton: NumberKeyboardButton {
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 }
-
 
 class NumberKeyboardButton: UIButton {
     init() {

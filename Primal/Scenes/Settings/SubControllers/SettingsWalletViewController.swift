@@ -60,7 +60,7 @@ final class SettingsWalletViewController: UIViewController, SettingsController, 
 
 private extension SettingsWalletViewController {
     func updateNWCStack() async throws {
-        nwcStack.subviews.forEach{ $0.removeFromSuperview() }
+        nwcStack.subviews.forEach { $0.removeFromSuperview() }
         
         let activeWallet = try await WalletManager.instance.walletAccountRepo.getActiveWallet(userId: IdentityManager.instance.userHexPubkey)
         
@@ -69,9 +69,9 @@ private extension SettingsWalletViewController {
             let info = NWCInfoView()
             
             [
-                SettingsTitleView(title: "WALLET CONNECTED"),               SpacerView(height: 10),
-                info,                                                       SpacerView(height: 16),
-                disconnectButton,                                           SpacerView(height: 24)
+                SettingsTitleView(title: "WALLET CONNECTED"), SpacerView(height: 10),
+                info, SpacerView(height: 16),
+                disconnectButton, SpacerView(height: 24)
             ].forEach { nwcStack.addArrangedSubview($0) }
             
             info.relayLabel.text = nwc.relays.first
@@ -89,11 +89,11 @@ private extension SettingsWalletViewController {
             let scanButton = ThemeableButton().setTheme({ $0.configuration = .pill(text: "Scan NWC QR Code", foregroundColor: .foreground, backgroundColor: .background3, font: .appFont(withSize: 16, weight: .regular)) }).constrainToSize(height: 48)
             
             [
-                SettingsTitleView(title: "CONNECT A WALLET"),                                                                       SpacerView(height: 10),
-                descLabel("Connect an external wallet by scanning or pasting its Nostr Wallet Connect (NWC) connection string:"),   SpacerView(height: 24),
-                pasteButton,                                                                                                        SpacerView(height: 12),
-                scanButton,                                                                                                         SpacerView(height: 24),
-                SpacerView(height: 10),
+                SettingsTitleView(title: "CONNECT A WALLET"), SpacerView(height: 10),
+                descLabel("Connect an external wallet by scanning or pasting its Nostr Wallet Connect (NWC) connection string:"), SpacerView(height: 24),
+                pasteButton, SpacerView(height: 12),
+                scanButton, SpacerView(height: 24),
+                SpacerView(height: 10)
             ].forEach { nwcStack.addArrangedSubview($0) }
             
             pasteButton.addAction(.init(handler: { [weak self] _ in
@@ -131,8 +131,8 @@ private extension SettingsWalletViewController {
         let exportDesc = descLabel("Download your entire wallet transaction history in CSV format")
         
         let primalStack = UIStackView(axis: .vertical, [
-            showNotifications,                                                                                                  SpacerView(height: 10),
-            descLabel("Get notified with push notifications when you receive a payment above a certain size"),                  SpacerView(height: 24),
+            showNotifications, SpacerView(height: 10),
+            descLabel("Get notified with push notifications when you receive a payment above a certain size"), SpacerView(height: 24),
             
             nwcVC.view
         ])
@@ -149,18 +149,18 @@ private extension SettingsWalletViewController {
         let mainStack = UIStackView(axis: .vertical, [
             backupInfoView,
             SettingsInfoView(name: "LN Address", desc: IdentityManager.instance.user?.lud16 ?? "Not set...", showArrow: false), SpacerView(height: 10),
-            addressDesc,                                                                                                        SpacerView(height: 24),
-            walletStart,                                                                                                        SpacerView(height: 10),
-            descLabel("Open the wallet when Primal starts"),                                                                    SpacerView(height: 24),
-            minTransaction,                                                                                                     SpacerView(height: 10),
-            descLabel("You can choose to hide small transactions to avoid spam in your transaction list"),                      SpacerView(height: 24),
+            addressDesc, SpacerView(height: 24),
+            walletStart, SpacerView(height: 10),
+            descLabel("Open the wallet when Primal starts"), SpacerView(height: 24),
+            minTransaction, SpacerView(height: 10),
+            descLabel("You can choose to hide small transactions to avoid spam in your transaction list"), SpacerView(height: 24),
             backupStack,
             restoreStack,
             exportStack,
-            externalWallet,                                                                                                     SpacerView(height: 10),
-            descLabel("Alternatively you can connect to an external lightning wallet via Nostr Wallet Connect"),                SpacerView(height: 24),
+            externalWallet, SpacerView(height: 10),
+            descLabel("Alternatively you can connect to an external lightning wallet via Nostr Wallet Connect"), SpacerView(height: 24),
             nwcStack,
-            primalStack,
+            primalStack
         ])
         
         mainStack.setCustomSpacing(20, after: backupInfoView)

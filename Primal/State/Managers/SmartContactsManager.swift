@@ -35,7 +35,7 @@ final class SmartContactsManager {
         "472f440f29ef996e92a186b8d320ff180c855903882e59d50de1b8bd5669301e", // marty
         "e88a691e98d9987c964521dff60025f60700378a4879180dcbbb4a5027850411", // nvk
         "91c9a5e1a9744114c6fe2d61ae4de82629eaaa0fb52f48288093c7e7e036f832", // rockstar
-        "fa984bd7dbb282f07e16e7ae87b26a2a7b9b90b7246a44771f0cf5ae58018f52", // pablo
+        "fa984bd7dbb282f07e16e7ae87b26a2a7b9b90b7246a44771f0cf5ae58018f52" // pablo
     ] }
     
     var cachedContactPubkeys: [String: [String]] = [:]
@@ -88,7 +88,7 @@ final class SmartContactsManager {
                 DatabaseManager.instance.searchProfilesPublisher(text).replaceError(with: []).first(),
                 SocketRequest(name: "user_search", payload: .object([
                     "query": .string(text),
-                    "limit": .number(15),
+                    "limit": .number(15)
                 ]))
                 .publisher()
                 .map { $0.getSortedUsers() }

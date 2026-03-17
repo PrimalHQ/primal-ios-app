@@ -19,7 +19,7 @@ class PremiumLearnMoreFeaturesController: UITableViewController {
         ("Media storage capacity", .text("10 GB"), .text("100 GB")),
         ("Media maximum file size", .text("1 GB"), .text("10 GB")),
         ("Primal Studio", .empty, .check),
-        ("Legend Status on Primal", .empty, .check),
+        ("Legend Status on Primal", .empty, .check)
     ]
     
     var didReachEnd = false

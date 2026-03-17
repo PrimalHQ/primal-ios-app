@@ -37,7 +37,7 @@ extension Request {
                 request.setValue("application/json", forHTTPHeaderField: "Content-Type")
             }
 
-            URLSession.shared.dataTask(with: request) { data, response, error in
+            URLSession.shared.dataTask(with: request) { data, _, error in
                 guard let data else {
                     promise(.failure(error ?? RequestError.noData))
                     return

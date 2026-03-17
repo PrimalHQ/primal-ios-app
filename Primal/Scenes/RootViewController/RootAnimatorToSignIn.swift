@@ -31,7 +31,6 @@ struct RootAnimatorToSignIn {
                 CATransaction.commit()
             }
             
-            
             DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(16000 / speedInt)) {
                 UIView.animate(withDuration: 10 / speed) {
                     introVC.view.alpha = 0

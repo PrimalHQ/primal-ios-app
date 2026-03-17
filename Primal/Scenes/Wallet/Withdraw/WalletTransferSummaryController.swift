@@ -105,10 +105,10 @@ private extension WalletTransferSummaryController {
         titleLabel.textAlignment = .center
         
         let stack = UIStackView(axis: .vertical, [
-            topView,        SpacerView(height: 115),
-            animationView,  SpacerView(height: 46),
-            titleLabel,     SpacerView(height: 28),
-            subtitleStack,  UIView(),
+            topView, SpacerView(height: 115),
+            animationView, SpacerView(height: 46),
+            titleLabel, SpacerView(height: 28),
+            subtitleStack, UIView(),
             closeButton
         ])
         stack.alignment = .center

@@ -31,13 +31,12 @@ extension DatabaseManager {
     }
     
     func lastVisitedProfilePubkeysPublisher(_ pubkey: String) -> AnyPublisher<[String], any Error> {
-        dbWriter.readPublisher  { db in
+        dbWriter.readPublisher { db in
             try ProfileLastVisit.lastVisitedProfilePubkeysRequest(pubkey).fetchAll(db)
         }
         .map { $0.map { $0.profilePubkey } }
         .eraseToAnyPublisher()
     }
-    
     
     func getProfilePublisher(_ pubkey: String) -> AnyPublisher<ParsedUser, any Error> {
         dbWriter.readPublisher { db in

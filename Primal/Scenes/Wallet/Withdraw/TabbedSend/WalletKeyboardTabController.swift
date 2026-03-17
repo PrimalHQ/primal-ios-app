@@ -109,7 +109,6 @@ final class WalletSendSmallActionBlackButton: UIButton {
     init(title: String, icon: UIImage?) {
         super.init(frame: .zero)
         
-        
         var config = UIButton.Configuration.filled()
         config.title = title
         config.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { incoming in

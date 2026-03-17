@@ -74,9 +74,9 @@ private extension OnboardingStartViewController {
         logo.centerToSuperview().pinToSuperview(edges: .vertical)
         
         let contentStack = UIStackView(arrangedSubviews: [
-            logoParent,         SpacerView(height: 25, priority: .defaultHigh),
-            signinButton,       SpacerView(height: 10, priority: .defaultHigh),
-            signupButton,       SpacerView(height: 10, priority: .defaultHigh),
+            logoParent, SpacerView(height: 25, priority: .defaultHigh),
+            signinButton, SpacerView(height: 10, priority: .defaultHigh),
+            signupButton, SpacerView(height: 10, priority: .defaultHigh),
             termsBothLines
         ])
         contentStack.axis = .vertical

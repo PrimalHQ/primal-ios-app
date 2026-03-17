@@ -130,7 +130,7 @@ class ArticleWebView: WKWebView, Themeable {
     
     func selectedText(_ callback: @escaping (String?) -> Void) {
         // Evaluate JavaScript to get the selected text
-        evaluateJavaScript("window.getSelection().toString()") { result, error in
+        evaluateJavaScript("window.getSelection().toString()") { result, _ in
             callback(result as? String)
         }
     }
@@ -180,7 +180,7 @@ private extension ArticleWebView {
             if result == nil || error != nil {
                 return
             }
-            self?.evaluateJavaScript("document.getElementById('main').clientHeight", completionHandler: { result, error in
+            self?.evaluateJavaScript("document.getElementById('main').clientHeight", completionHandler: { result, _ in
                 guard let self, let height = result as? CGFloat else { return }
                 
                 self.heightConstraint?.constant = height + 15

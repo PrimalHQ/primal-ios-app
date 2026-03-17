@@ -47,7 +47,6 @@ class SettingsRemoteSignerController: UIViewController, Themeable {
             }
         }
 
-        
         super.init(nibName: nil, bundle: nil)
         
         title = "Connected Apps"

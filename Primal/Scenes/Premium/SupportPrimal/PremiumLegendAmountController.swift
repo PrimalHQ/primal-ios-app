@@ -23,7 +23,6 @@ class PremiumLegendAmountController: UIViewController {
         }
     }
     
-    
     let balanceView = LargeBalanceConversionView(showWalletBalance: false, showSecondaryRow: true)
     let slider = GenericSliderView()
     
@@ -103,7 +102,7 @@ class PremiumLegendAmountController: UIViewController {
         let userStack = UIStackView(axis: .vertical, [
             image, SpacerView(height: 16),
             nameStack, SpacerView(height: 20),
-            titleView, //SpacerView(height: 20),
+            titleView // SpacerView(height: 20),
 //            avatarButton, UILabel("(you can always do this later)", color: .foreground4, font: .appFont(withSize: 14, weight: .regular))
         ])
         
@@ -112,4 +111,3 @@ class PremiumLegendAmountController: UIViewController {
         return userStack
     }
 }
-

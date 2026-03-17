@@ -172,4 +172,3 @@ extension SettingsRemoteSessionController: UITableViewDelegate {
         present(alert, animated: true)
     }
 }
-

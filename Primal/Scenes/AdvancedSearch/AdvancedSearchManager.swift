@@ -111,7 +111,7 @@ class AdvancedSearchManager: ObservableObject {
             searchScope.configurationString,
             searchOrder.configurationString,
             filters.configurationString(type: searchType),
-            timePosted.configurationString,
+            timePosted.configurationString
         ]
         
         for config in possibleConfigs {

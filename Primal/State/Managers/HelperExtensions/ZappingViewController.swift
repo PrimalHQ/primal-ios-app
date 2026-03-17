@@ -78,7 +78,7 @@ extension ZappingViewController {
         doZapFromView(zapView, reference: reference, amount: zapAmount, message: zapMessage)
     }
     
-    private func doZapFromView(_ zapView: AnimatingZappingView, reference: ZappableReferenceObject,  amount: Int, message: String) {
+    private func doZapFromView(_ zapView: AnimatingZappingView, reference: ZappableReferenceObject, amount: Int, message: String) {
         let newZapAmount = reference.currentSatsZapped + amount
         
         if WalletManager.instance.balance < amount {

@@ -5,7 +5,6 @@
 //  Created by Pavle Stevanović on 12. 8. 2025..
 //
 
-
 import UIKit
 import Nantes
 import SafariServices

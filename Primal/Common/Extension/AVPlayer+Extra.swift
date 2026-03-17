@@ -40,4 +40,3 @@ extension AVPlayer {
         seek(to: clampedTime, toleranceBefore: .zero, toleranceAfter: .zero)
     }
 }
-

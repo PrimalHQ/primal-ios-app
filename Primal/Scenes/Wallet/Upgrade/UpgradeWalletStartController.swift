@@ -24,7 +24,7 @@ class UpgradeWalletStartController: UIViewController {
             BulletPointStack(view: bulletLabel(textArray: [("We’ll transfer your wallet balance", false)])),
             BulletPointStack(view: bulletLabel(textArray: [("We’ll copy your transaction history", false)])),
             BulletPointStack(view: bulletLabel(textArray: [("You’ll keep your lighting address", false)])),
-            UILabel("Please keep Primal open\nuntil the upgrade process is done", color: .foreground, font: .appFont(withSize: 16, weight: .regular), multiline: true),
+            UILabel("Please keep Primal open\nuntil the upgrade process is done", color: .foreground, font: .appFont(withSize: 16, weight: .regular), multiline: true)
         ])
         
         let questionsLabel = NantesLabel()
@@ -56,9 +56,9 @@ class UpgradeWalletStartController: UIViewController {
         contentView.centerToSuperview(axis: .horizontal)
         contentView.centerYAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -10).isActive = true
         
-        let text = NSMutableAttributedString(string:"Questions? Check out our ", attributes: [
+        let text = NSMutableAttributedString(string: "Questions? Check out our ", attributes: [
             .foregroundColor: UIColor.foreground3,
-            .font: UIFont.appFont(withSize: 15, weight: .regular),
+            .font: UIFont.appFont(withSize: 15, weight: .regular)
         ])
         
         text.append(.init(string: "FAQs", attributes: [
@@ -81,7 +81,7 @@ class UpgradeWalletStartController: UIViewController {
         for (t, isBold) in textArray {
             text.append(.init(string: t, attributes: [
                 .foregroundColor: UIColor.foreground,
-                .font: UIFont.appFont(withSize: 16, weight: isBold ? .bold : .regular),
+                .font: UIFont.appFont(withSize: 16, weight: isBold ? .bold : .regular)
             ]))
         }
         
@@ -116,4 +116,3 @@ extension UpgradeWalletStartController: NantesLabelDelegate {
         show(UgradeWalletFaqController(), sender: nil)
     }
 }
-

@@ -534,7 +534,7 @@ class NoteProcessor: MetadataCoding {
             )
             
             itemsToRemove.append(mentionText)
-        } else if mention.post.kind == NostrKind.highlight.rawValue  {
+        } else if mention.post.kind == NostrKind.highlight.rawValue {
             let content = mention.post.content.trimmingCharacters(in: .whitespacesAndNewlines)
             
             highlights.append((mentionText, content, mention))

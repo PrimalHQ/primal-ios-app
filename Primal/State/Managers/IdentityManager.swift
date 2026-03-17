@@ -270,7 +270,7 @@ final class IdentityManager {
         guard let ev = NostrObject.updateSettings(settings) else { return }
         
         Connection.regular.requestCache(name: "set_app_settings", payload: .object([
-            "settings_event":  .object([
+            "settings_event": .object([
                 "content": .string(ev.content),
                 "created_at": .number(Double(ev.created_at)),
                 "id": .string(ev.id),
@@ -290,7 +290,7 @@ final class IdentityManager {
         guard let ev = NostrObject.create(content: "{\"description\": \"update notifications last seen timestamp\"}", kind: NostrKind.settings.rawValue, tags: []) else { return }
         
         Connection.regular.requestCache(name: "set_notifications_seen", payload: .object([
-            "event_from_user":  .object([
+            "event_from_user": .object([
                 "content": .string(ev.content),
                 "created_at": .number(Double(ev.created_at)),
                 "id": .string(ev.id),

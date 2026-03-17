@@ -28,7 +28,6 @@ class EmbeddedPostCellDatasource<T: FeedElementBaseCell>: UITableViewDiffableDat
         defaultRowAnimation = .none
     }
     
-    
     func elementForIndexPath(_ indexPath: IndexPath) -> NoteFeedElement? { nil }
     
     func postForIndexPath(_ indexPath: IndexPath) -> ParsedContent? { cells[safe: indexPath.row] }
@@ -49,7 +48,6 @@ class EmbeddedPostCellDatasource<T: FeedElementBaseCell>: UITableViewDiffableDat
         alternatingSection = alternatingSection == .feed ? .info : .feed
     }
 }
-
 
 class ArticleEmbeddedPostDatasource: UITableViewDiffableDataSource<SingleSection, (NoteFeedItem)>, NoteFeedDatasource, RegularFeedDatasourceProtocol {
     var cells: [NoteFeedItem] = []

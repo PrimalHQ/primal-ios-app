@@ -90,7 +90,7 @@ extension UIImage {
         var options: [String: Any] = [CIDetectorAccuracy: CIDetectorAccuracyHigh]
         
         let qrDetector = CIDetector(ofType: CIDetectorTypeQRCode, context: CIContext(), options: options)
-        if ciImage.properties.keys.contains((kCGImagePropertyOrientation as String)){
+        if ciImage.properties.keys.contains((kCGImagePropertyOrientation as String)) {
             options = [CIDetectorImageOrientation: ciImage.properties[(kCGImagePropertyOrientation as String)] ?? 1]
         } else {
             options = [CIDetectorImageOrientation: 1]
@@ -109,7 +109,7 @@ extension UIImage {
     
     func withAlpha(alpha: CGFloat) -> UIImage? {
         UIGraphicsBeginImageContextWithOptions(size, false, scale)
-        draw(at: CGPointZero, blendMode: .normal, alpha: alpha)
+        draw(at: CGPoint.zero, blendMode: .normal, alpha: alpha)
         let newImage = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
         return newImage
@@ -201,4 +201,3 @@ extension UIImage {
         return result
     }
 }
-

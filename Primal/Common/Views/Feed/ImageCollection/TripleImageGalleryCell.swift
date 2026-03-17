@@ -50,7 +50,6 @@ final class TripleImageGalleryCell: UICollectionViewCell, MultipleImageGalleryCe
         fatalError("init(coder:) has not been implemented")
     }
     
-    
     func setup(resources: [MediaMetadata.Resource], thumbnails: [String: String], downsampling: DownsamplingOption, userPubkey: String, delegate: ImageCellDelegate?) {
         
         let size = frame.size
@@ -90,4 +89,3 @@ final class TripleImageGalleryCell: UICollectionViewCell, MultipleImageGalleryCe
         self.delegate = delegate
     }
 }
-

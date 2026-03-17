@@ -88,7 +88,7 @@ Questions?  Check out our
         , attributes: [
             .foregroundColor: UIColor.foreground3,
             .font: UIFont.appFont(withSize: 15, weight: .regular),
-            .paragraphStyle: paragraph,
+            .paragraphStyle: paragraph
         ])
         
         text.append(.init(string: "FAQs", attributes: [

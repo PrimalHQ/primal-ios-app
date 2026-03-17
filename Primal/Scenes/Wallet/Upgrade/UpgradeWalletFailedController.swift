@@ -52,7 +52,6 @@ class UpgradeWalletFailedController: UIViewController {
             self?.navigationController?.setViewControllers([UpgradeWalletProcessController()], animated: true)
         }), for: .touchUpInside)
         
-        
         let firstString = """
 But no worries, your old wallet is still fully functional and you can safely try again. 
 
