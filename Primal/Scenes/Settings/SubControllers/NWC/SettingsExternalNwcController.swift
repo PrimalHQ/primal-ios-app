@@ -5,6 +5,7 @@
 //  Created by Pavle Stevanović on 29.1.25..
 //
 
+import PrimalShared
 import UIKit
 import Combine
 
@@ -124,25 +125,37 @@ private extension SettingsExternalNwcController {
         actionButton.addAction(.init(handler: { [weak self] _ in
             guard let self else { return }
             
-            PrimalWalletRequest(type: .nwcConnect(name: params.appName, amount: currentSelection.sats)).publisher()
-                .receive(on: DispatchQueue.main)
-                .sink { [weak self] res in
-                    guard let newNWC = res.newNWC, let self else { return }
-                    
-                    guard
-                        let uri = newNWC.uri.addingPercentEncoding(withAllowedCharacters: .alphanumerics.union(.init(charactersIn: "-._~"))),
-                        let deeplinkURL = URL(string: params.uri + "?value=\(uri)")
-                    else {
-                        show(SettingsNewNwcQRController(data: newNWC), sender: nil)
-                        
-                        RootViewController.instance.view.showToast("Unable to deeplink", extraPadding: 0)
-                        return
-                    }
-                    
-                    UIApplication.shared.open(deeplinkURL)
-                    navigationController?.popViewController(animated: true)
+            guard let walletId = WalletManager.instance.walletID else {
+                showErrorMessage("No wallet.")
+                return
+            }
+            
+            let nwcRepo = WalletManager.instance.nwcRepo
+            let userId = IdentityManager.instance.userHexPubkey
+            let params = params
+            
+            Task { @MainActor [weak self] in
+                let newNWC = try await nwcRepo.createNewWalletConnection(userId: userId, walletId: walletId, appName: params.appName, dailyBudget: currentSelection.sats?.kotlinLong).getOrNull()
+                
+                guard let newNWC = newNWC as? String else {
+                    self?.showErrorMessage("Unable to create new NWC connections")
+                    return
                 }
-                .store(in: &cancellables)
+                
+                guard
+                    let uri = newNWC.addingPercentEncoding(withAllowedCharacters: .alphanumerics.union(.init(charactersIn: "-._~"))),
+                    let deeplinkURL = URL(string: params.uri + "?value=\(uri)")
+                else {
+                    self?.show(SettingsNewNwcQRController(uri: newNWC), sender: nil)
+                    
+                    RootViewController.instance.view.showToast("Unable to deeplink", extraPadding: 0)
+                    return
+                }
+                
+                self?.navigationController?.popViewController(animated: true)
+                
+                await UIApplication.shared.open(deeplinkURL)
+            }
         }), for: .touchUpInside)
         
         budget.addAction(.init(handler: { [weak self] _ in

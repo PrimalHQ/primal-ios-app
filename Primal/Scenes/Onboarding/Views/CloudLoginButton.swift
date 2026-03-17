@@ -13,15 +13,16 @@ class CloudLoginButton: MyButton {
     
         let avatar = UserImageView(height: 36)
         avatar.setUserImage(user)
-        let nameLabel = UILabel(user.data.firstIdentifier, color: .white, font: .appFont(withSize: 16, weight: .bold))
-        let subName = UILabel(user.data.secondIdentifier ?? "", color: .white.withAlphaComponent(0.6), font: .appFont(withSize: 14, weight: .regular))
+        let nameLabel = UILabel(user.data.firstIdentifier, color: IceWave.instance.foreground, font: .appFont(withSize: 16, weight: .bold))
+        let subName = UILabel(user.data.secondIdentifier ?? "", color: IceWave.instance.foreground4, font: .appFont(withSize: 14, weight: .regular))
         subName.isHidden = user.data.secondIdentifier == nil
 
-        let typeLabel = UILabel(type, color: .white.withAlphaComponent(0.5), font: .appFont(withSize: 14, weight: .semibold))
+        let typeColor = IceWave.instance.foreground.withAlphaComponent(0.5)
+        let typeLabel = UILabel(type, color: typeColor, font: .appFont(withSize: 14, weight: .semibold))
         let typeParent = UIView().constrainToSize(width: 50, height: 22)
         typeParent.layer.cornerRadius = 11
         typeParent.layer.borderWidth = 1
-        typeParent.layer.borderColor = UIColor.white.withAlphaComponent(0.5).cgColor
+        typeParent.layer.borderColor = typeColor.cgColor
         typeParent.addSubview(typeLabel)
         typeLabel.centerToSuperview()
         
@@ -35,7 +36,7 @@ class CloudLoginButton: MyButton {
         
         constrainToSize(height: 56)
         layer.cornerRadius = 12
-        backgroundColor = .black.withAlphaComponent(0.4)
+        backgroundColor = .white
     }
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }

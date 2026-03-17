@@ -25,6 +25,7 @@ final class PostPreviewView: UIView, Themeable {
     let postPreview = PostPreviewPostPreviewView()
     let embeddedLive = LivePreviewView()
     let infoView = SimpleInfoView()
+    let embeddedPoll = PollView()
     let separatorLabel = UILabel()
 
     weak var imageAspectConstraint: NSLayoutConstraint?
@@ -112,6 +113,13 @@ final class PostPreviewView: UIView, Themeable {
             zapPreview.isHidden = true
         }
         
+        if let poll = content.poll {
+            embeddedPoll.updateForContent(content)
+            embeddedPoll.isHidden = false
+        } else {
+            embeddedPoll.isHidden = true
+        }
+        
         mainLabel.attributedText = content.attributedTextShort
         seeMoreLabel.isHidden = !mainLabel.isTruncated()
         
@@ -155,6 +163,7 @@ final class PostPreviewView: UIView, Themeable {
         seeMoreLabel.font = .appFont(withSize: FontSizeSelection.current.contentFontSize, weight: .regular)
         seeMoreLabel.textColor = .accent2
         
+        embeddedPoll.updateTheme()
         postPreview.updateTheme()
     }
 }
@@ -197,7 +206,7 @@ private extension PostPreviewView {
         nameTimeStack.alignment = .center
         
         let mainStack = UIStackView(arrangedSubviews: [
-            nameTimeStack, mainLabel, seeMoreLabel, SpacerView(height: 6), invoiceView, mainImages, postPreview, embeddedLive, zapPreview, linkPreview, infoView
+            nameTimeStack, mainLabel, seeMoreLabel, SpacerView(height: 6), invoiceView, mainImages, postPreview, embeddedLive, zapPreview, linkPreview, infoView, embeddedPoll
         ])
         mainStack.axis = .vertical
         mainStack.setCustomSpacing(6, after: nameTimeStack)

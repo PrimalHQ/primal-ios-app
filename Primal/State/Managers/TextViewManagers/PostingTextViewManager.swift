@@ -9,6 +9,7 @@ import Combine
 import UIKit
 import GenericJSON
 import NostrSDK
+import AVFoundation
 
 struct EditingToken {
     var range: NSRange
@@ -21,6 +22,26 @@ struct UserToken {
     var user: PrimalUser
 }
 
+enum PollType {
+    case user, zap(min: Int, max: Int)
+    
+    var name: String {
+        switch self {
+        case .user: return "User Poll"
+        case .zap:  return "Zap Poll"
+        }
+    }
+    
+    static var defaultZap = PollType.zap(min: 21, max: 21000)
+}
+
+struct PollData {
+    var type: PollType = .user
+    var length: (Int, Int, Int) = (1, 0, 0)  // Hours, minutes, seconds
+    
+    var options: [String] = []
+}
+
 extension NoteDraft {
     var isPosting: Bool { preparedEvent != nil }
 }
@@ -29,6 +50,7 @@ final class PostingTextViewManager: TextViewManager, MetadataCoding {
     @Published var userSearchText: String?
     @Published var users: [ParsedUser] = []
     @Published var isPosting: Bool = false
+    @Published var pollOptions: PollData?
     
     @Published var postButtonEnabledState = true
     @Published var postButtonTitle: String
@@ -36,6 +58,7 @@ final class PostingTextViewManager: TextViewManager, MetadataCoding {
     @Published var oldDraft: NoteDraft?
     
     var extractReferences = true
+    private var currentSearchPublisher: AnyCancellable?
     
     let defaultPostButtonTitle: String
     
@@ -308,36 +331,138 @@ final class PostingTextViewManager: TextViewManager, MetadataCoding {
     func reset() {
         oldDraft = nil
         isPosting = false
-        postButtonTitle = defaultPostButtonTitle
-        postButtonEnabledState = true
-        
         textView.text = ""
+        isEmpty = true
         media = []
         embeddedElements = []
+        pollOptions = nil
     }
     
-    func post(callback: @escaping (Bool, NostrObject?) -> Void) {
+    func post() async -> NostrObject? {
         var draft = currentDraft
         
-        guard let ev = NostrObject.post(draft, postingText: postingText, replyingToObject: replyingTo, embeddedElements: embeddedElements) else {
-            callback(false, nil)
-            return
-        }
-        
         isPosting = true
+        
+        guard let ev = await postingNostrObject() else { return nil }
+        
         draft.preparedEvent = ev
         oldDraft = draft
         DatabaseManager.instance.saveDraft(draft)
         
-        PostingManager.instance.sendEvent(ev) { success in
-            callback(success, ev)
-            if success {
-                DatabaseManager.instance.deleteDraft(draft)
-            }
-        }
+        guard await PostingManager.instance.sendEvent(ev) else { return nil }
+        
+        DatabaseManager.instance.deleteDraft(draft)
+        return ev
     }
     
-    var currentSearchPublisher: AnyCancellable?
+    func postingNostrObject() async -> NostrObject? {
+        let draft = currentDraft
+        
+        var allTags: [[String]] = []
+
+        /// The `e` tags are ordered at best effort to support the deprecated method of positional tags to maximize backwards compatibility
+        /// with clients that support replies but have not been updated to understand tag markers.
+        ///
+        /// https://github.com/nostr-protocol/nips/blob/master/10.md
+        ///
+        /// The tag to the root of the reply chain goes first.
+        /// The tag to the reply event being responded to goes last.
+        
+        var pubkeysToTag = Set<String>(draft.taggedUsers.map { $0.userPubkey })
+        
+        if let post = replyingTo {
+            if let root = post.tags.last(where: { tag in tag[safe: 3] == "root" }) {
+                allTags.append(root)
+                allTags.append([post.referenceTagLetter, post.universalID, RelayHintManager.instance.getRelayHint(post.universalID), "reply"])
+            } else {
+                // For top level replies (those replying directly to the root event), only the "root" marker should be used.
+                allTags.append([post.referenceTagLetter, post.universalID, RelayHintManager.instance.getRelayHint(post.universalID), "root"])
+            }
+            
+            pubkeysToTag.insert(post.pubkey)
+            pubkeysToTag.formUnion(post.tags.filter({ $0.first == "p" }).compactMap { $0[safe: 1] })
+        }
+        
+        for include in embeddedElements {
+            switch include {
+            case .highlight(let article, let highlight):
+                let articleID = article.asParsedContent.post.universalID
+                allTags.append(["e", highlight.event.id, "", "mention"])
+                allTags.append(["a", articleID, RelayHintManager.instance.getRelayHint(articleID), "mention"])
+
+                pubkeysToTag.insert(article.event.pubkey)
+            case .post(let post):
+                allTags.append(["e", post.post.id, RelayHintManager.instance.getRelayHint(post.post.id), "mention"])
+                
+                pubkeysToTag.insert(post.user.data.pubkey)
+                pubkeysToTag.formUnion(post.post.tags.filter({ $0.first == "p" }).compactMap { $0[safe: 1] })
+            case .article(let article):
+                let quotingObject = article.asParsedContent.post
+                allTags.append([article.referenceTagLetter, quotingObject.universalID, RelayHintManager.instance.getRelayHint(quotingObject.universalID), "mention"])
+                
+                pubkeysToTag.insert(article.user.data.pubkey)
+                pubkeysToTag.formUnion(quotingObject.tags.filter({ $0.first == "p" }).compactMap { $0[safe: 1] })
+            case .live(let live):
+                pubkeysToTag.insert(live.event.pubkey)
+                
+                allTags.append(["a", live.event.universalID, RelayHintManager.instance.getRelayHint(live.event.universalID), "mention"])
+            case .invoice:
+                break
+            }
+        }
+
+        pubkeysToTag.remove(IdentityManager.instance.userHexPubkey) // Don't tag yourself
+        
+        allTags += pubkeysToTag.map { ["p", $0, RelayHintManager.instance.userRelays[$0]?.first ?? "", "mention"] }
+        allTags += draft.text.extractHashtags().map({ ["t", $0.dropFirst().string] })
+        
+        var mediaTags: [[String]] = []
+        
+        for media in media {
+            guard let resource = media.resource, let uploadedUrl = media.state.url else { continue }
+
+            mediaTags.append(await resource.metaTagsWithURL(uploadURL: uploadedUrl))
+        }
+        
+        allTags += mediaTags
+
+        if let poll = pollOptions, !poll.options.isEmpty {
+            let kind: Int
+            switch poll.type {
+            case .zap(let min, let max):
+                for (index, option) in poll.options.enumerated() {
+                    allTags.append(["poll_option", "\(index)", option])
+                }
+                allTags.append(["value_minimum", "\(min)"])
+                allTags.append(["value_maximum", "\(max)"])
+                kind = NostrKind.zapPoll.rawValue
+
+                let (days, hours, minutes) = poll.length
+                let totalSeconds = (days * 86400) + (hours * 3600) + (minutes * 60)
+                if totalSeconds > 0 {
+                    let closedAt = Int(Date().timeIntervalSince1970) + totalSeconds
+                    allTags.append(["closed_at", "\(closedAt)"])
+                }
+            case .user:
+                for (index, option) in poll.options.enumerated() {
+                    allTags.append(["option", "\(index)", option])
+                }
+                allTags.append(["polltype", "singlechoice"])
+                kind = NostrKind.poll.rawValue
+
+                let (days, hours, minutes) = poll.length
+                let totalSeconds = (days * 86400) + (hours * 3600) + (minutes * 60)
+                if totalSeconds > 0 {
+                    let endsAt = Int(Date().timeIntervalSince1970) + totalSeconds
+                    allTags.append(["endsAt", "\(endsAt)"])
+                }
+            }
+
+            return NostrObject.create(content: postingText, kind: kind, tags: allTags)
+        }
+
+        return NostrObject.create(content: postingText, kind: 1, tags: allTags)
+    }
 }
 
 private extension PostingTextViewManager {
@@ -382,7 +507,7 @@ private extension PostingTextViewManager {
            let charBeforePosition = textView.position(from: startPosition, offset: -1),
            let charBeforeRange = textView.textRange(from: charBeforePosition, to: startPosition),
            let charBefore = textView.text(in: charBeforeRange),
-           charBefore.first?.isWhitespace == false
+           charBefore.first?.isWhitespace == false && charBefore.first != "("
         {
             currentlyEditingToken = nil
             return
@@ -544,27 +669,30 @@ private extension PostingTextViewManager {
             })
             .store(in: &cancellables)
         
-        Publishers.CombineLatest4($media, $isEmpty.removeDuplicates(), $oldDraft, $isPosting)
+        Publishers.CombineLatest(
+            Publishers.CombineLatest4($media, $isEmpty.removeDuplicates(), $oldDraft, $isPosting),
+            $pollOptions
+        )
             .debounce(for: 0.1, scheduler: RunLoop.main)
-            .sink { [weak self] images, isEmpty, oldDraft, isPosting in
+            .sink { [weak self] group, pollOptions in
                 guard let self else { return }
                 
+                let (images, isEmpty, oldDraft, isPosting) = group
+
                 if oldDraft?.preparedEvent != nil || isPosting {
                     postButtonEnabledState = false
                     postButtonTitle = "Posting..."
                     return
                 }
-                
-                let isUploadingImages: Bool = {
-                    for image in images {
-                        if case .uploading = image.state {
-                            return true
-                        }
-                    }
-                    return false
-                }()
-                
-                postButtonEnabledState = (!isEmpty || !images.isEmpty) && !isUploadingImages
+
+                let isUploadingImages = images.contains { if case .uploading = $0.state { true } else { false } }
+                let hasContent = !isEmpty || !images.isEmpty
+                var pollWellFormated = pollOptions == nil || (pollOptions?.options.count ?? 0) >= 2
+                if case .zap(let min, let max) = pollOptions?.type {
+                    pollWellFormated = pollWellFormated && min <= max && min >= 0 && max >= 0
+                }
+
+                postButtonEnabledState = hasContent && !isUploadingImages && pollWellFormated
                 postButtonTitle = isUploadingImages ? "Uploading..." : defaultPostButtonTitle
             }
             .store(in: &cancellables)

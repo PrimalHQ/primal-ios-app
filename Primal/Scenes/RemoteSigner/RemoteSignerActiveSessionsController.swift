@@ -23,7 +23,25 @@ extension UIButton.Configuration {
     }
 }
 
+private extension String {
+    static let nwcSessionId = "nwc"
+}
+
 class RemoteSignerActiveSessionsController: UIViewController {
+    
+    enum SessionType {
+        case remoteSession(RemoteAppSession)
+        case nwc
+        
+        var id: String {
+            switch self {
+            case .nwc:
+                return .nwcSessionId
+            case .remoteSession(let session):
+                return session.sessionId
+            }
+        }
+    }
     
     let contentParent = UIView()
     
@@ -85,7 +103,12 @@ class RemoteSignerActiveSessionsController: UIViewController {
         buttonsParent.addSubview(buttonStack)
         buttonStack.pinToSuperview(edges: .horizontal, padding: 24).pinToSuperview(edges: .top, padding: 16).pinToSuperview(edges: .bottom, padding: 4, safeArea: true)
         
-        Publishers.CombineLatest(RemoteSignerManager.instance.$activeSessions, LoginManager.instance.$loadedProfiles)
+        let sessionsPublisher = Publishers.CombineLatest(RemoteSignerManager.instance.$activeSessions, NwcServiceManager.shared.isServiceActivePublisher)
+            .map { activeSessions, isNwcServiceActive in
+                activeSessions.map({ SessionType.remoteSession($0) }) + (isNwcServiceActive ? [.nwc] : [])
+            }
+        
+        Publishers.CombineLatest(sessionsPublisher, LoginManager.instance.$loadedProfiles)
             .sink { [weak self] sessions, profiles in
                 guard let self else { return }
                 
@@ -97,24 +120,30 @@ class RemoteSignerActiveSessionsController: UIViewController {
                     dismiss(animated: true)
                 }
                 
-                selectedSessions = selectedSessions.filter({ id in sessions.contains(where: { $0.sessionId == id })})
+                selectedSessions = selectedSessions.filter({ id in sessions.contains(where: { $0.id == id })})
                 if selectedSessions.isEmpty == true {
-                    selectedSessions = Set(sessions.map { $0.sessionId })
+                    selectedSessions = Set(sessions.map { $0.id })
                 }
                 
                 sessions.forEach { session in
-                    let user = profiles.first(where: { $0.data.pubkey == session.userPubKey }) ?? .init(data: .init(pubkey: session.userPubKey))
+                    let button: MyButton
+                    switch session {
+                    case .remoteSession(let session):
+                        let user = profiles.first(where: { $0.data.pubkey == session.userPubKey }) ?? .init(data: .init(pubkey: session.userPubKey))
+                        
+                        button = RemoteSignerSessionSelectionButton(user: user, session: session)
+                    case .nwc:
+                        button = RemoteSignerNWCSessionSelectionButton()
+                    }
                     
-                    let button = RemoteSignerSessionSelectionButton(user: user, session: session)
-                    button.isSelected = self.selectedSessions.contains(session.sessionId)
+                    button.isSelected = self.selectedSessions.contains(session.id)
                     contentStack.addArrangedSubview(button)
-                    
                     button.addAction(.init(handler: { [weak self] _ in
                         guard let self else { return }
-                        if self.selectedSessions.contains(session.sessionId) {
-                            self.selectedSessions.remove(session.sessionId)
+                        if self.selectedSessions.contains(session.id) {
+                            self.selectedSessions.remove(session.id)
                         } else {
-                            self.selectedSessions.insert(session.sessionId)
+                            self.selectedSessions.insert(session.id)
                         }
                     }), for: .touchUpInside)
                 }
@@ -174,19 +203,30 @@ class RemoteSignerActiveSessionsController: UIViewController {
         }), for: .touchUpInside)
         
         settingsButton.addAction(.init(handler: { [weak self] _ in
-            guard
-                let self,
-                let sessionId = selectedSessions.first,
-                let clientPubKey = RemoteSignerManager.instance.activeSessions.first(where: { $0.sessionId == sessionId })?.clientPubKey,
-                let connection = RemoteSignerManager.instance.activeConnections.first(where: { $0.clientPubKey == clientPubKey }),
-                let nav: UINavigationController = navigationController ?? presentingViewController?.findInChildren()
-            else { return }
-            nav.pushViewController(SettingsConnectedAppController(appConnection: connection), animated: true)
+            guard let self, let sessionId = selectedSessions.first else { return }
+            
+            var settingsVC: UIViewController?
+            if sessionId == .nwcSessionId {
+                settingsVC = SettingsWalletViewController()
+            } else if let clientPubKey = RemoteSignerManager.instance.activeSessions.first(where: { $0.sessionId == sessionId })?.clientPubKey,
+                      let connection = RemoteSignerManager.instance.activeConnections.first(where: { $0.clientPubKey == clientPubKey }) {
+                
+                settingsVC = SettingsConnectedAppController(appConnection: connection)
+            }
+            
+            guard let settingsVC, let nav: UINavigationController = navigationController ?? presentingViewController?.findInChildren() else { return }
+            
+            nav.pushViewController(settingsVC, animated: true)
             dismiss(animated: true)
         }), for: .touchUpInside)
         
         disConnectButton.addAction(.init(handler: { [weak self] _ in
             guard let self else { return }
+            
+            if selectedSessions.contains(.nwcSessionId) {
+                NwcServiceManager.shared.endService()
+            }
+            
             let sessions = RemoteSignerManager.instance.activeSessions.filter { self.selectedSessions.contains($0.sessionId) }
             
             guard !sessions.isEmpty else { return }
@@ -214,6 +254,7 @@ class RemoteSignerSessionSelectionButton: MyButton {
         }
     }
     
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     init(user: ParsedUser, session: RemoteAppSession) {
         super.init(frame: .zero)
         
@@ -242,6 +283,38 @@ class RemoteSignerSessionSelectionButton: MyButton {
         nameLabel.text = session.name
         nipLabel.text = session.url
     }
+}
+
+class RemoteSignerNWCSessionSelectionButton: MyButton {
+    let appImage = UIImageView(image: .create(letter: "N", size: 40, color: .foreground3, backgroundColor: .foreground.withAlphaComponent(0.1))).constrainToSize(40)
+    
+    let nameLabel = UILabel("NWC Session", color: .foreground, font: .appFont(withSize: 16, weight: .bold))
+    
+    override var isPressed: Bool {
+        didSet {
+            layer.borderWidth = isSelected || isPressed ? 1 : 0
+        }
+    }
+    
+    override var isSelected: Bool {
+        didSet {
+            layer.borderWidth = isSelected || isPressed ? 1 : 0
+        }
+    }
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    init() {
+        super.init(frame: .zero)
+        
+        let mainStack = UIStackView([appImage, nameLabel])
+        mainStack.alignment = .center
+        mainStack.spacing = 10
+        
+        addSubview(mainStack)
+        mainStack.pinToSuperview(edges: .horizontal, padding: 14).pinToSuperview(edges: .vertical, padding: 10)
+        
+        layer.cornerRadius = 12
+        layer.borderColor = UIColor.accent.cgColor
+        backgroundColor = .background3
+    }
 }

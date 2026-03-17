@@ -115,9 +115,9 @@ extension ExploreFeedsViewController: UITableViewDelegate {
         else { return }
         
         
-        let kind: PrimalFeedType = parsed.metadata?.kind == "notes" ? .note : .article
-        
-        let spec = feed.primal_spec ?? "{\"dvm_id\":\"\(id)\",\"dvm_pubkey\":\"\(pubkey)\", \"kind\":\"\(kind.kind)\"}"
+        let feedType: PrimalFeedType = parsed.metadata?.kind == "notes" ? .note : .article
+
+        let spec = feed.primal_spec ?? "{\"dvm_id\":\"\(id)\",\"dvm_pubkey\":\"\(pubkey)\"}"
         
         let readsFeed = PrimalFeed(
             name: feed.name,
@@ -126,7 +126,7 @@ extension ExploreFeedsViewController: UITableViewDelegate {
             feedkind: "dvm"
         )
         
-        show(ExploreFeedPreviewParentController(feed: readsFeed, type: kind, feedInfo: parsed), sender: nil)
+        show(ExploreFeedPreviewParentController(feed: readsFeed, type: feedType, feedInfo: parsed), sender: nil)
     }
 }
 

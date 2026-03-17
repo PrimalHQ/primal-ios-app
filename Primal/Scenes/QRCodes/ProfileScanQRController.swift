@@ -30,7 +30,7 @@ final class ProfileScanQRController: OnboardingBaseViewController, QRCaptureCont
     
     var didOpenQRCode = false
     
-    let action = QRCodeActionButton("View QR Code")
+    let action = OnboardingMainButton("View QR Code")
     
     private var cancellables: Set<AnyCancellable> = []
     
@@ -104,7 +104,7 @@ private extension ProfileScanQRController {
         descLabel.text = "Scan a user’s QR code to find them on Nostr"
         descLabel.textAlignment = .center
         descLabel.font = .appFont(withSize: 18, weight: .regular)
-        descLabel.textColor = .white
+        descLabel.textColor = .onboarding
         descLabel.numberOfLines = 0
         
         videoPreviewLayer.session = captureSession

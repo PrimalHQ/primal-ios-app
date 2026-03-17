@@ -10,7 +10,7 @@ import SwiftUI
 import Lottie
 
 final class IntroVideoController: UIViewController {
-    lazy var video = UIImageView(image: UIImage(named: "LogoSplash"))
+    lazy var video = UIImageView(image: .logoSplash)
     
     override func viewDidLoad() {
         super.viewDidLoad()

@@ -7,8 +7,32 @@
 
 import UIKit
 import FLAnimatedImage
+import PrimalShared
 import Nantes
+import Combine
 import SafariServices
+
+extension ProfileData {
+    var firstIdentifier: String {
+        if let displayName, !displayName.isEmpty {
+            return displayName
+        }
+        if let handle, !handle.isEmpty {
+            return handle
+        }
+        return profileId
+    }
+
+    var hasDisplayName: Bool {
+        if let displayName, !displayName.isEmpty { return true }
+        if let handle, !handle.isEmpty { return true }
+        return false
+    }
+
+    var address: String? {
+        return lightningAddress ?? lnUrlDecoded
+    }
+}
 
 class TransactionUserInfoCell: UITableViewCell {
     let background = UIView()
@@ -19,7 +43,9 @@ class TransactionUserInfoCell: UITableViewCell {
     let checkbox = VerifiedView()
     let subtitleLabel = UILabel()
     let messageLabel = NantesLabel()
-    
+
+    private var profileCancellable: AnyCancellable?
+
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
@@ -32,7 +58,9 @@ class TransactionUserInfoCell: UITableViewCell {
 
 extension TransactionUserInfoCell: TransactionPartialCell {
     func setupWithCellInfo(_ info: TransactionCellType) {
-        let user: ParsedUser?
+        profileCancellable = nil
+        
+        let user: ProfileData?
         let message: String?
         let onchain: Bool
         switch info {
@@ -54,13 +82,20 @@ extension TransactionUserInfoCell: TransactionPartialCell {
             subtitleLabel.isHidden = true
             checkbox.isHidden = true
         } else if let user {
-            avatar.setUserImage(user)
-            mainLabel.text = user.data.firstIdentifier
-            subtitleLabel.text = user.data.address
+            avatar.setSharedUserImage(user)
+            mainLabel.text = user.firstIdentifier
+            if !user.hasDisplayName {
+                profileCancellable = DatabaseManager.instance.getProfilePublisher(user.profileId)
+                    .receive(on: DispatchQueue.main)
+                    .sink(receiveCompletion: { _ in }, receiveValue: { [weak self] parsedUser in
+                        self?.mainLabel.text = parsedUser.data.firstIdentifier
+                    })
+            }
+            subtitleLabel.text = user.address
             subtitleLabel.isHidden = subtitleLabel.text?.isEmpty != false
-            checkbox.user = user.data
+//            checkbox.user = user.data
         } else {
-            avatar.image = .nonZapPaymentOld
+            avatar.image = .nonZapPayment
             mainLabel.text = "Lightning payment"
             subtitleLabel.isHidden = true
             checkbox.isHidden = true

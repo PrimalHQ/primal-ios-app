@@ -14,12 +14,12 @@ extension UIColor {
 }
 
 enum Theme: String {
-    case sunriseWave, sunsetWave, midnightWave, iceWave
+    case /*sunriseWave, sunsetWave,*/ midnightWave, iceWave
     
     var theme: AppTheme {
         switch self {
-        case .sunsetWave:       return SunsetWave.instance
-        case .sunriseWave:      return SunriseWave.instance
+//        case .sunsetWave:       return SunsetWave.instance
+//        case .sunriseWave:      return SunriseWave.instance
         case .midnightWave:     return MidnightWave.instance
         case .iceWave:          return IceWave.instance
         }
@@ -28,21 +28,21 @@ enum Theme: String {
     static var current: AppTheme = {
         defaultTheme ?? (
             UIScreen.main.traitCollection.userInterfaceStyle == .light ?
-                SunriseWave.instance :
-                SunsetWave.instance
+                IceWave.instance :
+                MidnightWave.instance
             )
     }()
     
     static var inverse: AppTheme {
         switch current.kind {
-        case .sunriseWave:
-            return Theme.midnightWave.theme
-        case .sunsetWave:
-            return Theme.iceWave.theme
+//        case .sunriseWave:
+//            return Theme.midnightWave.theme
+//        case .sunsetWave:
+//            return Theme.iceWave.theme
         case .midnightWave:
-            return Theme.sunriseWave.theme
+            return Theme.iceWave.theme
         case .iceWave:
-            return Theme.sunsetWave.theme
+            return Theme.midnightWave.theme
         }
     }
     

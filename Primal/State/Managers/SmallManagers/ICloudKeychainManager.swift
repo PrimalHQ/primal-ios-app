@@ -57,7 +57,9 @@ final class ICloudKeychainManager {
     private let onlineKeychain: Keychain = Keychain(service: "net.primal.iosappOnline.Primal").synchronizable(true)
     private var cancellables = Set<AnyCancellable>()
     
-    private init() {}
+    private init() {
+        _ = getLoginInfo()
+    }
     
     static let instance: ICloudKeychainManager = ICloudKeychainManager()
     
@@ -147,7 +149,6 @@ final class ICloudKeychainManager {
         return true
     }
     
-    // Used until we get to support multiple accounts
     func getLoginInfo() -> NostrKeypair? {
         guard let npub = localNpubs.first else { return nil }
         
@@ -156,9 +157,14 @@ final class ICloudKeychainManager {
         return keypair
     }
     
-    func nsec(_ npub: String) -> String? { keychain.getSavedNsec(npub) }
+    func nsec(_ npub: String) -> String? {
+        keychain.getSavedNsec(npub) ?? {
+            guard let keypair = OnboardingSession.instance?.newUserKeypair, keypair.nVariant.npub == npub else { return nil }
+            return keypair.nVariant.nsec
+        }()
+    }
     
-    func hasNsec(_ npub: String) -> Bool { keychain.getSavedNsec(npub) != nil }
+    func hasNsec(_ npub: String) -> Bool { nsec(npub) != nil }
     
     @discardableResult
     func logoutCurrentUser() -> Bool {
@@ -192,20 +198,5 @@ final class ICloudKeychainManager {
         }
         
         return true
-    }
-    
-    func setupForIcloudNewUsers() {
-        let ud = UserDefaults.standard
-        
-        guard !ud.bool(forKey: "icloud_setup_done1") else {
-            return
-        }
-        
-        let npubsToRemind = localNpubs.filter { hasNsec($0) }
-        
-        if !npubsToRemind.isEmpty {
-            ud.set(npubsToRemind, forKey: .icloudRemindUsersKey)
-        }
-        ud.set(true, forKey: "icloud_setup_done1")
     }
 }

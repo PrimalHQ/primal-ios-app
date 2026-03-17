@@ -11,15 +11,15 @@ import SwiftUI
 protocol OnboardingViewController: UIViewController {
     var titleLabel: UILabel { get }
     var backButton: UIButton { get }
-    var backgroundIndex: CGFloat { get }
+    var backgroundIndex: Int { get }
 }
 
 class OnboardingBaseViewController: UIViewController, OnboardingViewController {
     lazy var titleLabel = UILabel()
     lazy var backButton: UIButton = .init()
     
-    let backgroundIndex: CGFloat
-    init(backgroundIndex: CGFloat) {
+    let backgroundIndex: Int
+    init(backgroundIndex: Int) {
         self.backgroundIndex = backgroundIndex
         super.init(nibName: nil, bundle: nil)
     }
@@ -32,13 +32,13 @@ class OnboardingParentViewController: UIPageViewController, UIPageViewController
         case start
         case login
         case signup
-        case redeemCode(String? = nil)
     }
     
     var viewControllerStack: [UIViewController]
     
-    override var preferredStatusBarStyle: UIStatusBarStyle { .lightContent }
+    override var preferredStatusBarStyle: UIStatusBarStyle { .darkContent }
     
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     init(_ start: StartScreen = .start) {
         switch start {
         case .start:
@@ -51,20 +51,10 @@ class OnboardingParentViewController: UIPageViewController, UIPageViewController
             }
         case .signup:
             viewControllerStack = [OnboardingDisplayNameController(backgroundIndex: 0)]
-        case .redeemCode(let code):
-            if let code {
-                viewControllerStack = [OnboardingEnterCodeController(startingCode: code, backgroundIndex: 0)]
-            } else {
-                viewControllerStack = [OnboardingScanCodeController(backgroundIndex: 0)]
-            }
         }
         super.init(transitionStyle: .scroll, navigationOrientation: .horizontal)
         dataSource = self
         delegate = self
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
     }
     
     override func viewDidLoad() {
@@ -131,6 +121,62 @@ class OnboardingParentViewController: UIPageViewController, UIPageViewController
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? { nil }
 }
 
+// MARK: - Onboarding Gradient Background
+
+class OnboardingBaseGradientView: UIView {
+    override class var layerClass: AnyClass { CAGradientLayer.self }
+
+    private var gradientLayer: CAGradientLayer { layer as! CAGradientLayer }
+
+    let reversed: Bool
+    
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    init(reversed: Bool) {
+        self.reversed = reversed
+        super.init(frame: .zero)
+        setup()
+    }
+    
+    private func setup() {
+        gradientLayer.colors = [
+            UIColor.white.cgColor,
+            UIColor(rgb: 0xE5E5E5).cgColor,
+        ]
+        gradientLayer.locations = [0.1, 0.501]
+        
+        gradientLayer.startPoint = reversed ? CGPoint(x: 1, y: 0) : CGPoint(x: 0, y: 0)
+        gradientLayer.endPoint = reversed ? CGPoint(x: 0, y: 1) : CGPoint(x: 1, y: 1)
+    }
+}
+
+class OnboardingOverlayGradientView: UIView {
+    override class var layerClass: AnyClass { CAGradientLayer.self }
+
+    private var gradientLayer: CAGradientLayer { layer as! CAGradientLayer }
+
+    let reversed: Bool
+    
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    init(reversed: Bool) {
+        self.reversed = reversed
+        super.init(frame: .zero)
+        setup()
+    }
+
+    private func setup() {
+        gradientLayer.colors = [
+            UIColor(rgb: 0x2586ED).withAlphaComponent(0.12).cgColor,
+            UIColor(rgb: 0x2572ED).cgColor,
+            UIColor(rgb: 0x2572ED).cgColor,
+            UIColor(rgb: 0x5B09AD).cgColor,
+        ]
+        gradientLayer.locations = [0.0, 0.566, 0.713, 1.0]
+        gradientLayer.startPoint = reversed ? CGPoint(x: 1, y: 0) : CGPoint(x: 0, y: 0)
+        gradientLayer.endPoint = reversed ? CGPoint(x: 0, y: 1) : CGPoint(x: 1, y: 1)
+        gradientLayer.opacity = 0.18
+    }
+}
+
 // MARK: - OnboardingViewController helpers
 
 extension OnboardingViewController {
@@ -145,8 +191,8 @@ extension OnboardingViewController {
         return NSAttributedString(
             string: string,
             attributes: [
-                .foregroundColor:   UIColor.white.withAlphaComponent(0.75),
-                .font:              UIFont.appFont(withSize: 16, weight: .semibold),
+                .foregroundColor:   UIColor(rgb: 0x111111).withAlphaComponent(0.8),
+                .font:              UIFont.appFont(withSize: 16, weight: .regular),
                 .paragraphStyle:    paragraph
             ]
         )
@@ -154,7 +200,7 @@ extension OnboardingViewController {
     
     func addNavigationBar(_ title: String) {
         backButton.setImage(UIImage(named: "back"), for: .normal)
-        backButton.tintColor = .white
+        backButton.tintColor = UIColor(rgb: 0x111111)
         backButton.constrainToSize(44)
         backButton.backgroundColor = .white.withAlphaComponent(0.01)
         view.addSubview(backButton)
@@ -167,40 +213,18 @@ extension OnboardingViewController {
         view.addSubview(titleLabel)
         titleLabel.centerToSuperview(axis: .horizontal).centerToView(backButton, axis: .vertical)
         titleLabel.text = title
-        titleLabel.font = .appFont(withSize: 24, weight: .regular)
-        titleLabel.textColor = .white
+        titleLabel.font = .appFont(withSize: 20, weight: .regular)
+        titleLabel.textColor = UIColor(rgb: 0x111111)
     }
     
-    func addBackground(clipToLeft: Bool = true) {
-        let background = UIImageView(image: UIImage(named: "onboardingBackground"))
-        let backgroundParent = UIView()
-        backgroundParent.addSubview(background)
-        view.addSubview(backgroundParent)
-        backgroundParent.pinToSuperview(edges: [.leading, .vertical])
-        background.pinToSuperview(edges: [.vertical, .trailing])
-        background.contentMode = .scaleAspectFill
-        background.widthAnchor.constraint(equalTo: background.heightAnchor, multiplier: 1875 / 812).isActive = true
-    
-        backgroundParent.trailingAnchor.constraint(greaterThanOrEqualTo: view.trailingAnchor).isActive = true
-        backgroundParent.isUserInteractionEnabled = false
-                
-        let constraint = NSLayoutConstraint(
-            item: background,
-            attribute: .leading,
-            relatedBy: .equal,
-            toItem: view,
-            attribute: .trailing,
-            multiplier: -1 * (backgroundIndex - 0.0001),
-            constant: 0
-        )
-        constraint.priority = .defaultHigh
-        constraint.isActive = true
-        
-        backgroundParent.clipsToBounds = true
-        if !clipToLeft {
-            DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
-                backgroundParent.clipsToBounds = false
-            }
-        }
+    func addBackground() {
+        let base = OnboardingBaseGradientView(reversed: backgroundIndex % 2 == 1)
+        let overlay = OnboardingOverlayGradientView(reversed: backgroundIndex % 2 == 1)
+        view.addSubview(base)
+        view.addSubview(overlay)
+        base.pinToSuperview()
+        overlay.pinToSuperview()
+        base.isUserInteractionEnabled = false
+        overlay.isUserInteractionEnabled = false
     }
 }

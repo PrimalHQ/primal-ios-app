@@ -13,7 +13,7 @@ final class ExploreViewController: PrimalPageController {
     
     private var cancellables: Set<AnyCancellable> = []
     
-    private let configButton = UIButton(configuration: .simpleImage("searchConfig"))
+    private let configButton = UIButton(configuration: .simpleImage(.searchConfig))
     
     let postButtonParent = UIView()
     let postButton = NewPostButton()
@@ -69,7 +69,7 @@ private extension ExploreViewController {
         }), for: .touchUpInside)
         
         postButton.addAction(.init(handler: { [weak self] _ in
-            self?.present(NewPostViewController(), animated: true)
+            self?.present(AdvancedEmbedPostViewController(), animated: true)
         }), for: .touchUpInside)
         view.addSubview(postButtonParent)
         postButtonParent.addSubview(postButton)

@@ -75,6 +75,14 @@ final class ChatListViewController: UIViewController, Themeable {
         table.backgroundColor = .background2
         table.reloadData()
     }
+    
+    func reload() {
+        isLoading = false
+        didReachEnd = false
+        shouldLoadNextPage = false
+        startFromZero = true
+        loadChatsIfNecessary()
+    }
 }
 
 private extension ChatListViewController {
@@ -121,14 +129,6 @@ private extension ChatListViewController {
             self?.loadingSpinner.stop()
             self?.table.refreshControl?.endRefreshing()
         }
-    }
-    
-    func reload() {
-        isLoading = false
-        didReachEnd = false
-        shouldLoadNextPage = false
-        startFromZero = true
-        loadChatsIfNecessary()
     }
     
     func loadChatsIfNecessary() {

@@ -20,10 +20,21 @@ struct AccountCreationData {
     var website: String = ""
 }
 
+struct ParsedSuggestionGroup {
+    var name: String
+    var coverUrl: String
+    var people: [ParsedSuggestionPerson]
+}
+
+struct ParsedSuggestionPerson {
+    var pubkey: String
+    var user: ParsedUser
+}
+
 class OnboardingSession {
     typealias Group = FollowSuggestionsRequest.Response.SuggestionGroup
     typealias Metadata = FollowSuggestionsRequest.Response.Metadata
-    
+
     var avatarURL = "" {
         didSet {
             if let url = URL(string: avatarURL) {
@@ -31,7 +42,8 @@ class OnboardingSession {
             }
         }
     }
-    var bannerURL = "https://m.primal.net/HQTd.jpg"
+    
+    var bannerURL = "https://blossom.primal.net/c15e22a2a8d1c7971f86adc758f944f3cbec6ef791fafd2604d85ee6beadaabb.png"
     
     @Published var isUploadingAvatar = false
     @Published var isUploadingBanner = false
@@ -40,8 +52,7 @@ class OnboardingSession {
     @Published var bannerImage: UIImage?
     @Published var isUploading = false
     
-    @Published var suggestionGroups: [OnboardingSession.Group] = []
-    var userMetadata: [String: Metadata] = [:]
+    @Published var parsedGroups: [ParsedSuggestionGroup] = []
     
     @Published var defaultRelays: [String] = bootstrap_relays
     
@@ -73,8 +84,19 @@ class OnboardingSession {
             .sink(receiveCompletion: { completion  in
                 print(completion)
             }, receiveValue: { [weak self] response in
-                self?.suggestionGroups = response.suggestions
-                self?.userMetadata = response.metadata
+                self?.parsedGroups = response.suggestions.map { group in
+                    ParsedSuggestionGroup(
+                        name: group.name,
+                        coverUrl: group.coverUrl,
+                        people: group.people.map { person in
+                            let nostrContent = response.metadata[person.pubkey].flatMap {
+                                NostrContent(kind: Int32($0.kind), content: $0.content, id: $0.id, created_at: Double($0.created_at), pubkey: $0.pubkey, sig: "", tags: [])
+                            }
+                            let primalUser = PrimalUser(nostrUser: nostrContent) ?? PrimalUser(pubkey: person.pubkey)
+                            return ParsedSuggestionPerson(pubkey: person.pubkey, user: ParsedUser(data: primalUser))
+                        }
+                    )
+                }
             })
             .store(in: &cancellables)
         
@@ -93,8 +115,9 @@ class OnboardingSession {
     
     func addPhoto(controller: UIViewController) {
         ImagePickerManager(controller) { [weak self] result in
-            guard let self = self, let (image, _) = result.image else { return }
-            self.image = image
+            guard let self = self, let imageRes = result as? ImageMediaPickerResult else { return }
+
+            self.image = imageRes.image
             self.isUploadingAvatar = true
             
             UploadAssetRequest(asset: result).publisher().receive(on: DispatchQueue.main).sink(receiveCompletion: { [weak self] in
@@ -115,8 +138,8 @@ class OnboardingSession {
     
     func addBanner(controller: UIViewController) {
         ImagePickerManager(controller) { [weak self] result in
-            guard let self = self, let (image, _) = result.image else { return }
-            self.bannerImage = image
+            guard let self = self, let imageRes = result as? ImageMediaPickerResult else { return }
+            self.bannerImage = imageRes.image
             self.isUploadingBanner = true
             
             UploadAssetRequest(asset: result).publisher().receive(on: DispatchQueue.main).sink(receiveCompletion: { [weak self] in

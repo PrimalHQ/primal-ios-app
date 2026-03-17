@@ -26,7 +26,7 @@ extension SettingsController {
             ])
             mutable.append(.init(string: link, attributes: [
                 .font: UIFont.appFont(withSize: 14, weight: .regular),
-                .foregroundColor: UIColor.accent,
+                .foregroundColor: UIColor.accent2,
                 .paragraphStyle: paragraph
             ]))
             $0.attributedText = mutable
@@ -72,7 +72,7 @@ private extension SettingsMainViewController {
     func setupView() {
         title = "Settings"
         
-        let keys = SettingsOptionButton(title: "Keys")
+        let keys = SettingsOptionButton(title: "Account")
         let wallet = SettingsOptionButton(title: "Wallet")
         let network = SettingsOptionButton(title: "Network")
         let appearance = SettingsOptionButton(title: "Appearance")

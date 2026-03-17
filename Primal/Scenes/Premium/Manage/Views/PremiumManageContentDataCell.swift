@@ -35,7 +35,7 @@ class PremiumManageContentDataCell: UITableViewCell {
         typeParent.addSubview(typeLabel)
         typeLabel.pinToSuperview(padding: 12)
         
-        var config = UIButton.Configuration.simpleImage("MenuBroadcast")
+        var config = UIButton.Configuration.simpleImage(.menuBroadcast)
         config.contentInsets = .init(top: 0, leading: 12, bottom: 0, trailing: 12)
         let recoverButton = UIButton(configuration: config)
         recoverButton.tintColor = .accent

@@ -7,10 +7,8 @@
 
 import Combine
 import UIKit
-import Ink
 import WebKit
 import SafariServices
-import Down
 import NostrSDK
 
 enum LongFormContentSegment {
@@ -188,16 +186,9 @@ private extension ArticleViewController {
     
     func updateHighlights() {
         hideHighlightMenu()
-        let parser = MarkdownParser()
+        
         zip(textParts, webViews).forEach { (text, webView) in
-            
-            let updatedText = updateText(text)
-            let down = Down(markdownString: updatedText)
-            if let html = try? down.toHTML(.smartUnsafe) {
-                webView.updateContent(html)
-            } else {
-                webView.updateContent(parser.html(from: updatedText))
-            }
+            webView.updateContent(HTMLGenerator.fromMarkdown(updateText(text)))
         }
     }
     
@@ -383,7 +374,7 @@ private extension ArticleViewController {
         
         let parts = parts
         
-        let parser = MarkdownParser()
+//        let parser = MarkdownParser()
         for part in parts {
             switch part {
             case .image(let url):
@@ -410,18 +401,12 @@ private extension ArticleViewController {
                 webView.pinToSuperview(edges: .vertical).pinToSuperview(edges: .horizontal, padding: 13)
                 contentStack.addArrangedSubview(webViewParent)
                 
-//                view.addGestureRecognizer(BindableTapGestureRecognizer(action: {
+//                webViewParent.addGestureRecognizer(BindableTapGestureRecognizer(action: {
 //                    UIPasteboard.general.string = webView.content
 //                    RootViewController.instance.showToast("Copied!")
 //                }))
         
-                let updatedText = updateText(text)
-                let down = Down(markdownString: updatedText)
-                if let html = try? down.toHTML([.smartUnsafe]) {
-                    webView.updateContent(html)
-                } else {
-                    webView.updateContent(parser.html(from: updatedText))
-                }
+                webView.updateContent(HTMLGenerator.fromMarkdown(updateText(text)))
             }
         }
         

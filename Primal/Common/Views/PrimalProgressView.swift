@@ -7,7 +7,16 @@
 
 import UIKit
 
-final class PrimalProgressView: UIView {
+class OnboardingProgressView: PrimalProgressView {
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    init(progress: Int = 0, total: Int = 4) {
+        super.init(progress: progress, total: total, bottomPadding: 12, markProgress: true)
+        primaryColor = IceWave.instance.foreground
+        secondaryColor = IceWave.instance.foreground.withAlphaComponent(0.25)
+    }
+}
+
+class PrimalProgressView: UIView {
     var currentPage: Int {
         didSet {
             updateColors()
@@ -27,6 +36,7 @@ final class PrimalProgressView: UIView {
     private let bottomPadding: CGFloat
     private let markProgress: Bool
     
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     init(progress: Int = 0, total: Int = 4, bottomPadding: CGFloat = 12, markProgress: Bool = false) {
         self.currentPage = progress
         self.numberOfPages = total
@@ -34,10 +44,6 @@ final class PrimalProgressView: UIView {
         self.markProgress = markProgress
         super.init(frame: .zero)
         setup()
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
     }
 }
 

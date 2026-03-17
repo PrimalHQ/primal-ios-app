@@ -23,7 +23,7 @@ struct PremiumUserInfo: Codable {
     var cohort_2: String
     var expires_on: Double?
     var legend_since: Double?
-    var premium_since: Double
+    var premium_since: Double?
 }
 
 extension LegendCustomization {

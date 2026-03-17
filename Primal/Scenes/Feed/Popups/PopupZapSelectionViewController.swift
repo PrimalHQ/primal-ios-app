@@ -207,29 +207,16 @@ private extension PopupZapSelectionViewController {
         ])
         keyboardSpacerView.updateHeightCancellable().store(in: &cancellables)
         
-        var smallScreen = true
-        if UIScreen.main.bounds.height > 900 {
-            smallScreen = false
-            $shouldShowAvatar.map({ !$0 }).assign(to: \.isHidden, on: avatarView).store(in: &cancellables)
-        } else {
-            Publishers.CombineLatest($shouldShowAvatar.removeDuplicates(), KeyboardManager.instance.$keyboardHeight.map { $0 < 5 })
-                .map({ ($0 && $1) })
-                .sink(receiveValue: { [weak self] shouldShow in
-                    self?.avatarView.alpha = shouldShow ? 1 : 0
-                    self?.avatarView.isHidden = !shouldShow
-                })
-                .store(in: &cancellables)
-        }
+        Publishers.CombineLatest($shouldShowAvatar.removeDuplicates(), KeyboardManager.instance.$keyboardHeight.map { $0 < 5 })
+            .map({ ($0 && $1) })
+            .sink(receiveValue: { [weak self] shouldShow in
+                self?.avatarView.alpha = shouldShow ? 1 : 0
+                self?.avatarView.isHidden = !shouldShow
+            })
+            .store(in: &cancellables)
         
         KeyboardManager.instance.$keyboardHeight.map { $0 > 5 }.sink(receiveValue: { [weak self] keyboardShown in
-            self?.usdLabel.isHidden = smallScreen && keyboardShown
-            if keyboardShown {
-                mainStack.distribution = .fill
-                mainStack.spacing = 12
-            } else {
-                mainStack.distribution = .equalSpacing
-                mainStack.spacing = UIStackView.spacingUseDefault
-            }
+            self?.usdLabel.isHidden = keyboardShown
         })
         .store(in: &cancellables)
         

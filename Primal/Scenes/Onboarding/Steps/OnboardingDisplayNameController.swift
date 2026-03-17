@@ -10,15 +10,15 @@ import UIKit
 import Kingfisher
 
 final class OnboardingDisplayNameController: OnboardingBaseViewController {    
-    let avatarView = UIImageView(image: UIImage(named: "onboardingDefaultAvatar"))
-    let addPhotoButton = SolidColorUIButton(title: "add photo", color: .white)
+    let avatarView = UIImageView(image: .onboardingDefaultAvatar)
+    let addPhotoButton = SolidColorUIButton(title: "add photo", color: UIColor(rgb: 0x1A295A).withAlphaComponent(0.7))
     
     let aboutInput = UITextField()
     let displayNameInput = UITextField()
     
     let nextButton = OnboardingMainButton("Next")
     
-    let progressView = PrimalProgressView(progress: 0, total: 4, markProgress: true)
+    let progressView = OnboardingProgressView(progress: 0, total: 4)
     let descLabel = UILabel()
     
     let session = OnboardingSession()
@@ -137,7 +137,7 @@ private extension OnboardingDisplayNameController {
                 self?.avatarView.alpha = 1
                 self?.addPhotoButton.setTitle("change photo", for: .normal)
             } else {
-                self?.avatarView.image =  UIImage(named: "onboardingDefaultAvatar")
+                self?.avatarView.image =  .onboardingDefaultAvatar
                 self?.avatarView.alpha = 0.5
                 self?.addPhotoButton.setTitle("add photo", for: .normal)
             }
@@ -153,10 +153,10 @@ private extension OnboardingDisplayNameController {
                 if isEditing {
                     UIView.animate(withDuration: 0.3) {
                         self.progressView.isHidden = true
-                        self.descLabel.isHidden = true
+                        descParent.isHidden = true
                         
                         self.progressView.alpha = 0
-                        self.descLabel.alpha = 0
+                        descParent.alpha = 0
                     }
                 } else {
                     self.showDescription()

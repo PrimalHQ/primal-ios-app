@@ -125,6 +125,11 @@ class ThreadFeedDatasource: UITableViewDiffableDataSource<TwoSectionFeed, Thread
         tableView.register(ParentThreadElementInvoiceCell.self, forCellReuseIdentifier: FeedElementInvoiceCell.cellID + ThreadPosition.parent.rawValue)
         tableView.register(MainThreadElementInvoiceCell.self, forCellReuseIdentifier: FeedElementInvoiceCell.cellID + ThreadPosition.main.rawValue)
         tableView.register(ChildThreadElementInvoiceCell.self, forCellReuseIdentifier: FeedElementInvoiceCell.cellID + ThreadPosition.child.rawValue)
+
+        // Poll
+        tableView.register(ParentThreadElementPollCell.self, forCellReuseIdentifier: FeedElementPollCell.cellID + ThreadPosition.parent.rawValue)
+        tableView.register(MainThreadElementPollCell.self, forCellReuseIdentifier: FeedElementPollCell.cellID + ThreadPosition.main.rawValue)
+        tableView.register(ChildThreadElementPollCell.self, forCellReuseIdentifier: FeedElementPollCell.cellID + ThreadPosition.child.rawValue)
         
         // Post preview
         tableView.register(ParentThreadElementPostPreviewCell.self, forCellReuseIdentifier: FeedElementPostPreviewCell.cellID + ThreadPosition.parent.rawValue)

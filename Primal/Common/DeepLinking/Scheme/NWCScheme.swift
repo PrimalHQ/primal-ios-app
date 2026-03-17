@@ -19,11 +19,6 @@ final class NWCSchemeDeeplinkHandler: DeeplinkHandlerProtocol {
 
     func openURL(_ url: URL) {
         guard canOpenURL(url) else { return }
-
-        guard WalletManager.instance.userHasWallet == true else {
-            RootViewController.instance.showToast("No wallet", icon: UIImage(named: "toastX"))
-            return
-        }
         
         guard 
             url.host() == "connect",

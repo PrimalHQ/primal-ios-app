@@ -41,7 +41,7 @@ final class InterestSelectionView: MyButton {
         addSubview(label)
         label.pinToSuperview(edges: .horizontal, padding: 20).centerToSuperview()
         
-        label.textColor = .white
+        label.textColor = UIColor(rgb: 0x111111)
         label.font = .appFont(withSize: 18, weight: .medium)
         
         constrainToSize(height: 36)

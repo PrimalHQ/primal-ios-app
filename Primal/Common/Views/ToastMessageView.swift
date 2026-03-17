@@ -33,7 +33,7 @@ extension UIView {
     }
     
     func showDimmedToastCentered(_ text: String, image: UIImage? = .toastCheckmark, durationSeconds: Int = 1) {
-        let view = ToastMessageView(text: text, image: image, theme: Theme.sunriseWave.theme)
+        let view = ToastMessageView(text: text, image: image, theme: Theme.iceWave.theme)
         
         let background = UIView()
         background.addSubview(view)
@@ -70,7 +70,7 @@ extension UIView {
     }
     
     func showToastTop(_ text: String, image: UIImage? = .toastCheckmark, durationSeconds: Int = 1) {
-        let view = ToastMessageView(text: text, image: image, theme: Theme.sunriseWave.theme)
+        let view = ToastMessageView(text: text, image: image, theme: Theme.iceWave.theme)
         
         addSubview(view)
         view.centerToSuperview(axis: .horizontal).pinToSuperview(edges: .top, padding: 30, safeArea: true)

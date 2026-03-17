@@ -26,3 +26,19 @@ extension Array where Element == JSON {
         return res?[safe: 1]
     }
 }
+
+extension Array where Element == [String] {
+    func tagArrayWithKey(_ key: String) -> [String]? {
+        first(where: { $0.first == key })
+    }
+    
+    func tagValueForKey(_ key: String) -> String? {
+        tagArrayWithKey(key)?[safe: 1]
+    }
+    
+    func tagArrayForKeyWithValue(_ key: String, value: String) -> [String]? {
+        first(where: {
+            $0.first == key && $0[safe: 1]?.lowercased() == value
+        })
+    }
+}

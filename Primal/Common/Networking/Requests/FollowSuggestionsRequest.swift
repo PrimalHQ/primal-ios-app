@@ -22,14 +22,14 @@ extension Decodable {
 
 struct FollowSuggestionsRequest: Request {
     typealias ResponseData = Response
-    
+
     let body: Any? = nil
-    var url: URL { URL(string: "https://media.primal.net/api/suggestions")! }
-    
+    var url: URL { URL(string: "https://media.primal.net/api/suggestions_2")! }
+
     struct Response: Codable {
         var metadata: [String: Metadata]
         var suggestions: [SuggestionGroup]
-        
+
         struct Metadata: Codable {
             var content: String
             var created_at: Int
@@ -40,11 +40,12 @@ struct FollowSuggestionsRequest: Request {
         }
         
         struct SuggestionGroup: Codable {
-            var group: String
-            var members: [Suggestion]
+            var name: String
+            var coverUrl: String
+            var people: [Person]
         }
-        
-        struct Suggestion: Codable {
+
+        struct Person: Codable {
             var name: String
             var pubkey: String
         }

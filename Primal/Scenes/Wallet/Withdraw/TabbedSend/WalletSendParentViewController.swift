@@ -13,7 +13,7 @@ protocol WalletSearchController: AnyObject, MetadataCoding {
     var textSearch: String? { get set }
     var cancellables: Set<AnyCancellable> { get set }
     
-    var     navigationControllerForSearchResults: UINavigationController? { get }
+    var navigationControllerForSearchResults: UINavigationController? { get }
 }
 
 extension WalletSearchController {
@@ -57,10 +57,7 @@ extension WalletSearchController {
         
         if text.isBitcoinAddress {
             let parsedBitcoinAddress = text.parsedBitcoinAddress
-            if let lightning = parsedBitcoinAddress.lightning {
-                textSearch = nil
-                search(lightning)
-            } else if let amount = parsedBitcoinAddress.1, amount > 0 {
+            if let amount = parsedBitcoinAddress.1, amount > 0 {
                 navigationControllerForSearchResults?.pushViewController(WalletSendViewController(.address(text, nil, nil, startingAmount: amount)), animated: true)
             } else {
                 navigationControllerForSearchResults?.pushViewController(WalletSendAmountController(.address(text, nil, nil)), animated: true)

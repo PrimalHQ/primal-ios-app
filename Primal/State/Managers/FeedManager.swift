@@ -42,7 +42,7 @@ final class FeedManager {
     @Published var newPostObjects: [ParsedContent] = []
     @Published var newPosts: (Int, [ParsedUser]) = (0, [])
     
-    @Published var newFeed: PrimalFeed?
+    var newFeed: PrimalFeed?
     var profilePubkey: String?
     @Published var didReachEnd = false
     
@@ -148,10 +148,15 @@ final class FeedManager {
         }
         
         SocketRequest(
-            useHTTP: true,
-            name: "thread_view",
+            name: "multi_kind_thread_view",
             payload: .object([
                 "event_id": .string(postId),
+                "kinds": [
+                    .number(Double(NostrKind.text.rawValue)),
+                    .number(Double(NostrKind.otherComments.rawValue)),
+                    .number(Double(NostrKind.poll.rawValue)),
+                    .number(Double(NostrKind.zapPoll.rawValue))
+                ],
                 "limit": .number(Double(limit)),
                 "user_pubkey": .string(IdentityManager.instance.userHexPubkey),
                 "include_parent_posts": .bool(includeParent)
@@ -297,8 +302,9 @@ private extension FeedManager {
             return Just([]).eraseToAnyPublisher()
         }
         
-        return SocketRequest(name: "mega_feed_directive", payload: .object([
+        return SocketRequest(name: "multi_kind_mega_feed_directive", payload: .object([
                 "spec": .string(spec),
+                "kinds": PrimalFeedType.note.kindsJSON,
                 "user_pubkey": .string(IdentityManager.instance.userHexPubkey),
                 "limit": .number(Double(40)),
                 "since": .number(until.rounded())
@@ -399,8 +405,9 @@ private extension FeedManager {
     func generateNewFeedPageRequest(_ feed: PrimalFeed) -> (String, JSON) {
         var payload: [String: JSON] = [
             "spec": .string(feed.spec),
+            "kinds": PrimalFeedType.note.kindsJSON,
             "user_pubkey": .string(IdentityManager.instance.userHexPubkey),
-            "limit": .number(Double(20))
+            "limit": 20
         ]
         
         if let until: Double = paginationInfo?.since {
@@ -408,28 +415,24 @@ private extension FeedManager {
             payload["offset"] = 1
         }
         
-        return ("mega_feed_directive", .object(payload))
+        return ("multi_kind_mega_feed_directive", .object(payload))
     }
     
     func generateProfileFeedRequest(_ profileId: String) -> (String, JSON) {
+        let notes = withRepliesOverride == true ? "replies" : "authored"
+
         var payload: [String: JSON] = [
-            "pubkey": .string(profileId),
+            "spec": .string("{\"id\":\"feed\",\"notes\":\"\(notes)\",\"pubkey\":\"\(profileId)\"}"),
+            "kinds": PrimalFeedType.note.kindsJSON,
             "user_pubkey": .string(IdentityManager.instance.userHexPubkey),
-            "notes": .string("authored"),
-            "limit": .number(40)
+            "limit": 40
         ]
         
-        if let until = paginationInfo?.since {
+        if let until: Double = paginationInfo?.since {
             payload["until"] = .number(until.rounded())
-        } else if let last = parsedPosts.last {
-            let until: Double = last.reposted?.date.timeIntervalSince1970 ?? last.post.created_at
-            payload["until"] = .number(until.rounded())
+            payload["offset"] = 1
         }
         
-        if withRepliesOverride == true {
-            payload["include_replies"] = true
-        }
-        
-        return ("feed", .object(payload))
+        return ("multi_kind_mega_feed_directive", .object(payload))
     }
 }

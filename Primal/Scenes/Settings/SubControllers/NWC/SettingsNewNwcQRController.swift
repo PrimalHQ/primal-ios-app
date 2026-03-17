@@ -8,7 +8,7 @@
 import UIKit
 
 class SettingsNewNwcQRController: UIViewController {
-    init(data: PrimalWalletNewNWCResponse) {
+    init(uri: String) {
         super.init(nibName: nil, bundle: nil)
         
         title = "New Wallet Connection"
@@ -24,7 +24,7 @@ class SettingsNewNwcQRController: UIViewController {
         
         let copyButton = LargeRoundedButton(title: "Copy NWC String")
         
-        let uriLabel = UILabel(data.uri, color: .foreground4, font: .appFont(withSize: 12, weight: .bold), multiline: true)
+        let uriLabel = UILabel(uri, color: .foreground4, font: .appFont(withSize: 12, weight: .bold), multiline: true)
         uriLabel.lineBreakMode = .byCharWrapping
         
         let checkImage = UIImageView(image: UIImage(named: "accountSwitchCheck"))
@@ -34,7 +34,7 @@ class SettingsNewNwcQRController: UIViewController {
         checkImage.contentMode = .center
         checkImage.layer.cornerRadius = 10
         
-        let qr = UIImageView(image: UIImage.createQRCode(data.uri, dimension: 225))
+        let qr = UIImageView(image: UIImage.createQRCode(uri, dimension: 225))
         let qrParent = UIView()
         qrParent.backgroundColor = .white
         qrParent.layer.cornerRadius = 12
@@ -69,7 +69,7 @@ class SettingsNewNwcQRController: UIViewController {
             .pinToSuperview(edges: .horizontal, padding: 24)
         
         copyButton.addAction(.init(handler: { _ in
-            UIPasteboard.general.string = data.uri
+            UIPasteboard.general.string = uri
             RootViewController.instance.view.showToast("Copied!", extraPadding: 0)
         }), for: .touchUpInside)
         

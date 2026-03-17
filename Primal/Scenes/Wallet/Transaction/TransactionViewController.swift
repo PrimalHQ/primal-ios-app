@@ -7,26 +7,25 @@
 
 import Combine
 import UIKit
+import PrimalShared
 import SafariServices
 
 final class TransactionViewController: NoteViewController {
     var cells: [TransactionCellType] { (dataSource as? TransactionViewDatasource)?.infoCells ?? [] }
     
-    let transaction: WalletTransaction
-    let user: ParsedUser?
+    let transaction: PrimalShared.Transaction
     
     var didFinishAppear = false
     
     var foregroundUpdate: AnyCancellable?
     
-    init(transaction: WalletTransaction, user: ParsedUser?) {
+    init(transaction: PrimalShared.Transaction) {
         self.transaction = transaction
-        self.user = user
         super.init()
         
         setup()
         
-        dataSource = TransactionViewDatasource(transaction: transaction, user: user, tableView: table, delegate: self)
+        dataSource = TransactionViewDatasource(transaction: transaction, tableView: table, delegate: self)
     }
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
@@ -94,7 +93,7 @@ final class TransactionViewController: NoteViewController {
             UIPasteboard.general.string = text
             view.showToast("Copied!")
         case .actionInfo(_, "view on blockchain"):
-            guard let onchainAddress = transaction.onchain_transaction_id, let url = URL(string: "https://mempool.space/tx/\(onchainAddress)") else { return }
+            guard let onchain = transaction as? Transaction.OnChain, let url = URL(string: "https://mempool.space/tx/\(onchain.transactionId)") else { return }
             present(SFSafariViewController(url: url), animated: true)
         case .expand:
             (dataSource as? TransactionViewDatasource)?.isExpanded.toggle()
@@ -119,13 +118,14 @@ final class TransactionViewController: NoteViewController {
 
 private extension TransactionViewController {
     func setup() {
-        let isDeposit = transaction.type == "DEPOSIT"
+        let isDeposit = transaction.type == .deposit
         
-        if transaction.state == "SUCCEEDED" {
+        if transaction.state == .succeeded {
+            let isZap = transaction is Transaction.Zap
             if isDeposit {
-                title = transaction.is_zap ? "Zap Received" : "Payment Received"
+                title = isZap ? "Zap Received" : "Payment Received"
             } else {
-                title = transaction.is_zap ? "Zap Sent" : "Payment Sent"
+                title = isZap ? "Zap Sent" : "Payment Sent"
             }
         } else {
             title = "Pending Transaction"

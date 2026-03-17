@@ -140,3 +140,13 @@ struct LongFormPost: Codable {
     
     var shortened: Bool { event.kind == NostrKind.shortenedArticle.rawValue }
 }
+
+extension NostrContent {
+    var originalDate: Double {
+        guard
+            let publish_date = tags.tagValueForKey("published_at"),
+            let date = Double(publish_date)
+        else { return created_at }
+        return date
+    }
+}

@@ -22,7 +22,7 @@ final class OnboardingMainButton: UIButton {
         setTitleColor(.white, for: .normal)
         setTitleColor(.white.withAlphaComponent(0.5), for: .highlighted)
         titleLabel?.font = .appFont(withSize: 18, weight: .semibold)
-        backgroundColor = .black.withAlphaComponent(0.81)
+        backgroundColor = .onboarding
         layer.cornerRadius = 28
         constrainToSize(height: 56)
     }
@@ -33,8 +33,8 @@ final class OnboardingMainButton: UIButton {
 }
 
 final class OnboardingStartViewController: OnboardingBaseViewController {    
-    let screenshot = UIImageView(image: UIImage(named: "screenshotOnboarding"))
-    let termsBothLines = TermsAndConditionsView(whiteOverride: true)
+    let screenshot = UIImageView(image: .screenshotOnboarding)
+    let termsBothLines = TermsAndConditionsView(darkOverride: true)
     
     let signupButton = OnboardingMainButton("Create Account")
     let signinButton = OnboardingMainButton("Sign In")
@@ -60,14 +60,10 @@ final class OnboardingStartViewController: OnboardingBaseViewController {
 
 private extension OnboardingStartViewController {
     func setup() {
-        let view = UIView()
+        addBackground()
         
-        let background = UIImageView(image: UIImage(named: "onboardingBackground"))
-        self.view.addSubview(background)
+        let view = UIView()
         self.view.addSubview(view)
-        background.pinToSuperview(edges: [.vertical, .leading])
-        background.contentMode = .scaleAspectFit
-        background.widthAnchor.constraint(equalTo: background.heightAnchor, multiplier: 1875 / 812).isActive = true
         
         view.addSubview(screenshot)
         screenshot.pinToSuperview(edges: .horizontal, padding: 36)

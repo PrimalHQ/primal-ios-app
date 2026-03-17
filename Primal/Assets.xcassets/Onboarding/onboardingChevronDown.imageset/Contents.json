@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "onboardingChevronDown.svg",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

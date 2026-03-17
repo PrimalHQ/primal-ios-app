@@ -8,6 +8,7 @@
 import UIKit
 import FLAnimatedImage
 import Kingfisher
+import PrimalShared
 
 class UserImageView: UIView, Themeable {
     let legendaryGradient = GradientView(colors: [])
@@ -24,24 +25,30 @@ class UserImageView: UIView, Themeable {
     
     var url = ""
     
-    var legendGradientSize: CGFloat {
+    static func glowSize(for height: CGFloat) -> CGFloat {
         height + {
             if height >= 100 { return 8 }
             if height >= 75 { return 6 }
-            if height >= 62 { return 5 }
+            if height >= 62 { return 6 }
             if height >= 44 { return 4 }
-            return 3
+            return 4
         }()
     }
-    
-    var noBackgroundCircle = false { didSet { updateHeight() } }
-    
-    var legendBackgroundCircleSize: CGFloat {
-        noBackgroundCircle ? height : height + {
+
+    static func backgroundCircleSize(for height: CGFloat) -> CGFloat {
+        height + {
             if height >= 78 { return 1 }
             if height >= 24 { return 0.5 }
             return 0
         }()
+    }
+
+    var legendGradientSize: CGFloat { Self.glowSize(for: height) }
+
+    var noBackgroundCircle = false { didSet { updateHeight() } }
+
+    var legendBackgroundCircleSize: CGFloat {
+        noBackgroundCircle ? height : Self.backgroundCircleSize(for: height)
     }
     
     lazy var livePill = UserImageLivePill(userImageHeight: height)
@@ -102,6 +109,7 @@ class UserImageView: UIView, Themeable {
     
     func removeUserImage() {
         legendaryGradient.isHidden = true
+        legendaryBackgroundCircleView.isHidden = true
         animatedImageView.kf.cancelDownloadTask()
         animatedImageView.image = UIImage(named: "Profile")        
     }
@@ -117,6 +125,28 @@ class UserImageView: UIView, Themeable {
             legendaryBackgroundCircleView.isHidden = true
             cachedLegendTheme = nil
         }
+    }
+    
+    func setSharedUserImage(_ user: PrimalShared.ProfileData) {
+        tag = tag + 1
+        
+        if showLegendGlow, let legend = user.primalPremiumInfo?.legendProfile, legend.avatarGlow, let styleId = legend.styleId?.lowercased(), let theme = LegendTheme(rawValue: styleId) {
+            legendaryGradient.isHidden = false
+            legendaryBackgroundCircleView.isHidden = false
+            legendaryGradient.setLegendGradient(theme)
+            cachedLegendTheme = theme
+        } else {
+            legendaryGradient.isHidden = true
+            legendaryBackgroundCircleView.isHidden = true
+        }
+
+        guard let image = user.avatarCdnImage, let url = URL(string: image.variants.first?.mediaUrl ?? image.sourceUrl) else {
+            animatedImageView.kf.cancelDownloadTask()
+            animatedImageView.image = UIImage(named: "Profile")
+            return
+        }
+        
+        loadImage(url: url, originalURL: image.sourceUrl, userPubkey: user.profileId)
     }
     
     func setUserImage(_ user: ParsedUser, feed: Bool = true, disableAnimated: Bool = false) {
@@ -276,7 +306,7 @@ class UserImageLivePill: UIView {
         
         updateHeight()
         
-        backgroundColor = .init(rgb: 0x111111)
+        backgroundColor = IceWave.instance.foreground
         dotView.backgroundColor = .live
         
         addSubview(stack)

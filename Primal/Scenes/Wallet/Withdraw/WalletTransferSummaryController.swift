@@ -10,26 +10,59 @@ import Lottie
 
 final class WalletTransferSummaryController: UIViewController {
     enum State {
-        case failure(navTitle: String, title: String, message: String)
-        case success(title: String, description: String)
+        case failure(navTitle: String, title: String?, message: String)
+        case success(title: String?, description: [NSAttributedString])
+        
+        static func successOld(title: String, description: String) -> State {
+            .success(title: title, description: [.init(string: description, attributes: [
+                .foregroundColor: UIColor.white,
+                .font: UIFont.appFont(withSize: 18, weight: .regular)
+            ])])
+        }
         
         static func paymentSuccess(amount: Int, address: String) -> State {
-            if address.count > 30 {
-                return .success(title: "Success, payment sent!", description: "\(amount.localized()) sats")
-            }
-            return .success(title: "Success, payment sent!", description: "\(amount.localized()) sats sent to \(address).")
+            let desc = NSMutableAttributedString(string: "Success! ", attributes: [
+                .foregroundColor: UIColor.white,
+                .font: UIFont.appFont(withSize: 18, weight: .regular)
+            ])
+            desc.append(.init(string: amount.localized(), attributes: [
+                .foregroundColor: UIColor.white,
+                .font: UIFont.appFont(withSize: 18, weight: .bold)
+            ]))
+            desc.append(.init(string: " sats sent to", attributes: [
+                .foregroundColor: UIColor.white,
+                .font: UIFont.appFont(withSize: 18, weight: .regular)
+            ]))
+            
+            let secondRowText = address.count <= 30 ? address : (address.isBitcoinAddress ? "Bitcoin Address" : "Lightning Invoice")
+            let secondRow = NSAttributedString(string: secondRowText, attributes: [
+                .foregroundColor: UIColor.white,
+                .font: UIFont.appFont(withSize: 18, weight: .regular)
+            ])
+            return .success(title: nil, description: [desc, secondRow])
         }
-        static func walletActivated(newAddress: String) -> State {
-            .success(
-                title: "Your wallet has been activated.\nYour new Nostr lightning address is:",
-                description: newAddress
-            )
+        
+        var navTitle: String {
+            guard case .failure(let navTitle, _, _) = self else { return "Success" }
+            return navTitle
+        }
+        
+        var title: String? {
+            switch self {
+            case .failure(_, let title, _), .success(let title, _):
+                return title
+            }
         }
     }
     
     var state: State
     
     let animationView = LottieAnimationView().constrainToSize(width: 270, height: 270)
+    
+    let titleLabel = UILabel("", color: .white, font: .appFont(withSize: 24, weight: .semibold))
+    let subtitleStack = UIStackView(axis: .vertical, spacing: 4, [])
+    
+    let closeButton = UIButton().constrainToSize(width: 152, height: 56)
     
     init(_ state: State) {
         self.state = state
@@ -40,6 +73,12 @@ final class WalletTransferSummaryController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        
+        navigationController?.setNavigationBarHidden(true, animated: animated)
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
         
         if !animationView.isAnimationPlaying {
             animationView.play()
@@ -56,43 +95,35 @@ private extension WalletTransferSummaryController {
         
         let topView = UIView()
         let back = backButtonWithColor(.white).customView ?? UIView()
-        let navTitle = UILabel()
+        let navTitle = UILabel(state.navTitle, color: .white, font: .appFont(withSize: 20, weight: .semibold))
         topView.addSubview(back)
         topView.addSubview(navTitle)
         back.pinToSuperview(edges: .leading, padding: 20).pinToSuperview(edges: .vertical)
         navTitle.centerToSuperview()
         
-        let title = UILabel()
-        title.numberOfLines = 0
-        title.textAlignment = .center
-        
-        let subtitle = UILabel()
-        let close = UIButton().constrainToSize(width: 152, height: 56)
+        titleLabel.numberOfLines = 0
+        titleLabel.textAlignment = .center
         
         let stack = UIStackView(axis: .vertical, [
-            topView,    SpacerView(height: 60),
-            animationView,       SpacerView(height: 4),
-            title,      SpacerView(height: 28),
-            subtitle,   UIView(),
-            close
+            topView,        SpacerView(height: 115),
+            animationView,  SpacerView(height: 46),
+            titleLabel,     SpacerView(height: 28),
+            subtitleStack,  UIView(),
+            closeButton
         ])
         stack.alignment = .center
         topView.pinToSuperview(edges: .horizontal)
-        subtitle.pinToSuperview(edges: .horizontal, padding: 50)
+        subtitleStack.pinToSuperview(edges: .horizontal, padding: 20)
+        
+        subtitleStack.alignment = .center
         
         view.addSubview(stack)
         stack.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .top, safeArea: true).pinToSuperview(edges: .bottom, padding: 40, safeArea: true)
         
-        navTitle.font = .appFont(withSize: 20, weight: .semibold)
-        title.font = .appFont(withSize: 24, weight: .semibold)
-        subtitle.font = .appFont(withSize: 18, weight: .regular)
-        subtitle.numberOfLines = 4
-        subtitle.textAlignment = .center
-        
-        close.layer.cornerRadius = 28
-        close.setTitle("Close", for: .normal)
-        close.titleLabel?.font = .appFont(withSize: 18, weight: .regular)
-        close.addAction(.init(handler: { [weak self] _ in
+        closeButton.layer.cornerRadius = 28
+        closeButton.setTitle("Close", for: .normal)
+        closeButton.titleLabel?.font = .appFont(withSize: 18, weight: .regular)
+        closeButton.addAction(.init(handler: { [weak self] _ in
             if let navigationController = self?.navigationController {
                 navigationController.popViewController(animated: true)
             } else {
@@ -100,38 +131,53 @@ private extension WalletTransferSummaryController {
             }
         }), for: .touchUpInside)
         
+        if let title = state.title {
+            titleLabel.text = title
+        } else {
+            titleLabel.isHidden = true
+        }
+        
         switch state {
-        case .success(let titleText, let subtitleText):
+        case .success(_, let subtitleText):
             animationView.animation = AnimationType.transferSuccess.animation
             
             navTitle.text = "Success"
-            title.text = titleText
-            subtitle.text = subtitleText
+            subtitleText
+                .map {
+                    let label = UILabel()
+                    label.attributedText = $0
+                    label.numberOfLines = 0
+                    label.textAlignment = .center
+                    return label
+                }
+                .forEach { subtitleStack.addArrangedSubview($0) }
             
-            close.setTitleColor(.white, for: .normal)
-            [title, subtitle, navTitle].forEach {
+            closeButton.setTitleColor(.white, for: .normal)
+            [titleLabel, navTitle].forEach {
                 $0.textColor = .white
             }
             
-            title.font = .appFont(withSize: 20, weight: .regular)
-            subtitle.font = .appFont(withSize: 20, weight: .semibold)
+            titleLabel.font = .appFont(withSize: 18, weight: .semibold)
             
-            close.backgroundColor = UIColor(rgb: 0x0E8A40)
+            closeButton.backgroundColor = UIColor(rgb: 0x0E8A40)
             
             view.backgroundColor = .receiveMoney
-        case .failure(let navTitleText, let titleText, let messageText):
+        case .failure(let navTitleText, _, let messageText):
             animationView.animation = AnimationType.transferFailed.animation
             
             navTitle.text = navTitleText
-            title.text = titleText
-            subtitle.text = messageText
             
-            close.setTitleColor(.white, for: .normal)
-            [title, subtitle, navTitle].forEach {
+            let subtitleLabel = UILabel(messageText, color: .white, font: .appFont(withSize: 18, weight: .regular), multiline: true)
+            subtitleLabel.numberOfLines = 4
+            subtitleLabel.textAlignment = .center
+            subtitleStack.addArrangedSubview(subtitleLabel)
+            
+            closeButton.setTitleColor(.white, for: .normal)
+            [titleLabel, navTitle].forEach {
                 $0.textColor = .white
             }
             
-            close.backgroundColor = UIColor(rgb: 0x222222)
+            closeButton.backgroundColor = UIColor(rgb: 0x222222)
             
             view.backgroundColor = .black
         }

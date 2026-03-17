@@ -19,6 +19,7 @@ final class SettingsRemoteSessionController: UIViewController {
     enum TableItem: Hashable {
         case sessionInfo(RemoteAppSession)
         case eventInfo(SessionEvent)
+        case empty
         
         var cellId: String {
             switch self {
@@ -26,6 +27,8 @@ final class SettingsRemoteSessionController: UIViewController {
                 return RemoteSignerConnectionInfoCell.reuseID
             case .eventInfo:
                 return RemoteSignerEventCell.reuseID
+            case .empty:
+                return "empty"
             }
         }
     }
@@ -43,8 +46,6 @@ final class SettingsRemoteSessionController: UIViewController {
         self.session = session
         self.sessionId = session.sessionId
         
-        var wSelf: SettingsRemoteSessionController?
-        
         dataSource = UITableViewDiffableDataSource<TableSections, TableItem>(tableView: tableView) { tableView, indexPath, item in
             let cell = tableView.dequeueReusableCell(withIdentifier: item.cellId, for: indexPath)
             
@@ -53,6 +54,8 @@ final class SettingsRemoteSessionController: UIViewController {
                 (cell as? RemoteSignerConnectionInfoCell)?.configure(session: session)
             case .eventInfo(let event):
                 (cell as? RemoteSignerEventCell)?.configure(event: event)
+            case .empty:
+                (cell as? EmptyMuteListCell)?.label.text = "No session events yet"
             }
             
             return cell
@@ -61,7 +64,6 @@ final class SettingsRemoteSessionController: UIViewController {
         
         super.init(nibName: nil, bundle: nil)
         
-        wSelf = self
         title = "Session Details"
         
         setupUI()
@@ -86,6 +88,7 @@ private extension SettingsRemoteSessionController {
         
         tableView.register(RemoteSignerConnectionInfoCell.self, forCellReuseIdentifier: RemoteSignerConnectionInfoCell.reuseID)
         tableView.register(RemoteSignerEventCell.self, forCellReuseIdentifier: RemoteSignerEventCell.reuseID)
+        tableView.register(EmptyMuteListCell.self, forCellReuseIdentifier: "empty")
     }
     
     func applySnapshot() {
@@ -93,7 +96,11 @@ private extension SettingsRemoteSessionController {
         snapshot.appendSections([.main, .events])
         
         snapshot.appendItems([.sessionInfo(session)], toSection: .main)
-        snapshot.appendItems(events.map { .eventInfo($0) }, toSection: .events)
+        if events.isEmpty {
+            snapshot.appendItems([.empty], toSection: .events)
+        } else {
+            snapshot.appendItems(events.map { .eventInfo($0) }, toSection: .events)
+        }
         
         dataSource.apply(snapshot, animatingDifferences: false)
     }
@@ -143,8 +150,7 @@ extension SettingsRemoteSessionController: UITableViewDelegate {
         else { return }
         
         switch item {
-            
-        case .sessionInfo:
+        case .empty, .sessionInfo:
             break
         case .eventInfo(let event):
             show(SettingsRemoteEventController(event: event), sender: nil)

@@ -14,14 +14,14 @@ protocol AnimatingViewProtocol {
 }
 
 protocol LivePreviewFeedCellDelegate: AnyObject {
-    func didSelectLive(_ live: ProcessedLiveEvent, user: ParsedUser)
+    func didSelectLive(_ live: ParsedLiveEvent)
 }
 
 class LivePreviewFeedCell: UITableViewCell, AnimatingViewProtocol {
     let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout()).constrainToSize(height: 72)
     let border = SpacerView(height: 1, color: .background3)
     
-    var lives: [(ParsedUser, ProcessedLiveEvent)] = [] { didSet { collectionView.reloadData() } }
+    var lives: [ParsedLiveEvent] = [] { didSet { collectionView.reloadData() } }
     
     weak var delegate: LivePreviewFeedCellDelegate?
     
@@ -58,7 +58,7 @@ class LivePreviewFeedCell: UITableViewCell, AnimatingViewProtocol {
         
         lives = users.compactMap {
             guard let live = LiveEventManager.instance.liveEvent(for: $0.data.pubkey) else { return nil }
-            return ($0, live)
+            return .init(event: live, user: $0)
         }
     }
     
@@ -78,8 +78,8 @@ extension LivePreviewFeedCell: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
-        let (usr, event) = lives[indexPath.item]
-        (cell as? LivePreviewFeedCellCell)?.setup(user: usr, live: event)
+        let live = lives[indexPath.item]
+        (cell as? LivePreviewFeedCellCell)?.setup(live: live)
         return cell
     }   
 }
@@ -94,8 +94,7 @@ extension LivePreviewFeedCell: UICollectionViewDelegateFlowLayout {
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let (usr, event) = lives[indexPath.item]
-        delegate?.didSelectLive(event, user: usr)
+        delegate?.didSelectLive(lives[indexPath.item])
     }
     
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
@@ -144,14 +143,14 @@ class LivePreviewFeedCellCell: UICollectionViewCell, AnimatingViewProtocol {
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
-    func setup(user: ParsedUser, live: ProcessedLiveEvent) {
-        userImage.setUserImage(user)
+    func setup(live: ParsedLiveEvent) {
+        userImage.setUserImage(live.user)
         textLabel.setText(.init(string: live.title, attributes: [
             .font: UIFont.appFont(withSize: 16, weight: .regular),
             .foregroundColor: UIColor.white
         ]))
         
-        watcherCountLabel.text = live.participants.localized()
+        watcherCountLabel.text = live.event.participants.localized()
         
         textLabel.backgroundColor = .accent
         background.backgroundColor = .accent

@@ -17,6 +17,7 @@ class SettingsRemoteSignerController: UIViewController, Themeable {
     
     enum TableItem: Hashable {
         case connection(RemoteAppConnection, ParsedUser, Bool)
+        case empty
     }
     
     var cancellables: Set<AnyCancellable> = []
@@ -31,7 +32,6 @@ class SettingsRemoteSignerController: UIViewController, Themeable {
         dataSource = UITableViewDiffableDataSource<SingleSection, TableItem>(tableView: tableView) { tableView, indexPath, item in
             switch item {
             case .connection(let connection, let user, let isActive):
-                
                 let cell = tableView.dequeueReusableCell(
                     withIdentifier: RemoteSignerConnectionCell.reuseID,
                     for: indexPath
@@ -39,6 +39,10 @@ class SettingsRemoteSignerController: UIViewController, Themeable {
                 
                 (cell as? RemoteSignerConnectionCell)?.configure(connection: connection, user: user, isActive: isActive)
                 
+                return cell
+            case .empty:
+                let cell = tableView.dequeueReusableCell(withIdentifier: "empty", for: indexPath)
+                (cell as? EmptyMuteListCell)?.label.text = "No connected apps"
                 return cell
             }
         }
@@ -55,6 +59,7 @@ class SettingsRemoteSignerController: UIViewController, Themeable {
         tableView.pinToSuperview()
         tableView.delegate = self
         tableView.register(RemoteSignerConnectionCell.self, forCellReuseIdentifier: RemoteSignerConnectionCell.reuseID)
+        tableView.register(EmptyMuteListCell.self, forCellReuseIdentifier: "empty")
         
         Publishers.CombineLatest3(
             LoginManager.instance.$loadedProfiles,
@@ -64,9 +69,13 @@ class SettingsRemoteSignerController: UIViewController, Themeable {
             .sink { [weak self] (profiles, connections, sessions) in
                 var snapshot = NSDiffableDataSourceSnapshot<SingleSection, TableItem>()
                 snapshot.appendSections([.main])
-                snapshot.appendItems(connections.map { connection in
-                        .connection(connection, profiles.first(where: { $0.data.pubkey == connection.userPubKey }) ?? .init(data: .init(pubkey: connection.userPubKey)), sessions.contains(where: { $0.clientPubKey == connection.clientPubKey }))
-                })
+                if connections.isEmpty {
+                    snapshot.appendItems([.empty], toSection: .main)
+                } else {
+                    snapshot.appendItems(connections.map { connection in
+                            .connection(connection, profiles.first(where: { $0.data.pubkey == connection.userPubKey }) ?? .init(data: .init(pubkey: connection.userPubKey)), sessions.contains(where: { $0.clientPubKey == connection.clientPubKey }))
+                    })
+                }
                 self?.dataSource.apply(snapshot)
             }
             .store(in: &cancellables)

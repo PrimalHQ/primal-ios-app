@@ -6,7 +6,9 @@
 //
 
 import UIKit
+import PrimalShared
 import Combine
+import NostrSDK
 
 protocol TransactionPartialCell: UITableViewCell {
     func setupWithCellInfo(_ info: TransactionCellType)
@@ -30,7 +32,7 @@ extension ArticleCell: TransactionPartialCell {
 enum TransactionCellType: Hashable {
     case amount(Int, incoming: Bool)
     case title(String)
-    case user(ParsedUser?, message: String?)
+    case user(PrimalShared.ProfileData?, message: String?)
     case onchain(message: String?)
     case info(String, String)
     case copyInfo(String, String)
@@ -66,11 +68,11 @@ enum TransactionCellType: Hashable {
 }
 
 enum TransactionFeedItem: Hashable {
-    case infoCell(TransactionCellType, WalletTransaction, isLast: Bool)
+    case infoCell(TransactionCellType, PrimalShared.Transaction, isLast: Bool)
     case noteElement(content: ParsedContent, element: NoteFeedElement)
 }
 
-class TransactionViewDatasource: UITableViewDiffableDataSource<TwoSectionFeed, TransactionFeedItem>, NoteFeedDatasource, RegularFeedDatasourceProtocol {
+class TransactionViewDatasource: UITableViewDiffableDataSource<TwoSectionFeed, TransactionFeedItem>, NoteFeedDatasource, RegularFeedDatasourceProtocol, MetadataCoding {
     var noteSectionCells: [TransactionFeedItem] = []
     var infoCells: [TransactionCellType] = []
     
@@ -82,11 +84,9 @@ class TransactionViewDatasource: UITableViewDiffableDataSource<TwoSectionFeed, T
     private var cancellables: Set<AnyCancellable> = []
     
     
-    let transaction: WalletTransaction
-    let user: ParsedUser?
-    init(transaction: WalletTransaction, user: ParsedUser?, tableView: UITableView, delegate: FeedElementCellDelegate) {
+    let transaction: PrimalShared.Transaction
+    init(transaction: PrimalShared.Transaction, tableView: UITableView, delegate: FeedElementCellDelegate) {
         self.transaction = transaction
-        self.user = user
         
         super.init(tableView: tableView) { [weak delegate] tableView, indexPath, item in
             let cell: UITableViewCell
@@ -97,7 +97,7 @@ class TransactionViewDatasource: UITableViewDiffableDataSource<TwoSectionFeed, T
                 (cell as? TransactionPartialCell)?.setupWithCellInfo(type)
         
                 (cell as? TransactionInfoCell)?.setIsLastInSection(isLast)
-                (cell as? TransactionAmountCell)?.setIsPending(transaction.state != "SUCCEEDED")
+                (cell as? TransactionAmountCell)?.setIsPending(transaction.state != .succeeded)
                 return cell
             case .noteElement(let content, let element):
                 cell = tableView.dequeueReusableCell(withIdentifier: element.cellID, for: indexPath)
@@ -127,8 +127,8 @@ class TransactionViewDatasource: UITableViewDiffableDataSource<TwoSectionFeed, T
         registerCells(tableView)
         registerTransactionCells(tableView)
         setInfoCells()
-                
-        if let zapInfo: ZapInfo = transaction.zap_request?.decode(), let postID = zapInfo.tags.first(where: { $0.first == "e" })?.last {
+            
+        if let zap = transaction as? Transaction.Zap, let metadata = try? decodedMetadata(from: zap.zappedEntity.toNostrString()), let postID = metadata.eventId {
             print(postID)
             
             isExpanded = false
@@ -185,17 +185,17 @@ class TransactionViewDatasource: UITableViewDiffableDataSource<TwoSectionFeed, T
     }
     
     func setInfoCells() {
-        let btcAmount = abs(Double(transaction.amount_btc) ?? 0)
-        let isDeposit = transaction.type == "DEPOSIT"
-        let isOnchain = transaction.onchainAddress != nil
-        let date = Date(timeIntervalSince1970: TimeInterval(transaction.created_at))
+        let btcAmount = abs(transaction.amountInBtc)
+        let isDeposit = transaction.type == .deposit
+        let isOnchain = transaction is Transaction.OnChain
+        let date = Date(timeIntervalSince1970: TimeInterval(transaction.createdAt))
         
         var cells: [TransactionCellType] = [
             .amount(Int((btcAmount * .BTC_TO_SAT).rounded()), incoming: isDeposit),
             .title(isDeposit ? "RECEIVED FROM" : "SENT TO"),
         ]
         
-        if let pubkey = user?.data.pubkey, pubkey != IdentityManager.instance.userHexPubkey {
+        if let zap = transaction as? Transaction.Zap, let user = zap.otherUserProfile {
             cells.append(.user(user, message: transaction.note))
         } else if isOnchain {
             cells.append(.onchain(message: transaction.note))
@@ -207,22 +207,22 @@ class TransactionViewDatasource: UITableViewDiffableDataSource<TwoSectionFeed, T
         
         if isExpanded {
             cells += [
-                .info("Status", transaction.state.localizedCapitalized),
+                .info("Status", transaction.state.name),
                 .info("Transaction Type", isOnchain ? "On-chain Payment" : "Lightning Payment")
             ]
             
             cells.append(.info("Current USD value", "$" + (btcAmount * .BTC_TO_USD).nDecimalPoints(n: 2)))
-            if let exchangeRateString = transaction.exchange_rate, let exchangeRate = Double(exchangeRateString) {
+            if let exchangeRateString = transaction.exchangeRate, let exchangeRate = Double(exchangeRateString) {
                 cells.append(.info("Original USD value", "$" + (btcAmount / exchangeRate).nDecimalPoints(n: 2)))
             }
-            if let feeString = transaction.total_fee_btc, let feeBtc = Double(feeString) {
+            if let feeString = transaction.totalFeeInBtc, let feeBtc = Double(feeString) {
                 let fee = Int((feeBtc * .BTC_TO_SAT).rounded())
                 cells.append(.info(isOnchain ? "Mining fee" : "Transaction fee", "\(fee) sats"))
             }
             if let invoice = transaction.invoice {
                 cells.append(.copyInfo("Invoice", invoice))
             }
-            if transaction.onchain_transaction_id != nil {
+            if isOnchain {
                 cells.append(.actionInfo("Details", "view on blockchain"))
             }
         }

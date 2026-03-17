@@ -370,7 +370,7 @@ class NoteProcessor: MetadataCoding {
                 }
             }
         }
-        
+
         // MARK: - Editing text
         
         for item in itemsToRemove {
@@ -450,7 +450,15 @@ class NoteProcessor: MetadataCoding {
         
         let nsText = text as NSString
         
-        p.zaps = parsedZaps.filter { $0.postId == post.id || $0.postId == post.universalID }
+        p.zaps = parsedZaps.filter { zap in
+            guard zap.postId == post.id || zap.postId == post.universalID else { return false }
+            // Exclude poll vote zaps from the top zaps gallery on zap polls
+            if post.kind == NostrKind.zapPoll.rawValue {
+                let tags = response.zapReceipts[zap.receiptId]?["tags"]?.arrayValue
+                if tags?.tagValueForKey("poll_option") != nil { return false }
+            }
+            return true
+        }
         p.hashtags = hashtags.flatMap { nsText.positions(of: $0, reference: $0) }
         p.mentions = markedMentions.flatMap { nsText.positions(of: $0.0, reference: $0.ref) }
 //        p.notes = referencedPosts.flatMap { nsText.positions(of: $0.0, reference: $0.1.post.id) }
@@ -459,7 +467,34 @@ class NoteProcessor: MetadataCoding {
         p.highlightEvents = highlights.map { $0.highlight }
         p.text = text
         p.buildContentString(style: contentStyle)
-        
+
+        // MARK: - Parsing poll data
+        if post.kind == NostrKind.poll.rawValue || post.kind == NostrKind.zapPoll.rawValue {
+            let isZapPoll = post.kind == NostrKind.zapPoll.rawValue
+            // NIP-88 user polls use "option" tag; zap polls use "poll_option" tag
+            let optionTagName = isZapPoll ? "poll_option" : "option"
+            let options: [ParsedPoll.Option] = post.tags.compactMap { tag in
+                guard tag.count >= 3, tag[0] == optionTagName else { return nil }
+                return .init(id: tag[1], label: String(tag[2].prefix(35)))
+            }
+            let pollType = post.tags.first(where: { $0.first == "polltype" })?[safe: 1] ?? "singlechoice"
+            // NIP-88 user polls use "endsAt" tag; zap polls use "closed_at" tag
+            let endsAtTagName = isZapPoll ? "closed_at" : "endsAt"
+            let endsAt: Date? = (post.tags.first(where: { $0.first == endsAtTagName }))
+                .flatMap { $0[safe: 1] }.flatMap { TimeInterval($0) }
+                .map { Date(timeIntervalSince1970: $0) }
+            let valueMinimum = post.tags.first(where: { $0.first == "value_minimum" }).flatMap { $0[safe: 1] }.flatMap { Int($0) }
+            let valueMaximum = post.tags.first(where: { $0.first == "value_maximum" }).flatMap { $0[safe: 1] }.flatMap { Int($0) }
+
+            if !options.isEmpty {
+                p.poll = ParsedPoll(
+                    options: options, pollType: pollType, endsAt: endsAt,
+                    isZapPoll: isZapPoll,
+                    valueMinimum: valueMinimum, valueMaximum: valueMaximum
+                )
+            }
+        }
+
         return p
     }
     
@@ -503,7 +538,7 @@ class NoteProcessor: MetadataCoding {
             let content = mention.post.content.trimmingCharacters(in: .whitespacesAndNewlines)
             
             highlights.append((mentionText, content, mention))
-        } else if mention.post.kind == post.kind {
+        } else if [NostrKind.text.rawValue, NostrKind.poll.rawValue, NostrKind.zapPoll.rawValue].contains(mention.post.kind) {
             referencedPosts.append((mentionText, mention))
         } else if mention.post.kind == NostrKind.mediaPost.rawValue, let urlTag = mention.post.tags.first(where: { $0.first == "imeta" })?[safe: 1], urlTag.hasPrefix("url ") {
             let url = String(urlTag.dropFirst(4))

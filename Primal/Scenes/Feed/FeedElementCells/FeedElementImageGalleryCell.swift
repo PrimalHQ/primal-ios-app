@@ -66,6 +66,28 @@ class FeedElementImageGalleryCell: FeedElementBaseCell, RegularFeedElementCell {
             imageAspectConstraint = aspect
             return
         }
+        
+        let firstAspect: CGFloat? = {
+            guard let firstMedia = content.mediaResources.first else { return nil }
+            guard let variant = firstMedia.variants.first else {
+                guard
+                    let imetaTag = content.post.tags.tagArrayForKeyWithValue("imeta", value: "url \(firstMedia.url)"),
+                    let dimensions = imetaTag.first(where: { $0.hasPrefix("dim")}),
+                    let sizeString = dimensions.split(separator: " ")[safe: 1]
+                else { return nil }
+                
+                let splitSizeString = sizeString.split(separator: "x")
+                
+                guard
+                    splitSizeString.count == 2,
+                    let width = Int(splitSizeString[0]),
+                    let height = Int(splitSizeString[1])
+                else { return nil }
+                
+                return CGFloat(max(1, height)) / CGFloat(max(1, width))
+            }
+            return CGFloat(max(1, variant.height)) / CGFloat(max(1, variant.width))
+        }()
     
         if let first = content.mediaResources.first?.variants.first {
             let constant: CGFloat = content.mediaResources.count > 1 ? 16 : 0

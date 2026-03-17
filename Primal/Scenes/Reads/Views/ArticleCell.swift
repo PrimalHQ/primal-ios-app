@@ -95,7 +95,7 @@ class ArticleCell: UITableViewCell, Themeable {
             contentImageView.image = UIImage(named: "longFormPlaceholderImage")
         }
         
-        timeLabel.text = Date(timeIntervalSince1970: content.event.created_at).timeAgoDisplayLong()
+        timeLabel.text = Date(timeIntervalSince1970: content.event.originalDate).timeAgoDisplayLong()
         avatar.setUserImage(content.user, disableAnimated: true)
         nameLabel.text = content.user.data.firstIdentifier
         commentLabel.text = "\(content.stats.replies ?? 0) comments"

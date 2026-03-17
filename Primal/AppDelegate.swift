@@ -23,6 +23,11 @@ extension UserDefaults {
         get { string(forKey: "signerNotificationEnableEventsKey")?.decode() ?? [] }
         set { setValue(newValue.encodeToString(), forKey: "signerNotificationEnableEventsKey") }
     }
+
+    var nwcNotificationEnableEvents: [NostrObject] {
+        get { string(forKey: "nwcNotificationEnableEventsKey")?.decode() ?? [] }
+        set { setValue(newValue.encodeToString(), forKey: "nwcNotificationEnableEventsKey") }
+    }
     
     var currentUserEnabledNotifications: Bool {
         notificationEnableEvents.contains(where: { $0.pubkey == IdentityManager.instance.userHexPubkey })
@@ -67,7 +72,11 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             .hugeFontKey:           true,
         ])
         
+        // Delete in 2027
         UserDefaults.standard.removeObject(forKey: .didVisitPremiumAfterProUpdateKey)
+        UserDefaults.standard.removeObject(forKey: .oldTransactionsKey)
+        UserDefaults.standard.removeObject(forKey: .icloudRemindUsersKey)
+        UserDefaults.standard.removeObject(forKey: "icloud_setup_done1")
         
         UITableView.appearance().sectionHeaderTopPadding = 0
         
@@ -78,9 +87,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         _ = SmartContactsManager.instance
         ArticleWebViewCache.setup()
         
-        ICloudKeychainManager.instance.setupForIcloudNewUsers()
-        
-        WalletRepositoryFactory.shared.doInit(enableDbEncryption: true, enableLogs: true)
+        WalletRepositoryFactory.shared.doInit(enableDbEncryption: true, enableLogs: true, breezApiKey: SecretsManager.instance.breezApiKey)
         AccountRepositoryFactory.shared.doInit(enableDbEncryption: true, enableLogs: true)
         
         _ = RemoteSignerManager.instance
@@ -125,6 +132,13 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         print("Failed to register for remote notifications: \(error.localizedDescription)")
     }
     
+    func applicationWillEnterForeground(_ application: UIApplication) {
+        PrimalApiClientFactory.shared.resumeAll()
+    }
+    
+    func applicationDidEnterBackground(_ application: UIApplication) {
+        PrimalApiClientFactory.shared.pauseAll()
+    }
 }
 
 private extension AppDelegate {
@@ -153,21 +167,36 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
             completionHandler([])
             return
         }
+
+        if let extra = notification.request.content.userInfo["extra"] as? [String: Any],
+           let eventKind = extra["event_kind"] as? Int, eventKind == 23194,
+           NwcServiceManager.shared.autoStartService {
+            NwcServiceManager.shared.startService()
+            completionHandler([])
+            return
+        }
         
         completionHandler([.banner, .sound, .badge])
     }
     
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
         let userInfo = response.notification.request.content.userInfo
-        
+
         if let extra = userInfo["extra"] as? [String: Any] {
             var waitForOpen = false
+            
+            if let eventKind = extra["event_kind"] as? Int, eventKind == 23194, NwcServiceManager.shared.autoStartService {
+                NwcServiceManager.shared.startService()
+                completionHandler()
+                return
+            }
+            
             if let userPubkey = extra["user_pubkey"] as? String, IdentityManager.instance.userHexPubkey != userPubkey, let npub = userPubkey.hexToNpub() {
                 _ = LoginManager.instance.login(npub)
                 RootViewController.instance.reset()
                 waitForOpen = true
             }
-            
+
             if let url = extra["link"] as? String, let url = URL(string: url) {
                 if waitForOpen {
                     DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
@@ -178,7 +207,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
                 }
             }
         }
-        
+
         print("Notification payload: \(userInfo)")
         // Handle the notification tap (e.g., navigate to a specific screen)
         completionHandler()

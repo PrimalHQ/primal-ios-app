@@ -15,7 +15,7 @@ final class LargeProfileView: UIView {
     let usernameLabel = UILabel()
     let descriptionLabel = NantesLabel()
     let websiteLabel = NantesLabel()
-    let changeBannerButton = SolidColorUIButton(title: "change banner", color: .init(rgb: 0xCA079F))
+    let changeBannerButton = SolidColorUIButton(title: "change banner", color: IceWave.instance.accent)
     
     var didTapUrl: (URL) -> Void = { _ in }
     
@@ -88,12 +88,12 @@ private extension LargeProfileView {
         nameLabel.adjustsFontSizeToFitWidth = true
         
         usernameLabel.font = .appFont(withSize: 14, weight: .regular)
-        usernameLabel.textColor = .init(rgb: 0x666666)
+        usernameLabel.textColor = .black
         
         descriptionLabel.font = .appFont(withSize: 14, weight: .regular)
         descriptionLabel.numberOfLines = 4
         descriptionLabel.lineBreakMode = .byWordWrapping
-        descriptionLabel.textColor = .black
+        descriptionLabel.textColor = .init(rgb: 0x666666)
         descriptionLabel.linkAttributes = [.foregroundColor: UIColor(rgb: 0xCA079F)]
         descriptionLabel.delegate = self
         

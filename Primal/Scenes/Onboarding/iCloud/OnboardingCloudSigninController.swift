@@ -9,24 +9,12 @@ import Combine
 import UIKit
 
 extension UIButton.Configuration {
-    static func newOnboardingButton(title: String) -> UIButton.Configuration {
-        var config = UIButton.Configuration.filled()
-        
-        config.attributedTitle = .init(title, attributes: .init([.font: UIFont.appFont(withSize: 16, weight: .bold)]))
-        config.baseForegroundColor = .white
-        
-        config.baseBackgroundColor = .black.withAlphaComponent(0.4)
-        config.background.cornerRadius = 12
-        
-        return config
-    }
-    
     static func onboardingSimpleButton(title: String) -> UIButton.Configuration {
         var config = UIButton.Configuration.plain()
         
         config.attributedTitle = .init(title, attributes: .init([.font: UIFont.appFont(withSize: 16, weight: .semibold)]))
-        config.baseForegroundColor = .white
-        
+        config.baseForegroundColor = UIColor(rgb: 0x111111)
+
         return config
     }
 }
@@ -86,7 +74,7 @@ private extension OnboardingCloudSigninController {
         addBackground()
         addNavigationBar("Sign In")
         
-        let manualInputButton = UIButton(configuration: .newOnboardingButton(title: "Enter your Nostr key to sign in")).constrainToSize(height: 60)
+        let manualInputButton = UIButton(configuration: .pill(text: "Enter your Nostr key to sign in", foregroundColor: .white, backgroundColor: .onboarding, font: .appFont(withSize: 16, weight: .semibold))).constrainToSize(height: 60)
         let scrollView = UIScrollView()
         scrollView.addSubview(buttonStack)
         buttonStack.pinToSuperview()
@@ -94,7 +82,7 @@ private extension OnboardingCloudSigninController {
         buttonStack.spacing = 12
         
         let contentStack = UIStackView(axis: .vertical, [
-            UILabel("Use a previous login:", color: .white, font: .appFont(withSize: 16, weight: .semibold), multiline: true),
+            UILabel("Use a previous login:", color: UIColor(rgb: 0x111111), font: .appFont(withSize: 16, weight: .semibold), multiline: true),
             scrollView,
             OrSeparatorView(),
             manualInputButton

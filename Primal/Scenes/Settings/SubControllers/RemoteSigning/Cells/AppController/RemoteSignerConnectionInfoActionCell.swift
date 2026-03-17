@@ -21,7 +21,7 @@ final class RemoteSignerConnectionInfoActionCell: UITableViewCell {
 
     private let iconView = UIImageView().constrainToSize(48)
     private let titleLabel = UILabel("", color: .foreground, font: .appFont(withSize: 18, weight: .bold))
-    private let lastSessionLabel = UILabel("", color: .foreground3, font: .appFont(withSize: 15, weight: .bold))
+    private let lastSessionLabel = UILabel("", color: .foreground3, font: .appFont(withSize: 15, weight: .regular))
     private let startSessionButton = UIButton()
     private let editNameButton = UIButton()
     private let deleteConnectionButton = UIButton()
@@ -62,7 +62,7 @@ final class RemoteSignerConnectionInfoActionCell: UITableViewCell {
         
         formatter.setLocalizedDateFormatFromTemplate("MMM d, yyyy h:mm a")
         
-        deleteConnectionButton.layer.borderColor = UIColor(rgb: 0xFA3C3C).withAlphaComponent(0.2).cgColor
+        deleteConnectionButton.layer.borderColor = UIColor(rgb: 0x4B0F0F).cgColor
         deleteConnectionButton.layer.borderWidth = 1
         deleteConnectionButton.layer.cornerRadius = 18
         
@@ -101,7 +101,8 @@ final class RemoteSignerConnectionInfoActionCell: UITableViewCell {
         
         startSessionButton.configuration = .pill(text: isActive ? "Stop Session" : "Start Session", foregroundColor: .background5, backgroundColor: .foreground, font: .appFont(withSize: 14, weight: .regular))
         editNameButton.configuration = .pill(text: "Edit Name", foregroundColor: .foreground, backgroundColor: .foreground6, font: .appFont(withSize: 14, weight: .regular))
-        deleteConnectionButton.configuration = .pill(text: "Delete Connection", foregroundColor: .init(rgb: 0xFA3C3C), backgroundColor: .init(rgb: 0x1f0404), font: .appFont(withSize: 14, weight: .regular))
+        deleteConnectionButton.configuration = .pill(text: "Delete Connection", foregroundColor: .delete, backgroundColor: .init(rgb: 0x1F0404), font: .appFont(withSize: 14, weight: .regular))
+//        deleteConnectionButton.backgroundColor = Theme.midnightWave.theme.background
         
         backgroundColor = .background5
     }

@@ -56,10 +56,10 @@ extension LegendTheme {
 }
 
 extension UIButton.Configuration {
-    static func coloredButton(_ title: String, color: UIColor) -> UIButton.Configuration {
+    static func coloredButton(_ title: String, color: UIColor, font: UIFont = .appFont(withSize: 16, weight: .regular)) -> UIButton.Configuration {
         var config = UIButton.Configuration.plain()
         config.attributedTitle = .init(title, attributes: .init([
-            .font: UIFont.appFont(withSize: 16, weight: .regular),
+            .font: font,
             .foregroundColor: color
         ]))
         return config
@@ -239,7 +239,11 @@ private extension ProfilePremiumCardController {
                 
                 let formatter = DateFormatter()
                 formatter.dateFormat = "MMMM d, yyyy"
-                sinceLabel.text = "\(custom.cohort_1) since \(formatter.string(from: Date(timeIntervalSince1970: custom.premium_since)))"
+                if let since = custom.premium_since {
+                    sinceLabel.text = "\(custom.cohort_1) since \(formatter.string(from: Date(timeIntervalSince1970: since)))"
+                } else {
+                    sinceLabel.text = custom.cohort_1
+                }
                  
                 otherLegendsButton.configuration = .coloredButton("See other Primal OGs", color: .accent)
                 becomeLegendParent.alpha = 0.001
@@ -266,7 +270,7 @@ private extension ProfilePremiumCardController {
         }), for: .touchUpInside)
         
         if PremiumCustomizationManager.instance.getCustomization(pubkey: user.data.pubkey) != nil, user.data.pubkey == IdentityManager.instance.userHexPubkey {
-            let threeDotsButton = UIButton(configuration: .simpleImage("threeDots"))
+            let threeDotsButton = UIButton(configuration: .simpleImage(.threeDots))
             threeDotsButton.tintColor = .init(rgb: 0x1E1E1E)
             threeDotsButton.showsMenuAsPrimaryAction = true
             threeDotsButton.menu = .init(children: [

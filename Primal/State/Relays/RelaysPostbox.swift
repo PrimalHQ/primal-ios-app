@@ -40,7 +40,7 @@ final class RelaysPostbox {
         
         func resultHandler(result: [JSON], relay: String) {
             DispatchQueue.main.async {
-                if didSucceed != true {
+                if didSucceed == nil {
                     didSucceed = true
                     successHandler?(result)
                 }                
@@ -51,6 +51,10 @@ final class RelaysPostbox {
         
         var relays = IdentityManager.instance.userRelays?.keys as? [String] ?? []
         if relays.isEmpty { relays = bootstrap_relays }
+        
+        Connection.regular.requestCache(name: "import_events", payload: .object(["events": .array([ev.toJSON()])])) { _ in
+            resultHandler(result: [], relay: "")
+        }
         
         if let jsonEV: JSON = ev.encodeToString()?.decode() {
             SocketRequest(name: "broadcast_events", payload: [

@@ -7,6 +7,7 @@
 
 import XCTest
 import Foundation
+@testable import Primal
 
 final class RegexTests: XCTestCase {
     
@@ -60,6 +61,134 @@ final class RegexTests: XCTestCase {
     }
     
     
+    // MARK: - Hashtag Tests
+
+    func testHashtagRejectsNumbers() {
+        XCTAssertFalse("#1".isHashtag)
+        XCTAssertFalse("#123".isHashtag)
+        XCTAssertFalse("#0".isHashtag)
+        XCTAssertFalse("#999999".isHashtag)
+        XCTAssertFalse("#42".isHashtag)
+        XCTAssertFalse(" #1".isHashtag)
+        XCTAssertFalse(" #99".isHashtag)
+    }
+
+    func testHashtagAcceptsValidHashtags() {
+        XCTAssertTrue("#hello".isHashtag)
+        XCTAssertTrue("#nostr".isHashtag)
+        XCTAssertTrue("#Bitcoin".isHashtag)
+        XCTAssertTrue("#a".isHashtag)
+        XCTAssertTrue("#Z".isHashtag)
+        XCTAssertTrue("#grownostr".isHashtag)
+        XCTAssertTrue("#zapathon".isHashtag)
+    }
+
+    func testHashtagAcceptsMixedAlphanumeric() {
+        XCTAssertTrue("#1a".isHashtag)
+        XCTAssertTrue("#a1".isHashtag)
+        XCTAssertTrue("#test123".isHashtag)
+        XCTAssertTrue("#123abc".isHashtag)
+        XCTAssertTrue("#2024year".isHashtag)
+        XCTAssertTrue("#year2024".isHashtag)
+        XCTAssertTrue("#abc123def".isHashtag)
+        XCTAssertTrue("#1bitcoin".isHashtag)
+    }
+
+    func testHashtagWithLeadingWhitespace() {
+        XCTAssertTrue(" #hello".isHashtag)
+        XCTAssertFalse(" #123".isHashtag)
+        XCTAssertTrue(" #nostr".isHashtag)
+        XCTAssertTrue(" #test123".isHashtag)
+        XCTAssertFalse(" #42".isHashtag)
+    }
+
+    func testHashtagRejectsInvalidFormats() {
+        // No hash symbol
+        XCTAssertFalse("hello".isHashtag)
+        // Empty after hash
+        XCTAssertFalse("#".isHashtag)
+        // Special characters only
+        XCTAssertFalse("##".isHashtag)
+        // Bare text without hash
+        XCTAssertFalse("nostr".isHashtag)
+        // Just whitespace
+        XCTAssertFalse(" ".isHashtag)
+        XCTAssertFalse("".isHashtag)
+    }
+
+    func testHashtagWithUnicode() {
+        XCTAssertTrue("#café".isHashtag)
+        XCTAssertTrue("#日本語".isHashtag)
+        XCTAssertTrue("#über".isHashtag)
+        XCTAssertTrue("#ñoño".isHashtag)
+    }
+
+    func testHashtagWithUnderscoresAndDashes() {
+        XCTAssertTrue("#hello_world".isHashtag)
+        XCTAssertTrue("#my-tag".isHashtag)
+        XCTAssertTrue("#_test".isHashtag)
+        XCTAssertTrue("#test-123".isHashtag)
+    }
+
+    // MARK: - extractHashtags Tests
+
+    func testExtractHashtagsBasic() {
+        XCTAssertEqual("Hello #nostr world".extractHashtags(), ["#nostr"])
+        XCTAssertEqual("#bitcoin is great".extractHashtags(), ["#bitcoin"])
+        XCTAssertEqual("end with #tag".extractHashtags(), ["#tag"])
+    }
+
+    func testExtractHashtagsMultiple() {
+        XCTAssertEqual(
+            "Check out #nostr and #bitcoin today".extractHashtags(),
+            ["#nostr", "#bitcoin"]
+        )
+        XCTAssertEqual(
+            "#one #two #three".extractHashtags(),
+            ["#one", "#two", "#three"]
+        )
+    }
+
+    func testExtractHashtagsRejectsNumbers() {
+        XCTAssertEqual("This is #1 priority".extractHashtags(), [])
+        XCTAssertEqual("Items #1 #2 #3".extractHashtags(), [])
+        XCTAssertEqual("#42 is the answer".extractHashtags(), [])
+        XCTAssertEqual("Rank #100".extractHashtags(), [])
+    }
+
+    func testExtractHashtagsMixedNumbersAndValid() {
+        XCTAssertEqual(
+            "This is #1 but #nostr is valid".extractHashtags(),
+            ["#nostr"]
+        )
+        XCTAssertEqual(
+            "#123 #hello #456 #world".extractHashtags(),
+            ["#hello", "#world"]
+        )
+        XCTAssertEqual(
+            "#1a is valid but #2 is not".extractHashtags(),
+            ["#1a"]
+        )
+    }
+
+    func testExtractHashtagsAcceptsMixedAlphanumeric() {
+        XCTAssertEqual("#test123".extractHashtags(), ["#test123"])
+        XCTAssertEqual("#123abc".extractHashtags(), ["#123abc"])
+        XCTAssertEqual("#2024year review".extractHashtags(), ["#2024year"])
+    }
+
+    func testExtractHashtagsNoMatches() {
+        XCTAssertEqual("No hashtags here".extractHashtags(), [])
+        XCTAssertEqual("".extractHashtags(), [])
+        XCTAssertEqual("Just a # symbol".extractHashtags(), [])
+    }
+
+    func testExtractHashtagsInlineDoesNotMatch() {
+        // Hashtag must be preceded by whitespace or start of string
+        XCTAssertEqual("email@#tag".extractHashtags(), [])
+        XCTAssertEqual("foo#bar".extractHashtags(), [])
+    }
+
     let nip27Tests: [(String, [String])] = [
         (
             """

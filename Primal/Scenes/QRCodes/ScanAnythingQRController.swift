@@ -9,7 +9,7 @@ import AVKit
 import Combine
 import UIKit
 
-final class ScanAnythingQRController: UIViewController, QRCaptureController, WalletSearchController, PromotionCodeChecker {
+final class ScanAnythingQRController: UIViewController, QRCaptureController, WalletSearchController {
     var captureSession = AVCaptureSession()
     var videoPreviewLayer: AVCaptureVideoPreviewLayer { previewView.previewLayer }
     var qrCodeFrameView = UIView()
@@ -120,26 +120,6 @@ extension ScanAnythingQRController: AVCaptureMetadataOutputObjectsDelegate {
         // Try to parse as URL using deeplink handlers first
         if parseURLWithDeeplinkHandlers(text) {
             textSearch = text
-            return
-        }
-              
-        // Check for promotion code
-        if let code = text.split(separator: "/").last?.string, code.count == 8, textSearch != code {
-            textSearch = code
-            
-            checkPromotionCode(code) { [weak self] result in
-                guard let self else { return }
-                switch result {
-                case .success(let info):
-                    dismiss(animated: true) {
-                        RootViewController.instance.present(OnboardingPreviewCodeController(info: info, code: code, backgroundIndex: 0), animated: true)
-                    }
-                case .failure(let message):
-                    dismiss(animated: true) {
-                        RootViewController.instance.present(OnboardingEnterCodeController(startingCode: code, error: message, backgroundIndex: 0), animated: true)
-                    }
-                }
-            }
             return
         }
         

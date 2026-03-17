@@ -20,6 +20,42 @@ extension UIButton.Configuration {
     }
 }
 
+class RemoteGifMediaPickerResult: ImagePickerResult {
+    let url: URL
+    
+    private var imageSize: CGSize?
+    
+    init(url: URL) {
+        self.url = url
+    }
+    
+    var thumbnailSource: MediaPickerResultThumbnailSource? { .remote(url) }
+    
+    func uploadURL() async throws -> URL {
+        let (data, _) = try await URLSession.shared.data(from: url)
+        let tempDir = FileManager.default.temporaryDirectory
+        let fileName = UUID().uuidString + ".gif"
+        let fileURL = tempDir.appendingPathComponent(fileName)
+        try data.write(to: fileURL)
+            
+        imageSize = UIImage(data: data)?.size
+            
+        return fileURL
+    }
+    
+    func metaTagsWithURL(uploadURL: String) async -> [String] {
+        var meta = [
+            "imeta",
+            "url \(uploadURL)",
+            "m image/gif"
+        ]
+        if let imageSize {
+            meta.append("dim \(imageSize.width)x\(imageSize.height)")
+        }
+        return meta
+    }
+}
+
 class NewPostViewController: UIViewController {
     let textView = UITextView()
     let imageView = UserImageView(height: 52)
@@ -30,8 +66,9 @@ class NewPostViewController: UIViewController {
     let imageButton = UIButton()
     let cameraButton = UIButton()
     let atButton = UIButton()
+    let gifButton = UIButton()
     let clearButton = UIButton(configuration: .capsuleBackground3(text: "Clear")).constrainToSize(width: 80, height: 28)
-    lazy var bottomStack = UIStackView(arrangedSubviews: [imageButton, cameraButton, atButton, UIView(), clearButton])
+    lazy var bottomStack = UIStackView(arrangedSubviews: [imageButton, gifButton, cameraButton, atButton, UIView(), clearButton])
     
     lazy var postButton = SmallPostButton(title: "Post")
     
@@ -81,10 +118,9 @@ private extension NewPostViewController {
         }
         
         let onPost = self.onPost
-        manager.post { success, _ in
-            if success {
-                onPost?()
-            }
+        Task { @MainActor in
+            guard let ev = await manager.post() else { return }
+            onPost?()
         }
         dismiss(animated: true)
     }
@@ -130,7 +166,8 @@ private extension NewPostViewController {
         imageButton.setImage(UIImage(named: "ImageIcon"), for: .normal)
         cameraButton.setImage(UIImage(named: "CameraIcon"), for: .normal)
         atButton.setImage(UIImage(named: "AtIcon"), for: .normal)
-        [imageButton, cameraButton, atButton].forEach {
+        gifButton.setImage(.gifButton, for: .normal)
+        [imageButton, cameraButton, atButton, gifButton].forEach {
             $0.constrainToSize(48)
             $0.tintColor = .foreground
         }
@@ -177,6 +214,13 @@ private extension NewPostViewController {
         }), for: .touchUpInside)
         postButton.addTarget(self, action: #selector(postButtonPressed), for: .touchUpInside)
         atButton.addTarget(manager, action: #selector(PostingTextViewManager.atButtonPressed), for: .touchUpInside)
+        gifButton.addAction(.init(handler: { [weak self] _ in
+            self?.present(KlipyGifController { [weak self] res in
+                guard let url = res.gifURL ?? res.mediumgifURL ?? res.tinygifURL else { return }
+                
+                self?.manager.processSelectedAsset(RemoteGifMediaPickerResult(url: url))
+            }, animated: true)
+        }), for: .touchUpInside)
         imageButton.addTarget(self, action: #selector(galleryButtonPressed), for: .touchUpInside)
         cameraButton.addTarget(self, action: #selector(cameraButtonPressed), for: .touchUpInside)
         clearButton.addAction(.init(handler: { [weak self] _ in
@@ -249,3 +293,4 @@ extension NewPostViewController: UIAdaptivePresentationControllerDelegate {
         false
     }
 }
+

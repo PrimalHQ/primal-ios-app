@@ -9,13 +9,13 @@ import Foundation
 
 private extension UserDefaults {
     var homeFeedResultString: String? {
-        get { string(forKey: "homeFeedLocalKey" + IdentityManager.instance.userHexPubkey) }
-        set { setValue(newValue, forKey: "homeFeedLocalKey" + IdentityManager.instance.userHexPubkey) }
+        get { string(forKey: "homeFeedLocalKey1" + IdentityManager.instance.userHexPubkey) }
+        set { setValue(newValue, forKey: "homeFeedLocalKey1" + IdentityManager.instance.userHexPubkey) }
     }
     
     var homeFeedSaveDate: Date? {
-        get { value(forKey: "homeFeedLocalDate" + IdentityManager.instance.userHexPubkey) as? Date }
-        set { setValue(newValue, forKey: "homeFeedLocalDate" + IdentityManager.instance.userHexPubkey) }
+        get { value(forKey: "homeFeedLocalDate1" + IdentityManager.instance.userHexPubkey) as? Date }
+        set { setValue(newValue, forKey: "homeFeedLocalDate1" + IdentityManager.instance.userHexPubkey) }
     }
 //    func getHomeFeedResultString(pubkey: String) -> String? {
 //        return string(forKey: "homeFeedLocalKey" + pubkey)

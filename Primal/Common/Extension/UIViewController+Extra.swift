@@ -41,6 +41,18 @@ extension UIViewController {
     
     var customBackButton: UIBarButtonItem { backButtonWithColor(.foreground) }
     
+    var customBackButtonWithDismiss: UIBarButtonItem {
+        let button = backButtonWithColorNoAction(.foreground)
+        button.addAction(.init(handler: { [weak self] _ in
+            guard let nav = self?.navigationController, nav.viewControllers.count > 1 else {
+                self?.dismiss(animated: true)
+                return
+            }
+            nav.popViewController(animated: true)
+        }), for: .touchUpInside)
+        return UIBarButtonItem(customView: button)
+    }
+    
     func customSearchButton(scope: SearchScope = .global, type: SearchType = .notes) -> UIBarButtonItem {
         let view = UIView().constrainToSize(44)
         let icon = UIImageView(image: UIImage(named: "navSearch"))

@@ -129,9 +129,9 @@ class TextViewManager: NSObject, UITextViewDelegate {
     func addMedia(_ files: [URL]) {
         for url in files {
             if let image = UIImage(contentsOfFile: url.path()) {
-                processSelectedAsset(.image((image, .jpeg)))
+                processSelectedAsset(ImageMediaPickerResult(image: image, type: .jpeg))
             } else if let image = getThumbnailImage(forUrl: url) {
-                processSelectedAsset(.video(.init(thumbnail: image, url: url)))
+                processSelectedAsset(VideoMediaPickerResult(thumbnail: image, url: url))
             }
         }
     }

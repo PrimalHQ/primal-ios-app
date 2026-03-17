@@ -403,8 +403,7 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
             guard let thread = open(post: post) as? ThreadViewController else { return }
         
             DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(200)) {
-                thread.textInputView.becomeFirstResponder()
-                thread.animateBarsToVisible()
+                thread.replyBoxTapped()
             }
         case .embeddedPost:
             guard
@@ -434,6 +433,10 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
             show(NoteReactionsParentController(.likes, noteId: post.post.universalID), sender: nil)
         case .repostDetails:
             show(NoteReactionsParentController(.reposts, noteId: post.post.universalID), sender: nil)
+        case .pollVotesDetails:
+            guard let poll = post.poll else { return }
+            
+            show(PollResultsViewController(eventId: post.post.id, poll: poll), sender: nil)
         case .share:
             let activityViewController = UIActivityViewController(activityItems: [post.webURL()], applicationActivities: nil)
             present(activityViewController, animated: true, completion: nil)
@@ -482,7 +485,7 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
             BookmarkManager.instance.unbookmark(post)
             (cell as? FeedElementBaseCell)?.update(post)
         case .articleTag(let tag):
-            showViewController(ArticleFeedViewController(feed: .init(name: "#\(tag)", spec: "{\"kind\":\"reads\",\"topic\":\"\(tag)\"}")))
+            showViewController(ArticleFeedViewController(feed: .init(name: "#\(tag)", spec: "{\"topic\":\"\(tag)\"}")))
         case .requestDelete:
             requestDelete(post)
         }
@@ -576,17 +579,6 @@ private extension NoteViewController {
         let postUser = post.user.data
         if postUser.address == nil {
             showErrorMessage(title: "Can’t Zap", "The user you're trying to zap didn't set up their lightning wallet")
-            return
-        }
-        
-        guard let hasWallet = WalletManager.instance.userHasWallet else { return } // Unknown
-        guard hasWallet else {
-            let popup = PopupMenuViewController(message: "To zap people on Nostr, you need to activate your wallet and get some sats.", actions: [
-                .init(title: "Go to wallet", image: .init(named: "selectedTabIcon-wallet"), handler: { [weak self] _ in
-                    self?.mainTabBarController?.switchToTab(.wallet)
-                })
-            ])
-            present(popup, animated: true)
             return
         }
         
@@ -710,6 +702,8 @@ extension NoteViewController: PostCellDelegate {
         
         let popup = PopupMenuViewController()
         
+        var repostTitle = "Repost"
+        
         if PostingManager.instance.hasReposted(parsedPost.post.universalID) {
             popup.addAction(.init(title: "Delete Repost", image: .menuTrash, attributes: .destructive, handler: { [weak self] _ in
                 let alert = UIAlertController(title: "Delete Repost?", message: "This will issue a \"request delete\" command to the relays where the repost was published", preferredStyle: .alert)
@@ -721,12 +715,14 @@ extension NoteViewController: PostCellDelegate {
                 alert.addAction(.init(title: "Cancel", style: .cancel))
                 self?.present(alert, animated: true)
             }))
-        } else {
-            popup.addAction(.init(title: "Repost", image: .repostIconLarge, handler: { _ in
-                PostingManager.instance.sendRepostEvent(post: post)
-                cell.repostButton.animateTo(post.reposts + 1, filled: true)
-            }))
+            
+            repostTitle = "Repost Again"
         }
+        
+        popup.addAction(.init(title: repostTitle, image: .repostIconLarge, handler: { _ in
+            PostingManager.instance.sendRepostEvent(post: post)
+            cell.repostButton.animateTo(post.reposts + 1, filled: true)
+        }))
         
         popup.addAction(.init(title: "Quote", image: .init(named: "quoteIconLarge"), handler: { [weak self] _ in
             guard let self else { return }
@@ -749,11 +745,17 @@ extension NoteViewController: PostCellDelegate {
         
         let allImages = post.mediaResources
         
+        if resource.url.isVideoURL {
+            handleVideoUrlTapped(resource, in: cell, allImages: allImages)
+            return
+        }
+        
         let current = cell.mainImages.currentImageCell()
         if let imageCell = current as? ImageCell {
             ImageGalleryController(current: resource, all: allImages).present(from: self, imageView: imageCell.imageView)
             return
-        } else if let multiCell = current as? MultipleImageGalleryCell,
+        }
+        if let multiCell = current as? MultipleImageGalleryCell,
                   let index = post.mediaResources.firstIndex(where: { $0.url == resource.url }),
                   let imageView = multiCell.imageViews[safe: index]?.display
         {
@@ -765,12 +767,12 @@ extension NoteViewController: PostCellDelegate {
     }
     
     func postCellDidTapEmbeddedImages(_ cell: ElementPostPreviewCell, embeddedPost: ParsedContent, resource: MediaMetadata.Resource) {
+        let allImages = embeddedPost.mediaResources
+        
         if resource.url.isVideoURL {
-            handleVideoUrlTapped(resource.url, in: cell)
+            handleVideoUrlTapped(resource, in: cell, allImages: allImages)
             return
         }
-        
-        let allImages = embeddedPost.mediaResources
         
         let current = cell.postPreview.mainImages.currentImageCell()
         if let imageCell = current as? ImageCell {
@@ -787,7 +789,9 @@ extension NoteViewController: PostCellDelegate {
         present(ImageGalleryController(current: resource, all: allImages), animated: true)
     }
     
-    func handleVideoUrlTapped(_ url: String, in cell: FeedElementVideoCell) {
+    func handleVideoUrlTapped(_ resource: MediaMetadata.Resource, in cell: FeedElementVideoCell, allImages: [MediaMetadata.Resource]) {
+        let url = resource.url
+        
         guard url.isVideoURL else {
             if let url = URL(string: url) {
                 let safari = SFSafariViewController(url: url)
@@ -806,9 +810,7 @@ extension NoteViewController: PostCellDelegate {
             VideoPlayer(url: url, originalURL: url, userPubkey: "").play()
         }
         
-        guard let player = VideoPlaybackManager.instance.currentlyPlayingVideo else { return }
-        
-        present(FullScreenVideoPlayerController(player), animated: true)
+        present(ImageGalleryController(current: resource, all: allImages), animated: true)
     }
     
     func menuConfigurationForZap(_ zap: ParsedZap) -> UIContextMenuConfiguration? {

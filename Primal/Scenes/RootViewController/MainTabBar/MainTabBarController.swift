@@ -11,6 +11,7 @@ import Lottie
 import SafariServices
 import GenericJSON
 import AVFoundation
+import PrimalShared
 
 extension UIViewController {
     var mainTabBarController: MainTabBarController? {
@@ -140,15 +141,28 @@ final class MainTabBarController: UIViewController, Themeable {
         continousConnection?.end()
     }
     
+    var runOnce = true
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        guard let npub = IdentityManager.instance.userHexPubkey.hexToNpub(), var usersToRemind = UserDefaults.standard.object(forKey: .icloudRemindUsersKey) as? [String], usersToRemind.contains(npub) else { return }
-        
-        smartPresent(CloudPopupController())
-        
-        usersToRemind.remove(object: npub)
-        UserDefaults.standard.set(usersToRemind, forKey: .icloudRemindUsersKey)
+        guard runOnce else { return }
+        runOnce = false
+        let userId = IdentityManager.instance.userHexPubkey
+        let migratePublisher = WalletManager.instance.$activeWallet
+            .filter({ $0 is Wallet.Primal && $0?.userId == userId })
+            .map { _ in MigrateWalletPopupController() as UIViewController }
+
+        let detectedPublisher = WalletManager.instance.$walletSetupState
+            .filter({ $0 != .normal && IdentityManager.instance.userHexPubkey == userId })
+            .map { WalletDetectedPopupController(isDiscontinued: $0 == .walletDiscontinued) as UIViewController }
+
+        migratePublisher.merge(with: detectedPublisher)
+            .first()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] popup in
+                self?.smartPresent(popup)
+            }
+            .store(in: &cancellables)
     }
 
     func hideForMenu() {
@@ -394,22 +408,15 @@ private extension MainTabBarController {
         }
         .store(in: &cancellables)
         
-        RemoteSignerManager.instance.isActivePublisher.sink { [weak self] isActive in
-            self?.remoteSignerView.isOff = !isActive
-            remoteSignerButton.isHidden = !isActive
-            
-            UIApplication.shared.isIdleTimerDisabled = isActive
-            
-            if #available(iOS 16.1, *) {
-                if isActive {
-                    RemoteSignerActivityManager.instance.startSignerActivity()
-                    RemoteSignerActivityManager.instance.playSong()
-                } else {
-                    RemoteSignerActivityManager.instance.endSignerActivity()
-                }
+        Publishers.CombineLatest(RemoteSignerManager.instance.isActivePublisher, NwcServiceManager.shared.isServiceActivePublisher)
+            .map { $0 || $1 }
+            .sink { [weak self] isActive in
+                self?.remoteSignerView.isOff = !isActive
+                remoteSignerButton.isHidden = !isActive
+                
+                UIApplication.shared.isIdleTimerDisabled = isActive
             }
-        }
-        .store(in: &cancellables)
+            .store(in: &cancellables)
         
         if #available(iOS 16.1, *) {
             NotificationCenter.default.publisher(for: UIApplication.didEnterBackgroundNotification)
@@ -475,8 +482,6 @@ private extension MainTabBarController {
                             newPost.manager.textView.text = text
                             newPost.manager.addMedia(files)
                             return (newPost, nil)
-                        case .promoCode(let code):
-                            return (OnboardingParentViewController(.redeemCode(code)), nil)
                         case .live(let live):
                             return (LiveVideoPlayerController(live: live), nil)
                         case .url(let url):

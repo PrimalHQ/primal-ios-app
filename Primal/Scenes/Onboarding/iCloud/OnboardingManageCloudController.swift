@@ -87,7 +87,7 @@ private extension OnboardingManageCloudController {
         buttonStack.spacing = 12
         
         let contentStack = UIStackView(axis: .vertical, [
-            UILabel("Remove the accounts you no longer need:", color: .white, font: .appFont(withSize: 16, weight: .semibold), multiline: true),
+            UILabel("Remove the accounts you no longer need:", color: UIColor(rgb: 0x111111), font: .appFont(withSize: 16, weight: .semibold), multiline: true),
             scrollView
         ])
         

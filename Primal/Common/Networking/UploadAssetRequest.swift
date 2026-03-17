@@ -34,10 +34,6 @@ class UploadAssetRequest {
         uploadAsset()
     }
     
-    convenience init(image: UIImage, type: ImageType = .png) {
-        self.init(asset: .image((image, type)))
-    }
-    
     var promise: ((Result<String, Error>) -> Void)?
     
     private var cancellables: Set<AnyCancellable> = []
@@ -53,45 +49,10 @@ class UploadAssetRequest {
     }
     
     func uploadAsset() {
-        guard let url: URL = {
-            switch pickedAsset {
-            case .image((let image, let type)):
-                let tmpURL = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
-                switch type {
-                case .png:
-                    guard let data = image.pngData() else { return nil }
-                    do {
-                        try data.write(to: tmpURL)
-                        return tmpURL
-                    } catch {
-                        return nil
-                    }
-                case .jpeg:
-                    guard let data = image.jpegData(compressionQuality: 0.9) else { return nil }
-                    do {
-                        try data.write(to: tmpURL)
-                        return tmpURL
-                    } catch {
-                        return nil
-                    }
-                case .gif(let data):
-                    do {
-                        try data.write(to: tmpURL)
-                        return tmpURL
-                    } catch {
-                        return nil
-                    }
-                }
-            case .video(let galleryVideo):
-                return galleryVideo.url
-            }
-        }() else {
-            promise?(.failure(UploadError.unableToProcess))
-            return
-        }
-        
         Task {
             do {
+                let url = try await pickedAsset.uploadURL()
+                
                 let result = try await self.uploadService.upload(path: url.path(), userId: IdentityManager.instance.userHexPubkey, onProgress: { [weak self] first, second in
                     self?.progress = Double(truncating: first) / Double(truncating: second)
                 })

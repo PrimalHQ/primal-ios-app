@@ -76,7 +76,7 @@ final class PrimalWebsiteScheme: DeeplinkHandlerProtocol, MetadataCoding {
         }
         
         if pathL.hasPrefix("/rc/") {
-            RootViewController.instance.navigateTo = .promoCode(id)
+//            RootViewController.instance.navigateTo = .promoCode(id)
             return
         }
         

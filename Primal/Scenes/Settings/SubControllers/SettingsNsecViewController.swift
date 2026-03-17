@@ -64,7 +64,7 @@ private extension SettingsNsecViewController {
     }
     
     func setupView() {
-        title = "Keys"
+        title = "Account"
         
         let npub = ICloudKeychainManager.instance.getLoginInfo()?.nVariant.npub ?? ""
         

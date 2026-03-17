@@ -49,29 +49,16 @@ protocol AppTheme {
 }
 
 extension AppTheme {
-    var isPurpleTheme: Bool {
-        switch kind {
-        case .sunriseWave, .sunsetWave:
-            return true
-        case .midnightWave, .iceWave:
-            return false
-        }
-    }
-    
-    var isBlueTheme: Bool { !isPurpleTheme }
-    
     var isDarkTheme: Bool {
         switch kind {
-        case .sunsetWave, .midnightWave:
+        case .midnightWave:
             return true
-        case .sunriseWave, .iceWave:
+        case .iceWave:
             return false
         }
     }
     
     var isLightTheme: Bool { !isDarkTheme }
     
-    var logoIcon: UIImage? {
-        isPurpleTheme ? UIImage(named: "primalLogo") : UIImage(named: "primalLogo")
-    }
+    var logoIcon: UIImage? { UIImage(named: "primalLogo") }
 }

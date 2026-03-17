@@ -7,6 +7,7 @@
 
 import Foundation
 import NostrSDK
+import UIKit
 
 extension Character {
     /// A simple emoji is one scalar and presented to the user as an Emoji
@@ -93,7 +94,7 @@ extension String : Identifiable {
     }
     
     var isHashtag: Bool {
-        let hashtagPattern = "(?:\\s|^)#[^\\s!@#$%^&*(),.?\":{}|<>]+"
+        let hashtagPattern = "(?:\\s|^)#(?!\\d+$)[^\\s!@#$%^&*(),.?\":{}|<>]+"
         
         guard let hashtagRegex = try? Regex(hashtagPattern) else {
             print("Unable to create hashtag pattern regex")
@@ -149,16 +150,15 @@ extension String : Identifiable {
         return regex.firstMatch(in: btcAddress, options: [], range: range) != nil
     }
     
-    var parsedBitcoinAddress: (String, Int?, String?, lightning: String?) {
+    var parsedBitcoinAddress: (String, Int?, String?) {
         let sections = split(separator: "?")
         guard
             let address = sections.first?.string,
             let params = sections.last?.split(separator: "&")
-        else { return (self, nil, nil, nil) }
+        else { return (self, nil, nil) }
         
         var amount: Int?
         var label: String?
-        var lightning: String?
         
         for param in params {
             let elements = param.split(separator: "=")
@@ -168,12 +168,9 @@ extension String : Identifiable {
             if elements.first == "label", let labelText = elements.last?.removingPercentEncoding {
                 label = labelText
             }
-            if elements.first == "lightning", let lightningText = elements.last?.string {
-                lightning = lightningText
-            }
         }
         
-        return (address, amount, label, lightning)
+        return (address, amount, label)
     }
     
     func hexToNoteId() -> String? { bech32_note_id(self) }
@@ -199,7 +196,7 @@ extension String : Identifiable {
     }
     
     func extractHashtags() -> [String] {
-        guard let regex = try? NSRegularExpression(pattern: "(?<!\\S)#\\w+", options: []) else { return [] }
+        guard let regex = try? NSRegularExpression(pattern: "(?<!\\S)#(?!\\d+\\b)\\w+", options: []) else { return [] }
         
         return regex.matches(in: self, options: [], range: NSRange(startIndex..., in: self))
             .compactMap { Range($0.range, in: self) }
@@ -278,6 +275,20 @@ extension String : Identifiable {
 }
 
 extension NSAttributedString {
+    static func satsString(_ sats: Int, fontSize: CGFloat, weight: UIFont.Weight = .bold) -> NSAttributedString {
+        let boldFont = UIFont.appFont(withSize: fontSize, weight: weight)
+        let regularFont = UIFont.appFont(withSize: fontSize, weight: .regular)
+        let result = NSMutableAttributedString(
+            string: sats.localized(),
+            attributes: [.font: boldFont, .foregroundColor: UIColor.foreground]
+        )
+        result.append(NSAttributedString(
+            string: " sats",
+            attributes: [.font: regularFont, .foregroundColor: UIColor.foreground3]
+        ))
+        return result
+    }
+
     func heightForWidth(_ width: CGFloat) -> CGFloat {
         let size = CGSize(width: width, height: .greatestFiniteMagnitude)
         let rect = boundingRect(

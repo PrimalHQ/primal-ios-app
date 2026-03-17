@@ -12,6 +12,12 @@ class CheckboxRadioButton: MyButton, Themeable {
     let imageView = UIImageView().constrainToSize(width: 12, height: 10)
     let circleView = UIView().constrainToSize(20)
     
+    var accent = true {
+        didSet {
+            updateTheme()
+        }
+    }
+    
     override var isSelected: Bool {
         didSet {
             updateTheme()
@@ -34,9 +40,11 @@ class CheckboxRadioButton: MyButton, Themeable {
     
     
     func updateTheme() {
+        
         if isSelected {
+            imageView.tintColor = accent ? .white : .background
             imageView.image = .checkboxLarge.withRenderingMode(.alwaysTemplate)
-            circleView.backgroundColor = .accent
+            circleView.backgroundColor = accent ? .accent : .foreground
             circleView.layer.borderWidth = 0
         } else {
             imageView.image = nil

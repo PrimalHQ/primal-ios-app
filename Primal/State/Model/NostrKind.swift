@@ -24,7 +24,11 @@ enum NostrKind: Int {
     case channelHideMessage = 43
     case channelMuteUser = 44
     
+    case pollVote = 1018
+    case poll = 1068
+    case otherComments = 1111
     case liveComment = 1311
+    case zapPoll = 6969
     
     case zapIntention = 9041
     case zapReceipt = 9735
@@ -63,7 +67,6 @@ enum NostrKind: Int {
     case notificationStats = 10_000_112
     case paginationEvent = 10_000_113
     case noteActions = 10_000_115
-    case popular_hashtags = 10_000_116
     case messagesMetadata = 10_000_118
     case mediaMetadata = 10_000_119
     case defaultRelays = 10_000_124
@@ -83,6 +86,7 @@ enum NostrKind: Int {
     case explorePeopleInfo = 10_000_157
     case primalName = 10_000_158
     case dvmFeedMetadata = 10_000_159
+    case popular_hashtags = 10_000_160
     case primalContentSettings = 10_000_162
     case userMediaStats = 10_000_163
     case userMediaData = 10_000_164
@@ -93,6 +97,7 @@ enum NostrKind: Int {
     case primalPremiumInfoList = 10_000_171
     case nip19DecodeResult = 10_000_173
     case blossomSuggestions = 10_000_175
+    case pollStats = 10_000_179
     case premiumLegendPurchase = 10_000_601
     case premiumState = 10_000_603
     case premiumSubscriptionHistory = 10_000_605

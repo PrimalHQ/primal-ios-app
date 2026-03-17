@@ -17,6 +17,19 @@ enum PostEmbedPreview {
     case live(ParsedLiveEvent)
 }
 
+extension UIButton.Configuration {
+    static func iconTextButton(icon: UIImage, text: String, font: UIFont = .appFont(withSize: 16, weight: .regular), color: UIColor) -> UIButton.Configuration {
+        var config = UIButton.Configuration.plain()
+        config.attributedTitle = .init(text, attributes: .init([
+            .font: font,
+            .foregroundColor: color
+        ]))
+        config.image = icon.withTintColor(color, renderingMode: .alwaysOriginal)
+        config.imagePadding = 4
+        return config
+    }
+}
+
 class AdvancedEmbedPostViewController: UIViewController {
     let postButtonText = "Post"
     
@@ -29,12 +42,17 @@ class AdvancedEmbedPostViewController: UIViewController {
     let imageButton = UIButton()
     let cameraButton = UIButton()
     let atButton = UIButton()
+    let gifButton = UIButton()
+    let pollButton = UIButton(configuration: .simpleImage(.pollIcon))
+    let removePollButton = UIButton(configuration: .iconTextButton(icon: .trash, text: "Remove poll", color: .delete))
     let clearButton = UIButton(configuration: .capsuleBackground3(text: "Clear")).constrainToSize(width: 80, height: 28)
-    lazy var bottomStack = UIStackView(arrangedSubviews: [imageButton, cameraButton, atButton, UIView(), clearButton])
+    lazy var bottomStack = UIStackView(arrangedSubviews: [imageButton, gifButton, pollButton, cameraButton, atButton, UIView(), removePollButton, clearButton])
     
     lazy var postButton = SmallPostButton(title: postButtonText)
     
-    let embeddedPreviewStack = UIStackView(axis: .vertical, [])
+    lazy var pollInputView = PollInputView(manager: manager)
+    
+    lazy var embeddedPreviewStack = UIStackView(axis: .vertical, spacing: 4, [])
     
     let manager: PostingTextViewManager
     
@@ -44,13 +62,21 @@ class AdvancedEmbedPostViewController: UIViewController {
     
     init(including: PostEmbedPreview? = nil, onPost: (() -> Void)? = nil) {
         manager = PostingTextViewManager(textView: textView, usersTable: usersTableView, replyId: nil, replyingTo: nil)
-        
+
         self.onPost = onPost
         super.init(nibName: nil, bundle: nil)
-        
+
         if let including {
             manager.embeddedElements.append(including)
         }
+        setup()
+    }
+
+    init(replyId: String, replyingTo: PrimalFeedPost?, onPost: (() -> Void)? = nil) {
+        manager = PostingTextViewManager(textView: textView, usersTable: usersTableView, replyId: replyId, replyingTo: replyingTo, defaultPostTitle: "Reply")
+
+        self.onPost = onPost
+        super.init(nibName: nil, bundle: nil)
         setup()
     }
     
@@ -84,10 +110,9 @@ private extension AdvancedEmbedPostViewController {
         }
         
         let onPost = self.onPost
-        manager.post { success, _ in
-            if success {
-                onPost?()
-            }
+        Task { @MainActor in
+            guard let ev = await manager.post() else { return }
+            onPost?()
         }
         dismiss(animated: true)
     }
@@ -108,7 +133,7 @@ private extension AdvancedEmbedPostViewController {
         presentationController?.delegate = self
         view.backgroundColor = .background2
         
-        let verticalStack = UIStackView(axis: .vertical, [textView, imagesCollectionView, embeddedPreviewStack])
+        let verticalStack = UIStackView(axis: .vertical, [textView, imagesCollectionView, pollInputView, embeddedPreviewStack])
         verticalStack.spacing = 12
         let scrollView = UIScrollView()
         scrollView.addSubview(verticalStack)
@@ -132,8 +157,9 @@ private extension AdvancedEmbedPostViewController {
         imageButton.setImage(UIImage(named: "ImageIcon"), for: .normal)
         cameraButton.setImage(UIImage(named: "CameraIcon"), for: .normal)
         atButton.setImage(UIImage(named: "AtIcon"), for: .normal)
+        gifButton.setImage(.gifButton, for: .normal)
         
-        [imageButton, cameraButton, atButton].forEach {
+        [imageButton, gifButton, cameraButton, atButton, pollButton].forEach {
             $0.tintColor = .foreground
             $0.constrainToSize(48)
         }
@@ -180,6 +206,13 @@ private extension AdvancedEmbedPostViewController {
         atButton.addTarget(manager, action: #selector(PostingTextViewManager.atButtonPressed), for: .touchUpInside)
         imageButton.addTarget(self, action: #selector(galleryButtonPressed), for: .touchUpInside)
         cameraButton.addTarget(self, action: #selector(cameraButtonPressed), for: .touchUpInside)
+        gifButton.addAction(.init(handler: { [weak self] _ in
+            self?.present(KlipyGifController { [weak self] res in
+                guard let url = res.gifURL ?? res.mediumgifURL ?? res.tinygifURL else { return }
+                
+                self?.manager.processSelectedAsset(RemoteGifMediaPickerResult(url: url))
+            }, animated: true)
+        }), for: .touchUpInside)
         
         cancel.addAction(.init(handler: { [weak self] _ in
             guard let self else { return }
@@ -205,6 +238,21 @@ private extension AdvancedEmbedPostViewController {
             }))
             self?.present(alert, animated: true)
         }), for: .touchUpInside)
+        
+        removePollButton.addAction(.init(handler: { [weak self] _ in
+            self?.manager.pollOptions = nil
+        }), for: .touchUpInside)
+        
+        pollButton.addAction(.init(handler: { [weak self] _ in
+            self?.manager.pollOptions = .init()
+            self?.pollInputView.reset()
+        }), for: .touchUpInside)
+        
+        pollInputView.pollTypeRow.addGestureRecognizer(BindableTapGestureRecognizer(action: { [weak self] in
+            let popup = PopupPollTypeController(currentType: self?.manager.pollOptions?.type ?? .user)
+            popup.delegate = self
+            self?.present(popup, animated: true)
+        }))
         
         textView.tintColor = .accent
         
@@ -280,7 +328,7 @@ private extension AdvancedEmbedPostViewController {
                 myView.addSubview(view)
                 view.pinToSuperview()
                 
-                let xButton = UIButton(configuration: .simpleImage("deleteImageIcon"))
+                let xButton = UIButton(configuration: .simpleImage(.deleteImageIcon))
                 myView.addSubview(xButton)
                 xButton.constrainToSize(24).pinToSuperview(edges: [.top, .trailing], padding: 8)
                 xButton.addAction(.init(handler: { [unowned self] _ in
@@ -289,6 +337,16 @@ private extension AdvancedEmbedPostViewController {
                 
                 self.embeddedPreviewStack.addArrangedSubview(myView)
             }
+        }
+        .store(in: &cancellables)
+        
+        manager.$pollOptions.sink { [weak self] poll in
+            guard let self else { return }
+            
+            removePollButton.isHidden = poll == nil
+            pollInputView.isHidden = poll == nil
+            clearButton.isHidden = poll != nil
+            pollButton.isHidden = poll != nil
         }
         .store(in: &cancellables)
     }
@@ -301,6 +359,20 @@ extension AdvancedEmbedPostViewController: UIAdaptivePresentationControllerDeleg
     
     func presentationControllerShouldDismiss(_ presentationController: UIPresentationController) -> Bool {
         false
+    }
+}
+
+extension AdvancedEmbedPostViewController: PopupPollTypeDelegate {
+    func pollTypeController(_ controller: PopupPollTypeController, didSelect type: PollType) {
+        switch manager.pollOptions?.type ?? .user {
+        case .user:
+            manager.pollOptions?.type = type
+        case .zap:
+            if case .user = type {
+                manager.pollOptions?.type = type
+            }
+        }
+        pollInputView.updateLabels()
     }
 }
 

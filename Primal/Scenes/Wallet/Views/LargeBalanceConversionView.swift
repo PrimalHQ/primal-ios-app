@@ -14,9 +14,9 @@ enum RoundingStyle {
 
 class LargeBalanceConversionView: UIStackView, Themeable {
     @Published var isBitcoinPrimary = true
-    @Published var balance: Int = 0
+    @Published var balance: Int?
     
-    let largeAmountLabel = UILabel()
+    let largeAmountLabel = UILabel("0", color: .foreground, font: .appFont(withSize: 48, weight: .bold))
     let smallAmountLabel = UILabel()
     
     let largeCurrencyLabel = UILabel()
@@ -53,7 +53,9 @@ class LargeBalanceConversionView: UIStackView, Themeable {
                 WalletManager.instance.$balance.delay(for: 1.5, scheduler: RunLoop.main)
             )
             .receive(on: DispatchQueue.main)
-            .assign(to: \.balance, onWeak: self)
+            .sink(receiveValue: { [weak self] balance in
+                self?.balance = balance
+            })
             .store(in: &cancellables)
         }
     }
@@ -243,11 +245,9 @@ private extension LargeBalanceConversionView {
     func setup() {
         setupLayout()
         updateTheme()
-        updateLabels(isBitcoinPrimary, balance)
         
         large$Label.text = "$"
         large$Label.font = .appFont(withSize: 28, weight: .light)
-        largeAmountLabel.font = .appFont(withSize: 48, weight: .bold)
         largeCurrencyLabel.font = .appFont(withSize: 16, weight: .regular)
         
         smallAmountLabel.font = .appFont(withSize: 16, weight: .regular)
@@ -291,20 +291,26 @@ private extension LargeBalanceConversionView {
         
         addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tapped)))
         
-        Publishers.CombineLatest($isBitcoinPrimary, $balance).sink { [weak self] isBitcoinPrimary, balance in
-            self?.updateLabels(isBitcoinPrimary, balance)
-        }
-        .store(in: &cancellables)
+        Publishers.CombineLatest($isBitcoinPrimary, $balance)
+            .removeDuplicates(by: { $0.0 == $1.0 && ($0.1 ?? 0) == ($1.1 ?? 0) })
+            .sink { [weak self] isBitcoinPrimary, balance in
+                self?.updateLabels(isBitcoinPrimary, balance)
+            }
+            .store(in: &cancellables)
     }
     
-    func updateLabels(_ isBitcoinPrimary: Bool, _ balance: Int) {
-        let usdAmount = balance.satsToUsdAmountString(roundingStyle)
+    func updateLabels(_ isBitcoinPrimary: Bool, _ balance: Int?) {
+        let balanceTmp = balance ?? 0
+        let usdAmount = balanceTmp.satsToUsdAmountString(roundingStyle)
         
-        guard animateBalanceChange && largeAmountLabel.text != nil else {
+        guard animateBalanceChange, let balance else {
+            let balance = balance ?? 0
             if isBitcoinPrimary {
-                largeAmountLabel.text = balance.satsToBitcoinString()
+                large$Label.alpha = 0
+                largeAmountLabel.text = balance.localized()
                 smallAmountLabel.text = "$\(usdAmount) USD"
             } else {
+                large$Label.alpha = 1
                 largeAmountLabel.text = usdAmount
                 smallAmountLabel.text = "\(balance.satsToBitcoinString()) BTC"
             }

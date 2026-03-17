@@ -16,7 +16,7 @@ final class SearchViewController: UIViewController, Themeable, WalletSearchContr
     let searchView = SearchInputHeaderView()
     let userTable = UITableView()
     
-    let configButton = UIButton(configuration: .simpleImage("searchConfig"))
+    let configButton = UIButton(configuration: .simpleImage(.searchConfig))
     
     @Published var userSearchText: String = ""
     

@@ -121,14 +121,17 @@ final class ChatManager {
         .store(in: &cancellables)
     }
     
-    func markAllChatsAsRead() {
+    func markAllChatsAsRead(_ callback: @escaping () -> Void) {
         guard let event = NostrObject.markAllChatRead() else { return }
         
         SocketRequest(name: "reset_directmsg_counts", payload: .object([
             "event_from_user": event.toJSON()
         ]))
         .publisher()
-        .sink { _ in }
-        .store(in: &cancellables)   
+        .receive(on: DispatchQueue.main)
+        .sink { _ in
+            callback()
+        }
+        .store(in: &cancellables)
     }
 }

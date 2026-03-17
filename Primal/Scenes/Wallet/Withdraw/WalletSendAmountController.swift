@@ -27,16 +27,19 @@ final class WalletSendAmountController: UIViewController, Themeable, KeyboardInp
             switch self {
             case let .user(user):
                 return user.data.lud16.isEmpty ? user.data.lud06 : user.data.lud16
-            case .address(let address, let invoice, let user):
+            case .address(let address, _, let user):
                 if address.isBitcoinAddress {
-                    return "Onchain transaction"
+                    return address.parsedBitcoinAddress.0
                 }
-                return user?.data.lud16 ?? invoice?.lninvoice.description ?? "Lightning Invoice"
+                if let user {
+                    return user.data.lud16.isEmpty ? user.data.lud06 : user.data.lud16
+                }
+                return address
             }
         }
         
-        var name: String? {
-            user?.data.name ?? (address.isBitcoinAddress ? "Bitcoin Address" : nil)
+        var name: String {
+            user?.data.name ?? (address.count <= 30 ? address : (address.isBitcoinAddress ? "Bitcoin Address" : "Lightning Invoice"))
         }
         
         var startingAmount: Int {
@@ -54,9 +57,9 @@ final class WalletSendAmountController: UIViewController, Themeable, KeyboardInp
     let input = LargeBalanceConversionView(showWalletBalance: false, showSecondaryRow: true)
     let keyboard = NumberKeyboardView()
     let profilePictureView = UserImageView(height: 88)
-    let nameLabel = UILabel()
+    lazy var nameLabel = UILabel(destination.name, color: .foreground, font: .appFont(withSize: 20, weight: .semibold))
     let nipLabel = ThemeableLabel().setTheme { $0.textColor = .foreground3 }
-    lazy var infoParent = UIStackView(axis: .vertical, [profilePictureView, SpacerView(height: 12), nipLabel, SpacerView(height: 2)])
+    lazy var infoParent = UIStackView(axis: .vertical, [profilePictureView, SpacerView(height: 12), nameLabel, nipLabel, SpacerView(height: 2)])
     
     let cancelButton = SimpleRoundedButton(title: "Cancel")
     let sendButton = LargeRoundedButton(title: "Next")
@@ -130,13 +133,6 @@ private extension WalletSendAmountController {
             keyboardStack
         ])
         
-        if let name = destination.name {
-            nameLabel.text = name
-            nameLabel.font = .appFont(withSize: 20, weight: .semibold)
-            nameLabel.textColor = .foreground
-            infoParent.insertArrangedSubview(nameLabel, at: 2)
-        }
-        
         view.addSubview(scrollView)
         scrollView.pinToSuperview(safeArea: true)
         
@@ -162,7 +158,7 @@ private extension WalletSendAmountController {
                 self?.show(ProfileViewController(profile: user), sender: nil)
             })
         } else {
-            profilePictureView.image = destination.address.isBitcoinAddress ? .onchainPayment : .nonZapPaymentDynamic
+            profilePictureView.image = destination.address.isBitcoinAddress ? .onchainPayment : .nonZapPayment
             profilePictureView.animatedImageView.clipsToBounds = false
         }
         
@@ -179,7 +175,7 @@ private extension WalletSendAmountController {
         
         keyboard.delegate = self
         
-        input.$balance.map({ $0 > 0 }).assign(to: \.isEnabled, onWeak: sendButton).store(in: &cancellables)
+        input.$balance.map({ $0 ?? 0 > 0 }).assign(to: \.isEnabled, onWeak: sendButton).store(in: &cancellables)
         
         cancelButton.addAction(.init(handler: { [weak self] _ in
             self?.navigationController?.viewControllers.removeAll(where: { $0 as? WalletSendParentViewController != nil })
@@ -191,9 +187,9 @@ private extension WalletSendAmountController {
             
             switch destination {
             case .user(let user):
-                navigationController?.pushViewController(WalletSendViewController(.user(user, startingAmount: input.balance)), animated: true)
+                navigationController?.pushViewController(WalletSendViewController(.user(user, startingAmount: input.balance ?? 0)), animated: true)
             case let .address(address, invoice, user):
-                if address.isBitcoinAddress, input.balance < 21000 {
+                if address.isBitcoinAddress, input.balance ?? 0 < 21000 {
                     showErrorMessage("Amount too small for an on-chain transaction")
                     return
                 }
@@ -229,12 +225,12 @@ extension KeyboardInputConnector {
     
     func numberKeyboardNumberPressed(_ number: Int) {
         if input.isBitcoinPrimary {
-            if input.balance > maxInputAmountSats / 10 {
+            if input.balance ?? 0 > maxInputAmountSats / 10 {
                 RootViewController.instance.view.showToast("Over maximum amount", extraPadding: 0)
                 return
             }
             
-            input.balance = input.balance * 10 + number
+            input.balance = (input.balance ?? 0) * 10 + number
             triggerHapticFeedback()
             return
         }
@@ -273,7 +269,7 @@ extension KeyboardInputConnector {
         triggerHapticFeedback()
         
         if input.isBitcoinPrimary {
-            input.balance = input.balance / 10
+            input.balance = (input.balance ?? 0) / 10
             return
         }
         

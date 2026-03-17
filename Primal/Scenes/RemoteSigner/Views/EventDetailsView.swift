@@ -61,7 +61,7 @@ extension SessionEvent {
         if let tags = json["tags"]?.arrayValue {
             var text = ""
             
-            for tag in tags {
+            for tag in tags.prefix(9) {
                 guard let tagArray = tag.arrayValue else { continue }
                 
                 var lineText = ""
@@ -97,6 +97,10 @@ extension SessionEvent {
                         text.append("\n" + lineText)
                     }
                 }
+            }
+            
+            if tags.count > 9 {
+                text.append("\n+\(tags.count - 9) more")
             }
             
             if !text.isEmpty {
@@ -164,6 +168,7 @@ class EventDetailsCopyView: UIView, Themeable {
     let titleLabel = UILabel()
     let textLabel = UILabel()
     let copyButton = UIButton(configuration: .simpleImage(.menuImageCopy))
+    let showMoreButton = UIButton()
     
     let text: String
     init(title: String, text: String, copyText: String) {
@@ -173,7 +178,7 @@ class EventDetailsCopyView: UIView, Themeable {
         let topStack = UIStackView([titleLabel, copyButton])
         topStack.alignment = .center
         
-        let mainStack = UIStackView(axis: .vertical, [topStack, textLabel])
+        let mainStack = UIStackView(axis: .vertical, [topStack, textLabel, showMoreButton])
         mainStack.spacing = 6
         
         addSubview(mainStack)
@@ -182,7 +187,19 @@ class EventDetailsCopyView: UIView, Themeable {
         titleLabel.font = .appFont(withSize: 16, weight: .semibold)
         titleLabel.text = title
         
-        textLabel.numberOfLines = 0
+        textLabel.numberOfLines = 10
+        showMoreButton.isHidden = true
+        
+        showMoreButton.addAction(.init(handler: { [weak self] _ in
+            guard let self else { return }
+            if textLabel.numberOfLines == 10 {
+                textLabel.numberOfLines = 0
+                showMoreButton.configuration = .accent("Show less...", font: .monospacedSystemFont(ofSize: 14, weight: .bold))
+            } else {
+                textLabel.numberOfLines = 10
+                showMoreButton.configuration = .accent("Show more...", font: .monospacedSystemFont(ofSize: 14, weight: .bold))
+            }
+        }), for: .touchUpInside)
         
         copyButton.addAction(.init(handler: { [weak self] _ in
             self?.showDimmedToastCentered("Copied!")
@@ -190,6 +207,10 @@ class EventDetailsCopyView: UIView, Themeable {
         }), for: .touchUpInside)
         
         updateTheme()
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(200)) {
+            self.showMoreButton.isHidden = !self.textLabel.isTruncated()
+        }
     }
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
@@ -205,5 +226,9 @@ class EventDetailsCopyView: UIView, Themeable {
             .foregroundColor: UIColor.foreground3,
             .paragraphStyle: style
         ])
+        
+        showMoreButton.configuration = textLabel.numberOfLines == 10 ?
+            .accent("Show more...", font: .monospacedSystemFont(ofSize: 14, weight: .bold)) :
+            .accent("Show less...", font: .monospacedSystemFont(ofSize: 14, weight: .bold))
     }
 }

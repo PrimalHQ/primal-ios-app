@@ -27,6 +27,7 @@ final class LiveMuteManager {
     }
     
     @Published private(set) var mutedPubkeys: Set<String> = []
+    var didLoadMuteList = false
 
     static let instance = LiveMuteManager()
 
@@ -38,7 +39,7 @@ final class LiveMuteManager {
         } else {
             mutedPubkeys.insert(pubkey)
         }
-        updateMuteList(mutedPubkeys, callback: callback)
+        updateMuteList(callback: callback)
     }
 
     func requestMuteList(callback: (() -> Void)? = nil) {
@@ -47,31 +48,35 @@ final class LiveMuteManager {
             "kind": .number(10555)
         ])
         .publisher()
-        .sink { res in
-            guard let obj = res.events.first(where: { $0["kind"]?.doubleValue == 10555 }) else { return }
+        .receive(on: DispatchQueue.main)
+        .sink { [weak self] res in
+            self?.didLoadMuteList = true
+            guard let self, let obj = res.events.first(where: { $0["kind"]?.doubleValue == 10555 }) else { return }
             let nostrContent = NostrContent(json: .object(obj))
             
-            for tag in nostrContent.tags where tag.first == "p" && tag.count > 1 {
-                self.mutedPubkeys.insert(tag[1])
+            let shouldUpdate = !mutedPubkeys.isEmpty
+            
+            for tag in nostrContent.tags where tag.first?.lowercased() == "p" && tag.count > 1 {
+                mutedPubkeys.insert(tag[1])
+            }
+            
+            if shouldUpdate {
+                updateMuteList()
             }
         }
         .store(in: &cancellables)
     }
 
-    func updateMuteList(_ muteTags: Set<String>, callback: (() -> Void)? = nil) {
-        if LoginManager.instance.method() != .nsec { return }
+    func updateMuteList(callback: (() -> Void)? = nil) {
+        if LoginManager.instance.method() != .nsec, didLoadMuteList { return }
 
-        guard let muteListEvent = NostrObject.liveMuteList(muteTags) else {
+        guard let muteListEvent = NostrObject.liveMuteList(mutedPubkeys) else {
             print("MuteManager: updateMuteList: Unable to create mutelist event")
             return
         }
 
-        RelaysPostbox.instance.request(muteListEvent, successHandler: { _ in
-            if let callback {
-                callback()
-            }
-        }, errorHandler: {
-            print("MuteManager: updateMuteList: Update failed")
-        })
+        PostingManager.instance.sendEvent(muteListEvent) { _ in
+            callback?()
+        }
     }
 }

@@ -86,7 +86,7 @@ private extension PremiumSearchNameController {
             .pinToSuperview(edges: .top, padding: 24, safeArea: true)
             .pinToSuperview(edges: .bottom)
         
-        let unavailableLabel = UILabel("Sorry, that name is currently unavailable", color: .init(rgb: 0xFA3C3C), font: .appFont(withSize: 14, weight: .regular))
+        let unavailableLabel = UILabel("Sorry, that name is currently unavailable", color: .delete, font: .appFont(withSize: 14, weight: .regular))
         view.addSubview(unavailableLabel)
         unavailableLabel
             .centerToSuperview(axis: .horizontal)

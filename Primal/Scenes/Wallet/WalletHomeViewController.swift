@@ -9,6 +9,7 @@ import AudioToolbox
 import Combine
 import UIKit
 import GenericJSON
+import PrimalShared
 
 protocol WalletHomeTransitionButton: UIControl {
     var imageView: UIImageView? { get }
@@ -26,14 +27,13 @@ extension LargeWalletButton: WalletHomeTransitionButton {
 final class WalletHomeViewController: UIViewController, Themeable {
     enum Cell {
         case loading
-        case activateWallet
+        case upgradeWallet
+        case backupWallet
         case buySats
         case error(String)
-        case transaction((WalletTransaction, ParsedUser))
-        
-        var transaction: WalletTransaction? { parsedTransaction?.0 }
-        
-        var parsedTransaction: (WalletTransaction, ParsedUser)? {
+        case transaction(PrimalShared.Transaction)
+
+        var transaction: PrimalShared.Transaction? {
             if case let .transaction(trans) = self {
                 return trans
             }
@@ -45,11 +45,12 @@ final class WalletHomeViewController: UIViewController, Themeable {
         var title: String?
         var cells: [Cell] = []
         
-        var parsedTransactions: [(WalletTransaction, ParsedUser)] { cells.compactMap { $0.parsedTransaction } }
+        var transactions: [PrimalShared.Transaction] { cells.compactMap { $0.transaction } }
     }
     
     private let navBar = WalletNavView()
     let table = UITableView()
+    private let walletDetectedView = OldWalletDetectedView()
     
     private var cancellables: Set<AnyCancellable> = []
     private var foregroundUpdate: AnyCancellable?
@@ -64,14 +65,11 @@ final class WalletHomeViewController: UIViewController, Themeable {
     
     var selectedIndexPath: IndexPath?
     
-    var animationsOn = false
-    
     private var tableData: [Section] = [] {
         didSet {
             guard navigationController?.topViewController == parent, view.window != nil else { return }
             
             table.reloadData()
-            animateCellsAppear(howManyCellsToAppear(oldValue, tableData))
         }
     }
     
@@ -79,26 +77,10 @@ final class WalletHomeViewController: UIViewController, Themeable {
         super.viewDidLoad()
         
         setup()
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) {
-            self.animationsOn = true
-        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
-        WalletManager.instance.recheck()
-        WalletManager.instance.loadNewExchangeRate()
-        
-        ICloudKeychainManager.instance.$userPubkey
-            .compactMap { $0.isEmpty ? nil : $0 }
-            .removeDuplicates()
-            .dropFirst()
-            .sink { [weak self] _ in
-                self?.cancellables = []
-            }
-            .store(in: &cancellables)
         
         table.reloadData()
         mainTabBarController?.setTabBarHidden(false, animated: animated)
@@ -106,8 +88,16 @@ final class WalletHomeViewController: UIViewController, Themeable {
         (navigationController as? MainNavigationController)?.isTransparent = false
     }
     
+    var monitorTask: Task<(), Error>?
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        
+        WalletManager.instance.pendingDepositsSyncer?.start()
+        
+        startMonitorTask()
+        
+        WalletManager.instance.recheck()
+        WalletManager.instance.loadNewExchangeRate()
         
         heavyImpact.prepare()
         
@@ -120,7 +110,11 @@ final class WalletHomeViewController: UIViewController, Themeable {
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         
+        WalletManager.instance.pendingDepositsSyncer?.stop()
+        
         foregroundUpdate = nil
+        
+        monitorTask?.cancel()
     }
     
     func updateTheme() {
@@ -132,15 +126,27 @@ final class WalletHomeViewController: UIViewController, Themeable {
     }
     
     func updateBuySatsButton() {
-        guard WalletManager.instance.primal?.userHasWallet == true else {
-            navigationItem.rightBarButtonItem = nil
-            return
+        return // Hide the button
+//        guard WalletManager.instance.primal?.userHasWallet == true else {
+//            navigationItem.rightBarButtonItem = nil
+//            return
+//        }
+//        let button = UIButton()
+//        button.setImage(UIImage(named: "buySats"), for: .normal)
+//        button.tintColor = .foreground3
+//        button.addAction(.init(handler: { [weak self] _ in self?.buySatsPressed() }), for: .touchUpInside)
+//        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: button)
+    }
+    
+    func startMonitorTask() {
+        let wallet = WalletManager.instance
+        guard let walletID = wallet.walletID else { return }
+        monitorTask?.cancel()
+        monitorTask = Task { @MainActor in
+            let result = try await wallet.walletRepo.awaitLightningPayment(walletId: walletID, invoice: nil, timeout: .max)
+            
+            wallet.recheck()
         }
-        let button = UIButton()
-        button.setImage(UIImage(named: "buySats"), for: .normal)
-        button.tintColor = .foreground3
-        button.addAction(.init(handler: { [weak self] _ in self?.buySatsPressed() }), for: .touchUpInside)
-        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: button)
     }
 }
 
@@ -152,9 +158,16 @@ extension WalletHomeViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         switch tableData[indexPath.section].cells[indexPath.row] {
-        case .activateWallet:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "activateWallet", for: indexPath)
-            if let cell = cell as? ActivateWalletCell {
+        case .upgradeWallet:
+            let cell = tableView.dequeueReusableCell(withIdentifier: "upgradeWallet", for: indexPath)
+            if let cell = cell as? UpgradeWalletCell {
+                cell.updateTheme()
+                cell.delegate = self
+            }
+            return cell
+        case .backupWallet:
+            let cell = tableView.dequeueReusableCell(withIdentifier: "backupWallet", for: indexPath)
+            if let cell = cell as? BackupWalletCell {
                 cell.updateTheme()
                 cell.delegate = self
             }
@@ -175,15 +188,13 @@ extension WalletHomeViewController: UITableViewDataSource {
             (cell as? ErrorMessageCell)?.setText(message)
             return cell
         case .transaction(let transaction):
+            if tableData.count == indexPath.section + 1 { WalletManager.instance.loadNewTransactionsPage() }
+            
             let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
             
             if let cell = cell as? TransactionCell {
                 cell.setup(with: transaction, showBTC: WalletManager.instance.isBitcoinPrimary)
                 cell.delegate = self
-            }
-            
-            if indexPath.section >= tableData.count - 1 {
-                WalletManager.instance.impl.loadMoreTransactions()
             }
             
             return cell
@@ -196,11 +207,13 @@ extension WalletHomeViewController: TransactionCellDelegate {
     func transactionCellDidTapAvatar(_ cell: TransactionCell) {
         guard
             let indexPath = table.indexPath(for: cell),
-            case let .transaction((_, user)) = tableData[indexPath.section].cells[indexPath.row],
-            user.data.pubkey != IdentityManager.instance.userHexPubkey
+            case let .transaction(trans) = tableData[indexPath.section].cells[indexPath.row],
+            let zapTrans = trans as? Transaction.Zap,
+            let pubkey = zapTrans.otherUserId,
+            pubkey != IdentityManager.instance.userHexPubkey
         else { return }
         
-        show(ProfileViewController(profile: user), sender: nil)
+        show(ProfileViewController(profile: .init(data: .init(pubkey: pubkey))), sender: nil)
     }
 }
 
@@ -259,22 +272,24 @@ extension WalletHomeViewController: UITableViewDelegate {
             break
         case .buySats:
             buySatsPressed()
-        case .transaction((let transaction, let user)):
+        case .transaction(let transaction):
             selectedIndexPath = indexPath
-            show(TransactionViewController(transaction: transaction, user: user), sender: nil)
-        case .activateWallet:
-            activateWalletPressed()
+            show(TransactionViewController(transaction: transaction), sender: nil)
+        case .upgradeWallet:
+            upgradeWalletPressed()
+        case .backupWallet:
+            backupWalletPressed()
         }
     }
 }
 
-extension WalletHomeViewController: BuySatsCellDelegate, ActivateWalletCellDelegate {
-    func activateWalletPressed() {
-        if WalletManager.instance.primal == nil {
-            WalletManager.instance.setUsePrimalWallet()
-        } else {
-            show(WalletActivateViewController(), sender: nil)
-        }
+extension WalletHomeViewController: BuySatsCellDelegate, UpgradeWalletCellDelegate, BackupWalletCellDelegate {
+    func upgradeWalletPressed() {
+        present(UpgradeWalletController(), animated: true)
+    }
+    
+    func backupWalletPressed() {
+        present(BackupWalletController(), animated: true)
     }
     
     func buySatsPressed() {
@@ -314,86 +329,89 @@ private extension WalletHomeViewController {
         table.register(TransactionCell.self, forCellReuseIdentifier: "cell")
         table.register(WalletInfoCell.self, forCellReuseIdentifier: "info")
         table.register(BuySatsCell.self, forCellReuseIdentifier: "buySats")
-        table.register(ActivateWalletCell.self, forCellReuseIdentifier: "activateWallet")
+        table.register(UpgradeWalletCell.self, forCellReuseIdentifier: "upgradeWallet")
+        table.register(BackupWalletCell.self, forCellReuseIdentifier: "backupWallet")
         table.register(ChatLoadingCell.self, forCellReuseIdentifier: "loading")
         table.register(ErrorMessageCell.self, forCellReuseIdentifier: "error")
         table.contentInset = .init(top: 0, left: 0, bottom: 186, right: 0)
         
         let refresh = UIRefreshControl()
-        refresh.addAction(.init(handler: { _ in
-            if WalletManager.instance.userHasWallet != true {
-                WalletManager.instance.primal?.refreshHasWallet()
-                return
-            }
-            
+        refresh.addAction(.init(handler: { _ in            
             WalletManager.instance.refresh()
         }), for: .valueChanged)
         table.refreshControl = refresh
-        
+
+        walletDetectedView.isHidden = true
+        view.addSubview(walletDetectedView)
+        walletDetectedView.pinToSuperview()
+
+        walletDetectedView.restoreButton.addAction(.init(handler: { [weak self] _ in
+            self?.show(RestoreWalletController(), sender: nil)
+        }), for: .touchUpInside)
+
+        walletDetectedView.createButton.addAction(.init(handler: { _ in
+            WalletManager.instance.newWalletSpark(IdentityManager.instance.userHexPubkey)
+        }), for: .touchUpInside)
+
         updateTheme()
         
-        WalletManager.instance.$userHasWallet.sink { [weak self] _ in
-            DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
-                self?.updateBuySatsButton()
-            }
-        }
-        .store(in: &cancellables)
-        
-        let isPoorPublisher = WalletManager.instance.$balance.map { $0 < 1000 }.removeDuplicates()
-        let shouldShowBuySatsPublisher = Publishers.CombineLatest(isPoorPublisher, WalletManager.instance.$didJustCreateWallet).map { $0 && $1 }
-        
-        Publishers.CombineLatest4(
-            WalletManager.instance.$userHasWallet,
-            WalletManager.instance.$isLoadingWallet,
-            WalletManager.instance.$parsedTransactions,
-            shouldShowBuySatsPublisher.removeDuplicates()
+        let transactionsPublisher = Publishers.Merge(
+            WalletManager.instance.$parsedTransactions.first(),
+            WalletManager.instance.$parsedTransactions.compactMap { $0.isEmpty ? nil : $0 }
         )
-        .debounce(for: .seconds(0.1), scheduler: RunLoop.main)
+        
+        WalletManager.instance.$activeWallet.compactMap({ $0 })
+            .compactMap { $0 is Wallet.Primal ? "Legacy Wallet" : "Wallet" }
+            .removeDuplicates()
+            .receive(on: DispatchQueue.main)
+            .assign(to: \.title, onWeak: self)
+            .store(in: &cancellables)
+        
+        Publishers.CombineLatest3(WalletManager.instance.$activeWallet, transactionsPublisher, WalletManager.instance.$walletSetupState)
         .receive(on: DispatchQueue.main)
-        .sink { [weak self] hasWallet, isLoading, transactions, shouldShowBuySats in
+        .sink { [weak self] wallet, transactions, setupState in
             guard let self else { return }
-            
+
             let grouping = Dictionary(grouping: transactions) {
-                Calendar.current.dateComponents([.day, .year, .month], from: Date(timeIntervalSince1970: TimeInterval($0.0.created_at)))
+                Calendar.current.dateComponents([.day, .year, .month], from: Date(timeIntervalSince1970: TimeInterval($0.createdAt)))
             }
-            
+
             table.refreshControl?.endRefreshing()
             var firstSection = Section(cells: [])
-            
+
             guard LoginManager.instance.method() == .nsec else {
                 tableData = [firstSection, Section(cells: [.error("Primal is in read only mode because you are signed in via your public key. To enable all options, please sign in with your private key, starting with 'nsec...")])]
                 return
             }
-            
-            if hasWallet == false {
-                firstSection.cells += [.activateWallet]
-            } else if isLoading && transactions.isEmpty {
-                firstSection.cells += [.loading]
-            } else if shouldShowBuySats {
-                firstSection.cells += [.buySats]
+
+            switch setupState {
+            case .walletDetected:
+                walletDetectedView.configure(isDiscontinued: false)
+                walletDetectedView.isHidden = false
+            case .walletDiscontinued:
+                walletDetectedView.configure(isDiscontinued: true)
+                walletDetectedView.isHidden = false
+            case .normal:
+                walletDetectedView.isHidden = true
+                if wallet == nil {
+                    firstSection.cells += [.loading]
+                } else if let primal = wallet as? Wallet.Primal {
+                    firstSection.cells += [.upgradeWallet]
+                } else if let spark = wallet as? Wallet.Spark, let balance = spark.balanceInBtc?.doubleValue, balance > 0, !spark.isBackedUp {
+                    firstSection.cells += [.backupWallet]
+                }
             }
             
             var tableData = [Section]()
             if !firstSection.cells.isEmpty {
                 tableData.append(firstSection)
             }
-            tableData.append(contentsOf: grouping.sorted(by: { $0.1.first?.0.created_at ?? 0 > $1.1.first?.0.created_at ?? 0 }).map {
-                let date = Date(timeIntervalSince1970: TimeInterval($0.value.first?.0.created_at ?? 0))
+            tableData.append(contentsOf: grouping.sorted(by: { $0.1.first?.createdAt ?? 0 > $1.1.first?.createdAt ?? 0 }).map {
+                let date = Date(timeIntervalSince1970: TimeInterval($0.value.first?.createdAt ?? 0))
                 return .init(title: date.daysAgoDisplay(), cells: $0.value.map { .transaction($0) })
             })
             
-            let allowAnimation = animationsOn || transactions.count == 1
-            
-            if allowAnimation, howManyCellsToAppear(self.tableData, tableData) > 0, tableData.first?.cells.map({ $0.transaction }).first??.type == "DEPOSIT" {
-                mainTabBarController?.playThunderAnimation()
-                AudioServicesPlayAlertSound(SystemSoundID(kSystemSoundID_Vibrate))
-                
-                DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(500)) {
-                    self.tableData = tableData
-                }
-            } else {
-                self.tableData = tableData
-            }
+            self.tableData = tableData
         }
         .store(in: &cancellables)
         
@@ -438,12 +456,12 @@ private extension WalletHomeViewController {
             }
         }
         .store(in: &cancellables)
-        
-        WalletManager.instance.$userHasWallet
-            .map { $0 ?? false }
-            .receive(on: DispatchQueue.main)
-            .assign(to: \.isHidden, onWeak: navBar.blockerView)
-            .store(in: &cancellables)
+
+//        WalletManager.instance.$userHasWallet
+//            .map { $0 ?? false }
+//            .receive(on: DispatchQueue.main)
+//            .assign(to: \.isHidden, onWeak: navBar.blockerView)
+//            .store(in: &cancellables)
     }
     
     
@@ -456,26 +474,6 @@ private extension WalletHomeViewController {
         table.contentOffset.y = max(5, contentOffsetStart.y - translation)
     }
     
-    func howManyCellsToAppear(_ oldValue: [Section], _ newValue: [Section]) -> Int {
-        guard table.window != nil, let indexPaths = table.indexPathsForVisibleRows else { return 0 }
-        
-        let oldIds = Set(oldValue.flatMap { $0.cells.compactMap({ cell in cell.transaction?.id }) })
-        let newIds = Set(newValue.flatMap { $0.cells.compactMap({ cell in cell.transaction?.id }) })
-        
-        if oldIds.isEmpty { return 0 }
-        
-        let deltaIds = newIds.subtracting(oldIds)
-        var animateCount = 0
-        for indexPath in indexPaths {
-            if let transaction = newValue[safe: indexPath.section]?.cells[safe: indexPath.row]?.transaction, deltaIds.contains(transaction.id) {
-                animateCount += 1
-            } else {
-                break
-            }
-        }
-        
-        return animateCount
-    }
     
     func animateCellsAppear(_ count: Int) {
         guard count > 0 else { return }

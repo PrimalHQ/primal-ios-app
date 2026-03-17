@@ -60,7 +60,7 @@ final class ProfileViewController: PostFeedViewController, ArticleCellController
     var articles: [Article] = [] {
         didSet {
             guard profileTab == .reads else { return }
-            profileDataSource?.setArticles(articles.uniqueByFilter({ $0.identifier }))
+            profileDataSource?.setArticles(articles)
             profileDataSource?.isLoading = isLoading
         }
     }
@@ -234,7 +234,7 @@ private extension ProfileViewController {
         .map { $0.getArticles() }
         .receive(on: DispatchQueue.main)
         .sink(receiveValue: { [weak self] articles in
-            self?.articles = articles
+            self?.articles = articles.uniqueByFilter({ $0.identifier })
             self?.isLoadingArticles = false
         })
         .store(in: &cancellables)
@@ -386,7 +386,7 @@ extension ProfileViewController: ProfileNavigationViewDelegate {
         
         PrimalFeed.addFeed(.init(
             name: "\(profile.data.firstIdentifier)'s feed",
-            spec: "{\"id\":\"feed\",\"kind\":\"notes\",\"pubkey\":\"c48e29f04b482cc01ca1f9ef8c86ef8318c059e0e9353235162f080f26e14c11\"}",
+            spec: "{\"id\":\"feed\",\"pubkey\":\"\(profile.data.pubkey)\"}",
             description: "Notes feed of \(profile.data.firstIdentifier)"
         ), type: .note, notifyBackend: true)
         
@@ -488,7 +488,7 @@ extension ProfileViewController: MediaTripleCellDelegate {
 }
 
 extension ProfileViewController: LivePreviewFeedCellDelegate {
-    func didSelectLive(_ live: ProcessedLiveEvent, user: ParsedUser) {
-        present(LiveVideoPlayerController(live: .init(event: live, user: user)), animated: true)
+    func didSelectLive(_ live: ParsedLiveEvent) {
+        present(LiveVideoPlayerController(live: live), animated: true)
     }
 }

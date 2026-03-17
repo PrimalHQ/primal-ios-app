@@ -18,6 +18,8 @@ class ChatLoadingCell: UITableViewCell, Themeable {
         contentView.addSubview(loadingView)
         loadingView.pinToSuperview(edges: .vertical).centerToSuperview(axis: .horizontal).constrainToSize(70)
         loadingView.play()
+        
+        [self, contentView, loadingView].forEach { $0.backgroundColor = .clear }
     }
     
     required init?(coder: NSCoder) {

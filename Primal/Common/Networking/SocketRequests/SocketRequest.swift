@@ -12,7 +12,6 @@ import GenericJSON
 struct SocketRequest {
     let url: URL = URL(string: "https://cache2.primal.net/api/")!
     
-    var useHTTP = false
     let name: String
     let payload: JSON?
     
@@ -83,6 +82,28 @@ struct SocketRequest {
         }
         .waitForConnection(connection)
         .eraseToAnyPublisher()
+    }
+}
+
+class SocketRequestAsyncExecutor {
+    let name: String
+    let payload: JSON?
+    let connection: Connection
+    
+    var cancellable: AnyCancellable?
+    
+    init(name: String, payload: JSON?, connection: Connection = Connection.regular) {
+        self.name = name
+        self.payload = payload
+        self.connection = connection
+    }
+    
+    func execute() async -> PostRequestResult {
+        await withCheckedContinuation { continuation in
+            cancellable = SocketRequest(name: name, payload: payload).publisher().sink { res in
+                continuation.resume(returning: res)
+            }
+        }
     }
 }
 
@@ -165,7 +186,7 @@ extension PostRequestResult {
                 user.rawData = payload.encodeToString()
                 users[nostrUser.pubkey] = user
             }
-        case .text:
+        case .text, .poll, .zapPoll, .otherComments:
             let content = NostrContent(jsonData: payload)
             posts.append(content)
             order.append(content.id)
@@ -224,6 +245,9 @@ extension PostRequestResult {
             if noteStatus.zapped {
                 WalletManager.instance.setZapUnknown(noteStatus.event_id)
             }
+            if let voted = noteStatus.voted_for_option {
+                PollManager.instance.userVotes[noteStatus.event_id] = voted
+            }
         case .mentions:
             guard let contentJSON: JSON = contentString.decode() else {
                 print("Error decoding mentions string to json")
@@ -271,13 +295,12 @@ extension PostRequestResult {
             }
             userStats = nostrUserProfileInfo
         case .popular_hashtags:
-            guard let contentArray: [[String: Double]] = contentString.decode() else {
+            guard let contentDic: [String: Double] = contentString.decode() else {
                 print("Error decoding popular hashtags")
                 return
             }
             
-            for object in contentArray {
-                guard let (name, count) = object.first else { continue }
+            for (name, count) in contentDic {
                 popularHashtags.append(.init(title: name, appearances: count))
             }
         case .timestamp:
@@ -419,6 +442,8 @@ extension PostRequestResult {
             Task {
                 await BlossomServerManager.instance.addBlossomInfo(payload)
             }
+        case .pollStats:
+            PollManager.instance.parsePollStatsContent(contentString)
         default:
             events.append(payload)
         }

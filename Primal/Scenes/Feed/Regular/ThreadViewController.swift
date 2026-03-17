@@ -13,9 +13,11 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
     let id: String
     var mainObject: PrimalFeedPost? {
         didSet {
-            inputManager.replyingTo = mainObject
+            replyController?.manager.replyingTo = mainObject
         }
     }
+
+    private var replyController: AdvancedEmbedPostViewController?
     
     var didPostNewComment = false
         
@@ -32,7 +34,7 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
     @Published private var didLoadData = false
     
     private var textHeightConstraint: NSLayoutConstraint?
-    let textInputView = SelfSizingTextView()
+    private let textInputView = SelfSizingTextView()
     let textInputLoadingIndicator = LoadingSpinnerView().constrainToSize(30)
     private let placeholderLabel = UILabel()
     private let inputParent = UIView()
@@ -78,8 +80,7 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
         
         self.init(threadId: post.post.id, startingPosts: [post])
         mainObject = post.post
-        inputManager.replyingTo = mainObject
-        
+
         updateReplyToLabel()
     }
     
@@ -90,8 +91,7 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
         
         self.init(threadId: post.post.id, startingPosts: posts.map { $0.post.id == post.post.id ? post : $0 })
         mainObject = post.post
-        inputManager.replyingTo = mainObject
-        
+
         updateReplyToLabel()
     }
     
@@ -166,7 +166,7 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
                 if nav.viewControllers.contains(where: { $0 == self }) {
                     return // the controller is still in the nav stack so data will not be lost
                 }
-                inputManager.askToSave(nav)
+                replyController?.manager.askToSave(nav)
             }
         }
     }
@@ -233,7 +233,11 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
         navigationItem.leftBarButtonItem = .init(customView: back)
         back.addAction(.init(handler: { [weak self] _ in
             guard let self else { return }
-            inputManager.askToSaveThenDismiss(self)
+            if let manager = replyController?.manager {
+                manager.askToSaveThenDismiss(self)
+            } else {
+                backButtonPressed()
+            }
         }), for: .touchUpInside)
         
         textInputView.tintColor = .accent
@@ -272,6 +276,21 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
     override func showToast(_ message: String) {
         view.showToastTop(message)
     }
+
+    @objc func replyBoxTapped() {
+        guard !posts.isEmpty else { return }
+
+        if replyController == nil {
+            replyController = AdvancedEmbedPostViewController(replyId: id, replyingTo: mainObject, onPost: { [weak self] in
+                guard let self else { return }
+                didPostNewComment = true
+                feed.requestThread(postId: id, includeParent: false)
+            })
+        }
+
+        guard let replyController, replyController.presentingViewController == nil else { return }
+        present(replyController, animated: true)
+    }
 }
 
 private extension ThreadViewController {
@@ -294,9 +313,9 @@ private extension ThreadViewController {
             return
         }
         
-        inputManager.post { [weak self] success, event in
-            guard success, let event, let self else {
-                self?.feed.requestThread(postId: self?.id ?? "", includeParent: false)
+        Task { @MainActor [self] in
+            guard let event = await inputManager.post() else {
+                feed.requestThread(postId: self.id, includeParent: false)
                 return
             }
             
@@ -330,7 +349,6 @@ private extension ThreadViewController {
                     }
                 }
                 .store(in: &cancellables)
-
         }
     }
     
@@ -359,7 +377,14 @@ private extension ThreadViewController {
         }
         
         result.append(mainPost) // Main post
-        let mainChildren = posts.filter({ $0.replyingTo?.post.id == mainPost.post.id }).sorted(by: { $0.post.created_at > $1.post.created_at })
+        let mainAuthor = mainPost.user.data.pubkey
+        let mainChildren = posts.filter({ $0.replyingTo?.post.id == mainPost.post.id }).sorted(by: {
+            let lhsIsAuthor = $0.user.data.pubkey == mainAuthor
+            let rhsIsAuthor = $1.user.data.pubkey == mainAuthor
+            if lhsIsAuthor != rhsIsAuthor { return lhsIsAuthor }
+            if lhsIsAuthor { return $0.post.created_at < $1.post.created_at }
+            return $0.post.created_at > $1.post.created_at
+        })
         result.append(contentsOf: mainChildren)
         
         if result.count != posts.count { // In case some post is missing or added twice
@@ -636,11 +661,21 @@ private extension ThreadViewController {
         postButton.constrainToSize(width: 80, height: 28)
         postButton.addTarget(self, action: #selector(postButtonPressed), for: .touchUpInside)
         
+        let gifButton = ThemeableButton().constrainToSize(48).setTheme { $0.tintColor = .foreground }
+        gifButton.setImage(.gifButton, for: .normal)
+        gifButton.addAction(.init(handler: { [weak self] _ in
+            self?.present(KlipyGifController(gifSelectedCallback: { res in
+                guard let url = res.gifURL ?? res.mediumgifURL ?? res.tinygifURL else { return }
+                
+                self?.inputManager.processSelectedAsset(RemoteGifMediaPickerResult(url: url))
+            }), animated: true)
+        }), for: .touchUpInside)
+        
         let atButton = ThemeableButton().constrainToSize(48).setTheme { $0.tintColor = .foreground }
         atButton.setImage(UIImage(named: "AtIcon"), for: .normal)
         atButton.addTarget(inputManager, action: #selector(PostingTextViewManager.atButtonPressed), for: .touchUpInside)
         
-        [imageButton, cameraButton, atButton, UIView(), postButton].forEach {
+        [imageButton, gifButton, cameraButton, atButton, UIView(), postButton].forEach {
             buttonStack.addArrangedSubview($0)
         }
         
@@ -664,6 +699,10 @@ private extension ThreadViewController {
         textHeightConstraint?.priority = .defaultHigh
         inputContentMaxHeightConstraint = contentStack.heightAnchor.constraint(equalToConstant: 600)
         inputContentMaxHeightConstraint?.priority = .init(500)
+
+        textInputView.isUserInteractionEnabled = false
+        let replyTap = UITapGestureRecognizer(target: self, action: #selector(replyBoxTapped))
+        inputBackground.addGestureRecognizer(replyTap)
         
         view.addSubview(usersTableView)
         usersTableView.pin(to: inputParent, edges: .horizontal)
@@ -696,16 +735,17 @@ private extension ThreadViewController {
 // Back gesture
 extension ThreadViewController: UIGestureRecognizerDelegate {
     var askToSaveIsNecessary: Bool {
-        let draft = inputManager.currentDraft
-        
-        if let oldDraft = inputManager.oldDraft {
+        guard let manager = replyController?.manager else { return false }
+        let draft = manager.currentDraft
+
+        if let oldDraft = manager.oldDraft {
             if oldDraft.text == draft.text && oldDraft.uploadedAssets == draft.uploadedAssets {
                 return false
             }
-        } else if textInputView.text.isEmpty == true {
+        } else if manager.textView.text?.isEmpty ?? true {
             return false
         }
-        
+
         return true
     }
     
@@ -713,7 +753,7 @@ extension ThreadViewController: UIGestureRecognizerDelegate {
         if navigationController?.topViewController != self { return true }
         
         if askToSaveIsNecessary {
-            inputManager.askToSave(self) { [weak self] dialog in
+            replyController?.manager.askToSave(self) { [weak self] dialog in
                 if !dialog {
                     self?.backButtonPressed()
                 }
