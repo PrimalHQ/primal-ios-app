@@ -464,8 +464,9 @@ final class WalletManager {
     }
     
     // MARK: - Sending
-    func sendLNInvoice(_ lninvoice: String, satsOverride: Int?, messageOverride: String?) async throws {
-        try await send(.LightningLnInvoice(amountSats: String(satsOverride ?? 0), noteRecipient: messageOverride, noteSelf: messageOverride, idempotencyKey: UUID().uuidString, lnInvoice: lninvoice))
+    @discardableResult
+    func sendLNInvoice(_ lninvoice: String, satsOverride: Int?, messageOverride: String?) async throws -> PaymentResult {
+        return try await send(.LightningLnInvoice(amountSats: String(satsOverride ?? 0), noteRecipient: messageOverride, noteSelf: messageOverride, idempotencyKey: UUID().uuidString, lnInvoice: lninvoice))
     }
     
     func sendLNURL(lnurl: String, sats: Int, note: String) async throws {
@@ -482,13 +483,35 @@ final class WalletManager {
         try await send(.BitcoinOnChain(amountSats: String(sats), noteRecipient: note, noteSelf: note, idempotencyKey: UUID().uuidString, onChainAddress: btcAddress, onChainTierId: tier))
     }
     
-    func send(_ request: TxRequest) async throws {
+    @discardableResult
+    func send(_ request: TxRequest) async throws -> PaymentResult {
         guard let walletID else { throw WalletError.noWallet }
 
         let res = try await walletRepo.pay(walletId: walletID, request: request)
-        
+
         if let error = res.exceptionOrNull()?.description() { throw WalletError.serverError(error.split(separator: ":").last?.string ?? "") }
-        if res.getOrNull() == nil { throw WalletError.serverError("Unable to pay invoice") }
+        guard let result = res.getOrNull() else { throw WalletError.serverError("Unable to pay invoice") }
+
+        // Extract preimage from the Kotlin SDK pay result for L402 proof-of-payment.
+        // The PrimalShared framework returns an opaque KMP type; we parse its description
+        // to access preimage/paymentHash until a typed Swift DTO is added to PrimalShared.
+        let desc = String(describing: result)
+        var preimage: String?
+        var paymentHash: String?
+
+        for part in desc.components(separatedBy: ",") {
+            let trimmed = part.trimmingCharacters(in: .whitespaces)
+            if trimmed.hasPrefix("preimage=") {
+                let val = String(trimmed.dropFirst("preimage=".count))
+                if val != "null" && !val.isEmpty { preimage = val }
+            } else if trimmed.hasPrefix("paymentHash=") || trimmed.hasPrefix("payment_hash=") {
+                let key = trimmed.hasPrefix("paymentHash=") ? "paymentHash=" : "payment_hash="
+                let val = String(trimmed.dropFirst(key.count)).trimmingCharacters(in: CharacterSet(charactersIn: ")"))
+                if val != "null" && !val.isEmpty { paymentHash = val }
+            }
+        }
+
+        return PaymentResult(preimage: preimage, paymentHash: paymentHash)
     }
     
     // MARK: - Zapping
