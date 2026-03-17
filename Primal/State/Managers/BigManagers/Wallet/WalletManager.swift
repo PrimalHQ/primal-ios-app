@@ -92,7 +92,7 @@ enum WalletError: Error {
         case .noLud:
             return "This account doesn't have lud06 or lud16 set up."
         case .serverError(let message):
-            return message.count < 100 ? message : "There has been an error."
+            return message.count < 150 ? message : "There has been an error."
         case .inAppPurchaseServerError:
             return "We were not able to send sats to your wallet. Please contact us at support@primal.net and we will assist you."
         }
@@ -488,7 +488,7 @@ final class WalletManager {
 
         let res = try await walletRepo.pay(walletId: walletID, request: request)
         
-        if let error = res.exceptionOrNull()?.description() { throw WalletError.serverError(error) }
+        if let error = res.exceptionOrNull()?.description() { throw WalletError.serverError(error.split(separator: ":").last?.string ?? "") }
         if res.getOrNull() == nil { throw WalletError.serverError("Unable to pay invoice") }
     }
     

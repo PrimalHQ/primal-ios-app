@@ -65,7 +65,6 @@ enum PrimalFeedType {
 
 extension PrimalFeed {
     static func setServerFeeds(_ feeds: [PrimalFeed], type: PrimalFeedType) {
-        let feeds = feeds.map { $0.migratingToMultiKind() }
         var allFeeds = getAllFeeds(type)
 
         allFeeds.removeAll(where: { feed in
@@ -114,15 +113,12 @@ extension PrimalFeed {
     private static var allReadsKey: String { IdentityManager.instance.userHexPubkey + "allReadsFeedsKey" }
     private static var allNotesKey: String { IdentityManager.instance.userHexPubkey + "allNotesFeedsKey" }
     static func getAllFeeds(_ type: PrimalFeedType) -> [PrimalFeed] {
-        let feeds: [PrimalFeed] = {
-            switch type {
-            case .note:
-                return UserDefaults.standard.string(forKey: allNotesKey)?.decode() ?? []
-            case .article:
-                return UserDefaults.standard.string(forKey: allReadsKey)?.decode() ?? []
-            }
-        }()
-        return feeds.map { $0.migratingToMultiKind() }
+        switch type {
+        case .note:
+            return UserDefaults.standard.string(forKey: allNotesKey)?.decode() ?? []
+        case .article:
+            return UserDefaults.standard.string(forKey: allReadsKey)?.decode() ?? []
+        }
     }
     
     static func getActiveFeeds(_ type: PrimalFeedType) -> [PrimalFeed] {

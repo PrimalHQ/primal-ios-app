@@ -79,32 +79,6 @@ struct PrimalFeed: Codable {
     var description: String = ""
     var feedkind: String = ""
     var enabled: Bool = true
-
-    /// Removes legacy `"kind"` and `"kinds"` from the spec (kinds are now passed as a separate request parameter)
-    func migratingToMultiKind() -> PrimalFeed {
-        guard let data = spec.data(using: .utf8),
-              var json = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
-        else { return self }
-
-        var didEdit = false
-
-        if json.removeValue(forKey: "kind") != nil {
-            didEdit = true
-        }
-
-        if json.removeValue(forKey: "kinds") != nil {
-            didEdit = true
-        }
-
-        guard didEdit,
-              let newData = try? JSONSerialization.data(withJSONObject: json),
-              let newSpec = String(data: newData, encoding: .utf8)
-        else { return self }
-
-        var updated = self
-        updated.spec = newSpec
-        return updated
-    }
 }
 
 extension PostRequestResult {
@@ -113,8 +87,7 @@ extension PostRequestResult {
             Int($0["kind"]?.doubleValue ?? 0) == NostrKind.feedsSettings.rawValue
         }) else { return [] }
 
-        let feeds: [PrimalFeed] = event["content"]?.stringValue?.decode() ?? []
-        return feeds.map { $0.migratingToMultiKind() }
+        return event["content"]?.stringValue?.decode() ?? []
     }
 }
 

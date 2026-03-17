@@ -360,11 +360,7 @@ private extension WalletSendViewController {
                     } else if address.lowercased().hasPrefix("lnurl") {
                         try await WalletManager.instance.sendLNURL(lnurl: address, sats: amount, note: messageInput.text ?? "")
                     } else {
-                        if invoice?.lninvoice.amount_msat ?? 0 == 0 {
-                            try await WalletManager.instance.sendLNInvoice(address, satsOverride: amount, messageOverride: messageInput.text)
-                        } else {
-                            try await WalletManager.instance.sendLNInvoice(address, satsOverride: nil, messageOverride: nil)
-                        }
+                        try await WalletManager.instance.sendLNInvoice(address, satsOverride: amount, messageOverride: messageInput.text)
                     }
                 }
                 
