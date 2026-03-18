@@ -275,8 +275,12 @@ final class WalletManager {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] wallet in
                 guard let self, let wallet else { return }
+                let old = activeWallet
                 activeWallet = wallet
                 balance = Int((wallet.balanceInBtc?.doubleValue ?? 0) * Double(SAT_PER_BTC))
+                if let old, old.walletId != wallet.walletId, old.userId == wallet.userId {
+                    refresh()
+                }
             }
             .store(in: &updateCancellables)
 
@@ -378,6 +382,7 @@ final class WalletManager {
         
         let flow = walletRepo.latestTransactions(walletId: walletID)
         let snapshot = IosWalletPagingFactory.shared.createTransactionSnapshot(pagingFlow: flow)
+        transactionsSnapshot?.dispose()
         transactionsSnapshot = snapshot
         
         Task { @MainActor in

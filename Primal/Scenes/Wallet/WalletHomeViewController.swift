@@ -373,15 +373,11 @@ private extension WalletHomeViewController {
 
         updateTheme()
         
-        let transactionsPublisher = Publishers.Merge(
-            WalletManager.instance.$parsedTransactions.first(),
-            WalletManager.instance.$parsedTransactions.compactMap { $0.isEmpty ? nil : $0 }
-        )
-        
+        let userId = IdentityManager.instance.userHexPubkey
         WalletManager.instance.$activeWallet.compactMap({ $0 })
             .receive(on: DispatchQueue.main)
             .sink { [weak self] wallet in
-                guard let self else { return }
+                guard let self, wallet.userId == userId else { return }
                 let name = wallet is Wallet.Primal ? "Legacy Wallet" : "Wallet"
                 title = name
                 if DevModeSettings.walletSwitcherEnabled {
@@ -390,10 +386,16 @@ private extension WalletHomeViewController {
             }
             .store(in: &cancellables)
         
+        let transactionsPublisher = Publishers.Merge3(
+            WalletManager.instance.$parsedTransactions.first(),
+            WalletManager.instance.$parsedTransactions.compactMap { $0.isEmpty ? nil : $0 },
+            WalletManager.instance.$activeWallet.compactMap({ $0?.walletId }).removeDuplicates().dropFirst().map({ _ in [] })
+        )
+        
         Publishers.CombineLatest3(WalletManager.instance.$activeWallet, transactionsPublisher, WalletManager.instance.$walletSetupState)
-        .receive(on: DispatchQueue.main)
+        .debounce(for: 0.1, scheduler: DispatchQueue.main)
         .sink { [weak self] wallet, transactions, setupState in
-            guard let self else { return }
+            guard let self, wallet?.userId ?? userId == userId else { return }
 
             let grouping = Dictionary(grouping: transactions) {
                 Calendar.current.dateComponents([.day, .year, .month], from: Date(timeIntervalSince1970: TimeInterval($0.createdAt)))

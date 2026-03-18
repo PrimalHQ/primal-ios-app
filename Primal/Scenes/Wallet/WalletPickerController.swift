@@ -18,6 +18,10 @@ extension Wallet {
     }
 }
 
+protocol WalletSelectionCellDelegate: AnyObject {
+    func walletSelectionCellDidTapZap(_ cell: WalletSelectionCell)
+}
+
 final class WalletPickerController: UIViewController {
     private var cancellables: Set<AnyCancellable> = []
 
@@ -116,7 +120,10 @@ extension WalletPickerController: UITableViewDataSource {
         let cell = table.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
         let wallet = wallets[indexPath.row]
         let isActive = wallet.walletId == WalletManager.instance.activeWallet?.walletId
-        (cell as? WalletSelectionCell)?.setup(wallet, selected: isActive)
+        if let cell = cell as? WalletSelectionCell {
+            cell.delegate = self
+            cell.setup(wallet, selected: isActive, zapFilled: Bool.random())
+        }
         return cell
     }
 }
@@ -129,11 +136,20 @@ extension WalletPickerController: UITableViewDelegate {
     }
 }
 
+extension WalletPickerController: WalletSelectionCellDelegate {
+    func walletSelectionCellDidTapZap(_ cell: WalletSelectionCell) {
+        // TODO: -
+    }
+}
+
 final class WalletSelectionCell: UITableViewCell {
     private let backgroundColorView = UIView()
     private let titleLabel = UILabel()
     private let balanceLabel = UILabel()
     private let addressLabel = UILabel()
+    private let zapButton = UIButton()
+
+    weak var delegate: WalletSelectionCellDelegate?
 
     private var isSelectedWallet = false
 
@@ -154,11 +170,18 @@ final class WalletSelectionCell: UITableViewCell {
         vStack.alignment = .leading
         vStack.spacing = 4
 
-        contentView.addSubview(vStack)
-        vStack.pinToSuperview(edges: .vertical, padding: 16).centerToSuperview()
-        let leading = vStack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 32)
-        leading.priority = .required
-        leading.isActive = true
+        zapButton.constrainToSize(44)
+        zapButton.tintColor = .foreground3
+        zapButton.addAction(.init(handler: { [weak self] _ in
+            guard let self else { return }
+            self.delegate?.walletSelectionCellDidTapZap(self)
+        }), for: .touchUpInside)
+
+        let hStack = UIStackView([vStack, UIView(), zapButton])
+        hStack.alignment = .center
+
+        contentView.addSubview(hStack)
+        hStack.pinToSuperview(edges: .vertical, padding: 16).pinToSuperview(edges: .horizontal, padding: 32)
 
         backgroundColorView.backgroundColor = .background3
         backgroundColorView.layer.cornerRadius = 8
@@ -178,7 +201,8 @@ final class WalletSelectionCell: UITableViewCell {
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
-    func setup(_ wallet: Wallet, selected: Bool) {
+    /// `zapFilled`: `true` = filled icon, `false` = outline icon, `nil` = hidden
+    func setup(_ wallet: Wallet, selected: Bool, zapFilled: Bool? = nil) {
         titleLabel.text = wallet.displayName
 
         let sats = Int((wallet.balanceInBtc?.doubleValue ?? 0) * .BTC_TO_SAT)
@@ -189,6 +213,14 @@ final class WalletSelectionCell: UITableViewCell {
             addressLabel.isHidden = false
         } else {
             addressLabel.isHidden = true
+        }
+
+        if let zapFilled {
+            let imageName = zapFilled ? "feedZapFilled" : "feedZap"
+            zapButton.setImage(UIImage(named: imageName)?.withRenderingMode(.alwaysTemplate), for: .normal)
+            zapButton.isHidden = false
+        } else {
+            zapButton.isHidden = true
         }
 
         isSelectedWallet = selected
