@@ -5480,7 +5480,7 @@
 			repositoryURL = "https://github.com/PrimalHQ/primal-shared-ios";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 0.1.17;
+				minimumVersion = 0.1.18;
 			};
 		};
 		B9F933162B867D860064B495 /* XCRemoteSwiftPackageReference "qrcode" */ = {
