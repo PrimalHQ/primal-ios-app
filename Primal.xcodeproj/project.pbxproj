@@ -415,6 +415,7 @@
 		B94F2BB12AD053020041181B /* PrimalWalletRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94F2BB02AD053020041181B /* PrimalWalletRequest.swift */; };
 		B94F2BB32AD056D10041181B /* WalletRequestResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94F2BB22AD056D10041181B /* WalletRequestResult.swift */; };
 		B94F2BB92AD411690041181B /* WalletHomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94F2BB82AD411690041181B /* WalletHomeViewController.swift */; };
+		C1A3B7E82F3A1D0100ABCDEF /* WalletPickerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1A3B7E72F3A1D0100ABCDEF /* WalletPickerController.swift */; };
 		B94F2BBC2AD428400041181B /* LargeBalanceConversionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94F2BBB2AD428400041181B /* LargeBalanceConversionView.swift */; };
 		B94F2BBE2AD42F990041181B /* LargeWalletButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94F2BBD2AD42F990041181B /* LargeWalletButton.swift */; };
 		B94F2BC02AD446840041181B /* TransactionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94F2BBF2AD446840041181B /* TransactionCell.swift */; };
@@ -1248,6 +1249,7 @@
 		B94F2BB02AD053020041181B /* PrimalWalletRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimalWalletRequest.swift; sourceTree = "<group>"; };
 		B94F2BB22AD056D10041181B /* WalletRequestResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletRequestResult.swift; sourceTree = "<group>"; };
 		B94F2BB82AD411690041181B /* WalletHomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletHomeViewController.swift; sourceTree = "<group>"; };
+		C1A3B7E72F3A1D0100ABCDEF /* WalletPickerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletPickerController.swift; sourceTree = "<group>"; };
 		B94F2BBB2AD428400041181B /* LargeBalanceConversionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LargeBalanceConversionView.swift; sourceTree = "<group>"; };
 		B94F2BBD2AD42F990041181B /* LargeWalletButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LargeWalletButton.swift; sourceTree = "<group>"; };
 		B94F2BBF2AD446840041181B /* TransactionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionCell.swift; sourceTree = "<group>"; };
@@ -2984,6 +2986,7 @@
 				B928F8672F30BF7500DBD9D0 /* Upgrade */,
 				B94F2BBA2AD4282A0041181B /* Views */,
 				B94F2BB82AD411690041181B /* WalletHomeViewController.swift */,
+				C1A3B7E72F3A1D0100ABCDEF /* WalletPickerController.swift */,
 			);
 			path = Wallet;
 			sourceTree = "<group>";
@@ -4721,6 +4724,7 @@
 				B91EF0D32CEB830600299ECF /* PremiumManageSubscriptionController.swift in Sources */,
 				B981E09E2D666137002B9729 /* PrimalWebsiteScheme.swift in Sources */,
 				B94F2BB92AD411690041181B /* WalletHomeViewController.swift in Sources */,
+				C1A3B7E82F3A1D0100ABCDEF /* WalletPickerController.swift in Sources */,
 				B9009B612B1109AD002B0613 /* PrimalEndpointsRequest.swift in Sources */,
 				B9CC1AEE2DF767020020BFC2 /* UserListViewController.swift in Sources */,
 				C1AF0260998E17001EF1988C /* MuteManager.swift in Sources */,
