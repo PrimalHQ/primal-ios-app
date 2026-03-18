@@ -5,6 +5,7 @@
 //  Created by Pavle Stevanović on 20.9.24..
 //
 
+import Combine
 import UIKit
 
 extension String {
@@ -25,20 +26,23 @@ struct DevModeSettings {
 
 final class SettingsDevModeController: UIViewController, Themeable {
     let smoothScrollSpeed = SettingsInfoView(name: "Smooth Scroll Speed", desc: "200", showArrow: true)
+    let walletIDInfo = SettingsInfoView(name: "Wallet ID", desc: "-", showIcon: .copyIcon24)
+
+    var cancellables: Set<AnyCancellable> = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
         setup()
     }
-    
+
     func updateTheme() {
         view.backgroundColor = .background
         navigationItem.leftBarButtonItem = customBackButton
     }
-    
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
+
         smoothScrollSpeed.descLabel.text = "\(RootViewController.instance.smoothScrollSpeed) units"
     }
 }
@@ -53,10 +57,12 @@ private extension SettingsDevModeController {
         let stack = UIStackView(axis: .vertical, [
             walletSwitcher, SpacerView(height: 10),
             descLabel("Enable wallet switcher popup on the wallet home screen"), SpacerView(height: 20),
-            SettingsBorder(), SpacerView(height: 20),
-            scrollButton, SpacerView(height: 10),
-            descLabel("Show the button for smooth scrolling"), SpacerView(height: 20),
-            smoothScrollSpeed, SpacerView(height: 20)
+            walletIDInfo, SpacerView(height: 10),
+            descLabel("Tap to copy wallet ID to clipboard"), SpacerView(height: 20),
+//            SettingsBorder(), SpacerView(height: 20),
+//            scrollButton, SpacerView(height: 10),
+//            descLabel("Show the button for smooth scrolling"), SpacerView(height: 20),
+//            smoothScrollSpeed, SpacerView(height: 20)
         ])
         
         let scroll = UIScrollView()
@@ -88,6 +94,20 @@ private extension SettingsDevModeController {
         smoothScrollSpeed.addAction(.init(handler: { [weak self] _ in
             self?.show(SettingsEditSmoothScrollSpeedController(), sender: nil)
         }), for: .touchUpInside)
+
+        walletIDInfo.isUserInteractionEnabled = true
+        walletIDInfo.addAction(.init(handler: { [weak self] _ in
+            guard let walletID = self?.walletIDInfo.descLabel.text, walletID != "-" else { return }
+            UIPasteboard.general.string = walletID
+            RootViewController.instance.view.showToast("Copied!", extraPadding: 0)
+        }), for: .touchUpInside)
+
+        WalletManager.instance.$activeWallet
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] wallet in
+                self?.walletIDInfo.descLabel.text = wallet?.walletId ?? "-"
+            }
+            .store(in: &cancellables)
     }
     
     func descLabel(_ text: String) -> UILabel {
