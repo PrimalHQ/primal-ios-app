@@ -42,7 +42,10 @@ extension SettingsController {
 
 class SettingsMainViewController: UIViewController, Themeable {
     let versionLabel = UILabel()
-    
+    var versionTapCount = 0
+    var lastTapTime: Date?
+    let devMode = SettingsOptionButton(title: "Dev Mode")
+
     init() {
         super.init(nibName: nil, bundle: nil)
     }
@@ -80,8 +83,7 @@ private extension SettingsMainViewController {
         let muted = SettingsOptionButton(title: "Muted Content")
         let mediaUploads = SettingsOptionButton(title: "Media Uploads")
         let notifications = SettingsOptionButton(title: "Notifications")
-        let devMode = SettingsOptionButton(title: "Dev Mode")
-        devMode.isHidden = true
+        devMode.isHidden = !DevModeSettings.devToolsEnabled
         let zaps = SettingsOptionButton(title: "Zaps")
         
         let versionTitleLabel = SettingsTitleView(title: "VERSION")
@@ -111,6 +113,11 @@ private extension SettingsMainViewController {
         } else {
             versionLabel.text = "Unknown"
         }
+
+        versionLabel.isUserInteractionEnabled = true
+        versionLabel.addGestureRecognizer(BindableTapGestureRecognizer(action: { [weak self] in
+            self?.versionLabelTapped()
+        }))
         
         guard LoginManager.instance.method() == .nsec else {
             [keys, appearance, contentDisplay, muted, notifications, zaps, network].forEach { $0.addDisabledNSecWarning(self) }
@@ -158,5 +165,24 @@ private extension SettingsMainViewController {
     
     @objc func keysPressed() {
         navigationController?.pushViewController(SettingsNsecViewController(), animated: true)
+    }
+
+    func versionLabelTapped() {
+        guard !DevModeSettings.devToolsEnabled else { return }
+
+        let now = Date()
+        if let lastTap = lastTapTime, now.timeIntervalSince(lastTap) > 1 {
+            versionTapCount = 0
+        }
+
+        lastTapTime = now
+        versionTapCount += 1
+
+        if versionTapCount >= 3 {
+            versionTapCount = 0
+            DevModeSettings.devToolsEnabled = true
+            devMode.isHidden = false
+            view.showToast("Dev tools enabled")
+        }
     }
 }

@@ -8,13 +8,18 @@
 import UIKit
 
 extension String {
-    static let enableDevModeKey = "enableDevModeKey1"
+    static let devToolsEnabledKey = "devToolsEnabledKey1"
+    static let walletSwitcherEnabledKey = "walletSwitcherEnabledKey"
 }
 
 struct DevModeSettings {
-    static var enableDevMode: Bool {
-        get { UserDefaults.standard.bool(forKey: .enableDevModeKey) }
-        set { UserDefaults.standard.set(newValue, forKey: .enableDevModeKey) }
+    static var devToolsEnabled: Bool {
+        get { UserDefaults.standard.bool(forKey: .devToolsEnabledKey) }
+        set { UserDefaults.standard.set(newValue, forKey: .devToolsEnabledKey) }
+    }
+    static var walletSwitcherEnabled: Bool {
+        get { UserDefaults.standard.bool(forKey: .walletSwitcherEnabledKey) }
+        set { UserDefaults.standard.set(newValue, forKey: .walletSwitcherEnabledKey) }
     }
 }
 
@@ -42,13 +47,13 @@ private extension SettingsDevModeController {
     func setup() {
         title = "Dev Mode"
         
-//        let devMode = SettingsSwitchView("Enable Dev Mode")
+        let walletSwitcher = SettingsSwitchView("Enable Wallet Switcher")
         let scrollButton = SettingsSwitchView("Enable Smooth Scroll Button")
         
         let stack = UIStackView(axis: .vertical, [
-//            devMode, SpacerView(height: 10),
-//            descLabel("Show the connected state in the top right corner of the screen. More dev features to come."), SpacerView(height: 20),
-//            SettingsBorder(), SpacerView(height: 20),
+            walletSwitcher, SpacerView(height: 10),
+            descLabel("Enable wallet switcher popup on the wallet home screen"), SpacerView(height: 20),
+            SettingsBorder(), SpacerView(height: 20),
             scrollButton, SpacerView(height: 10),
             descLabel("Show the button for smooth scrolling"), SpacerView(height: 20),
             smoothScrollSpeed, SpacerView(height: 20)
@@ -67,14 +72,13 @@ private extension SettingsDevModeController {
         
         updateTheme()
         
-//        devMode.switchView.isOn = DevModeSettings.enableDevMode
+        walletSwitcher.switchView.isOn = DevModeSettings.walletSwitcherEnabled
         scrollButton.switchView.isOn = !RootViewController.instance.smoothScrollButton.isHidden
         
-//        devMode.switchView.addAction(.init(handler: { [weak devMode] _ in
-//            guard let value = devMode?.switchView.isOn else { return }
-//            DevModeSettings.enableDevMode = value
-//
-//        }), for: .valueChanged)
+        walletSwitcher.switchView.addAction(.init(handler: { [weak walletSwitcher] _ in
+            guard let value = walletSwitcher?.switchView.isOn else { return }
+            DevModeSettings.walletSwitcherEnabled = value
+        }), for: .valueChanged)
         
         scrollButton.switchView.addAction(.init(handler: { [weak scrollButton] _ in
             guard let value = scrollButton?.switchView.isOn else { return }
