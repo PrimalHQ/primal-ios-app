@@ -19,7 +19,7 @@ extension Wallet {
 }
 
 protocol WalletSelectionCellDelegate: AnyObject {
-    func walletSelectionCellDidTapZap(_ cell: WalletSelectionCell)
+    func walletSelectionCellDidTapBolt(_ cell: WalletSelectionCell)
 }
 
 final class WalletPickerController: UIViewController {
@@ -28,6 +28,17 @@ final class WalletPickerController: UIViewController {
     private let table = UITableView()
     private var wallets: [Wallet] = []
     private let callback: (Wallet) -> Void
+
+    private var isEditMode = false
+    private var registeredWalletId: String?
+    private var registeredLightningAddress: String?
+    private var previewRegisteredWalletId: String?
+
+    private let titleLabel = UILabel()
+    private let bottomBar = UIView()
+    private let configureButton = UIButton()
+    private let cancelButton = UIButton()
+    private let doneButton = UIButton()
 
     // Header height: pullBar(5) + spacing(20) + title(~24) + spacing(14) + top padding(16) = ~79
     private let headerHeight: CGFloat = 79
@@ -50,6 +61,7 @@ final class WalletPickerController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         loadWallets()
+        fetchRegisteredWallet()
     }
 
     private func loadWallets() {
@@ -66,11 +78,76 @@ final class WalletPickerController: UIViewController {
             .store(in: &cancellables)
     }
 
+    private func fetchRegisteredWallet() {
+        let userId = IdentityManager.instance.userHexPubkey
+        Task {
+            guard let status = try await WalletManager.instance.primalWalletRepo
+                .fetchWalletStatus(userId: userId).getOrNull() else { return }
+
+            await MainActor.run {
+                let registeredId = status.registeredSparkWalletId
+                    ?? (status.hasCustodialWallet ? userId : nil)
+                self.registeredWalletId = registeredId
+                self.registeredLightningAddress = status.lightningAddress
+                self.table.reloadData()
+            }
+        }
+    }
+
     private func updatePreferredHeight() {
         table.layoutIfNeeded()
-        let contentHeight = headerHeight + table.contentSize.height
+        let contentHeight = headerHeight + table.contentSize.height + 56 // 56 for bottom bar
         preferredContentSize = CGSize(width: view.bounds.width, height: max(300, contentHeight))
         sheetPresentationController?.invalidateDetents()
+    }
+
+    private func setEditMode(_ editing: Bool) {
+        isEditMode = editing
+        if editing {
+            previewRegisteredWalletId = registeredWalletId
+        } else {
+            previewRegisteredWalletId = nil
+        }
+        titleLabel.text = editing ? "Configure Wallets" : "Wallets"
+        configureButton.isHidden = editing
+        cancelButton.isHidden = !editing
+        doneButton.isHidden = !editing
+        table.reloadData()
+    }
+
+    private func confirmReassignment() {
+        guard let previewId = previewRegisteredWalletId, previewId != registeredWalletId else {
+            setEditMode(false)
+            return
+        }
+
+        guard let targetWallet = wallets.first(where: { $0.walletId == previewId }) else { return }
+
+        let userId = IdentityManager.instance.userHexPubkey
+
+        Task {
+            if targetWallet is Wallet.Spark {
+                _ = try await WalletManager.instance.sparkWalletAccountRepository
+                    .registerSparkWallet(userId: userId, walletId: targetWallet.walletId)
+            } else if targetWallet is Wallet.Primal {
+                guard let sparkWalletId = registeredWalletId else { return }
+                _ = try await WalletManager.instance.sparkWalletAccountRepository
+                    .unregisterSparkWallet(userId: userId, walletId: sparkWalletId)
+            } else {
+                return
+            }
+
+            guard let status = try await WalletManager.instance.primalWalletRepo
+                .fetchWalletStatus(userId: userId).getOrNull() else { return }
+
+            await MainActor.run {
+                let registeredId = status.registeredSparkWalletId
+                    ?? (status.hasCustodialWallet ? userId : nil)
+                self.registeredWalletId = registeredId
+                self.registeredLightningAddress = status.lightningAddress
+                self.setEditMode(false)
+            }
+        }
     }
 
     private func setup() {
@@ -82,12 +159,11 @@ final class WalletPickerController: UIViewController {
         pullBarParent.addSubview(pullBar)
         pullBar.pinToSuperview(edges: .vertical).centerToSuperview(axis: .horizontal)
 
-        let title = UILabel()
-        title.text = "Wallets"
-        title.font = .appFont(withSize: 20, weight: .bold)
-        title.textColor = .foreground
-        title.setContentCompressionResistancePriority(.required, for: .vertical)
-        title.textAlignment = .center
+        titleLabel.text = "Wallets"
+        titleLabel.font = .appFont(withSize: 20, weight: .bold)
+        titleLabel.textColor = .foreground
+        titleLabel.setContentCompressionResistancePriority(.required, for: .vertical)
+        titleLabel.textAlignment = .center
 
         table.showsVerticalScrollIndicator = false
         table.register(WalletSelectionCell.self, forCellReuseIdentifier: "cell")
@@ -96,10 +172,13 @@ final class WalletPickerController: UIViewController {
         table.separatorStyle = .none
         table.backgroundColor = .background2
 
+        setupBottomBar()
+
         let stack = UIStackView(arrangedSubviews: [
             pullBarParent, SpacerView(height: 20, priority: .required),
-            title, SpacerView(height: 14, priority: .required),
-            table
+            titleLabel, SpacerView(height: 14, priority: .required),
+            table,
+            bottomBar
         ])
         table.pinToSuperview(edges: .horizontal)
 
@@ -111,6 +190,42 @@ final class WalletPickerController: UIViewController {
         pullBar.backgroundColor = .foreground.withAlphaComponent(0.8)
         pullBar.layer.cornerRadius = 2.5
     }
+
+    private func setupBottomBar() {
+        let separator = UIView()
+        separator.backgroundColor = .foreground6
+        separator.constrainToSize(height: 1)
+
+        configureButton.setTitle("Configure wallets", for: .normal)
+        configureButton.setTitleColor(.accent, for: .normal)
+        configureButton.titleLabel?.font = .appFont(withSize: 16, weight: .regular)
+        configureButton.addAction(.init(handler: { [weak self] _ in
+            self?.setEditMode(true)
+        }), for: .touchUpInside)
+
+        cancelButton.setTitle("Cancel", for: .normal)
+        cancelButton.setTitleColor(.accent, for: .normal)
+        cancelButton.titleLabel?.font = .appFont(withSize: 16, weight: .regular)
+        cancelButton.isHidden = true
+        cancelButton.addAction(.init(handler: { [weak self] _ in
+            self?.setEditMode(false)
+        }), for: .touchUpInside)
+
+        doneButton.setTitle("Done", for: .normal)
+        doneButton.setTitleColor(.accent, for: .normal)
+        doneButton.titleLabel?.font = .appFont(withSize: 16, weight: .bold)
+        doneButton.isHidden = true
+        doneButton.addAction(.init(handler: { [weak self] _ in
+            self?.confirmReassignment()
+        }), for: .touchUpInside)
+
+        let buttonRow = UIStackView([cancelButton, UIView(), configureButton, doneButton])
+        buttonRow.alignment = .center
+
+        let barStack = UIStackView(axis: .vertical, [separator, buttonRow])
+        bottomBar.addSubview(barStack)
+        barStack.pinToSuperview(edges: .horizontal, padding: 16).pinToSuperview(edges: .vertical, padding: 8)
+    }
 }
 
 extension WalletPickerController: UITableViewDataSource {
@@ -120,9 +235,28 @@ extension WalletPickerController: UITableViewDataSource {
         let cell = table.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
         let wallet = wallets[indexPath.row]
         let isActive = wallet.walletId == WalletManager.instance.activeWallet?.walletId
+
+        let effectiveRegisteredId = isEditMode ? previewRegisteredWalletId : registeredWalletId
+        let isRegistered = wallet.walletId == effectiveRegisteredId
+        let isNWC = wallet is Wallet.NWC
+
+        let boltFilled: Bool?
+        if isEditMode {
+            boltFilled = isNWC ? nil : isRegistered
+        } else {
+            boltFilled = nil
+        }
+
+        let addressOverride: String?
+        if isEditMode && !isNWC {
+            addressOverride = isRegistered ? registeredLightningAddress : nil
+        } else {
+            addressOverride = wallet.lightningAddress
+        }
+
         if let cell = cell as? WalletSelectionCell {
             cell.delegate = self
-            cell.setup(wallet, selected: isActive, zapFilled: Bool.random())
+            cell.setup(wallet, selected: !isEditMode && isActive, boltFilled: boltFilled, lightningAddressOverride: addressOverride)
         }
         return cell
     }
@@ -131,23 +265,35 @@ extension WalletPickerController: UITableViewDataSource {
 extension WalletPickerController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let wallet = wallets[indexPath.row]
-        dismiss(animated: true)
-        callback(wallet)
+
+        if isEditMode {
+            guard !(wallet is Wallet.NWC) else { return }
+            previewRegisteredWalletId = wallet.walletId
+            table.reloadData()
+        } else {
+            dismiss(animated: true)
+            callback(wallet)
+        }
     }
 }
 
 extension WalletPickerController: WalletSelectionCellDelegate {
-    func walletSelectionCellDidTapZap(_ cell: WalletSelectionCell) {
-        // TODO: -
+    func walletSelectionCellDidTapBolt(_ cell: WalletSelectionCell) {
+        guard let indexPath = table.indexPath(for: cell) else { return }
+        let wallet = wallets[indexPath.row]
+        guard !(wallet is Wallet.NWC) else { return }
+        previewRegisteredWalletId = wallet.walletId
+        table.reloadData()
     }
 }
 
 final class WalletSelectionCell: UITableViewCell {
     private let backgroundColorView = UIView()
     private let titleLabel = UILabel()
-    private let balanceLabel = UILabel()
     private let addressLabel = UILabel()
-    private let zapButton = UIButton()
+    private let balanceLabel = UILabel()
+    private let satsLabel = UILabel()
+    private let boltButton = UIButton()
 
     weak var delegate: WalletSelectionCellDelegate?
 
@@ -166,19 +312,24 @@ final class WalletSelectionCell: UITableViewCell {
         contentView.addSubview(backgroundColorView)
         backgroundColorView.pinToSuperview(edges: .horizontal, padding: 20).pinToSuperview(edges: .vertical, padding: 6)
 
-        let vStack = UIStackView(axis: .vertical, [titleLabel, balanceLabel, addressLabel])
-        vStack.alignment = .leading
-        vStack.spacing = 4
+        let leftStack = UIStackView(axis: .vertical, [titleLabel, addressLabel])
+        leftStack.alignment = .leading
+        leftStack.spacing = 4
 
-        zapButton.constrainToSize(44)
-        zapButton.tintColor = .foreground3
-        zapButton.addAction(.init(handler: { [weak self] _ in
+        let balanceStack = UIStackView(axis: .vertical, [balanceLabel, satsLabel])
+        balanceStack.alignment = .trailing
+        balanceStack.spacing = 2
+
+        boltButton.constrainToSize(44)
+        boltButton.tintColor = .foreground3
+        boltButton.addAction(.init(handler: { [weak self] _ in
             guard let self else { return }
-            self.delegate?.walletSelectionCellDidTapZap(self)
+            self.delegate?.walletSelectionCellDidTapBolt(self)
         }), for: .touchUpInside)
 
-        let hStack = UIStackView([vStack, UIView(), zapButton])
+        let hStack = UIStackView([leftStack, UIView(), balanceStack, boltButton])
         hStack.alignment = .center
+        hStack.spacing = 8
 
         contentView.addSubview(hStack)
         hStack.pinToSuperview(edges: .vertical, padding: 16).pinToSuperview(edges: .horizontal, padding: 32)
@@ -189,11 +340,15 @@ final class WalletSelectionCell: UITableViewCell {
         titleLabel.font = .appFont(withSize: 20, weight: .regular)
         titleLabel.textColor = .foreground
 
-        balanceLabel.font = .appFont(withSize: 15, weight: .regular)
-        balanceLabel.textColor = .foreground4
-
         addressLabel.font = .appFont(withSize: 15, weight: .regular)
         addressLabel.textColor = .foreground4
+
+        balanceLabel.font = .appFont(withSize: 15, weight: .regular)
+        balanceLabel.textColor = .foreground
+
+        satsLabel.font = .appFont(withSize: 15, weight: .regular)
+        satsLabel.textColor = .foreground4
+        satsLabel.text = "sats"
 
         backgroundColor = .background2
         contentView.backgroundColor = .background2
@@ -201,26 +356,27 @@ final class WalletSelectionCell: UITableViewCell {
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
-    /// `zapFilled`: `true` = filled icon, `false` = outline icon, `nil` = hidden
-    func setup(_ wallet: Wallet, selected: Bool, zapFilled: Bool? = nil) {
+    /// `boltFilled`: `true` = filled bolt icon, `false` = outline bolt icon, `nil` = hidden
+    func setup(_ wallet: Wallet, selected: Bool, boltFilled: Bool? = nil, lightningAddressOverride: String?) {
         titleLabel.text = wallet.displayName
 
         let sats = Int((wallet.balanceInBtc?.doubleValue ?? 0) * .BTC_TO_SAT)
-        balanceLabel.text = sats.localized() + " sats"
+        balanceLabel.text = sats.localized()
 
-        if let address = wallet.lightningAddress, !address.isEmpty {
+        if let address = lightningAddressOverride, !address.isEmpty {
             addressLabel.text = address
             addressLabel.isHidden = false
         } else {
             addressLabel.isHidden = true
         }
 
-        if let zapFilled {
-            let imageName = zapFilled ? "feedZapFilled" : "feedZap"
-            zapButton.setImage(UIImage(named: imageName)?.withRenderingMode(.alwaysTemplate), for: .normal)
-            zapButton.isHidden = false
+        if let boltFilled {
+            let imageName = boltFilled ? "feedZapFilled" : "feedZap"
+            boltButton.setImage(UIImage(named: imageName)?.withRenderingMode(.alwaysTemplate), for: .normal)
+            boltButton.tintColor = boltFilled ? .accent : .foreground3
+            boltButton.isHidden = false
         } else {
-            zapButton.isHidden = true
+            boltButton.isHidden = true
         }
 
         isSelectedWallet = selected

@@ -211,7 +211,7 @@ final class WalletManager {
     private let regConnection = PrimalApiClientFactory.shared.create(serverType: .caching)
     private let walletConnection = PrimalApiClientFactory.shared.create(serverType: .wallet)
     private let profileRepo: ProfileRepository
-    private lazy var primalWalletRepo = WalletRepositoryFactory.shared.createPrimalWalletAccountRepository(primalWalletApiClient: walletConnection, nostrEventSignatureHandler: SigningManager.instance)
+    lazy var primalWalletRepo = WalletRepositoryFactory.shared.createPrimalWalletAccountRepository(primalWalletApiClient: walletConnection, nostrEventSignatureHandler: SigningManager.instance)
     private lazy var sparkWalletManager = WalletRepositoryFactory.shared.createSparkWalletManager()
     lazy var sparkWalletAccountRepository = WalletRepositoryFactory.shared.createSparkWalletAccountRepository(primalWalletApiClient: walletConnection, nostrEventSignatureHandler: SigningManager.instance)
     private lazy var walletSessionProvider = WalletRepositoryFactory.shared.createWalletSessionProvider(
