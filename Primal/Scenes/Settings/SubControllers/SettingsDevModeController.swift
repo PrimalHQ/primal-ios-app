@@ -59,7 +59,7 @@ private extension SettingsDevModeController {
         let clearCacheButton = UIButton(configuration: .accentPill(text: "Clear Image Cache", font: .appFont(withSize: 16, weight: .semibold))).constrainToSize(height: 40)
         clearCacheButton.addAction(.init(handler: { [weak clearCacheButton] _ in
             clearCacheButton?.isEnabled = false
-            LocalCacheManager.instance.clearImageCaches {
+            CachingManager.instance.clearImageCaches {
                 clearCacheButton?.isEnabled = true
                 RootViewController.instance.view.showToast("Image cache cleared", extraPadding: 0)
             }

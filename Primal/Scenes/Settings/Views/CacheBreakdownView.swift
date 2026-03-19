@@ -36,9 +36,9 @@ final class CacheBreakdownView: UIView {
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
     func startObserving() {
-        LocalCacheManager.instance.recalculate()
+        CachingManager.instance.recalculate()
 
-        LocalCacheManager.instance.$cacheSizeInfo
+        CachingManager.instance.$cacheSizeInfo
             .receive(on: DispatchQueue.main)
             .sink { [weak self] info in
                 self?.updateGraph(info)

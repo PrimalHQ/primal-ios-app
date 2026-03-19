@@ -653,7 +653,6 @@
 		B9DF0CB52C25AE0F009ADC7B /* LargeZapPillViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DF0CB42C25AE0F009ADC7B /* LargeZapPillViews.swift */; };
 		B9DF0CB82C25EF2F009ADC7B /* LongFormZapsPostCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DF0CB72C25EF2F009ADC7B /* LongFormZapsPostCell.swift */; };
 		B9DF8EB02F4C61F600A3FA21 /* KlipyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DF8EAF2F4C61F600A3FA21 /* KlipyManager.swift */; };
-		C1A2B3D4E5F6078901234568 /* LocalCacheManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1A2B3D4E5F6078901234567 /* LocalCacheManager.swift */; };
 		B9DF8EB32F4C64D700A3FA21 /* KlipyGifController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DF8EB22F4C64C900A3FA21 /* KlipyGifController.swift */; };
 		B9DF8ED62F4E0E7A00A3FA21 /* WalletReceiveToResultAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DF8ED52F4E0E7A00A3FA21 /* WalletReceiveToResultAnimator.swift */; };
 		B9DF8ED82F4F2D1500A3FA21 /* PollInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DF8ED72F4F2D0C00A3FA21 /* PollInputView.swift */; };
@@ -1489,7 +1488,6 @@
 		B9DF0CB42C25AE0F009ADC7B /* LargeZapPillViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LargeZapPillViews.swift; sourceTree = "<group>"; };
 		B9DF0CB72C25EF2F009ADC7B /* LongFormZapsPostCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LongFormZapsPostCell.swift; sourceTree = "<group>"; };
 		B9DF8EAF2F4C61F600A3FA21 /* KlipyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KlipyManager.swift; sourceTree = "<group>"; };
-		C1A2B3D4E5F6078901234567 /* LocalCacheManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalCacheManager.swift; sourceTree = "<group>"; };
 		B9DF8EB22F4C64C900A3FA21 /* KlipyGifController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KlipyGifController.swift; sourceTree = "<group>"; };
 		B9DF8ED52F4E0E7A00A3FA21 /* WalletReceiveToResultAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletReceiveToResultAnimator.swift; sourceTree = "<group>"; };
 		B9DF8ED72F4F2D0C00A3FA21 /* PollInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollInputView.swift; sourceTree = "<group>"; };
@@ -2615,7 +2613,6 @@
 				B91EF0E12CECD20700299ECF /* PremiumCustomizationManager.swift */,
 				B9FAC6412D2BEE8400B57EF6 /* BlossomServerManager.swift */,
 				B9DF8EAF2F4C61F600A3FA21 /* KlipyManager.swift */,
-				C1A2B3D4E5F6078901234567 /* LocalCacheManager.swift */,
 				B9FAC6472D31A95800B57EF6 /* LinkPreviewManager.swift */,
 			);
 			path = SmallManagers;
@@ -4737,7 +4734,6 @@
 				C1AF0260998E17001EF1988C /* MuteManager.swift in Sources */,
 				B9D331FD2EE860E10023D541 /* RemoteSignerConnectionInfoCell.swift in Sources */,
 				B9DF8EB02F4C61F600A3FA21 /* KlipyManager.swift in Sources */,
-				C1A2B3D4E5F6078901234568 /* LocalCacheManager.swift in Sources */,
 				B928F6642B51D52B00B2273E /* ViewAnimations.swift in Sources */,
 				B900328A2BD266FF00ADD2E5 /* NoteZapsViewController.swift in Sources */,
 				9D0C1431EB7AE3C05CE1B6FB /* PollResultsViewController.swift in Sources */,

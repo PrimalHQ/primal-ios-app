@@ -117,7 +117,7 @@ open class AnimatedImageCache {
     ) -> DiskStorage.Config {
         var diskConfig = DiskStorage.Config(
             name: name,
-            sizeLimit: 0,
+            sizeLimit: 500_000_000, // 500 MB
             directory: cacheDirectoryURL
         )
         if let closure = diskCachePathClosure {
