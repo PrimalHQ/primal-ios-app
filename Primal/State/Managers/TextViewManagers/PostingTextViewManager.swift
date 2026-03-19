@@ -456,6 +456,8 @@ final class PostingTextViewManager: TextViewManager, MetadataCoding {
                 }
             }
 
+            allTags.append(["client", "Primal iOS"])
+
             return NostrObject.create(content: postingText, kind: kind, tags: allTags)
         }
 
