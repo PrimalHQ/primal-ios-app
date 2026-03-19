@@ -27,6 +27,7 @@ struct DevModeSettings {
 final class SettingsDevModeController: UIViewController, Themeable {
     let smoothScrollSpeed = SettingsInfoView(name: "Smooth Scroll Speed", desc: "200", showArrow: true)
     let walletIDInfo = SettingsInfoView(name: "Wallet ID", desc: "-", showIcon: .copyIcon24)
+    let cacheBreakdownView = CacheBreakdownView()
 
     var cancellables: Set<AnyCancellable> = []
 
@@ -44,53 +45,62 @@ final class SettingsDevModeController: UIViewController, Themeable {
         super.viewWillAppear(animated)
 
         smoothScrollSpeed.descLabel.text = "\(RootViewController.instance.smoothScrollSpeed) units"
+        cacheBreakdownView.startObserving()
     }
 }
 
 private extension SettingsDevModeController {
     func setup() {
         title = "Dev Mode"
-        
+
         let walletSwitcher = SettingsSwitchView("Enable Wallet Switcher")
         let scrollButton = SettingsSwitchView("Enable Smooth Scroll Button")
-        
+
+        let clearCacheButton = UIButton(configuration: .accentPill(text: "Clear Image Cache", font: .appFont(withSize: 16, weight: .semibold))).constrainToSize(height: 40)
+        clearCacheButton.addAction(.init(handler: { [weak clearCacheButton] _ in
+            clearCacheButton?.isEnabled = false
+            LocalCacheManager.instance.clearImageCaches {
+                clearCacheButton?.isEnabled = true
+                RootViewController.instance.view.showToast("Image cache cleared", extraPadding: 0)
+            }
+        }), for: .touchUpInside)
+
         let stack = UIStackView(axis: .vertical, [
             walletSwitcher, SpacerView(height: 10),
             descLabel("Enable wallet switcher popup on the wallet home screen"), SpacerView(height: 20),
             walletIDInfo, SpacerView(height: 10),
             descLabel("Tap to copy wallet ID to clipboard"), SpacerView(height: 20),
-//            SettingsBorder(), SpacerView(height: 20),
-//            scrollButton, SpacerView(height: 10),
-//            descLabel("Show the button for smooth scrolling"), SpacerView(height: 20),
-//            smoothScrollSpeed, SpacerView(height: 20)
+            SettingsBorder(), SpacerView(height: 20),
+            cacheBreakdownView, SpacerView(height: 12),
+            clearCacheButton, SpacerView(height: 20),
         ])
-        
+
         let scroll = UIScrollView()
         view.addSubview(scroll)
         scroll
             .pinToSuperview(edges: .horizontal)
             .pinToSuperview(edges: .bottom, padding: 56, safeArea: true)
             .pinToSuperview(edges: .top, padding: 7, safeArea: true)
-        
+
         scroll.addSubview(stack)
         stack.pinToSuperview(edges: .horizontal, padding: 20).pinToSuperview(edges: .vertical, padding: 38)
         stack.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -40).isActive = true
-        
+
         updateTheme()
-        
+
         walletSwitcher.switchView.isOn = DevModeSettings.walletSwitcherEnabled
         scrollButton.switchView.isOn = !RootViewController.instance.smoothScrollButton.isHidden
-        
+
         walletSwitcher.switchView.addAction(.init(handler: { [weak walletSwitcher] _ in
             guard let value = walletSwitcher?.switchView.isOn else { return }
             DevModeSettings.walletSwitcherEnabled = value
         }), for: .valueChanged)
-        
+
         scrollButton.switchView.addAction(.init(handler: { [weak scrollButton] _ in
             guard let value = scrollButton?.switchView.isOn else { return }
             RootViewController.instance.smoothScrollButton.isHidden = !value
         }), for: .valueChanged)
-        
+
         smoothScrollSpeed.addAction(.init(handler: { [weak self] _ in
             self?.show(SettingsEditSmoothScrollSpeedController(), sender: nil)
         }), for: .touchUpInside)
@@ -109,7 +119,7 @@ private extension SettingsDevModeController {
             }
             .store(in: &cancellables)
     }
-    
+
     func descLabel(_ text: String) -> UILabel {
         let label = ThemeableLabel().setTheme { $0.textColor = .foreground3 }
         label.text = text
@@ -121,26 +131,26 @@ private extension SettingsDevModeController {
 
 final class SettingsEditSmoothScrollSpeedController: UIViewController, Themeable {
     let valueInput = UITextField()
-    
+
     init() {
         super.init(nibName: nil, bundle: nil)
-        
+
         setup()
     }
-    
+
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        
+
         guard let value = Int(valueInput.text ?? "") else { return }
 
         RootViewController.instance.smoothScrollSpeed = value
     }
-    
+
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
-    
+
     func updateTheme() {
         view.backgroundColor = .background
-        
+
         navigationItem.leftBarButtonItem = customBackButton
     }
 }
@@ -148,29 +158,29 @@ final class SettingsEditSmoothScrollSpeedController: UIViewController, Themeable
 private extension SettingsEditSmoothScrollSpeedController {
     func setup() {
         updateTheme()
-        
+
         title = "Smooth Scroll Speed"
-        
+
         let amountParent = ThemeableView().constrainToSize(height: 48).setTheme { $0.backgroundColor = .background3 }
         amountParent.addSubview(valueInput)
         amountParent.layer.cornerRadius = 24
         valueInput.pinToSuperview(edges: .horizontal, padding: 16).centerToSuperview()
-        
+
         let stack = UIStackView(axis: .vertical, [
             SettingsTitleViewVibrant(title: "SCROLL AT SPEED:"), SpacerView(height: 12),
             amountParent
         ])
-        
+
         valueInput.text = "\(RootViewController.instance.smoothScrollSpeed)"
         valueInput.keyboardType = .numberPad
-        
+
         view.addSubview(stack)
         stack.pinToSuperview(edges: [.top, .horizontal], padding: 20, safeArea: true)
-        
+
         view.addGestureRecognizer(BindableTapGestureRecognizer(action: { [weak self] in
             self?.valueInput.resignFirstResponder()
         }))
-        
+
         amountParent.addGestureRecognizer(BindableTapGestureRecognizer(action: { [weak self] in
             self?.valueInput.becomeFirstResponder()
         }))
