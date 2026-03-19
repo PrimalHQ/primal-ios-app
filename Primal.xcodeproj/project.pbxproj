@@ -107,7 +107,6 @@
 		9E55F2952A1FBDB600D5D523 /* BorderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E55F2942A1FBDB600D5D523 /* BorderView.swift */; };
 		9E55F2972A1FBE8600D5D523 /* SettingsTitleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E55F2962A1FBE8600D5D523 /* SettingsTitleView.swift */; };
 		9E55F2992A1FD1DC00D5D523 /* CopyButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E55F2982A1FD1DC00D5D523 /* CopyButton.swift */; };
-		D2B3C4E5F6A7089012345679 /* CacheBreakdownView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2B3C4E5F6A7089012345678 /* CacheBreakdownView.swift */; };
 		9E5BD93C2A1E3133008DFFBE /* NewPostViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E5BD93B2A1E3133008DFFBE /* NewPostViewController.swift */; };
 		9E5BD93F2A1E6567008DFFBE /* SmallPostButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E5BD93E2A1E6567008DFFBE /* SmallPostButton.swift */; };
 		9E5BD9412A1E6586008DFFBE /* CancelButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E5BD9402A1E6586008DFFBE /* CancelButton.swift */; };
@@ -752,6 +751,7 @@
 		C1AF0260998E17001EF1988C /* MuteManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AF0026036532D4652C7322 /* MuteManager.swift */; };
 		C1AF0E7F59461BB9839F1D44 /* NostrScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AF0C03B5BEAE4C6902AD25 /* NostrScheme.swift */; };
 		C7F8A2B3D4E5061798A3B1C2 /* PrimalPremiumLogoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7F8A2B3D4E5061798A3B1C3 /* PrimalPremiumLogoView.swift */; };
+		D2B3C4E5F6A7089012345679 /* CacheBreakdownView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2B3C4E5F6A7089012345678 /* CacheBreakdownView.swift */; };
 		D5A4266E6F84FB8044839C0E /* PollVoteDetailsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDBBAA6B683A9D0CB02B7060 /* PollVoteDetailsCell.swift */; };
 		E365D8456ACE78BF9DE4C077 /* OldWalletDetectedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5764AD3FE766D500CBC6420 /* OldWalletDetectedView.swift */; };
 /* End PBXBuildFile section */
@@ -951,7 +951,6 @@
 		9E55F2942A1FBDB600D5D523 /* BorderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderView.swift; sourceTree = "<group>"; };
 		9E55F2962A1FBE8600D5D523 /* SettingsTitleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsTitleView.swift; sourceTree = "<group>"; };
 		9E55F2982A1FD1DC00D5D523 /* CopyButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CopyButton.swift; sourceTree = "<group>"; };
-		D2B3C4E5F6A7089012345678 /* CacheBreakdownView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheBreakdownView.swift; sourceTree = "<group>"; };
 		9E5BD93B2A1E3133008DFFBE /* NewPostViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewPostViewController.swift; sourceTree = "<group>"; };
 		9E5BD93E2A1E6567008DFFBE /* SmallPostButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmallPostButton.swift; sourceTree = "<group>"; };
 		9E5BD9402A1E6586008DFFBE /* CancelButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CancelButton.swift; sourceTree = "<group>"; };
@@ -1586,6 +1585,7 @@
 		C1AF0C03B5BEAE4C6902AD25 /* NostrScheme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NostrScheme.swift; sourceTree = "<group>"; };
 		C1AF0E693616ED45B0E46466 /* PrimalScheme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PrimalScheme.swift; sourceTree = "<group>"; };
 		C7F8A2B3D4E5061798A3B1C3 /* PrimalPremiumLogoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimalPremiumLogoView.swift; sourceTree = "<group>"; };
+		D2B3C4E5F6A7089012345678 /* CacheBreakdownView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheBreakdownView.swift; sourceTree = "<group>"; };
 		EC1B50E71AC4CB3BACD02E0A /* PollVoteOptionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollVoteOptionCell.swift; sourceTree = "<group>"; };
 		F2BF0F83E0F616FCB6C4AB48 /* PollResultsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollResultsViewController.swift; sourceTree = "<group>"; };
 		FDBBAA6B683A9D0CB02B7060 /* PollVoteDetailsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollVoteDetailsCell.swift; sourceTree = "<group>"; };
@@ -5484,7 +5484,7 @@
 			repositoryURL = "https://github.com/PrimalHQ/primal-shared-ios";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 0.1.18;
+				minimumVersion = 0.1.19;
 			};
 		};
 		B9F933162B867D860064B495 /* XCRemoteSwiftPackageReference "qrcode" */ = {

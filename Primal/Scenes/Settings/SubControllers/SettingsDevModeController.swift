@@ -7,6 +7,7 @@
 
 import Combine
 import UIKit
+import PrimalShared
 
 extension String {
     static let devToolsEnabledKey = "devToolsEnabledKey1"
@@ -26,7 +27,7 @@ struct DevModeSettings {
 
 final class SettingsDevModeController: UIViewController, Themeable {
     let smoothScrollSpeed = SettingsInfoView(name: "Smooth Scroll Speed", desc: "200", showArrow: true)
-    let walletIDInfo = SettingsInfoView(name: "Wallet ID", desc: "-", showIcon: .copyIcon24)
+    let walletListStack = UIStackView(axis: .vertical, [])
     let cacheBreakdownView = CacheBreakdownView()
 
     var cancellables: Set<AnyCancellable> = []
@@ -65,11 +66,12 @@ private extension SettingsDevModeController {
             }
         }), for: .touchUpInside)
 
+        walletListStack.spacing = 8
+
         let stack = UIStackView(axis: .vertical, [
             walletSwitcher, SpacerView(height: 10),
             descLabel("Enable wallet switcher popup on the wallet home screen"), SpacerView(height: 20),
-            walletIDInfo, SpacerView(height: 10),
-            descLabel("Tap to copy wallet ID to clipboard"), SpacerView(height: 20),
+            walletListStack, SpacerView(height: 20),
             SettingsBorder(), SpacerView(height: 20),
             cacheBreakdownView, SpacerView(height: 12),
             clearCacheButton, SpacerView(height: 20),
@@ -105,19 +107,49 @@ private extension SettingsDevModeController {
             self?.show(SettingsEditSmoothScrollSpeedController(), sender: nil)
         }), for: .touchUpInside)
 
-        walletIDInfo.isUserInteractionEnabled = true
-        walletIDInfo.addAction(.init(handler: { [weak self] _ in
-            guard let walletID = self?.walletIDInfo.descLabel.text, walletID != "-" else { return }
-            UIPasteboard.general.string = walletID
-            RootViewController.instance.view.showToast("Copied!", extraPadding: 0)
-        }), for: .touchUpInside)
+        loadWallets()
+    }
 
-        WalletManager.instance.$activeWallet
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] wallet in
-                self?.walletIDInfo.descLabel.text = wallet?.walletId ?? "-"
+    func loadWallets() {
+        let userId = IdentityManager.instance.userHexPubkey
+
+        Task { @MainActor in
+            let sparkWalletIds = (try? await WalletManager.instance.sparkWalletAccountRepository
+                .findAllPersistedWalletIds(userId: userId)) ?? []
+
+            WalletManager.instance.$activeWallet
+                .receive(on: DispatchQueue.main)
+                .sink { [weak self] activeWallet in
+                    self?.updateWalletList(activeWallet: activeWallet, sparkWalletIds: sparkWalletIds)
+                }
+                .store(in: &cancellables)
+        }
+    }
+
+    func updateWalletList(activeWallet: Wallet?, sparkWalletIds: [String]) {
+        walletListStack.arrangedSubviews.forEach { $0.removeFromSuperview() }
+
+        var seenIds: Set<String> = []
+
+        // Active wallet first
+        if let active = activeWallet {
+            let sats = Int((active.balanceInBtc?.doubleValue ?? 0) * .BTC_TO_SAT)
+            let item = DevToolsWalletItemView()
+            item.configure(wallet: active, isActive: true, lightningAddress: active.lightningAddress, balanceInSats: sats)
+            walletListStack.addArrangedSubview(item)
+            seenIds.insert(active.walletId)
+        }
+
+        // Remaining Spark wallets (deduplicated)
+        for walletId in sparkWalletIds where !seenIds.contains(walletId) {
+            let item = DevToolsWalletItemView()
+            walletListStack.addArrangedSubview(item)
+            Task { @MainActor in
+                let address = try? await WalletManager.instance.sparkWalletAccountRepository
+                    .getLightningAddress(walletId: walletId)
+                item.configure(walletId: walletId, lightningAddress: address)
             }
-            .store(in: &cancellables)
+        }
     }
 
     func descLabel(_ text: String) -> UILabel {
@@ -184,5 +216,158 @@ private extension SettingsEditSmoothScrollSpeedController {
         amountParent.addGestureRecognizer(BindableTapGestureRecognizer(action: { [weak self] in
             self?.valueInput.becomeFirstResponder()
         }))
+    }
+}
+
+// MARK: - DevToolsWalletItemView
+
+private final class DevToolsWalletItemView: UIView, Themeable {
+    private let nameLabel = UILabel()
+    private let balanceLabel = UILabel()
+    private let activeChip = UILabel()
+    private let supportLabel = UILabel()
+    private let copyButton = UIButton()
+    private let keyButton = UIButton()
+
+    private var walletId: String?
+    private var isSpark = false
+    
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+
+        layer.cornerRadius = 12
+
+        nameLabel.font = .appFont(withSize: 16, weight: .semibold)
+        balanceLabel.font = .appFont(withSize: 16, weight: .regular)
+        supportLabel.font = .appFont(withSize: 13, weight: .regular)
+        supportLabel.lineBreakMode = .byTruncatingTail
+
+        activeChip.font = .appFont(withSize: 11, weight: .bold)
+        activeChip.textAlignment = .center
+        activeChip.clipsToBounds = true
+        activeChip.isHidden = true
+
+        copyButton.setImage(UIImage(named: "copyIcon24")?.withRenderingMode(.alwaysTemplate), for: .normal)
+        copyButton.constrainToSize(32)
+        copyButton.addAction(.init(handler: { [weak self] _ in
+            guard let walletId = self?.walletId else { return }
+            UIPasteboard.general.string = walletId
+            self?.showDimmedToastCentered("Copied!")
+        }), for: .touchUpInside)
+
+        keyButton.setImage(UIImage(named: "keySmall")?.withRenderingMode(.alwaysTemplate), for: .normal)
+        keyButton.constrainToSize(32)
+        keyButton.isHidden = true
+        keyButton.addAction(.init(handler: { [weak self] _ in
+            self?.copySeedPhrase()
+        }), for: .touchUpInside)
+
+        let headlineStack = UIStackView([nameLabel, balanceLabel, activeChip])
+        headlineStack.spacing = 8
+        headlineStack.alignment = .center
+
+        let leftStack = UIStackView(axis: .vertical, [headlineStack, supportLabel])
+        leftStack.spacing = 4
+
+        let mainStack = UIStackView([leftStack, UIView(), copyButton, keyButton])
+        mainStack.alignment = .center
+        mainStack.spacing = 8
+
+        addSubview(mainStack)
+        mainStack.pinToSuperview(edges: .horizontal, padding: 12).pinToSuperview(edges: .vertical, padding: 10)
+
+        updateTheme()
+    }
+    
+    func updateTheme() {
+        backgroundColor = .background3
+        nameLabel.textColor = .foreground
+        balanceLabel.textColor = .foreground3
+        supportLabel.textColor = .foreground4
+        copyButton.tintColor = .foreground3
+        keyButton.tintColor = .foreground3
+        activeChip.textColor = .white
+        activeChip.backgroundColor = .accent
+    }
+
+    func configure(wallet: Wallet, isActive: Bool, lightningAddress: String?, balanceInSats: Int?) {
+        walletId = wallet.walletId
+        isSpark = wallet is Wallet.Spark
+
+        if wallet is Wallet.Spark {
+            nameLabel.text = "Spark Wallet"
+        } else if wallet is Wallet.Primal {
+            nameLabel.text = "Primal Wallet"
+        } else if wallet is Wallet.NWC {
+            nameLabel.text = "NWC Wallet"
+        } else {
+            nameLabel.text = "Wallet"
+        }
+
+        if let sats = balanceInSats {
+            balanceLabel.text = "\(sats.localized()) sats"
+            balanceLabel.isHidden = false
+        } else {
+            balanceLabel.isHidden = true
+        }
+
+        activeChip.isHidden = !isActive
+        if isActive {
+            activeChip.text = "  ACTIVE  "
+            activeChip.sizeToFit()
+            activeChip.layer.cornerRadius = activeChip.intrinsicContentSize.height / 2
+        }
+
+        let truncatedId = truncateWalletId(wallet.walletId)
+        if let address = lightningAddress, !address.isEmpty {
+            supportLabel.text = "\(address) · \(truncatedId)"
+        } else {
+            supportLabel.text = truncatedId
+        }
+
+        keyButton.isHidden = !isSpark
+    }
+
+    func configure(walletId: String, lightningAddress: String?) {
+        self.walletId = walletId
+        isSpark = true
+
+        nameLabel.text = "Spark Wallet"
+        balanceLabel.isHidden = true
+        activeChip.isHidden = true
+
+        let truncatedId = truncateWalletId(walletId)
+        if let address = lightningAddress, !address.isEmpty {
+            supportLabel.text = "\(address) · \(truncatedId)"
+        } else {
+            supportLabel.text = truncatedId
+        }
+
+        keyButton.isHidden = false
+    }
+
+    private func truncateWalletId(_ id: String) -> String {
+        guard id.count > 15 else { return id }
+        return "\(id.prefix(5))...\(id.suffix(5))"
+    }
+
+    private func copySeedPhrase() {
+        guard let walletId else { return }
+        Task { @MainActor in
+            do {
+                let seed = try await WalletManager.instance.sparkWalletAccountRepository
+                    .getPersistedSeedWords(walletId: walletId).getOrNull()
+                let words = seed?.compactMap { $0 as? String } ?? []
+                if words.isEmpty {
+                    self.showDimmedToastCentered("No seed phrase found")
+                } else {
+                    UIPasteboard.general.string = words.joined(separator: " ")
+                    self.showDimmedToastCentered("Seed phrase copied!")
+                }
+            } catch {
+                self.showDimmedToastCentered("Failed to get seed phrase")
+            }
+        }
     }
 }
