@@ -18,7 +18,7 @@ class SettingsNWCQRScanController: OnboardingBaseViewController, QRCaptureContro
     
     var didOpenQRCode = false
     
-    let action = QRCodeActionButton("Paste Connection String")
+    let action = OnboardingMainButton("Paste Connection String")
     
     private var cancellables: Set<AnyCancellable> = []
     
@@ -87,13 +87,13 @@ private extension SettingsNWCQRScanController {
         descLabel.text = "Scan the NWC\nconnection QR code"
         descLabel.textAlignment = .center
         descLabel.font = .appFont(withSize: 18, weight: .regular)
-        descLabel.textColor = .white
+        descLabel.textColor = UIColor(rgb: 0x111111)
         descLabel.numberOfLines = 0
         
         videoPreviewLayer.session = captureSession
         videoPreviewLayer.videoGravity = AVLayerVideoGravity.resizeAspectFill
         videoPreviewLayer.masksToBounds = true
-        videoPreviewLayer.borderColor = UIColor.white.cgColor
+        videoPreviewLayer.borderColor = UIColor(rgb: 0x111111).cgColor
         videoPreviewLayer.borderWidth = 4
         videoPreviewLayer.cornerRadius = 16
         

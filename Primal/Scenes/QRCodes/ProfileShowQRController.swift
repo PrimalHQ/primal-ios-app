@@ -29,22 +29,6 @@ extension UIButton.Configuration {
     }
 }
 
-final class QRCodeActionButton: UIButton {
-    init(_ title: String) {
-        super.init(frame: .zero)
-        setTitle(title, for: .normal)
-        setTitleColor(.white, for: .normal)
-        titleLabel?.font  = .appFont(withSize: 18, weight: .semibold)
-        backgroundColor = .init(rgb: 0x4B002D)
-        layer.cornerRadius = 29
-        constrainToSize(height: 58)
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-}
-
 final class ProfileShowQRController: UIViewController, OnboardingViewController {
     struct MenuOption {
         let name: String
