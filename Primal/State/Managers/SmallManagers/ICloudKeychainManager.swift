@@ -175,15 +175,32 @@ final class ICloudKeychainManager {
     func removeKeypair(_ npub: String) -> Bool {
         userPubkey = ""
         localNpubs.remove(object: npub)
-    
+
         do {
             try keychain.saveNpubs(localNpubs)
             try keychain.remove(npub)
+            try keychain.remove(Self.seedKey(for: npub))
         } catch let error {
             print("ICloudKeychain: \(error)")
             return false
         }
-        
+
         return true
+    }
+
+    // MARK: - Spark Seed Phrase (local keychain only)
+
+    private static func seedKey(for npub: String) -> String { "spark-seed-\(npub)" }
+
+    func saveSeedPhrase(npub: String, seedPhrase: String) {
+        try? keychain.set(seedPhrase, key: Self.seedKey(for: npub))
+    }
+
+    func getSeedPhrase(_ npub: String) -> String? {
+        try? keychain.getString(Self.seedKey(for: npub))
+    }
+
+    func removeSeedPhrase(_ npub: String) {
+        try? keychain.remove(Self.seedKey(for: npub))
     }
 }

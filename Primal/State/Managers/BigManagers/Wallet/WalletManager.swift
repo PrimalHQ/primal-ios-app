@@ -312,6 +312,8 @@ final class WalletManager {
 
         guard let walletId = res?.getOrNull() as? String else { return nil }
 
+        await saveSeedToKeychain(walletId: walletId, pubkey: pubkey)
+
         return try? await sparkWalletAccountRepository.getLightningAddress(walletId: walletId)
     }
     
@@ -574,13 +576,18 @@ final class WalletManager {
 extension WalletManager {
     func restoreWalletFromSeed(_ phrase: String) {
         walletSetupState = .normal
+        let pubkey = IdentityManager.instance.userHexPubkey
         Task {
             try await RestoreSparkWalletUseCase(
                 sparkWalletManager: sparkWalletManager,
                 walletAccountRepository: walletAccountRepo,
                 sparkWalletAccountRepository: sparkWalletAccountRepository
             )
-            .invoke(seedWords: phrase, userId: IdentityManager.instance.userHexPubkey)
+            .invoke(seedWords: phrase, userId: pubkey)
+
+            if let npub = pubkey.hexToNpub() {
+                ICloudKeychainManager.instance.saveSeedPhrase(npub: npub, seedPhrase: phrase)
+            }
         }
     }
     
@@ -608,7 +615,13 @@ extension WalletManager {
                     if let failed = prog as? MigrationProgress.Failed {
                         return .failed(failed.logs.joined(separator: "\n"))
                     }
-                    if let completed = prog as? MigrationProgress.Completed {
+                    if prog is MigrationProgress.Completed {
+                        Task { [weak self] in
+                            guard let self else { return }
+                            if let walletId = try? await self.sparkWalletAccountRepository.findPersistedWalletId(userId: pubkey) {
+                                await self.saveSeedToKeychain(walletId: walletId, pubkey: pubkey)
+                            }
+                        }
                         return .completed
                     }
                     return .inProgress("Starting migration...")
@@ -664,9 +677,26 @@ enum WalletMigrationStep {
 private extension WalletManager {
     func detectWalletSetupState(pubkey: String) async {
         do {
-            let hasLocal = try await sparkWalletAccountRepository
-                .findPersistedWalletId(userId: pubkey) != nil
-            guard !hasLocal else { return }
+            let localWalletId = try await sparkWalletAccountRepository
+                .findPersistedWalletId(userId: pubkey)
+
+            if let localWalletId {
+                // Back-fill keychain for existing users upgrading to this version
+                await saveSeedToKeychain(walletId: localWalletId, pubkey: pubkey)
+                return
+            }
+
+            // No local wallet — try restoring from keychain seed
+            if let npub = pubkey.hexToNpub(),
+               let seed = ICloudKeychainManager.instance.getSeedPhrase(npub) {
+                try await RestoreSparkWalletUseCase(
+                    sparkWalletManager: sparkWalletManager,
+                    walletAccountRepository: walletAccountRepo,
+                    sparkWalletAccountRepository: sparkWalletAccountRepository
+                )
+                .invoke(seedWords: seed, userId: pubkey)
+                return
+            }
 
             guard let status = try await primalWalletRepo
                 .fetchWalletStatus(userId: pubkey).getOrNull() else { return }
@@ -683,6 +713,15 @@ private extension WalletManager {
         } catch {
             // Detection failure is non-fatal
         }
+    }
+
+    func saveSeedToKeychain(walletId: String, pubkey: String) async {
+        guard let npub = pubkey.hexToNpub() else { return }
+        guard let seed = try? await sparkWalletAccountRepository
+            .getPersistedSeedWords(walletId: walletId).getOrNull() else { return }
+        let words = seed.compactMap { $0 as? String }
+        guard !words.isEmpty else { return }
+        ICloudKeychainManager.instance.saveSeedPhrase(npub: npub, seedPhrase: words.joined(separator: " "))
     }
 
     func setupPublishers() {
