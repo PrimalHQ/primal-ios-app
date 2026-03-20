@@ -375,30 +375,34 @@ final class WalletManager {
     
     func refresh(reset: Bool = true) {
         guard let walletID else { return }
-        
+
 //        if reset {
             parsedTransactions = []
 //        }
-        
+
         let flow = walletRepo.latestTransactions(walletId: walletID)
         let snapshot = IosWalletPagingFactory.shared.createTransactionSnapshot(pagingFlow: flow)
         transactionsSnapshot?.dispose()
         transactionsSnapshot = snapshot
-        
+
         Task { @MainActor in
             _ = try await walletRepo.fetchWalletBalance(walletId: walletID)
-            
+
             for await items in snapshot.items where !items.isEmpty {
                 print("Got \(items.count) transactions on this page")
-                
+
                 if walletID != self.walletID || snapshot != self.transactionsSnapshot { return } // If we changed the wallet stop updating from this snapshot
-                
+
                 parsedTransactions = (parsedTransactions + items).unique()
-                
+
                 snapshot.accessLast()
-                
+
                 await asyncFunctionThatWaitsForNewPageEvent()
             }
+        }
+
+        Task {
+            try? await walletRepo.enrichUnenrichedTransactions()
         }
     }
     
