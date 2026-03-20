@@ -194,7 +194,13 @@ class TransactionViewDatasource: UITableViewDiffableDataSource<TwoSectionFeed, T
             .title(isDeposit ? "RECEIVED FROM" : "SENT TO")
         ]
         
-        if let zap = transaction as? Transaction.Zap, let user = zap.otherUserProfile {
+        let otherUserProfile: PrimalShared.ProfileData? = {
+            if let zap = transaction as? Transaction.Zap { return zap.otherUserProfile }
+            if let lightning = transaction as? Transaction.Lightning { return lightning.otherUserProfile }
+            return nil
+        }()
+
+        if let user = otherUserProfile {
             cells.append(.user(user, message: transaction.note))
         } else if isOnchain {
             cells.append(.onchain(message: transaction.note))

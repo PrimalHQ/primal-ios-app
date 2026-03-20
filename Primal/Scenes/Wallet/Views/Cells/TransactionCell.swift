@@ -58,7 +58,13 @@ final class TransactionCell: UITableViewCell, Themeable {
         let isDeposit = transaction.type == .deposit
         var isZap = false
         
-        if let zapTrans = transaction as? Transaction.Zap, let user = zapTrans.otherUserProfile {
+        let otherUserProfile: PrimalShared.ProfileData? = {
+            if let zap = transaction as? Transaction.Zap { return zap.otherUserProfile }
+            if let lightning = transaction as? Transaction.Lightning { return lightning.otherUserProfile }
+            return nil
+        }()
+
+        if let user = otherUserProfile {
             if oldProfileId != user.profileId {
                 profileImage.setSharedUserImage(user)
                 oldProfileId = user.profileId
@@ -72,7 +78,7 @@ final class TransactionCell: UITableViewCell, Themeable {
                         self?.nameLabel.text = parsedUser.data.firstIdentifier
                     })
             }
-            isZap = true
+            isZap = transaction is Transaction.Zap
         } else if let onchain = transaction as? Transaction.OnChain {
             oldProfileId = ""
             profileImage.image = UIImage(named: "onchainPayment")
