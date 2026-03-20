@@ -172,18 +172,6 @@ final class ICloudKeychainManager {
         return removeKeypair(npub)
     }
     
-    @discardableResult
-    func clearSavedKeys() -> Bool {
-        do {
-            try keychain.removeAll()
-            userPubkey = ""
-            return true
-        } catch let error {
-            print("ICloudKeychain: \(error)")
-            return false
-        }
-    }
-    
     func removeKeypair(_ npub: String) -> Bool {
         userPubkey = ""
         localNpubs.remove(object: npub)
