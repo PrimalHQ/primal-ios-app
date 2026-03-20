@@ -176,6 +176,12 @@ extension NostrObject {
             ["p", note.referencePubkey]
         ])
     }
+
+    static func reportUser(_ report: ReportReason, pubkey: String) -> NostrObject? {
+        createNostrObject(content: "", kind: 1984, tags: [
+            ["p", pubkey, report.rawValue]
+        ])
+    }
     
     static func relays(_ relays: [String: RelayInfo]) -> NostrObject? {
         let relayTags = relays.compactMap { url, info in
