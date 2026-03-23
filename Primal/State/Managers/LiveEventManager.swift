@@ -200,7 +200,8 @@ class LiveEventManager {
     }
     
     func liveEvent(for pubkey: String) -> ProcessedLiveEvent? {
-        return liveEvents[pubkey]
+        guard let event = liveEvents[pubkey], event.isLive else { return nil }
+        return event
     }
     
     func user(for pubkey: String) -> ParsedUser? {

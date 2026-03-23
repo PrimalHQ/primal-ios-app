@@ -43,7 +43,7 @@ final class VideoPlaybackManager: NSObject {
         $isMuted
             .dropFirst()
             .sink { [weak self] isMuted in
-                (self?.currentlyPlaying as? FeedVideoPlayer)?.setMuted(isMuted)
+                self?.currentlyPlaying?.setMuted(isMuted)
             }
             .store(in: &cancellables)
 
