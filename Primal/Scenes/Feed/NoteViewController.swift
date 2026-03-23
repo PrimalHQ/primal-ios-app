@@ -124,6 +124,7 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
     var prevTransform: CGFloat = 0
 
     var isVisibleOnScreen: Bool {
+        guard UIApplication.shared.applicationState == .active else { return false }
         guard table.window != nil else { return false }
         if let pageVC = parent as? UIPageViewController {
             return pageVC.viewControllers?.contains(self) == true
