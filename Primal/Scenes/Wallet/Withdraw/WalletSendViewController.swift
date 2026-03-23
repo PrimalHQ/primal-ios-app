@@ -284,8 +284,8 @@ private extension WalletSendViewController {
                     self?.tiers = res.tiers.map {
                         var price: String = "\($0.estimatedFee.amount) \($0.estimatedFee.currency)"
                         if let amount = Double($0.estimatedFee.amount) {
-                            let usd = amount * .BTC_TO_USD
-                            price = "$\(usd.localized())"
+                            let sats = Int(amount * .BTC_TO_SAT)
+                            price = "\(sats.localized()) sats"
                         }
                         
                         let min = $0.estimatedDeliveryDurationInMin
@@ -303,7 +303,8 @@ private extension WalletSendViewController {
                             }
                         }
                         
-                        return .init(name: $0._label, price: price, length: time, id: $0.id)
+                        let minSats: Int? = Double($0.minimumAmount?.amount ?? "").map { Int($0 * .BTC_TO_SAT) }
+                        return .init(name: $0._label, price: price, length: time, id: $0.id, minAmountSats: minSats)
                     }
                 }
                 .store(in: &cancellables)
@@ -336,6 +337,11 @@ private extension WalletSendViewController {
             let note = messageInput.text ?? ""
             
             if amount < 1 {
+                return
+            }
+
+            if let minSats = selectedTier?.minAmountSats, amount < minSats {
+                showErrorMessage("Minimum transaction amount for \(selectedTier?.name ?? "this tier") is \(minSats.localized()) sats")
                 return
             }
             

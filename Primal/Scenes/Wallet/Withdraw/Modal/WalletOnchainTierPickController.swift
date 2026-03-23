@@ -13,6 +13,7 @@ struct WalletOnchainTier {
     var price: String
     var length: String
     var id: String
+    var minAmountSats: Int?
 }
 
 protocol WalletOnchainTierPickDelegate: AnyObject {
