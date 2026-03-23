@@ -173,11 +173,11 @@ extension ImageGalleryView: UICollectionViewDataSource {
             
             let url = r.url(for: .small)?.absoluteString ?? r.url
             
-            let player: VideoPlayer
-            if let current = VideoPlaybackManager.instance.currentlyPlayingVideo, current.url == url {
+            let player: FeedVideoPlayer
+            if let current = VideoPlaybackManager.instance.currentlyPlayingFeedVideo, current.url == url {
                 player = current
             } else {
-                player = .init(url: url, originalURL: r.url, userPubkey: userPubkey)
+                player = FeedVideoPlayer(url: url, originalURL: r.url, userPubkey: userPubkey)
             }
             
             if let cell = cell as? VideoCell {

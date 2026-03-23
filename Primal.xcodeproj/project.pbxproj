@@ -272,7 +272,8 @@
 		B907D3A02DBA5144002B86DA /* PopupReportContentController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B907D39F2DBA5144002B86DA /* PopupReportContentController.swift */; };
 		B907D3C12DBBF18B002B86DA /* LightningDevKit in Frameworks */ = {isa = PBXBuildFile; productRef = B907D3C02DBBF18B002B86DA /* LightningDevKit */; };
 		B90820272EE838A600E4422A /* RemoteSignerConnectionAutostartCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90820262EE8389600E4422A /* RemoteSignerConnectionAutostartCell.swift */; };
-		B90DB0672E58DDF500A67D4A /* VideoPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90DB0662E58DDF500A67D4A /* VideoPlayer.swift */; };
+		F8E7A8239A9F7E466C01EBF5 /* FeedVideoPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF3D490ED6A30BA8537BEBDF /* FeedVideoPlayer.swift */; };
+		ED696C5B32C51E1E05C1EADD /* LiveVideoPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58BCEEB23F4CCE0243097494 /* LiveVideoPlayer.swift */; };
 		B90DB0692E5C71A200A67D4A /* videoLoadingScreenLight.json in Resources */ = {isa = PBXBuildFile; fileRef = B90DB0682E5C71A200A67D4A /* videoLoadingScreenLight.json */; };
 		B90DB06B2E5C753800A67D4A /* LiveVideoConfigController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90DB06A2E5C752700A67D4A /* LiveVideoConfigController.swift */; };
 		B90DB06D2E5CB90100A67D4A /* LiveMuteManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90DB06C2E5CB8FC00A67D4A /* LiveMuteManager.swift */; };
@@ -1111,7 +1112,8 @@
 		B906AB152C9B52C10089813F /* DatabaseManager+Profile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DatabaseManager+Profile.swift"; sourceTree = "<group>"; };
 		B907D39F2DBA5144002B86DA /* PopupReportContentController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupReportContentController.swift; sourceTree = "<group>"; };
 		B90820262EE8389600E4422A /* RemoteSignerConnectionAutostartCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSignerConnectionAutostartCell.swift; sourceTree = "<group>"; };
-		B90DB0662E58DDF500A67D4A /* VideoPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPlayer.swift; sourceTree = "<group>"; };
+		AF3D490ED6A30BA8537BEBDF /* FeedVideoPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedVideoPlayer.swift; sourceTree = "<group>"; };
+		58BCEEB23F4CCE0243097494 /* LiveVideoPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveVideoPlayer.swift; sourceTree = "<group>"; };
 		B90DB0682E5C71A200A67D4A /* videoLoadingScreenLight.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = videoLoadingScreenLight.json; sourceTree = "<group>"; };
 		B90DB06A2E5C752700A67D4A /* LiveVideoConfigController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveVideoConfigController.swift; sourceTree = "<group>"; };
 		B90DB06C2E5CB8FC00A67D4A /* LiveMuteManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveMuteManager.swift; sourceTree = "<group>"; };
@@ -2683,9 +2685,10 @@
 		B90DB0632E58DDDF00A67D4A /* Video */ = {
 			isa = PBXGroup;
 			children = (
+				AF3D490ED6A30BA8537BEBDF /* FeedVideoPlayer.swift */,
 				B9E0E6292EEB483A00F48B2A /* GenericPlayer.swift */,
+				58BCEEB23F4CCE0243097494 /* LiveVideoPlayer.swift */,
 				B914CD682A9E6B4A00CD0BD1 /* VideoPlaybackManager.swift */,
-				B90DB0662E58DDF500A67D4A /* VideoPlayer.swift */,
 			);
 			path = Video;
 			sourceTree = "<group>";
@@ -4371,7 +4374,8 @@
 				B9C5A0E82F44ACD3007CB5D3 /* SecretsManager.swift in Sources */,
 				B90EF0F12B03F7AF00A7CD65 /* SettingsContentDisplayController.swift in Sources */,
 				B91EF0E42CECDE1600299ECF /* UserImageView.swift in Sources */,
-				B90DB0672E58DDF500A67D4A /* VideoPlayer.swift in Sources */,
+				F8E7A8239A9F7E466C01EBF5 /* FeedVideoPlayer.swift in Sources */,
+				ED696C5B32C51E1E05C1EADD /* LiveVideoPlayer.swift in Sources */,
 				B928F8722F30BFB400DBD9D0 /* BackupWalletIntroController.swift in Sources */,
 				B928F8732F30BFB400DBD9D0 /* BackupWalletPhraseController.swift in Sources */,
 				B928F8742F30BFB400DBD9D0 /* BackupWalletController.swift in Sources */,

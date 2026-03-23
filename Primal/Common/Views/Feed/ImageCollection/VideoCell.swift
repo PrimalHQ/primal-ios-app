@@ -22,9 +22,9 @@ final class VideoCell: UICollectionViewCell {
     var muteUpdater: AnyCancellable?
     var playUpdater: AnyCancellable?
     
-    var player: VideoPlayer? {
+    var player: FeedVideoPlayer? {
         didSet {
-            muteUpdater = VideoPlaybackManager.instance.isMutedPublisher.receive(on: DispatchQueue.main).sink(receiveValue: { [weak self] isMuted in
+            muteUpdater = VideoPlaybackManager.instance.$isMuted.receive(on: DispatchQueue.main).sink(receiveValue: { [weak self] isMuted in
                 self?.muteButton.buttonState = isMuted ? .muted : .unmuted
             })
             
@@ -103,7 +103,7 @@ final class VideoCell: UICollectionViewCell {
         playerView.playerLayer.player = nil
     }
     
-    func setup(player: VideoPlayer, duration: Int, thumbnail: String?) {
+    func setup(player: FeedVideoPlayer, duration: Int, thumbnail: String?) {
         self.player = player
         thumbnailImage.image = nil
         self.duration = duration

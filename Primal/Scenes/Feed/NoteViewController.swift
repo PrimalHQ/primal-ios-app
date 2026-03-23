@@ -102,7 +102,7 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-        if !VideoPlaybackManager.instance.isLive {
+        if VideoPlaybackManager.instance.autoPlay {
             VideoPlaybackManager.instance.currentlyPlaying?.delayedPause()
         }
         
@@ -125,7 +125,7 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
     
     func playVideoOnScroll() {
         if let presentedViewController, !presentedViewController.isBeingDismissed { return }
-        if let current = VideoPlaybackManager.instance.currentlyPlayingVideo, current.isLive && current.isPlaying { return }
+        if VideoPlaybackManager.instance.blocksAutoplay { return }
         guard ContentDisplaySettings.autoPlayVideos, table.window != nil, FullScreenVideoPlayerController.instance == nil else { return }
         
         let allVideoCells = table.visibleCells.flatMap { ($0 as? FeedElementVideoCell)?.currentVideoCells ?? [] }
@@ -157,9 +157,9 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
         // so if delta is larger than 300 we ignore it
         if abs(delta) > 300 { return }
         
-        if FullScreenVideoPlayerController.instance == nil && !VideoPlaybackManager.instance.isLive {
+        if FullScreenVideoPlayerController.instance == nil && VideoPlaybackManager.instance.autoPlay {
             if abs(delta) > 50 {
-                VideoPlaybackManager.instance.currentlyPlayingVideo?.delayedPause()
+                VideoPlaybackManager.instance.currentlyPlayingFeedVideo?.delayedPause()
             } else {
                 playVideoOnScroll()
             }
@@ -804,8 +804,8 @@ extension NoteViewController: PostCellDelegate {
             return
         }
         
-        if VideoPlaybackManager.instance.currentlyPlayingVideo?.originalURL != url {
-            VideoPlayer(url: url, originalURL: url, userPubkey: "").play()
+        if VideoPlaybackManager.instance.currentlyPlayingFeedVideo?.originalURL != url {
+            FeedVideoPlayer(url: url, originalURL: url, userPubkey: "").play()
         }
         
         present(ImageGalleryController(current: resource, all: allImages), animated: true)

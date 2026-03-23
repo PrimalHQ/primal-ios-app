@@ -25,7 +25,7 @@ class LiveVideoEmbeddedView: UIView {
     private let streamEndedLabel = UILabel("STREAM ENDED", color: .init(rgb: 0x666666), font: .appFont(withSize: 12, weight: .bold))
     
     @Published var showChevron = false
-    var player: VideoPlayer? { didSet { streamEndedView.isHidden = player != nil } }
+    var player: LiveVideoPlayer? { didSet { streamEndedView.isHidden = player != nil } }
     
     var playPauseCancellable: AnyCancellable?
     
@@ -93,7 +93,7 @@ class LiveVideoEmbeddedView: UIView {
         playPauseCancellable = nil
     }
     
-    func setup(player: VideoPlayer, live: ProcessedLiveEvent) {
+    func setup(player: LiveVideoPlayer) {
         self.player = player
         playerView.player = player.avPlayer
         

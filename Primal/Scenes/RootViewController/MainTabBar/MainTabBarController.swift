@@ -423,7 +423,7 @@ private extension MainTabBarController {
                 .sink { _ in
                     guard
                         RemoteSignerManager.instance.isActive,
-                        !((VideoPlaybackManager.instance.currentlyPlayingVideo?.isLive ?? false) && (VideoPlaybackManager.instance.currentlyPlayingVideo?.isPlaying ?? false))
+                        VideoPlaybackManager.instance.autoPlay
                     else { return }
                     
                     RemoteSignerActivityManager.instance.playSong()

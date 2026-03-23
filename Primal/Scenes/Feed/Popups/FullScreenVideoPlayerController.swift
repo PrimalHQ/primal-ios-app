@@ -12,9 +12,9 @@ class FullScreenVideoPlayerController: AVPlayerViewController {
     
     static weak var instance: FullScreenVideoPlayerController?
     
-    let video: VideoPlayer
-    
-    init(_ video: VideoPlayer) {
+    let video: FeedVideoPlayer
+
+    init(_ video: FeedVideoPlayer) {
         self.video = video
         super.init(nibName: nil, bundle: nil)
         player = video.avPlayer
