@@ -122,11 +122,19 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
     var barsMaxTransform: CGFloat { topBarHeight }
     var prevPosition: CGFloat = 0
     var prevTransform: CGFloat = 0
-    
+
+    var isVisibleOnScreen: Bool {
+        guard table.window != nil else { return false }
+        if let pageVC = parent as? UIPageViewController {
+            return pageVC.viewControllers?.contains(self) == true
+        }
+        return true
+    }
+
     func playVideoOnScroll() {
         if let presentedViewController, !presentedViewController.isBeingDismissed { return }
         if VideoPlaybackManager.instance.blocksAutoplay { return }
-        guard ContentDisplaySettings.autoPlayVideos, table.window != nil, FullScreenVideoPlayerController.instance == nil else { return }
+        guard ContentDisplaySettings.autoPlayVideos, isVisibleOnScreen, FullScreenVideoPlayerController.instance == nil else { return }
         
         let allVideoCells = table.visibleCells.flatMap { ($0 as? FeedElementVideoCell)?.currentVideoCells ?? [] }
 
