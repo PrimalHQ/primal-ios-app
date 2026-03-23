@@ -130,7 +130,7 @@ private extension WalletReceiveViewController {
         monitorTask = Task { @MainActor [weak self] in
             let result = try await wallet.walletRepo.awaitLightningPayment(walletId: walletID, invoice: self?.invoice, timeout: .max)
             
-            if result.isSuccess, let self, self.navigationController?.topViewController == self {
+            if result.getOrNull() != nil, let self, self.navigationController?.topViewController == self {
                 navigationController?.pushViewController(WalletTransferSummaryController(.success(title: text, description: [])), animated: true)
             } else {
                 print(result.exceptionOrNull())
