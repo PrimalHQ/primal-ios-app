@@ -323,7 +323,7 @@ extension ProfileViewController: ProfileNavigationViewDelegate {
     }
     
     func tappedReportUser() {
-        
+        present(PopupReportContentController(userPubkey: profile.data.pubkey), animated: true)
     }
     
     func tappedSearch() {

@@ -140,7 +140,7 @@ extension PostRequestResult {
             }
             return
         case .zapReceipt:
-            guard 
+            guard
                 let id = payload["id"]?.stringValue,
                 let tags = payload["tags"]?.arrayValue,
                 let zapContent: JSON = tags.tagValueForKey("description")?.decode()
@@ -148,8 +148,9 @@ extension PostRequestResult {
                 print("Error decoding zapReceipt")
                 return
             }
-            
+
             zapReceipts[id] = zapContent
+            zapReceiptEvents[id] = payload
             return
         case .handlerInfo:
             events.append(payload)

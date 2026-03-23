@@ -211,7 +211,7 @@ final class WalletManager {
     private let regConnection = PrimalApiClientFactory.shared.create(serverType: .caching)
     private let walletConnection = PrimalApiClientFactory.shared.create(serverType: .wallet)
     private let profileRepo: ProfileRepository
-    private lazy var primalWalletRepo = WalletRepositoryFactory.shared.createPrimalWalletAccountRepository(primalWalletApiClient: walletConnection, nostrEventSignatureHandler: SigningManager.instance)
+    lazy var primalWalletRepo = WalletRepositoryFactory.shared.createPrimalWalletAccountRepository(primalWalletApiClient: walletConnection, nostrEventSignatureHandler: SigningManager.instance)
     private lazy var sparkWalletManager = WalletRepositoryFactory.shared.createSparkWalletManager()
     lazy var sparkWalletAccountRepository = WalletRepositoryFactory.shared.createSparkWalletAccountRepository(primalWalletApiClient: walletConnection, nostrEventSignatureHandler: SigningManager.instance)
     private lazy var walletSessionProvider = WalletRepositoryFactory.shared.createWalletSessionProvider(
@@ -275,8 +275,12 @@ final class WalletManager {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] wallet in
                 guard let self, let wallet else { return }
+                let old = activeWallet
                 activeWallet = wallet
                 balance = Int((wallet.balanceInBtc?.doubleValue ?? 0) * Double(SAT_PER_BTC))
+                if let old, old.walletId != wallet.walletId, old.userId == wallet.userId {
+                    refresh()
+                }
             }
             .store(in: &updateCancellables)
 
@@ -307,6 +311,8 @@ final class WalletManager {
         let res = try? await ensureSpark.invoke(userId: pubkey, register: true)
 
         guard let walletId = res?.getOrNull() as? String else { return nil }
+
+        await saveSeedToKeychain(walletId: walletId, pubkey: pubkey)
 
         return try? await sparkWalletAccountRepository.getLightningAddress(walletId: walletId)
     }
@@ -371,29 +377,34 @@ final class WalletManager {
     
     func refresh(reset: Bool = true) {
         guard let walletID else { return }
-        
+
 //        if reset {
             parsedTransactions = []
 //        }
-        
+
         let flow = walletRepo.latestTransactions(walletId: walletID)
         let snapshot = IosWalletPagingFactory.shared.createTransactionSnapshot(pagingFlow: flow)
+        transactionsSnapshot?.dispose()
         transactionsSnapshot = snapshot
-        
+
         Task { @MainActor in
             _ = try await walletRepo.fetchWalletBalance(walletId: walletID)
-            
+
             for await items in snapshot.items where !items.isEmpty {
                 print("Got \(items.count) transactions on this page")
-                
+
                 if walletID != self.walletID || snapshot != self.transactionsSnapshot { return } // If we changed the wallet stop updating from this snapshot
-                
+
                 parsedTransactions = (parsedTransactions + items).unique()
-                
+
                 snapshot.accessLast()
-                
+
                 await asyncFunctionThatWaitsForNewPageEvent()
             }
+        }
+
+        Task {
+            try? await walletRepo.enrichUnenrichedTransactions()
         }
     }
     
@@ -565,13 +576,18 @@ final class WalletManager {
 extension WalletManager {
     func restoreWalletFromSeed(_ phrase: String) {
         walletSetupState = .normal
+        let pubkey = IdentityManager.instance.userHexPubkey
         Task {
             try await RestoreSparkWalletUseCase(
                 sparkWalletManager: sparkWalletManager,
                 walletAccountRepository: walletAccountRepo,
                 sparkWalletAccountRepository: sparkWalletAccountRepository
             )
-            .invoke(seedWords: phrase, userId: IdentityManager.instance.userHexPubkey)
+            .invoke(seedWords: phrase, userId: pubkey)
+
+            if let npub = pubkey.hexToNpub() {
+                ICloudKeychainManager.instance.saveSeedPhrase(npub: npub, seedPhrase: phrase)
+            }
         }
     }
     
@@ -599,7 +615,13 @@ extension WalletManager {
                     if let failed = prog as? MigrationProgress.Failed {
                         return .failed(failed.logs.joined(separator: "\n"))
                     }
-                    if let completed = prog as? MigrationProgress.Completed {
+                    if prog is MigrationProgress.Completed {
+                        Task { [weak self] in
+                            guard let self else { return }
+                            if let walletId = try? await self.sparkWalletAccountRepository.findPersistedWalletId(userId: pubkey) {
+                                await self.saveSeedToKeychain(walletId: walletId, pubkey: pubkey)
+                            }
+                        }
                         return .completed
                     }
                     return .inProgress("Starting migration...")
@@ -655,9 +677,26 @@ enum WalletMigrationStep {
 private extension WalletManager {
     func detectWalletSetupState(pubkey: String) async {
         do {
-            let hasLocal = try await sparkWalletAccountRepository
-                .findPersistedWalletId(userId: pubkey) != nil
-            guard !hasLocal else { return }
+            let localWalletId = try await sparkWalletAccountRepository
+                .findPersistedWalletId(userId: pubkey)
+
+            if let localWalletId {
+                // Back-fill keychain for existing users upgrading to this version
+                await saveSeedToKeychain(walletId: localWalletId, pubkey: pubkey)
+                return
+            }
+
+            // No local wallet — try restoring from keychain seed
+            if let npub = pubkey.hexToNpub(),
+               let seed = ICloudKeychainManager.instance.getSeedPhrase(npub) {
+                try await RestoreSparkWalletUseCase(
+                    sparkWalletManager: sparkWalletManager,
+                    walletAccountRepository: walletAccountRepo,
+                    sparkWalletAccountRepository: sparkWalletAccountRepository
+                )
+                .invoke(seedWords: seed, userId: pubkey)
+                return
+            }
 
             guard let status = try await primalWalletRepo
                 .fetchWalletStatus(userId: pubkey).getOrNull() else { return }
@@ -674,6 +713,15 @@ private extension WalletManager {
         } catch {
             // Detection failure is non-fatal
         }
+    }
+
+    func saveSeedToKeychain(walletId: String, pubkey: String) async {
+        guard let npub = pubkey.hexToNpub() else { return }
+        guard let seed = try? await sparkWalletAccountRepository
+            .getPersistedSeedWords(walletId: walletId).getOrNull() else { return }
+        let words = seed.compactMap { $0 as? String }
+        guard !words.isEmpty else { return }
+        ICloudKeychainManager.instance.saveSeedPhrase(npub: npub, seedPhrase: words.joined(separator: " "))
     }
 
     func setupPublishers() {

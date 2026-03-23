@@ -33,10 +33,20 @@ class PollVotesFeedManager: BaseFeedManager {
                 
                 let newVotes: [PollResultsVote]
                 if isZapPoll {
-                    newVotes = result.zapReceipts.values
-                        .compactMap { (json: JSON) -> (String, Int)? in
-                            guard let pubkey = json["pubkey"]?.stringValue else { return nil }
-                            let amountString = json["tags"]?.arrayValue?.tagValueForKey("amount") ?? ""
+                    newVotes = result.zapReceipts
+                        .compactMap { (receiptId, zapRequest) -> (String, Int)? in
+                            guard let pubkey = zapRequest["pubkey"]?.stringValue else { return nil }
+
+                            // Extract amount from bolt11 invoice in the zap receipt (matching Android)
+                            let receiptTags = result.zapReceiptEvents[receiptId]?["tags"]?.arrayValue
+                            if let bolt11 = receiptTags?.tagValueForKey("bolt11"),
+                               let invoice = bolt11.invoiceFromString(),
+                               let amountMsats = invoice.amount {
+                                return (pubkey, Int(amountMsats / 1000))
+                            }
+
+                            // Fallback: amount tag in zap request
+                            let amountString = zapRequest["tags"]?.arrayValue?.tagValueForKey("amount") ?? ""
                             let amount = (Int(amountString) ?? 0) / 1000
                             return (pubkey, amount)
                         }

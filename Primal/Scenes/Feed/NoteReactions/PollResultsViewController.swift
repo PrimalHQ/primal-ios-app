@@ -69,6 +69,8 @@ private extension PollResultsViewController {
         table.delegate = self
         table.separatorStyle = .none
         table.dataSource = datasource
+        table.contentInsetAdjustmentBehavior = .never
+        table.contentInset = .init(top: 20, left: 0, bottom: 80, right: 0)
 
         PollManager.instance.statsPublisher(eventId)
             .receive(on: DispatchQueue.main)

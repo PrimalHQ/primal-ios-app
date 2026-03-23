@@ -17,12 +17,25 @@ enum ReportReason: String, CaseIterable {
 }
 
 class PopupReportContentController: UIViewController {
-    
+
+    enum ReportTarget {
+        case content(PostingReferenceObject)
+        case user(pubkey: String)
+    }
+
     let optionViews = ReportReason.allCases.map { ReportPickerSelectionView(name: $0.rawValue.capitalized) }
-    
-    let reference: PostingReferenceObject
+
+    let target: ReportTarget
+
     init(_ reference: PostingReferenceObject) {
-        self.reference = reference
+        self.target = .content(reference)
+        super.init(nibName: nil, bundle: nil)
+        modalTransitionStyle = .crossDissolve
+        modalPresentationStyle = .overFullScreen
+    }
+
+    init(userPubkey: String) {
+        self.target = .user(pubkey: userPubkey)
         super.init(nibName: nil, bundle: nil)
         modalTransitionStyle = .crossDissolve
         modalPresentationStyle = .overFullScreen
@@ -74,10 +87,20 @@ class PopupReportContentController: UIViewController {
         }), for: .touchUpInside)
         
         reportButton.addAction(.init(handler: { [weak self] _ in
-            guard let self, let currentReason, let event = NostrObject.reportNote(currentReason, reference) else { return }
-            
+            guard let self, let currentReason else { return }
+
+            let event: NostrObject?
+            switch target {
+            case .content(let reference):
+                event = NostrObject.reportNote(currentReason, reference)
+            case .user(let pubkey):
+                event = NostrObject.reportUser(currentReason, pubkey: pubkey)
+            }
+
+            guard let event else { return }
+
             dismiss(animated: true, completion: nil)
-            
+
             PostingManager.instance.sendEvent(event, { _ in })
         }), for: .touchUpInside)
     }

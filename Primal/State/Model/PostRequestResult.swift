@@ -19,6 +19,7 @@ class PostRequestResult: Codable {
     
     var postZaps: [PrimalZapEvent] = []
     var zapReceipts: [String: JSON] = [:]
+    var zapReceiptEvents: [String: [String: JSON]] = [:]
     
     var order: [String] = []
     

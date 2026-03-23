@@ -24,6 +24,7 @@ extension LargeWalletButton: WalletHomeTransitionButton {
 }
 
 final class WalletHomeViewController: UIViewController, Themeable {
+    lazy var navTitleView = DropdownNavigationView(title: "Wallet")
     enum Cell {
         case loading
         case upgradeWallet
@@ -80,11 +81,12 @@ final class WalletHomeViewController: UIViewController, Themeable {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
+
         table.reloadData()
         mainTabBarController?.setTabBarHidden(false, animated: animated)
         navigationController?.setNavigationBarHidden(false, animated: animated)
         (navigationController as? MainNavigationController)?.isTransparent = false
+        updateNavigationTitleView()
     }
     
     var monitorTask: Task<(), Error>?
@@ -307,9 +309,26 @@ extension WalletHomeViewController: UIGestureRecognizerDelegate {
 
 // MARK: - Private
 private extension WalletHomeViewController {
+    func updateNavigationTitleView() {
+        if DevModeSettings.walletSwitcherEnabled {
+            navigationItem.titleView = navTitleView
+        } else {
+            navigationItem.titleView = nil
+        }
+    }
+
     func setup() {
         title = "Wallet"
-        
+
+        navTitleView.button.addAction(.init(handler: { [weak self] _ in
+            guard let self else { return }
+            let picker = WalletPickerController { [weak self] wallet in
+                self?.switchToWallet(wallet)
+            }
+            present(picker, animated: true)
+        }), for: .touchUpInside)
+        updateNavigationTitleView()
+
         let stack = UIStackView(axis: .vertical, [navBar, table])
         view.addSubview(stack)
         // It's necessary to keep the table longer than the view itself, so when the navbar expands and table shortens, we don't see any empty parts of the table
@@ -354,22 +373,29 @@ private extension WalletHomeViewController {
 
         updateTheme()
         
-        let transactionsPublisher = Publishers.Merge(
-            WalletManager.instance.$parsedTransactions.first(),
-            WalletManager.instance.$parsedTransactions.compactMap { $0.isEmpty ? nil : $0 }
-        )
-        
+        let userId = IdentityManager.instance.userHexPubkey
         WalletManager.instance.$activeWallet.compactMap({ $0 })
-            .compactMap { $0 is Wallet.Primal ? "Legacy Wallet" : "Wallet" }
-            .removeDuplicates()
             .receive(on: DispatchQueue.main)
-            .assign(to: \.title, onWeak: self)
+            .sink { [weak self] wallet in
+                guard let self, wallet.userId == userId else { return }
+                let name = wallet is Wallet.Primal ? "Legacy Wallet" : "Wallet"
+                title = name
+                if DevModeSettings.walletSwitcherEnabled {
+                    navTitleView.title = wallet.displayName
+                }
+            }
             .store(in: &cancellables)
         
+        let transactionsPublisher = Publishers.Merge3(
+            WalletManager.instance.$parsedTransactions.first(),
+            WalletManager.instance.$parsedTransactions.compactMap { $0.isEmpty ? nil : $0 },
+            WalletManager.instance.$activeWallet.compactMap({ $0?.walletId }).removeDuplicates().dropFirst().map({ _ in [] })
+        )
+        
         Publishers.CombineLatest3(WalletManager.instance.$activeWallet, transactionsPublisher, WalletManager.instance.$walletSetupState)
-        .receive(on: DispatchQueue.main)
+        .debounce(for: 0.1, scheduler: DispatchQueue.main)
         .sink { [weak self] wallet, transactions, setupState in
-            guard let self else { return }
+            guard let self, wallet?.userId ?? userId == userId else { return }
 
             let grouping = Dictionary(grouping: transactions) {
                 Calendar.current.dateComponents([.day, .year, .month], from: Date(timeIntervalSince1970: TimeInterval($0.createdAt)))
@@ -463,6 +489,13 @@ private extension WalletHomeViewController {
 //            .store(in: &cancellables)
     }
     
+    func switchToWallet(_ wallet: Wallet) {
+        let userId = IdentityManager.instance.userHexPubkey
+        Task {
+            try? await WalletManager.instance.walletAccountRepo.setActiveWallet(userId: userId, walletId: wallet.walletId)
+        }
+    }
+
     @objc func headerPanned(_ sender: UIPanGestureRecognizer) {
         if case .began = sender.state {
             contentOffsetStart = table.contentOffset
