@@ -624,12 +624,18 @@ private extension PostingTextViewManager {
                 text = text.replacingCharacters(in: range, with: "")
             }
         }
-     
+
         if text != textView.text {
+            let trimmed = text.replacingOccurrences(of: "\\s+$", with: "", options: .regularExpression)
+            let charsToRemove = text.count - trimmed.count
+            if charsToRemove > 0 {
+                let removeRange = NSRange(location: attributedText.length - charsToRemove, length: charsToRemove)
+                attributedText.deleteCharacters(in: removeRange)
+            }
             textView.attributedText = attributedText
         }
     }
-    
+
     func extractReference(_ ref: String) -> Bool {
         if ref.lowercased().hasPrefix("lnbc"), let invoice = ref.invoiceFromString() {
             embeddedElements.append(.invoice(invoice, ref))
