@@ -349,6 +349,14 @@ private extension AdvancedEmbedPostViewController {
             pollButton.isHidden = poll != nil
         }
         .store(in: &cancellables)
+        
+        manager.didRestoreDraftEvent.sink { [weak self] in
+            guard let self else { return }
+            if let poll = manager.pollOptions {
+                pollInputView.restore(poll)
+            }
+        }
+        .store(in: &cancellables)
     }
 }
 

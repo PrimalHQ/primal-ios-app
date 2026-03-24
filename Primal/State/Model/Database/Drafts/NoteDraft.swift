@@ -20,15 +20,18 @@ struct DatabaseUserToken: Codable, Equatable {
 
 struct NoteDraft: Identifiable, Equatable {
     var id: String { userPubkey + replyingTo }
-    
+
     var replyingTo: String
     var userPubkey: String
-    
+
     var preparedEvent: NostrObject?
-    
+
     var text: String
     var uploadedAssets: [String]
     var taggedUsers: [DatabaseUserToken]
+
+    var kind: Int
+    var customTags: [[String]]
 }
 
 extension NoteDraft {
@@ -44,6 +47,8 @@ extension NoteDraft: Codable, FetchableRecord, MutablePersistableRecord {
         static let text = Column(CodingKeys.text)
         static let uploadedAssets = Column(CodingKeys.uploadedAssets)
         static let taggedUsers = Column(CodingKeys.taggedUsers)
+        static let kind = Column(CodingKeys.kind)
+        static let customTags = Column(CodingKeys.customTags)
     }
     
     static let profile = belongsTo(Profile.self)
@@ -68,6 +73,14 @@ extension NoteDraft: Codable, FetchableRecord, MutablePersistableRecord {
             taggedUsers = taggedString.decode() ?? []
         } else {
             taggedUsers = []
+        }
+
+        kind = row[Columns.kind] ?? 1
+
+        if let customTagsString: String = row[Columns.customTags] {
+            customTags = customTagsString.decode() ?? []
+        } else {
+            customTags = []
         }
     }
 }

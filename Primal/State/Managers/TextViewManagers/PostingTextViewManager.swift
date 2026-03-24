@@ -38,8 +38,86 @@ enum PollType {
 struct PollData {
     var type: PollType = .user
     var length: (Int, Int, Int) = (1, 0, 0)  // Hours, minutes, seconds
-    
+
     var options: [String] = []
+
+    func toCustomTags(forPosting: Bool = false) -> [[String]] {
+        var tags: [[String]] = []
+        let (days, hours, minutes) = length
+        let totalSeconds = (days * 86400) + (hours * 3600) + (minutes * 60)
+
+        switch type {
+        case .zap(let min, let max):
+            for (index, option) in options.enumerated() {
+                tags.append(["poll_option", "\(index)", option])
+            }
+            tags.append(["value_minimum", "\(min)"])
+            tags.append(["value_maximum", "\(max)"])
+            if forPosting, totalSeconds > 0 {
+                let closedAt = Int(Date().timeIntervalSince1970) + totalSeconds
+                tags.append(["closed_at", "\(closedAt)"])
+            }
+        case .user:
+            for (index, option) in options.enumerated() {
+                tags.append(["option", "\(index)", option])
+            }
+            tags.append(["polltype", "singlechoice"])
+            if forPosting, totalSeconds > 0 {
+                let endsAt = Int(Date().timeIntervalSince1970) + totalSeconds
+                tags.append(["endsAt", "\(endsAt)"])
+            }
+        }
+
+        if forPosting {
+            tags.append(["client", "Primal iOS"])
+        } else {
+            tags.append(["draft_poll_length", "\(days)", "\(hours)", "\(minutes)"])
+        }
+        return tags
+    }
+
+    static func from(kind: Int, customTags: [[String]]) -> PollData? {
+        guard kind == NostrKind.zapPoll.rawValue || kind == NostrKind.poll.rawValue else { return nil }
+
+        var options: [String] = []
+        var pollType: PollType = .user
+        var length: (Int, Int, Int) = (1, 0, 0)
+
+        for tag in customTags {
+            guard let key = tag.first else { continue }
+            switch key {
+            case "poll_option", "option":
+                if tag.count >= 3 { options.append(tag[2]) }
+            case "value_minimum":
+                if tag.count >= 2, let min = Int(tag[1]) {
+                    if case .zap(_, let max) = pollType {
+                        pollType = .zap(min: min, max: max)
+                    } else {
+                        pollType = .zap(min: min, max: 21000)
+                    }
+                }
+            case "value_maximum":
+                if tag.count >= 2, let max = Int(tag[1]) {
+                    if case .zap(let min, _) = pollType {
+                        pollType = .zap(min: min, max: max)
+                    } else {
+                        pollType = .zap(min: 21, max: max)
+                    }
+                }
+            case "draft_poll_length":
+                if tag.count >= 4,
+                   let d = Int(tag[1]), let h = Int(tag[2]), let m = Int(tag[3]) {
+                    length = (d, h, m)
+                }
+            default:
+                break
+            }
+        }
+
+        guard !options.isEmpty else { return nil }
+
+        return PollData(type: pollType, length: length, options: options)
+    }
 }
 
 extension NoteDraft {
@@ -56,6 +134,8 @@ final class PostingTextViewManager: TextViewManager, MetadataCoding {
     @Published var postButtonTitle: String
     
     @Published var oldDraft: NoteDraft?
+    
+    var didRestoreDraftEvent = PassthroughSubject<Void, Never>()
     
     var extractReferences = true
     private var currentSearchPublisher: AnyCancellable?
@@ -255,7 +335,17 @@ final class PostingTextViewManager: TextViewManager, MetadataCoding {
     }
     
     var currentDraft: NoteDraft {
-        NoteDraft(
+        var kind = 1
+        var customTags: [[String]] = []
+        if let poll = pollOptions, !poll.options.isEmpty {
+            switch poll.type {
+            case .zap:  kind = NostrKind.zapPoll.rawValue
+            case .user: kind = NostrKind.poll.rawValue
+            }
+            customTags = poll.toCustomTags()
+        }
+
+        return NoteDraft(
             replyingTo: replyingTo?.universalID ?? "",
             userPubkey: IdentityManager.instance.userHexPubkey,
             text: currentDraftText,
@@ -266,7 +356,9 @@ final class PostingTextViewManager: TextViewManager, MetadataCoding {
                         text: token.text,
                         userPubkey: token.user.pubkey
                     )
-            })
+            }),
+            kind: kind,
+            customTags: customTags
         )
     }
     
@@ -274,11 +366,11 @@ final class PostingTextViewManager: TextViewManager, MetadataCoding {
         let draft = currentDraft
         
         if let oldDraft {
-            if oldDraft.text == draft.text && oldDraft.uploadedAssets == draft.uploadedAssets {
+            if oldDraft.text == draft.text && oldDraft.uploadedAssets == draft.uploadedAssets && oldDraft.kind == draft.kind && oldDraft.customTags == draft.customTags {
                 callback(false)
                 return
             }
-        } else if draft.text.isEmpty {
+        } else if draft.text.isEmpty && draft.customTags.isEmpty {
             callback(false)
             return
         }
@@ -425,38 +517,13 @@ final class PostingTextViewManager: TextViewManager, MetadataCoding {
         allTags += mediaTags
 
         if let poll = pollOptions, !poll.options.isEmpty {
+            allTags += poll.toCustomTags(forPosting: true)
+
             let kind: Int
             switch poll.type {
-            case .zap(let min, let max):
-                for (index, option) in poll.options.enumerated() {
-                    allTags.append(["poll_option", "\(index)", option])
-                }
-                allTags.append(["value_minimum", "\(min)"])
-                allTags.append(["value_maximum", "\(max)"])
-                kind = NostrKind.zapPoll.rawValue
-
-                let (days, hours, minutes) = poll.length
-                let totalSeconds = (days * 86400) + (hours * 3600) + (minutes * 60)
-                if totalSeconds > 0 {
-                    let closedAt = Int(Date().timeIntervalSince1970) + totalSeconds
-                    allTags.append(["closed_at", "\(closedAt)"])
-                }
-            case .user:
-                for (index, option) in poll.options.enumerated() {
-                    allTags.append(["option", "\(index)", option])
-                }
-                allTags.append(["polltype", "singlechoice"])
-                kind = NostrKind.poll.rawValue
-
-                let (days, hours, minutes) = poll.length
-                let totalSeconds = (days * 86400) + (hours * 3600) + (minutes * 60)
-                if totalSeconds > 0 {
-                    let endsAt = Int(Date().timeIntervalSince1970) + totalSeconds
-                    allTags.append(["endsAt", "\(endsAt)"])
-                }
+            case .zap:  kind = NostrKind.zapPoll.rawValue
+            case .user: kind = NostrKind.poll.rawValue
             }
-
-            allTags.append(["client", "Primal iOS"])
 
             return NostrObject.create(content: postingText, kind: kind, tags: allTags)
         }
@@ -753,8 +820,11 @@ private extension PostingTextViewManager {
                 })
                 
                 media = draft.uploadedAssets.map { .init(resource: nil, state: .uploaded($0)) } + (draft.isPosting ? [] : media)
-                
+
+                pollOptions = PollData.from(kind: draft.kind, customTags: draft.customTags)
+
                 didChangeEvent.send(textView)
+                didRestoreDraftEvent.send(())
             }
             .store(in: &cancellables)
     }
