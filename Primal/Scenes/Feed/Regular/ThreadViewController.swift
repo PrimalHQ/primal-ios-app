@@ -644,7 +644,7 @@ private extension ThreadViewController {
         let imageButton = ThemeableButton().constrainToSize(48).setTheme { $0.tintColor = .foreground }
         imageButton.setImage(UIImage(named: "ImageIcon"), for: .normal)
         imageButton.addAction(.init(handler: { [unowned self] _ in
-            ImagePickerManager(self, mode: .gallery, allowVideo: true) { [weak self] result in
+            ImagePickerManager(self, mode: .gallery, allowVideo: true, selectionLimit: 0) { [weak self] result in
                 self?.inputManager.processSelectedAsset(result)
             }
         }), for: .touchUpInside)

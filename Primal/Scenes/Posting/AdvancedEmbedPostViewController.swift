@@ -118,7 +118,7 @@ private extension AdvancedEmbedPostViewController {
     }
     
     @objc func galleryButtonPressed() {
-        ImagePickerManager(self, mode: .gallery, allowVideo: true) { [weak self] result in
+        ImagePickerManager(self, mode: .gallery, allowVideo: true, selectionLimit: 0) { [weak self] result in
             self?.manager.processSelectedAsset(result)
         }
     }
