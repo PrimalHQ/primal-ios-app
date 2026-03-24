@@ -605,20 +605,21 @@ private extension PostingTextViewManager {
     func findAndExtractReferences() {
         guard extractReferences else { return }
         
-        let pattern = "(?<=^(nostr:)?|\\s(nostr:)?)((note1|nevent1|naddr1)[qpzry9x8gf2tdwv0s3jn54khce6mua7l]+)|(\(String.lightningInvoicePattern))"
+        let pattern = "(?<=^|\\s)(nostr:)?((note1|nevent1|naddr1)[qpzry9x8gf2tdwv0s3jn54khce6mua7l]+)|(\(String.lightningInvoicePattern))"
 
         guard let regex = try? NSRegularExpression(pattern: pattern, options: []) else { return }
-        
+
         var text = textView.text ?? ""
-        
+
         let attributedText = NSMutableAttributedString(attributedString: textView.attributedText)
-        
+
         let foundTexts = regex.matches(in: text, options: [], range: NSRange(text.startIndex..., in: text))
             .compactMap { Range($0.range, in: text) }
             .map { text[$0].string }
-        
+
         for foundText in foundTexts {
-            if extractReference(foundText), let range = text.range(of: foundText) {
+            let bareRef = foundText.hasPrefix("nostr:") ? String(foundText.dropFirst(6)) : foundText
+            if extractReference(bareRef), let range = text.range(of: foundText) {
                 attributedText.replaceCharacters(in: NSRange(range, in: text), with: "")
                 text = text.replacingCharacters(in: range, with: "")
             }
