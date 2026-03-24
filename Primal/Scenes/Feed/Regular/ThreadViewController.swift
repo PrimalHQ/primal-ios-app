@@ -11,13 +11,7 @@ import SafariServices
 
 final class ThreadViewController: PostFeedViewController, ArticleCellController {
     let id: String
-    var mainObject: PrimalFeedPost? {
-        didSet {
-            replyController?.manager.replyingTo = mainObject
-        }
-    }
-
-    private var replyController: AdvancedEmbedPostViewController?
+    var mainObject: PrimalFeedPost?
     
     var didPostNewComment = false
         
@@ -152,23 +146,12 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
         
         // We should only update while the view is visible, otherwise table cells get fucked up unexplainably
         keyboardCancellable = keyboardSizer.updateHeightCancellable()
-        
-        (navigationController as? MainNavigationController)?.backGestureDelegate = self
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
         mainTabBarController?.showTabBarBorder = true
-        
-        if let nav = navigationController {
-            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(50)) { [self] in
-                if nav.viewControllers.contains(where: { $0 == self }) {
-                    return // the controller is still in the nav stack so data will not be lost
-                }
-                replyController?.manager.askToSave(nav)
-            }
-        }
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -229,16 +212,7 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
     override func updateTheme() {
         super.updateTheme()
         
-        let back = backButtonWithColorNoAction(.foreground)
-        navigationItem.leftBarButtonItem = .init(customView: back)
-        back.addAction(.init(handler: { [weak self] _ in
-            guard let self else { return }
-            if let manager = replyController?.manager {
-                manager.askToSaveThenDismiss(self)
-            } else {
-                backButtonPressed()
-            }
-        }), for: .touchUpInside)
+        navigationItem.leftBarButtonItem = customBackButton
         
         textInputView.tintColor = .accent
         textInputView.textColor = .foreground
@@ -280,15 +254,12 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
     @objc func replyBoxTapped() {
         guard !posts.isEmpty else { return }
 
-        if replyController == nil {
-            replyController = AdvancedEmbedPostViewController(replyId: id, replyingTo: mainObject, onPost: { [weak self] in
-                guard let self else { return }
-                didPostNewComment = true
-                feed.requestThread(postId: id, includeParent: false)
-            })
-        }
+        let replyController = AdvancedEmbedPostViewController(replyId: id, replyingTo: mainObject, onPost: { [weak self] in
+            guard let self else { return }
+            didPostNewComment = true
+            feed.requestThread(postId: id, includeParent: false)
+        })
 
-        guard let replyController, replyController.presentingViewController == nil else { return }
         present(replyController, animated: true)
     }
 }
@@ -729,38 +700,5 @@ private extension ThreadViewController {
             .foregroundColor: UIColor.accent2
         ]))
         return value
-    }
-}
-
-// Back gesture
-extension ThreadViewController: UIGestureRecognizerDelegate {
-    var askToSaveIsNecessary: Bool {
-        guard let manager = replyController?.manager else { return false }
-        let draft = manager.currentDraft
-
-        if let oldDraft = manager.oldDraft {
-            if oldDraft.text == draft.text && oldDraft.uploadedAssets == draft.uploadedAssets {
-                return false
-            }
-        } else if manager.textView.text?.isEmpty ?? true {
-            return false
-        }
-
-        return true
-    }
-    
-    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-        if navigationController?.topViewController != self { return true }
-        
-        if askToSaveIsNecessary {
-            replyController?.manager.askToSave(self) { [weak self] dialog in
-                if !dialog {
-                    self?.backButtonPressed()
-                }
-            }
-            return false
-        }
-        
-        return true
     }
 }
