@@ -60,7 +60,7 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
     private let usersTableView = UITableView()
     private var inputContentMaxHeightConstraint: NSLayoutConstraint?
     
-    private lazy var inputManager = PostingTextViewManager(textView: textInputView, usersTable: usersTableView, replyId: id, replyingTo: mainObject, defaultPostTitle: "Reply")
+//    private lazy var inputManager = PostingTextViewManager(textView: textInputView, usersTable: usersTableView, replyId: id, replyingTo: mainObject, defaultPostTitle: "Reply")
     
     var isLoading = true {
         didSet {
@@ -96,7 +96,7 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
         feed.parsedPosts = startingPosts
         feed.requestThread(postId: threadId, includeParent: startingPosts.count < 2)
         
-        inputManager.extractReferences = false
+//        inputManager.extractReferences = false
         dataSource = ThreadFeedDatasource(threadID: threadId, tableView: table, delegate: self)
         
         posts = startingPosts
@@ -233,7 +233,7 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
     
     override func setBarsToTransform(_ transform: CGFloat) {
         var transform = transform
-        if (!didMoveToMain && mainPositionInThread != 0) || posts.count < 10 || inputManager.isEditing {
+        if (!didMoveToMain && mainPositionInThread != 0) || posts.count < 10 /*|| inputManager.isEditing*/ {
             transform = 0
         }
         
@@ -266,61 +266,61 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
 
 private extension ThreadViewController {
     @objc func postButtonPressed() {
-        guard textInputView.isEditable, !posts.isEmpty else { return }
-        
-        if inputManager.didUploadFail {
-            inputManager.restartFailedUploads()
-            return
-        }
-        
-        if inputManager.isUploadingImages {
-            return
-        }
-        
-        let text = inputManager.postingText.trimmingCharacters(in: .whitespacesAndNewlines)
-        
-        guard !text.isEmpty else {
-            showErrorMessage(title: "Please Enter Text", "Text cannot be empty")
-            return
-        }
-        
-        Task { @MainActor [self] in
-            guard let event = await inputManager.post() else {
-                feed.requestThread(postId: self.id, includeParent: false)
-                return
-            }
-            
-            SocketRequest(name: "import_events", payload: .object(["events": .array([event.toJSON()])]))
-                .publisher()
-                .flatMap { _ in
-                    SocketRequest(name: "events", payload: [
-                        "event_ids": [.string(event.id)],
-                        "user_pubkey": .string(IdentityManager.instance.userHexPubkey),
-                        "extended_response": true
-                    ])
-                    .publisher()
-                }
-                .map { $0.process(contentStyle: .threadChildren).first }
-                .receive(on: DispatchQueue.main)
-                .sink { [weak self] post in
-                    guard let self else { return }
-                    
-                    didPostNewComment = true
-                    didMoveToMain = false
-
-                    guard let post else {
-                        feed.requestThread(postId: self.id, includeParent: false)
-                        return
-                    }
-                    
-                    if feed.parsedPosts.count > mainPositionInThread + 1 {
-                        feed.parsedPosts.insert(post, at: mainPositionInThread + 1)
-                    } else {
-                        feed.parsedPosts.append(post)
-                    }
-                }
-                .store(in: &cancellables)
-        }
+//        guard textInputView.isEditable, !posts.isEmpty else { return }
+//        
+//        if inputManager.didUploadFail {
+//            inputManager.restartFailedUploads()
+//            return
+//        }
+//        
+//        if inputManager.isUploadingImages {
+//            return
+//        }
+//        
+//        let text = inputManager.postingText.trimmingCharacters(in: .whitespacesAndNewlines)
+//        
+//        guard !text.isEmpty else {
+//            showErrorMessage(title: "Please Enter Text", "Text cannot be empty")
+//            return
+//        }
+//        
+//        Task { @MainActor [self] in
+//            guard let event = await inputManager.post() else {
+//                feed.requestThread(postId: self.id, includeParent: false)
+//                return
+//            }
+//            
+//            SocketRequest(name: "import_events", payload: .object(["events": .array([event.toJSON()])]))
+//                .publisher()
+//                .flatMap { _ in
+//                    SocketRequest(name: "events", payload: [
+//                        "event_ids": [.string(event.id)],
+//                        "user_pubkey": .string(IdentityManager.instance.userHexPubkey),
+//                        "extended_response": true
+//                    ])
+//                    .publisher()
+//                }
+//                .map { $0.process(contentStyle: .threadChildren).first }
+//                .receive(on: DispatchQueue.main)
+//                .sink { [weak self] post in
+//                    guard let self else { return }
+//                    
+//                    didPostNewComment = true
+//                    didMoveToMain = false
+//
+//                    guard let post else {
+//                        feed.requestThread(postId: self.id, includeParent: false)
+//                        return
+//                    }
+//                    
+//                    if feed.parsedPosts.count > mainPositionInThread + 1 {
+//                        feed.parsedPosts.insert(post, at: mainPositionInThread + 1)
+//                    } else {
+//                        feed.parsedPosts.append(post)
+//                    }
+//                }
+//                .store(in: &cancellables)
+//        }
     }
     
     @objc func inputSwippedDown() {
@@ -454,85 +454,85 @@ private extension ThreadViewController {
             })
             .store(in: &cancellables)
         
-        Publishers.CombineLatest(inputManager.$isEditing, inputManager.didChangeEvent.prepend(textInputView))
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] isEditing, textView in
-                self?.placeholderLabel.isHidden = isEditing || !textView.text.isEmpty
-            }
-            .store(in: &cancellables)
-        
-        inputManager.$users.receive(on: DispatchQueue.main).sink { [weak self] users in
-            guard let self else { return }
-            self.usersTableView.isHidden = users.isEmpty
-            self.inputManager.usersHeightConstraint.constant = CGFloat(users.count) * 60
-            UIView.animate(withDuration: 0.3) {
-                self.view.layoutIfNeeded()
-            } completion: { _ in
-                self.usersTableView.reloadData()
-            }
-            self.usersTableView.reloadData()
-        }
-        .store(in: &cancellables)
-        
-        inputManager.$media.assign(to: \.imageResources, onWeak: imagesCollectionView).store(in: &cancellables)
-        inputManager.$postButtonEnabledState.assign(to: \.isEnabled, on: postButton).store(in: &cancellables)
-        inputManager.$postButtonTitle.sink { [postButton] title in
-            postButton.setTitle(title, for: .normal)
-        }
-        .store(in: &cancellables)
-        
-        inputManager.$isPosting
-            .sink { [weak self] isPosting in
-                guard let self else { return }
-                if isPosting {
-                    textInputLoadingIndicator.isHidden = false
-                    textInputLoadingIndicator.play()
-                } else {
-                    textInputLoadingIndicator.pause()
-                    textInputLoadingIndicator.isHidden = true
-                }
-            }
-            .store(in: &cancellables)
-        
-        Publishers.CombineLatest3(
-            inputManager.$users.map({ $0.isEmpty }).removeDuplicates(),
-            inputManager.$media.map({ $0.isEmpty }).removeDuplicates(),
-            inputManager.$isEditing.removeDuplicates()
-        )
-        .prepend([(true, true, false)])
-        .withPrevious()
-        .receive(on: DispatchQueue.main)
-        .sink { [weak self] old, new in
-            guard let self else { return }
-            let (isUsersEmpty, imagesIsEmpty, isEditing) = new
-            let (_, _, oldIsEditing) = old
-            
-            let isImageHidden = !isEditing || imagesIsEmpty || !isUsersEmpty
-            
-            inputContentMaxHeightConstraint?.isActive = !imagesIsEmpty
-            textHeightConstraint?.isActive = !isEditing
-            
-            imagesCollectionView.isHidden = isImageHidden
-            
-            UIView.animate(withDuration: 0.2) {
-                self.replyingToLabel.isHidden = !isEditing
-                self.replyingToLabel.alpha = isEditing ? 1 : 0
-                
-                self.buttonStack.isHidden = !isEditing
-                self.buttonStack.alpha = isEditing ? 1 : 0
-                
-                self.imagesCollectionView.alpha = isImageHidden ? 0.01 : 1
-            }
-            
-            if isEditing && !oldIsEditing {
-                DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
-                    if self.mainPositionInThread < self.posts.count {
-                        self.table.scrollToRow(at: self.mainPostIndex, at: .top, animated: true)
-                    }
-                }
-            }
-        }
-        .store(in: &cancellables)
+//        Publishers.CombineLatest(inputManager.$isEditing, inputManager.didChangeEvent.prepend(textInputView))
+//            .receive(on: DispatchQueue.main)
+//            .sink { [weak self] isEditing, textView in
+//                self?.placeholderLabel.isHidden = isEditing || !textView.text.isEmpty
+//            }
+//            .store(in: &cancellables)
+//        
+//        inputManager.$users.receive(on: DispatchQueue.main).sink { [weak self] users in
+//            guard let self else { return }
+//            self.usersTableView.isHidden = users.isEmpty
+//            self.inputManager.usersHeightConstraint.constant = CGFloat(users.count) * 60
+//            UIView.animate(withDuration: 0.3) {
+//                self.view.layoutIfNeeded()
+//            } completion: { _ in
+//                self.usersTableView.reloadData()
+//            }
+//            self.usersTableView.reloadData()
+//        }
+//        .store(in: &cancellables)
+//        
+//        inputManager.$media.assign(to: \.imageResources, onWeak: imagesCollectionView).store(in: &cancellables)
+//        inputManager.$postButtonEnabledState.assign(to: \.isEnabled, on: postButton).store(in: &cancellables)
+//        inputManager.$postButtonTitle.sink { [postButton] title in
+//            postButton.setTitle(title, for: .normal)
+//        }
+//        .store(in: &cancellables)
+//        
+//        inputManager.$isPosting
+//            .sink { [weak self] isPosting in
+//                guard let self else { return }
+//                if isPosting {
+//                    textInputLoadingIndicator.isHidden = false
+//                    textInputLoadingIndicator.play()
+//                } else {
+//                    textInputLoadingIndicator.pause()
+//                    textInputLoadingIndicator.isHidden = true
+//                }
+//            }
+//            .store(in: &cancellables)
+//        
+//        Publishers.CombineLatest3(
+//            inputManager.$users.map({ $0.isEmpty }).removeDuplicates(),
+//            inputManager.$media.map({ $0.isEmpty }).removeDuplicates(),
+//            inputManager.$isEditing.removeDuplicates()
+//        )
+//        .prepend([(true, true, false)])
+//        .withPrevious()
+//        .receive(on: DispatchQueue.main)
+//        .sink { [weak self] old, new in
+//            guard let self else { return }
+//            let (isUsersEmpty, imagesIsEmpty, isEditing) = new
+//            let (_, _, oldIsEditing) = old
+//            
+//            let isImageHidden = !isEditing || imagesIsEmpty || !isUsersEmpty
+//            
+//            inputContentMaxHeightConstraint?.isActive = !imagesIsEmpty
+//            textHeightConstraint?.isActive = !isEditing
+//            
+//            imagesCollectionView.isHidden = isImageHidden
+//            
+//            UIView.animate(withDuration: 0.2) {
+//                self.replyingToLabel.isHidden = !isEditing
+//                self.replyingToLabel.alpha = isEditing ? 1 : 0
+//                
+//                self.buttonStack.isHidden = !isEditing
+//                self.buttonStack.alpha = isEditing ? 1 : 0
+//                
+//                self.imagesCollectionView.alpha = isImageHidden ? 0.01 : 1
+//            }
+//            
+//            if isEditing && !oldIsEditing {
+//                DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
+//                    if self.mainPositionInThread < self.posts.count {
+//                        self.table.scrollToRow(at: self.mainPostIndex, at: .top, animated: true)
+//                    }
+//                }
+//            }
+//        }
+//        .store(in: &cancellables)
     }
     
     func setup() {
@@ -576,7 +576,7 @@ private extension ThreadViewController {
         let contentStack = UIStackView(axis: .vertical, [textParent, imagesCollectionView])
         contentStack.spacing = 12
         
-        imagesCollectionView.imageDelegate = inputManager
+//        imagesCollectionView.imageDelegate = inputManager
         imagesCollectionView.isHidden = true
         imagesCollectionView.backgroundColor = .clear
         
@@ -612,44 +612,44 @@ private extension ThreadViewController {
         textInputView.backgroundColor = .clear
         textInputView.returnKeyType = .default
         
-        let imageButton = ThemeableButton().constrainToSize(48).setTheme { $0.tintColor = .foreground }
-        imageButton.setImage(UIImage(named: "ImageIcon"), for: .normal)
-        imageButton.addAction(.init(handler: { [unowned self] _ in
-            ImagePickerManager(self, mode: .gallery, allowVideo: true, selectionLimit: 0) { [weak self] result in
-                self?.inputManager.processSelectedAsset(result)
-            }
-        }), for: .touchUpInside)
-        
-        let cameraButton = ThemeableButton().constrainToSize(48).setTheme { $0.tintColor = .foreground }
-        cameraButton.setImage(UIImage(named: "CameraIcon"), for: .normal)
-        cameraButton.addAction(.init(handler: { [unowned self] _ in
-            ImagePickerManager(self, mode: .camera) { [weak self] result in
-                self?.inputManager.processSelectedAsset(result)
-            }
-        }), for: .touchUpInside)
+//        let imageButton = ThemeableButton().constrainToSize(48).setTheme { $0.tintColor = .foreground }
+//        imageButton.setImage(UIImage(named: "ImageIcon"), for: .normal)
+//        imageButton.addAction(.init(handler: { [unowned self] _ in
+//            ImagePickerManager(self, mode: .gallery, allowVideo: true, selectionLimit: 0) { [weak self] result in
+//                self?.inputManager.processSelectedAsset(result)
+//            }
+//        }), for: .touchUpInside)
+//        
+//        let cameraButton = ThemeableButton().constrainToSize(48).setTheme { $0.tintColor = .foreground }
+//        cameraButton.setImage(UIImage(named: "CameraIcon"), for: .normal)
+//        cameraButton.addAction(.init(handler: { [unowned self] _ in
+//            ImagePickerManager(self, mode: .camera) { [weak self] result in
+//                self?.inputManager.processSelectedAsset(result)
+//            }
+//        }), for: .touchUpInside)
         
         postButton.titleLabel?.font = .appFont(withSize: 14, weight: .medium)
         postButton.constrainToSize(width: 80, height: 28)
         postButton.addTarget(self, action: #selector(postButtonPressed), for: .touchUpInside)
         
-        let gifButton = ThemeableButton().constrainToSize(48).setTheme { $0.tintColor = .foreground }
-        gifButton.setImage(.gifButton, for: .normal)
-        gifButton.addAction(.init(handler: { [weak self] _ in
-            self?.present(KlipyGifController(gifSelectedCallback: { res in
-                guard let url = res.gifURL ?? res.mediumgifURL ?? res.tinygifURL else { return }
-                
-                self?.inputManager.processSelectedAsset(RemoteGifMediaPickerResult(url: url))
-            }), animated: true)
-        }), for: .touchUpInside)
-        
-        let atButton = ThemeableButton().constrainToSize(48).setTheme { $0.tintColor = .foreground }
-        atButton.setImage(UIImage(named: "AtIcon"), for: .normal)
-        atButton.addTarget(inputManager, action: #selector(PostingTextViewManager.atButtonPressed), for: .touchUpInside)
-        
-        [imageButton, gifButton, cameraButton, atButton, UIView(), postButton].forEach {
-            buttonStack.addArrangedSubview($0)
-        }
-        
+//        let gifButton = ThemeableButton().constrainToSize(48).setTheme { $0.tintColor = .foreground }
+//        gifButton.setImage(.gifButton, for: .normal)
+//        gifButton.addAction(.init(handler: { [weak self] _ in
+//            self?.present(KlipyGifController(gifSelectedCallback: { res in
+//                guard let url = res.gifURL ?? res.mediumgifURL ?? res.tinygifURL else { return }
+//                
+//                self?.inputManager.processSelectedAsset(RemoteGifMediaPickerResult(url: url))
+//            }), animated: true)
+//        }), for: .touchUpInside)
+//        
+//        let atButton = ThemeableButton().constrainToSize(48).setTheme { $0.tintColor = .foreground }
+//        atButton.setImage(UIImage(named: "AtIcon"), for: .normal)
+//        atButton.addTarget(inputManager, action: #selector(PostingTextViewManager.atButtonPressed), for: .touchUpInside)
+//        
+//        [imageButton, gifButton, cameraButton, atButton, UIView(), postButton].forEach {
+//            buttonStack.addArrangedSubview($0)
+//        }
+//        
         buttonStack.alignment = .center
         
         placeholderLabel.font = .appFont(withSize: 16, weight: .regular)

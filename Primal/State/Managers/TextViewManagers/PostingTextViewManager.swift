@@ -200,9 +200,7 @@ final class PostingTextViewManager: TextViewManager, MetadataCoding {
         connectPublishers()
         setup()
         
-        if replyId == nil {
-            findDraft()
-        }
+        findDraft()
     }
     
     func replaceEditingTokenWithUser(_ user: ParsedUser) {
