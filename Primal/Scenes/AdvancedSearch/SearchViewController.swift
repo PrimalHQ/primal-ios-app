@@ -116,11 +116,12 @@ private extension SearchViewController {
     
     func setBindings() {
         $userSearchText
-            .flatMap { [weak self] in
+            .handleEvents(receiveOutput: { [weak self] _ in
                 self?.userTable.reloadData()
-                
-                return SmartContactsManager.instance.userSearchPublisher($0)
-            }
+            })
+
+            .map { SmartContactsManager.instance.userSearchPublisher($0) }
+            .switchToLatest()
             .receive(on: DispatchQueue.main)
             .sink(receiveValue: { [weak self] users in
                 self?.users = users

@@ -93,15 +93,33 @@ extension DerivableRequest<Profile> {
     }
     
     func searchUsers(_ search: String) -> Self {
-        let escapedSearchText = search.replacingOccurrences(of: "%", with: "\\%")
-                                           .replacingOccurrences(of: "_", with: "\\_")
-        let pattern = "%\(escapedSearchText)%"
+        let escapedSearchText = search.replacingOccurrences(of: "%", with: "\\%").replacingOccurrences(of: "_", with: "\\_")
 
+        if search.count > 2 {
+            let pattern = "%\(escapedSearchText)%"
+            if search.count > 4 {
+                return filter(
+                    Profile.Columns.displayName.collating(.nocase).like(pattern, escape: "\\") ||
+                    Profile.Columns.name.collating(.nocase).like(pattern, escape: "\\") ||
+                    Profile.Columns.about.collating(.nocase).like(pattern, escape: "\\") ||
+                    Profile.Columns.nip05.collating(.nocase).like(pattern, escape: "\\") ||
+                    Profile.Columns.lud16.collating(.nocase).like(pattern, escape: "\\") ||
+                    Profile.Columns.pubkey == search
+                )
+            }
+            return filter(
+                Profile.Columns.displayName.collating(.nocase).like(pattern, escape: "\\") ||
+                Profile.Columns.about.collating(.nocase).like(pattern, escape: "\\") ||
+                Profile.Columns.name.collating(.nocase).like(pattern, escape: "\\")
+            )
+        }
+        
+        let pattern = "\(escapedSearchText)%"
         return filter(
             Profile.Columns.displayName.collating(.nocase).like(pattern, escape: "\\") ||
             Profile.Columns.name.collating(.nocase).like(pattern, escape: "\\") ||
-//            Profile.Columns.about.collating(.nocase).like(pattern, escape: "\\") ||
-            Profile.Columns.pubkey == search
+            Profile.Columns.nip05.collating(.nocase).like(pattern, escape: "\\") ||
+            Profile.Columns.lud16.collating(.nocase).like(pattern, escape: "\\")
         )
     }
 }
