@@ -14,8 +14,7 @@ class FeedVideoPlayer: NSObject, PlayerProtocol {
         avPlayer.isMuted = isMuted
 
         let category: AVAudioSession.Category = isMuted ? .ambient : .playback
-        try? AVAudioSession.sharedInstance().setCategory(category, mode: .default)
-        try? AVAudioSession.sharedInstance().setActive(true)
+        VideoPlaybackManager.instance.setAudioSessionCategory(category)
     }
 
     lazy var avPlayer: AVPlayer = playerWithURL(url)
@@ -52,8 +51,7 @@ class FeedVideoPlayer: NSObject, PlayerProtocol {
         avPlayer.isMuted = isMuted
 
         let category: AVAudioSession.Category = isMuted ? .ambient : .playback
-        try? AVAudioSession.sharedInstance().setCategory(category, mode: .default)
-        try? AVAudioSession.sharedInstance().setActive(true)
+        VideoPlaybackManager.instance.setAudioSessionCategory(category)
 
         VideoPlaybackManager.instance.currentlyPlaying = self
     }

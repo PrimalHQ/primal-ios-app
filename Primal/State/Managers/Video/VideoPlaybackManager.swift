@@ -35,6 +35,19 @@ final class VideoPlaybackManager: NSObject {
     var currentlyPlayingFeedVideo: FeedVideoPlayer? { currentlyPlaying as? FeedVideoPlayer }
     var currentlyPlayingLiveVideo: LiveVideoPlayer? { currentlyPlaying as? LiveVideoPlayer }
 
+    private var currentCategory: AVAudioSession.Category?
+    private var currentMode: AVAudioSession.Mode?
+    private var currentOptions: AVAudioSession.CategoryOptions?
+
+    func setAudioSessionCategory(_ category: AVAudioSession.Category, mode: AVAudioSession.Mode = .default, options: AVAudioSession.CategoryOptions = []) {
+        guard currentCategory != category || currentMode != mode || currentOptions != options else { return }
+        try? AVAudioSession.sharedInstance().setCategory(category, mode: mode, options: options)
+        try? AVAudioSession.sharedInstance().setActive(true)
+        currentCategory = category
+        currentMode = mode
+        currentOptions = options
+    }
+
     private var cancellables: Set<AnyCancellable> = []
 
     override init() {

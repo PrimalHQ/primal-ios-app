@@ -44,8 +44,7 @@ class LiveVideoPlayer: NSObject, PlayerProtocol {
         
         avPlayer.play()
         
-        try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .moviePlayback)
-        try? AVAudioSession.sharedInstance().setActive(true)
+        VideoPlaybackManager.instance.setAudioSessionCategory(.playback, mode: .moviePlayback)
         
         updateRemoteControls()
         

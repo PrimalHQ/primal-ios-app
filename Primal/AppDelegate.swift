@@ -80,7 +80,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         
         UITableView.appearance().sectionHeaderTopPadding = 0
         
-        try? AVAudioSession.sharedInstance().setCategory(.ambient, mode: .default)
+        VideoPlaybackManager.instance.setAudioSessionCategory(.ambient)
         
         PrimalEndpointsManager.instance.checkIfNecessary()
         

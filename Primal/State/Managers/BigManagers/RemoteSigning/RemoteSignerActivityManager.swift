@@ -201,8 +201,7 @@ class RemoteSessionAudioPlayer: GenericPlayer<AVAudioPlayer> {
     }
 
     override func play() {
-        try? AVAudioSession.sharedInstance().setCategory(.playback, options: [.mixWithOthers])
-        try? AVAudioSession.sharedInstance().setActive(true)
+        VideoPlaybackManager.instance.setAudioSessionCategory(.playback, options: [.mixWithOthers])
         super.play()
     }
 

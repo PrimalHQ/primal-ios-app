@@ -28,7 +28,7 @@ class FullScreenVideoPlayerController: AVPlayerViewController {
         super.viewDidAppear(animated)
         
         video.play()  // Necessary to cancel delayed pause
-        try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
+        VideoPlaybackManager.instance.setAudioSessionCategory(.playback)
         player?.isMuted = false
         player?.play()
         

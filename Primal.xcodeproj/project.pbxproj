@@ -1838,7 +1838,6 @@
 			isa = PBXGroup;
 			children = (
 				B904EA152F23B4F7006D195C /* Markdown */,
-				B9EDA58B2E4F5AEA003262E4 /* UserSearch */,
 				9E9F2F7229F6AB6400A9CDF3 /* Views */,
 				9E83DF752A573F1C00F2C379 /* Helpers */,
 				9E83DF6A2A573DE800F2C379 /* Protocols */,
@@ -3717,13 +3716,6 @@
 			path = Gestures;
 			sourceTree = "<group>";
 		};
-		B9EDA58B2E4F5AEA003262E4 /* UserSearch */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = UserSearch;
-			sourceTree = "<group>";
-		};
 		B9F9331B2B88F6C40064B495 /* Premium */ = {
 			isa = PBXGroup;
 			children = (
@@ -4979,7 +4971,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.0.31;
+				MARKETING_VERSION = 3.0.32;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -5028,7 +5020,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.0.31;
+				MARKETING_VERSION = 3.0.32;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
