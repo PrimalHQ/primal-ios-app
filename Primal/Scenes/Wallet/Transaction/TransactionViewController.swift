@@ -13,19 +13,33 @@ import SafariServices
 final class TransactionViewController: NoteViewController {
     var cells: [TransactionCellType] { (dataSource as? TransactionViewDatasource)?.infoCells ?? [] }
     
-    let transaction: PrimalShared.Transaction
-    
+    private(set) var transaction: PrimalShared.Transaction
+
     var didFinishAppear = false
-    
+
     var foregroundUpdate: AnyCancellable?
-    
+
     init(transaction: PrimalShared.Transaction) {
         self.transaction = transaction
         super.init()
-        
+
         setup()
-        
+
         dataSource = TransactionViewDatasource(transaction: transaction, tableView: table, delegate: self)
+
+        Task {
+            let enriched = try? await WalletManager.instance.walletRepo.enrichTransaction(transactionId: transaction.transactionId)
+            guard enriched == true else { return }
+
+            let updated = try? await WalletManager.instance.walletRepo.findTransactionByIdOrNull(txId: transaction.transactionId)
+            guard let updated else { return }
+
+            await MainActor.run {
+                self.transaction = updated
+                self.setup()
+                (self.dataSource as? TransactionViewDatasource)?.updateTransaction(updated)
+            }
+        }
     }
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
