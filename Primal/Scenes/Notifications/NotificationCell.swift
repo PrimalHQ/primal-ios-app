@@ -11,7 +11,7 @@ protocol NotificationCellDelegate: PostCellDelegate {
     func avatarListTappedInCell(_ cell: NotificationCell, index: Int)
 }
 
-final class NotificationCell: PostCell, ElementReactionsCell {
+final class NotificationCell: PostCell, ElementReactionsCell, ElementImageGalleryCell  {
     let iconView = UIImageView()
     let iconLabel = UILabel()
     let avatarStack = AvatarView()
