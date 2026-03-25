@@ -46,7 +46,7 @@ class NwcServiceManager {
         autoStartService = isOn
 
         if isOn {
-            startService()
+            startService(showPopup: true)
             updatePushNotificationEvents()
         } else {
             UserDefaults.standard.nwcNotificationEnableEvents = []
@@ -58,7 +58,7 @@ class NwcServiceManager {
         activeServices = [:]
     }
     
-    func startService() {
+    func startService(showPopup: Bool) {
         let pubkeys = LoginManager.instance.loggedInNpubs()
             .filter { ICloudKeychainManager.instance.hasNsec($0) }
             .compactMap { $0.npubToPubkey() }
@@ -73,6 +73,14 @@ class NwcServiceManager {
             }
 
             activeServices = pubkeysWithNWC.reduce(into: [:], { $0[$1] = activeServices[$1] ?? NWCService(pubkey: $1) })
+            
+            if showPopup, #available(iOS 16.1, *), !RemoteSignerActivityManager.instance.isAudioAllowed {
+                try await Task.sleep(for: .seconds(3) + .milliseconds(300))
+
+                RootViewController.instance.smartPresent(RemoteSignerRootController(
+                    .custom(RemoteSignerDisclosureController(connection: CustomRemoteSignerDisclosureApp(name: "NWC Service")) { })
+                ))
+            }
         }
 
         updatePushNotificationEvents()

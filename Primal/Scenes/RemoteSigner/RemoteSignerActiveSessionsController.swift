@@ -288,7 +288,7 @@ class RemoteSignerSessionSelectionButton: MyButton {
 class RemoteSignerNWCSessionSelectionButton: MyButton {
     let appImage = UIImageView(image: .create(letter: "N", size: 40, color: .foreground3, backgroundColor: .foreground.withAlphaComponent(0.1))).constrainToSize(40)
     
-    let nameLabel = UILabel("NWC Session", color: .foreground, font: .appFont(withSize: 16, weight: .bold))
+    let nameLabel = UILabel("NWC Service", color: .foreground, font: .appFont(withSize: 16, weight: .bold))
     
     override var isPressed: Bool {
         didSet {

@@ -267,7 +267,7 @@ class RemoteSignerSignInController: UIViewController {
                 }
 
                 if nwcConnectionString != nil {
-                    NwcServiceManager.shared.startService()
+                    NwcServiceManager.shared.startService(showPopup: false)
                 }
 
                 if #available(iOS 16.1, *), !RemoteSignerActivityManager.instance.isAudioAllowed {

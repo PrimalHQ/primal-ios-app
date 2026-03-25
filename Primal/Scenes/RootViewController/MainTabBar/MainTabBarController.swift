@@ -422,7 +422,7 @@ private extension MainTabBarController {
             NotificationCenter.default.publisher(for: UIApplication.didEnterBackgroundNotification)
                 .sink { _ in
                     guard
-                        RemoteSignerManager.instance.isActive,
+                        RemoteSignerManager.instance.isActive || NwcServiceManager.shared.isServiceActive,
                         VideoPlaybackManager.instance.autoPlay
                     else { return }
                     

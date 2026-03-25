@@ -171,7 +171,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         if let extra = notification.request.content.userInfo["extra"] as? [String: Any],
            let eventKind = extra["event_kind"] as? Int, eventKind == 23194,
            NwcServiceManager.shared.autoStartService {
-            NwcServiceManager.shared.startService()
+            NwcServiceManager.shared.startService(showPopup: false)
             completionHandler([])
             return
         }
@@ -186,7 +186,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
             var waitForOpen = false
             
             if let eventKind = extra["event_kind"] as? Int, eventKind == 23194, NwcServiceManager.shared.autoStartService {
-                NwcServiceManager.shared.startService()
+                NwcServiceManager.shared.startService(showPopup: false)
                 completionHandler()
                 return
             }

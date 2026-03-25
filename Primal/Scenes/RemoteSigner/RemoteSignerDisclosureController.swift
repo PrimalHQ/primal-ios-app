@@ -10,6 +10,24 @@ import Combine
 import PrimalShared
 import Kingfisher
 
+protocol RemoteSignerDisclosureApp {
+    var name: String? { get }
+    var image: String? { get }
+}
+
+extension RemoteSignerDisclosureApp {
+    func defaultImage(size: CGFloat, color: UIColor = .foreground3, background: UIColor = .foreground.withAlphaComponent(0.1)) -> UIImage? {
+        return UIImage.create(letter: String(self.name?.first ?? "?"), size: size, color: color, backgroundColor: background)
+    }
+}
+
+extension RemoteAppConnection: RemoteSignerDisclosureApp { }
+extension RemoteAppSession: RemoteSignerDisclosureApp { }
+struct CustomRemoteSignerDisclosureApp: RemoteSignerDisclosureApp {
+    var name: String?
+    var image: String?
+}
+
 @available(iOS 16.1, *)
 class RemoteSignerDisclosureController: UIViewController {
 
@@ -17,10 +35,10 @@ class RemoteSignerDisclosureController: UIViewController {
     
     let designHeight: CGFloat = 556
     
-    let connection: RemoteAppConnection
+    let connection: RemoteSignerDisclosureApp
     let callback: () -> Void
     var didCallCallback = false
-    init(connection: RemoteAppConnection, callback: @escaping () -> Void) {
+    init(connection: RemoteSignerDisclosureApp, callback: @escaping () -> Void) {
         self.connection = connection
         self.callback = callback
         super.init(nibName: nil, bundle: nil)

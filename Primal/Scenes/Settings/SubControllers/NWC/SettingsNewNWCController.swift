@@ -146,7 +146,7 @@ private extension SettingsNewNWCController {
                     return
                 }
                 
-                NwcServiceManager.shared.startService()
+                NwcServiceManager.shared.startService(showPopup: true)
                 
                 self?.show(SettingsNewNwcQRController(uri: string), sender: nil)
             }
