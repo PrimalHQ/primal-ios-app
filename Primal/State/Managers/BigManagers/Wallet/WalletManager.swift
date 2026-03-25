@@ -290,7 +290,7 @@ final class WalletManager {
         Task {
             // call ensure primal wallet exists will have no action if it shouldn't do anything
             _ = try? await EnsurePrimalWalletExistsUseCase(primalWalletAccountRepository: primalWalletRepo, walletAccountRepository: walletAccountRepo)
-                .invoke(userId: pubkey, setAsActive: true)
+                .invoke(userId: pubkey, setAsActive: false)
             await detectWalletSetupState(pubkey: pubkey)
         }
 
