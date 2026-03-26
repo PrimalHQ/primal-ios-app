@@ -11,8 +11,6 @@ import UIKit
 class MainThreadElementReactionsCell: FeedElementBaseCell, RegularFeedElementCell, ElementReactionsCell {
     static var cellID: String { "FeedElementReactionsCell" }
 
-    let threadLayout = ThreadLayout(position: .main)
-
     var bookmarkUpdater: AnyCancellable?
     var isShowingBookmarked = false
 
@@ -39,7 +37,6 @@ class MainThreadElementReactionsCell: FeedElementBaseCell, RegularFeedElementCel
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
-        threadLayout.install(in: contentView)
         setup()
 
         contentView.addSubview(bottomBorder)
@@ -103,8 +100,6 @@ class MainThreadElementReactionsCell: FeedElementBaseCell, RegularFeedElementCel
     override func updateTheme() {
         super.updateTheme()
 
-        threadLayout.updateAppearance(contentView: contentView)
-
         bookmarkButton.tintColor = .foreground5
         bottomBorder.backgroundColor = .background3
         border.backgroundColor = .background3
@@ -152,7 +147,7 @@ private extension MainThreadElementReactionsCell {
         timeLabel.font = .appFont(withSize: 16, weight: .regular)
         infoRow.spacing = 12
 
-        threadLayout.secondRow.addSubview(mainStack)
+        contentContainer.addSubview(mainStack)
 
         mainStack
             .pinToSuperview(edges: .horizontal)

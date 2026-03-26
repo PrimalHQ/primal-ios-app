@@ -26,9 +26,9 @@ extension ElementReactionsCell {
 class FeedElementReactionsCell: FeedElementBaseCell, RegularFeedElementCell, ElementReactionsCell {
     static var cellID: String { "FeedElementReactionsCell" }
 
-    var buttonLeadingPadding: CGFloat { 8 }
-    var buttonTrailingPadding: CGFloat { 32 }
-    var showsBottomBorder: Bool { true }
+    var buttonLeadingPadding: CGFloat { threadLayout != nil ? -8 : 8 }
+    var buttonTrailingPadding: CGFloat { threadLayout != nil ? 16 : 32 }
+    var showsBottomBorder: Bool { threadLayout?.position != .parent }
 
     var bookmarkUpdater: AnyCancellable?
     var isShowingBookmarked = false

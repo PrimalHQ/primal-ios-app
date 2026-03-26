@@ -13,8 +13,6 @@ import Nantes
 class MainThreadElementTextCell: FeedElementBaseCell, RegularFeedElementCell {
     static var cellID: String { "FeedElementTextCell" }
 
-    let threadLayout = ThreadLayout(position: .main)
-
     var useShortText: Bool { true }
 
     let selectionTextView = UITextView()
@@ -24,7 +22,6 @@ class MainThreadElementTextCell: FeedElementBaseCell, RegularFeedElementCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
-        threadLayout.install(in: contentView)
         setup()
     }
 
@@ -44,13 +41,12 @@ class MainThreadElementTextCell: FeedElementBaseCell, RegularFeedElementCell {
 
     override func updateTheme() {
         super.updateTheme()
-        threadLayout.updateAppearance(contentView: contentView)
     }
 }
 
 private extension MainThreadElementTextCell {
     func setup() {
-        threadLayout.secondRow.addSubview(selectionTextView)
+        contentContainer.addSubview(selectionTextView)
         selectionTextView
             .pinToSuperview(edges: .horizontal, padding: -5)
             .pinToSuperview(edges: .top, padding: 3)

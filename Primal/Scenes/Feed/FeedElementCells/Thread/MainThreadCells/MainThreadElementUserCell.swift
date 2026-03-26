@@ -10,8 +10,6 @@ import UIKit
 class MainThreadElementUserCell: FeedElementBaseCell, RegularFeedElementCell {
     static var cellID: String { "FeedElementUserCell" }
 
-    let threadLayout = ThreadLayout(position: .main)
-
     let threeDotsButton = UIButton()
     let profileImageView = UserImageView(height: 42)
     let checkbox = VerifiedView().constrainToSize(FontSizeSelection.current.contentFontSize)
@@ -25,7 +23,6 @@ class MainThreadElementUserCell: FeedElementBaseCell, RegularFeedElementCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
-        threadLayout.install(in: contentView)
         setup()
     }
 
@@ -67,8 +64,6 @@ class MainThreadElementUserCell: FeedElementBaseCell, RegularFeedElementCell {
     override func updateTheme() {
         super.updateTheme()
 
-        threadLayout.updateAppearance(contentView: contentView)
-
         threeDotsButton.tintColor = .foreground3
 
         nameLabel.textColor = .foreground
@@ -81,7 +76,7 @@ class MainThreadElementUserCell: FeedElementBaseCell, RegularFeedElementCell {
 
 private extension MainThreadElementUserCell {
     private func setup() {
-        threadLayout.secondRow.addSubview(mainStack)
+        contentContainer.addSubview(mainStack)
         mainStack
             .pinToSuperview(edges: .top, padding: 12)
             .pinToSuperview(edges: .bottom, padding: 3)

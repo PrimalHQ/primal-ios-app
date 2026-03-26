@@ -10,8 +10,6 @@ import UIKit
 class ThreadElementUserCell: FeedElementBaseCell, RegularFeedElementCell {
     static var cellID: String { "FeedElementUserCell" }
 
-    let threadLayout: ThreadLayout
-
     let threeDotsButton = UIButton()
     let profileImageView = UserImageView(height: 24)
     let checkbox = VerifiedView().constrainToSize(FontSizeSelection.current.contentFontSize)
@@ -22,16 +20,12 @@ class ThreadElementUserCell: FeedElementBaseCell, RegularFeedElementCell {
     lazy var nameStack = UIStackView([nameLabel, checkbox, nipLabel, separatorLabel, timeLabel])
     let threeDotsSpacer = SpacerView(width: 20)
 
-    convenience override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        self.init(position: .main, style: style, reuseIdentifier: reuseIdentifier)
-    }
-    init(position: ThreadPosition, style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        self.threadLayout = ThreadLayout(position: position)
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
-        threadLayout.install(in: contentView)
+        guard let threadLayout else { return }
 
-        switch position {
+        switch threadLayout.position {
         case .parent:
             threadLayout.parentIndicator.removeFromSuperview()
 
@@ -100,8 +94,6 @@ class ThreadElementUserCell: FeedElementBaseCell, RegularFeedElementCell {
     override func updateTheme() {
         super.updateTheme()
 
-        threadLayout.updateAppearance(contentView: contentView)
-
         threeDotsButton.tintColor = .foreground3
 
         nameLabel.textColor = .foreground
@@ -116,7 +108,7 @@ class ThreadElementUserCell: FeedElementBaseCell, RegularFeedElementCell {
 
 private extension ThreadElementUserCell {
     private func setup() {
-        threadLayout.secondRow.addSubview(nameStack)
+        contentContainer.addSubview(nameStack)
         nameStack
             .pinToSuperview(edges: .top, padding: 8)
             .pinToSuperview(edges: .bottom, padding: 2)
