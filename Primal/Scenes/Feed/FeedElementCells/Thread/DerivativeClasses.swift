@@ -7,7 +7,8 @@
 
 import UIKit
 
-// User Cell
+// MARK: - User Cell (subclasses ThreadElementUserCell which has unique layout)
+
 class ParentThreadElementUserCell: ThreadElementUserCell {
     init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(position: .parent, style: style, reuseIdentifier: reuseIdentifier)
@@ -22,318 +23,935 @@ class ChildThreadElementUserCell: ThreadElementUserCell {
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 }
 
-// Text Cell
-class ParentThreadElementTextCell: ThreadElementTextCell {
-    init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(position: .parent, style: style, reuseIdentifier: reuseIdentifier)
+// MARK: - Text Cell
+
+class ParentThreadElementTextCell: FeedElementTextCell {
+    let threadLayout = ThreadLayout(position: .parent)
+    override var contentContainer: UIView { threadLayout.secondRow }
+    override var horizontalPadding: CGFloat { 0 }
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        threadLayout.install(in: contentView)
     }
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
-}
-class ChildThreadElementTextCell: ThreadElementTextCell {
-    init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(position: .child, style: style, reuseIdentifier: reuseIdentifier)
+    override func update(_ parsedContent: ParsedContent) {
+        super.update(parsedContent)
+        threadLayout.updateAppearance(contentView: contentView)
     }
-    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    override func updateTheme() {
+        super.updateTheme()
+        threadLayout.updateAppearance(contentView: contentView)
+    }
 }
 
-// Images Gallery
-class ParentThreadElementImageGalleryCell: ThreadElementImageGalleryCell {
-    init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(position: .parent, style: style, reuseIdentifier: reuseIdentifier)
+class ChildThreadElementTextCell: FeedElementTextCell {
+    let threadLayout = ThreadLayout(position: .child)
+    override var contentContainer: UIView { threadLayout.secondRow }
+    override var horizontalPadding: CGFloat { 0 }
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        threadLayout.install(in: contentView)
     }
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
-}
-class ChildThreadElementImageGalleryCell: ThreadElementImageGalleryCell {
-    init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(position: .child, style: style, reuseIdentifier: reuseIdentifier)
+    override func update(_ parsedContent: ParsedContent) {
+        super.update(parsedContent)
+        threadLayout.updateAppearance(contentView: contentView)
     }
-    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
-}
-
-// Zap Gallery
-class ParentThreadElementSmallZapGalleryCell: ThreadElementSmallZapGalleryCell {
-    init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(position: .parent, style: style, reuseIdentifier: reuseIdentifier)
+    override func updateTheme() {
+        super.updateTheme()
+        threadLayout.updateAppearance(contentView: contentView)
     }
-    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
-}
-class ChildThreadElementSmallZapGalleryCell: ThreadElementSmallZapGalleryCell {
-    init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(position: .child, style: style, reuseIdentifier: reuseIdentifier)
-    }
-    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 }
 
-// Reactions
-class ParentThreadElementReactionsCell: ThreadElementReactionsCell {
-    init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(position: .parent, style: style, reuseIdentifier: reuseIdentifier)
+// MARK: - Image Gallery
+
+class ParentThreadElementImageGalleryCell: FeedElementImageGalleryCell {
+    let threadLayout = ThreadLayout(position: .parent)
+    override var contentContainer: UIView { threadLayout.secondRow }
+    override var horizontalPadding: CGFloat { 0 }
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        threadLayout.install(in: contentView)
     }
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
-}
-class ChildThreadElementReactionsCell: ThreadElementReactionsCell {
-    init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(position: .child, style: style, reuseIdentifier: reuseIdentifier)
+    override func update(_ content: ParsedContent) {
+        super.update(content)
+        threadLayout.updateAppearance(contentView: contentView)
     }
-    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    override func updateTheme() {
+        super.updateTheme()
+        threadLayout.updateAppearance(contentView: contentView)
+    }
 }
 
-// Article preview
-class ParentThreadElementArticleCell: ThreadElementArticleCell {
-    init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(position: .parent, style: style, reuseIdentifier: reuseIdentifier)
+class ChildThreadElementImageGalleryCell: FeedElementImageGalleryCell {
+    let threadLayout = ThreadLayout(position: .child)
+    override var contentContainer: UIView { threadLayout.secondRow }
+    override var horizontalPadding: CGFloat { 0 }
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        threadLayout.install(in: contentView)
     }
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
-}
-class MainThreadElementArticleCell: ThreadElementArticleCell {
-    init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(position: .main, style: style, reuseIdentifier: reuseIdentifier)
+    override func update(_ content: ParsedContent) {
+        super.update(content)
+        threadLayout.updateAppearance(contentView: contentView)
     }
-    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
-}
-class ChildThreadElementArticleCell: ThreadElementArticleCell {
-    init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(position: .child, style: style, reuseIdentifier: reuseIdentifier)
+    override func updateTheme() {
+        super.updateTheme()
+        threadLayout.updateAppearance(contentView: contentView)
     }
-    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
-}
-
-// Post preview
-class ParentThreadElementPostPreviewCell: ThreadElementPostPreviewCell {
-    init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(position: .parent, style: style, reuseIdentifier: reuseIdentifier)
-    }
-    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
-}
-class MainThreadElementPostPreviewCell: ThreadElementPostPreviewCell {
-    init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(position: .main, style: style, reuseIdentifier: reuseIdentifier)
-    }
-    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
-}
-class ChildThreadElementPostPreviewCell: ThreadElementPostPreviewCell {
-    init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(position: .child, style: style, reuseIdentifier: reuseIdentifier)
-    }
-    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 }
 
-// Poll
-class ParentThreadElementPollCell: ThreadElementPollCell {
-    init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(position: .parent, style: style, reuseIdentifier: reuseIdentifier)
+// MARK: - Zap Gallery
+
+class ParentThreadElementSmallZapGalleryCell: FeedElementSmallZapGalleryCell {
+    let threadLayout = ThreadLayout(position: .parent)
+    override var contentContainer: UIView { threadLayout.secondRow }
+    override var horizontalPadding: CGFloat { 0 }
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        threadLayout.install(in: contentView)
     }
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
-}
-class MainThreadElementPollCell: ThreadElementPollCell {
-    init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(position: .main, style: style, reuseIdentifier: reuseIdentifier)
+    override func update(_ parsedContent: ParsedContent) {
+        super.update(parsedContent)
+        threadLayout.updateAppearance(contentView: contentView)
     }
-    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
-}
-class ChildThreadElementPollCell: ThreadElementPollCell {
-    init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(position: .child, style: style, reuseIdentifier: reuseIdentifier)
+    override func updateTheme() {
+        super.updateTheme()
+        threadLayout.updateAppearance(contentView: contentView)
     }
-    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 }
 
-// Invoice
-class ParentThreadElementInvoiceCell: ThreadElementInvoiceCell {
-    init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(position: .parent, style: style, reuseIdentifier: reuseIdentifier)
+class ChildThreadElementSmallZapGalleryCell: FeedElementSmallZapGalleryCell {
+    let threadLayout = ThreadLayout(position: .child)
+    override var contentContainer: UIView { threadLayout.secondRow }
+    override var horizontalPadding: CGFloat { 0 }
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        threadLayout.install(in: contentView)
     }
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
-}
-class MainThreadElementInvoiceCell: ThreadElementInvoiceCell {
-    init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(position: .main, style: style, reuseIdentifier: reuseIdentifier)
+    override func update(_ parsedContent: ParsedContent) {
+        super.update(parsedContent)
+        threadLayout.updateAppearance(contentView: contentView)
     }
-    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
-}
-class ChildThreadElementInvoiceCell: ThreadElementInvoiceCell {
-    init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(position: .child, style: style, reuseIdentifier: reuseIdentifier)
+    override func updateTheme() {
+        super.updateTheme()
+        threadLayout.updateAppearance(contentView: contentView)
     }
-    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
-}
-
-// Zap Preview
-class ParentThreadElementZapPreviewCell: ThreadElementZapPreviewCell {
-    init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(position: .parent, style: style, reuseIdentifier: reuseIdentifier)
-    }
-    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
-}
-class MainThreadElementZapPreviewCell: ThreadElementZapPreviewCell {
-    init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(position: .main, style: style, reuseIdentifier: reuseIdentifier)
-    }
-    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
-}
-class ChildThreadElementZapPreviewCell: ThreadElementZapPreviewCell {
-    init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(position: .child, style: style, reuseIdentifier: reuseIdentifier)
-    }
-    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 }
 
-// Info
-class ParentThreadElementInfoCell: ThreadElementInfoCell {
-    init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(position: .parent, style: style, reuseIdentifier: reuseIdentifier)
+// MARK: - Reactions (has extra overrides for padding/border)
+
+class ParentThreadElementReactionsCell: FeedElementReactionsCell {
+    let threadLayout = ThreadLayout(position: .parent)
+    override var contentContainer: UIView { threadLayout.secondRow }
+    override var horizontalPadding: CGFloat { 0 }
+    override var buttonLeadingPadding: CGFloat { -8 }
+    override var buttonTrailingPadding: CGFloat { 16 }
+    override var showsBottomBorder: Bool { false }
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        threadLayout.install(in: contentView)
     }
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    override func update(_ content: ParsedContent) {
+        super.update(content)
+        threadLayout.updateAppearance(contentView: contentView)
+    }
+    override func updateTheme() {
+        super.updateTheme()
+        threadLayout.updateAppearance(contentView: contentView)
+    }
 }
-class MainThreadElementInfoCell: ThreadElementInfoCell {
-    init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(position: .main, style: style, reuseIdentifier: reuseIdentifier)
+
+class ChildThreadElementReactionsCell: FeedElementReactionsCell {
+    let threadLayout = ThreadLayout(position: .child)
+    override var contentContainer: UIView { threadLayout.secondRow }
+    override var horizontalPadding: CGFloat { 0 }
+    override var buttonLeadingPadding: CGFloat { -8 }
+    override var buttonTrailingPadding: CGFloat { 16 }
+    override var showsBottomBorder: Bool { true }
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        threadLayout.install(in: contentView)
     }
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    override func update(_ content: ParsedContent) {
+        super.update(content)
+        threadLayout.updateAppearance(contentView: contentView)
+    }
+    override func updateTheme() {
+        super.updateTheme()
+        threadLayout.updateAppearance(contentView: contentView)
+    }
 }
-class ChildThreadElementInfoCell: ThreadElementInfoCell {
-    init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(position: .child, style: style, reuseIdentifier: reuseIdentifier)
+
+// MARK: - Article Preview
+
+class ParentThreadElementArticleCell: FeedElementArticleCell {
+    let threadLayout = ThreadLayout(position: .parent)
+    override var contentContainer: UIView { threadLayout.secondRow }
+    override var horizontalPadding: CGFloat { 0 }
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        threadLayout.install(in: contentView)
     }
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    override func update(_ content: ParsedContent) {
+        super.update(content)
+        threadLayout.updateAppearance(contentView: contentView)
+    }
+    override func updateTheme() {
+        super.updateTheme()
+        threadLayout.updateAppearance(contentView: contentView)
+    }
+}
+
+class MainThreadElementArticleCell: FeedElementArticleCell {
+    let threadLayout = ThreadLayout(position: .main)
+    override var contentContainer: UIView { threadLayout.secondRow }
+    override var horizontalPadding: CGFloat { 0 }
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        threadLayout.install(in: contentView)
+    }
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    override func update(_ content: ParsedContent) {
+        super.update(content)
+        threadLayout.updateAppearance(contentView: contentView)
+    }
+    override func updateTheme() {
+        super.updateTheme()
+        threadLayout.updateAppearance(contentView: contentView)
+    }
+}
+
+class ChildThreadElementArticleCell: FeedElementArticleCell {
+    let threadLayout = ThreadLayout(position: .child)
+    override var contentContainer: UIView { threadLayout.secondRow }
+    override var horizontalPadding: CGFloat { 0 }
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        threadLayout.install(in: contentView)
+    }
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    override func update(_ content: ParsedContent) {
+        super.update(content)
+        threadLayout.updateAppearance(contentView: contentView)
+    }
+    override func updateTheme() {
+        super.updateTheme()
+        threadLayout.updateAppearance(contentView: contentView)
+    }
+}
+
+// MARK: - Post Preview
+
+class ParentThreadElementPostPreviewCell: FeedElementPostPreviewCell {
+    let threadLayout = ThreadLayout(position: .parent)
+    override var contentContainer: UIView { threadLayout.secondRow }
+    override var horizontalPadding: CGFloat { 0 }
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        threadLayout.install(in: contentView)
+    }
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    override func update(_ content: ParsedContent) {
+        super.update(content)
+        threadLayout.updateAppearance(contentView: contentView)
+    }
+    override func updateTheme() {
+        super.updateTheme()
+        threadLayout.updateAppearance(contentView: contentView)
+    }
+}
+
+class MainThreadElementPostPreviewCell: FeedElementPostPreviewCell {
+    let threadLayout = ThreadLayout(position: .main)
+    override var contentContainer: UIView { threadLayout.secondRow }
+    override var horizontalPadding: CGFloat { 0 }
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        threadLayout.install(in: contentView)
+    }
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    override func update(_ content: ParsedContent) {
+        super.update(content)
+        threadLayout.updateAppearance(contentView: contentView)
+    }
+    override func updateTheme() {
+        super.updateTheme()
+        threadLayout.updateAppearance(contentView: contentView)
+    }
+}
+
+class ChildThreadElementPostPreviewCell: FeedElementPostPreviewCell {
+    let threadLayout = ThreadLayout(position: .child)
+    override var contentContainer: UIView { threadLayout.secondRow }
+    override var horizontalPadding: CGFloat { 0 }
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        threadLayout.install(in: contentView)
+    }
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    override func update(_ content: ParsedContent) {
+        super.update(content)
+        threadLayout.updateAppearance(contentView: contentView)
+    }
+    override func updateTheme() {
+        super.updateTheme()
+        threadLayout.updateAppearance(contentView: contentView)
+    }
+}
+
+// MARK: - Poll
+
+class ParentThreadElementPollCell: FeedElementPollCell {
+    let threadLayout = ThreadLayout(position: .parent)
+    override var contentContainer: UIView { threadLayout.secondRow }
+    override var horizontalPadding: CGFloat { 0 }
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        threadLayout.install(in: contentView)
+    }
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    override func update(_ content: ParsedContent) {
+        super.update(content)
+        threadLayout.updateAppearance(contentView: contentView)
+    }
+    override func updateTheme() {
+        super.updateTheme()
+        threadLayout.updateAppearance(contentView: contentView)
+    }
+}
+
+class MainThreadElementPollCell: FeedElementPollCell {
+    let threadLayout = ThreadLayout(position: .main)
+    override var contentContainer: UIView { threadLayout.secondRow }
+    override var horizontalPadding: CGFloat { 0 }
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        threadLayout.install(in: contentView)
+    }
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    override func update(_ content: ParsedContent) {
+        super.update(content)
+        threadLayout.updateAppearance(contentView: contentView)
+    }
+    override func updateTheme() {
+        super.updateTheme()
+        threadLayout.updateAppearance(contentView: contentView)
+    }
+}
+
+class ChildThreadElementPollCell: FeedElementPollCell {
+    let threadLayout = ThreadLayout(position: .child)
+    override var contentContainer: UIView { threadLayout.secondRow }
+    override var horizontalPadding: CGFloat { 0 }
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        threadLayout.install(in: contentView)
+    }
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    override func update(_ content: ParsedContent) {
+        super.update(content)
+        threadLayout.updateAppearance(contentView: contentView)
+    }
+    override func updateTheme() {
+        super.updateTheme()
+        threadLayout.updateAppearance(contentView: contentView)
+    }
+}
+
+// MARK: - Invoice
+
+class ParentThreadElementInvoiceCell: FeedElementInvoiceCell {
+    let threadLayout = ThreadLayout(position: .parent)
+    override var contentContainer: UIView { threadLayout.secondRow }
+    override var horizontalPadding: CGFloat { 0 }
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        threadLayout.install(in: contentView)
+    }
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    override func update(_ content: ParsedContent) {
+        super.update(content)
+        threadLayout.updateAppearance(contentView: contentView)
+    }
+    override func updateTheme() {
+        super.updateTheme()
+        threadLayout.updateAppearance(contentView: contentView)
+    }
+}
+
+class MainThreadElementInvoiceCell: FeedElementInvoiceCell {
+    let threadLayout = ThreadLayout(position: .main)
+    override var contentContainer: UIView { threadLayout.secondRow }
+    override var horizontalPadding: CGFloat { 0 }
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        threadLayout.install(in: contentView)
+    }
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    override func update(_ content: ParsedContent) {
+        super.update(content)
+        threadLayout.updateAppearance(contentView: contentView)
+    }
+    override func updateTheme() {
+        super.updateTheme()
+        threadLayout.updateAppearance(contentView: contentView)
+    }
+}
+
+class ChildThreadElementInvoiceCell: FeedElementInvoiceCell {
+    let threadLayout = ThreadLayout(position: .child)
+    override var contentContainer: UIView { threadLayout.secondRow }
+    override var horizontalPadding: CGFloat { 0 }
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        threadLayout.install(in: contentView)
+    }
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    override func update(_ content: ParsedContent) {
+        super.update(content)
+        threadLayout.updateAppearance(contentView: contentView)
+    }
+    override func updateTheme() {
+        super.updateTheme()
+        threadLayout.updateAppearance(contentView: contentView)
+    }
+}
+
+// MARK: - Zap Preview
+
+class ParentThreadElementZapPreviewCell: FeedElementZapPreviewCell {
+    let threadLayout = ThreadLayout(position: .parent)
+    override var contentContainer: UIView { threadLayout.secondRow }
+    override var horizontalPadding: CGFloat { 0 }
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        threadLayout.install(in: contentView)
+    }
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    override func update(_ content: ParsedContent) {
+        super.update(content)
+        threadLayout.updateAppearance(contentView: contentView)
+    }
+    override func updateTheme() {
+        super.updateTheme()
+        threadLayout.updateAppearance(contentView: contentView)
+    }
+}
+
+class MainThreadElementZapPreviewCell: FeedElementZapPreviewCell {
+    let threadLayout = ThreadLayout(position: .main)
+    override var contentContainer: UIView { threadLayout.secondRow }
+    override var horizontalPadding: CGFloat { 0 }
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        threadLayout.install(in: contentView)
+    }
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    override func update(_ content: ParsedContent) {
+        super.update(content)
+        threadLayout.updateAppearance(contentView: contentView)
+    }
+    override func updateTheme() {
+        super.updateTheme()
+        threadLayout.updateAppearance(contentView: contentView)
+    }
+}
+
+class ChildThreadElementZapPreviewCell: FeedElementZapPreviewCell {
+    let threadLayout = ThreadLayout(position: .child)
+    override var contentContainer: UIView { threadLayout.secondRow }
+    override var horizontalPadding: CGFloat { 0 }
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        threadLayout.install(in: contentView)
+    }
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    override func update(_ content: ParsedContent) {
+        super.update(content)
+        threadLayout.updateAppearance(contentView: contentView)
+    }
+    override func updateTheme() {
+        super.updateTheme()
+        threadLayout.updateAppearance(contentView: contentView)
+    }
+}
+
+// MARK: - Info
+
+class ParentThreadElementInfoCell: FeedElementInfoCell {
+    let threadLayout = ThreadLayout(position: .parent)
+    override var contentContainer: UIView { threadLayout.secondRow }
+    override var horizontalPadding: CGFloat { 0 }
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        threadLayout.install(in: contentView)
+    }
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    override func update(_ content: ParsedContent) {
+        super.update(content)
+        threadLayout.updateAppearance(contentView: contentView)
+    }
+    override func updateTheme() {
+        super.updateTheme()
+        threadLayout.updateAppearance(contentView: contentView)
+    }
+}
+
+class MainThreadElementInfoCell: FeedElementInfoCell {
+    let threadLayout = ThreadLayout(position: .main)
+    override var contentContainer: UIView { threadLayout.secondRow }
+    override var horizontalPadding: CGFloat { 0 }
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        threadLayout.install(in: contentView)
+    }
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    override func update(_ content: ParsedContent) {
+        super.update(content)
+        threadLayout.updateAppearance(contentView: contentView)
+    }
+    override func updateTheme() {
+        super.updateTheme()
+        threadLayout.updateAppearance(contentView: contentView)
+    }
+}
+
+class ChildThreadElementInfoCell: FeedElementInfoCell {
+    let threadLayout = ThreadLayout(position: .child)
+    override var contentContainer: UIView { threadLayout.secondRow }
+    override var horizontalPadding: CGFloat { 0 }
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        threadLayout.install(in: contentView)
+    }
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    override func update(_ content: ParsedContent) {
+        super.update(content)
+        threadLayout.updateAppearance(contentView: contentView)
+    }
+    override func updateTheme() {
+        super.updateTheme()
+        threadLayout.updateAppearance(contentView: contentView)
+    }
 }
 
 // MARK: - Live Preview
-class ParentThreadElementLivePreviewCell: ThreadElementLivePreviewCell {
-    init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(position: .parent, style: style, reuseIdentifier: reuseIdentifier)
+
+class ParentThreadElementLivePreviewCell: FeedElementLivePreviewCell {
+    let threadLayout = ThreadLayout(position: .parent)
+    override var contentContainer: UIView { threadLayout.secondRow }
+    override var horizontalPadding: CGFloat { 0 }
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        threadLayout.install(in: contentView)
     }
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
-}
-class MainThreadElementLivePreviewCell: ThreadElementLivePreviewCell {
-    init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(position: .main, style: style, reuseIdentifier: reuseIdentifier)
+    override func update(_ parsedContent: ParsedContent) {
+        super.update(parsedContent)
+        threadLayout.updateAppearance(contentView: contentView)
     }
-    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
-}
-class ChildThreadElementLivePreviewCell: ThreadElementLivePreviewCell {
-    init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(position: .child, style: style, reuseIdentifier: reuseIdentifier)
+    override func updateTheme() {
+        super.updateTheme()
+        threadLayout.updateAppearance(contentView: contentView)
     }
-    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 }
 
-// Link Preview
-class ParentThreadElementWebPreviewCell<T: LinkPreview>: ThreadElementWebPreviewCell<T> {
-    init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(position: .parent, style: style, reuseIdentifier: reuseIdentifier)
+class MainThreadElementLivePreviewCell: FeedElementLivePreviewCell {
+    let threadLayout = ThreadLayout(position: .main)
+    override var contentContainer: UIView { threadLayout.secondRow }
+    override var horizontalPadding: CGFloat { 0 }
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        threadLayout.install(in: contentView)
     }
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
-}
-class MainThreadElementWebPreviewCell<T: LinkPreview>: ThreadElementWebPreviewCell<T> {
-    init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(position: .main, style: style, reuseIdentifier: reuseIdentifier)
+    override func update(_ parsedContent: ParsedContent) {
+        super.update(parsedContent)
+        threadLayout.updateAppearance(contentView: contentView)
     }
-    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
-}
-class ChildThreadElementWebPreviewCell<T: LinkPreview>: ThreadElementWebPreviewCell<T> {
-    init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(position: .child, style: style, reuseIdentifier: reuseIdentifier)
+    override func updateTheme() {
+        super.updateTheme()
+        threadLayout.updateAppearance(contentView: contentView)
     }
-    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
-}
-
-// System Link Preview
-class ParentThreadElementSystemWebPreviewCell: ThreadElementSystemWebPreviewCell {
-    init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(position: .parent, style: style, reuseIdentifier: reuseIdentifier)
-    }
-    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
-}
-class MainThreadElementSystemWebPreviewCell: ThreadElementSystemWebPreviewCell {
-    init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(position: .main, style: style, reuseIdentifier: reuseIdentifier)
-    }
-    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
-}
-class ChildThreadElementSystemWebPreviewCell: ThreadElementSystemWebPreviewCell {
-    init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(position: .child, style: style, reuseIdentifier: reuseIdentifier)
-    }
-    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 }
 
-// WK Link Preview
-class ParentThreadElementWebkitLinkPreviewCell: ThreadElementWebkitLinkPreviewCell {
-    init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(position: .parent, style: style, reuseIdentifier: reuseIdentifier)
+class ChildThreadElementLivePreviewCell: FeedElementLivePreviewCell {
+    let threadLayout = ThreadLayout(position: .child)
+    override var contentContainer: UIView { threadLayout.secondRow }
+    override var horizontalPadding: CGFloat { 0 }
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        threadLayout.install(in: contentView)
     }
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
-}
-class MainThreadElementWebkitLinkPreviewCell: ThreadElementWebkitLinkPreviewCell {
-    init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(position: .main, style: style, reuseIdentifier: reuseIdentifier)
+    override func update(_ parsedContent: ParsedContent) {
+        super.update(parsedContent)
+        threadLayout.updateAppearance(contentView: contentView)
     }
-    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
-}
-class ChildThreadElementWebkitLinkPreviewCell: ThreadElementWebkitLinkPreviewCell {
-    init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(position: .child, style: style, reuseIdentifier: reuseIdentifier)
+    override func updateTheme() {
+        super.updateTheme()
+        threadLayout.updateAppearance(contentView: contentView)
     }
-    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
-}
-
-// Youtube Link Preview
-class ParentThreadElementYoutubePreviewCell: ThreadElementYoutubePreviewCell {
-    init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(position: .parent, style: style, reuseIdentifier: reuseIdentifier)
-    }
-    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
-}
-class MainThreadElementYoutubePreviewCell: ThreadElementYoutubePreviewCell {
-    init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(position: .main, style: style, reuseIdentifier: reuseIdentifier)
-    }
-    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
-}
-class ChildThreadElementYoutubePreviewCell: ThreadElementYoutubePreviewCell {
-    init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(position: .child, style: style, reuseIdentifier: reuseIdentifier)
-    }
-    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 }
 
-// Music Link Preview
-class ParentThreadElementMusicPreviewCell: ThreadElementMusicPreviewCell {
-    init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(position: .parent, style: style, reuseIdentifier: reuseIdentifier)
+// MARK: - Link Preview (generic)
+
+class ParentThreadElementWebPreviewCell<T: LinkPreview>: FeedElementWebPreviewCell<T> {
+    let threadLayout = ThreadLayout(position: .parent)
+    override var contentContainer: UIView { threadLayout.secondRow }
+    override var horizontalPadding: CGFloat { 0 }
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        threadLayout.install(in: contentView)
     }
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
-}
-class MainThreadElementMusicPreviewCell: ThreadElementMusicPreviewCell {
-    init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(position: .main, style: style, reuseIdentifier: reuseIdentifier)
+    override func update(_ content: ParsedContent) {
+        super.update(content)
+        threadLayout.updateAppearance(contentView: contentView)
     }
-    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
-}
-class ChildThreadElementMusicPreviewCell: ThreadElementMusicPreviewCell {
-    init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(position: .child, style: style, reuseIdentifier: reuseIdentifier)
+    override func updateTheme() {
+        super.updateTheme()
+        threadLayout.updateAppearance(contentView: contentView)
     }
-    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 }
 
-// Tidal Link Preview
-class ParentThreadElementTidalPreviewCell: ThreadElementTidalPreviewCell {
-    init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(position: .parent, style: style, reuseIdentifier: reuseIdentifier)
+class MainThreadElementWebPreviewCell<T: LinkPreview>: FeedElementWebPreviewCell<T> {
+    let threadLayout = ThreadLayout(position: .main)
+    override var contentContainer: UIView { threadLayout.secondRow }
+    override var horizontalPadding: CGFloat { 0 }
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        threadLayout.install(in: contentView)
     }
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    override func update(_ content: ParsedContent) {
+        super.update(content)
+        threadLayout.updateAppearance(contentView: contentView)
+    }
+    override func updateTheme() {
+        super.updateTheme()
+        threadLayout.updateAppearance(contentView: contentView)
+    }
 }
-class MainThreadElementTidalPreviewCell: ThreadElementTidalPreviewCell {
-    init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(position: .main, style: style, reuseIdentifier: reuseIdentifier)
+
+class ChildThreadElementWebPreviewCell<T: LinkPreview>: FeedElementWebPreviewCell<T> {
+    let threadLayout = ThreadLayout(position: .child)
+    override var contentContainer: UIView { threadLayout.secondRow }
+    override var horizontalPadding: CGFloat { 0 }
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        threadLayout.install(in: contentView)
     }
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    override func update(_ content: ParsedContent) {
+        super.update(content)
+        threadLayout.updateAppearance(contentView: contentView)
+    }
+    override func updateTheme() {
+        super.updateTheme()
+        threadLayout.updateAppearance(contentView: contentView)
+    }
 }
-class ChildThreadElementTidalPreviewCell: ThreadElementTidalPreviewCell {
-    init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(position: .child, style: style, reuseIdentifier: reuseIdentifier)
+
+// MARK: - System Link Preview
+
+class ParentThreadElementSystemWebPreviewCell: FeedElementSystemWebPreviewCell {
+    let threadLayout = ThreadLayout(position: .parent)
+    override var contentContainer: UIView { threadLayout.secondRow }
+    override var horizontalPadding: CGFloat { 0 }
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        threadLayout.install(in: contentView)
     }
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    override func update(_ content: ParsedContent) {
+        super.update(content)
+        threadLayout.updateAppearance(contentView: contentView)
+    }
+    override func updateTheme() {
+        super.updateTheme()
+        threadLayout.updateAppearance(contentView: contentView)
+    }
+}
+
+class MainThreadElementSystemWebPreviewCell: FeedElementSystemWebPreviewCell {
+    let threadLayout = ThreadLayout(position: .main)
+    override var contentContainer: UIView { threadLayout.secondRow }
+    override var horizontalPadding: CGFloat { 0 }
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        threadLayout.install(in: contentView)
+    }
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    override func update(_ content: ParsedContent) {
+        super.update(content)
+        threadLayout.updateAppearance(contentView: contentView)
+    }
+    override func updateTheme() {
+        super.updateTheme()
+        threadLayout.updateAppearance(contentView: contentView)
+    }
+}
+
+class ChildThreadElementSystemWebPreviewCell: FeedElementSystemWebPreviewCell {
+    let threadLayout = ThreadLayout(position: .child)
+    override var contentContainer: UIView { threadLayout.secondRow }
+    override var horizontalPadding: CGFloat { 0 }
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        threadLayout.install(in: contentView)
+    }
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    override func update(_ content: ParsedContent) {
+        super.update(content)
+        threadLayout.updateAppearance(contentView: contentView)
+    }
+    override func updateTheme() {
+        super.updateTheme()
+        threadLayout.updateAppearance(contentView: contentView)
+    }
+}
+
+// MARK: - Webkit Link Preview
+
+class ParentThreadElementWebkitLinkPreviewCell: FeedElementWebkitLinkPreviewCell {
+    let threadLayout = ThreadLayout(position: .parent)
+    override var contentContainer: UIView { threadLayout.secondRow }
+    override var horizontalPadding: CGFloat { 0 }
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        threadLayout.install(in: contentView)
+    }
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    override func update(_ content: ParsedContent) {
+        super.update(content)
+        threadLayout.updateAppearance(contentView: contentView)
+    }
+    override func updateTheme() {
+        super.updateTheme()
+        threadLayout.updateAppearance(contentView: contentView)
+    }
+}
+
+class MainThreadElementWebkitLinkPreviewCell: FeedElementWebkitLinkPreviewCell {
+    let threadLayout = ThreadLayout(position: .main)
+    override var contentContainer: UIView { threadLayout.secondRow }
+    override var horizontalPadding: CGFloat { 0 }
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        threadLayout.install(in: contentView)
+    }
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    override func update(_ content: ParsedContent) {
+        super.update(content)
+        threadLayout.updateAppearance(contentView: contentView)
+    }
+    override func updateTheme() {
+        super.updateTheme()
+        threadLayout.updateAppearance(contentView: contentView)
+    }
+}
+
+class ChildThreadElementWebkitLinkPreviewCell: FeedElementWebkitLinkPreviewCell {
+    let threadLayout = ThreadLayout(position: .child)
+    override var contentContainer: UIView { threadLayout.secondRow }
+    override var horizontalPadding: CGFloat { 0 }
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        threadLayout.install(in: contentView)
+    }
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    override func update(_ content: ParsedContent) {
+        super.update(content)
+        threadLayout.updateAppearance(contentView: contentView)
+    }
+    override func updateTheme() {
+        super.updateTheme()
+        threadLayout.updateAppearance(contentView: contentView)
+    }
+}
+
+// MARK: - Youtube Preview
+
+class ParentThreadElementYoutubePreviewCell: FeedElementYoutubePreviewCell {
+    let threadLayout = ThreadLayout(position: .parent)
+    override var contentContainer: UIView { threadLayout.secondRow }
+    override var horizontalPadding: CGFloat { 0 }
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        threadLayout.install(in: contentView)
+    }
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    override func update(_ content: ParsedContent) {
+        super.update(content)
+        threadLayout.updateAppearance(contentView: contentView)
+    }
+    override func updateTheme() {
+        super.updateTheme()
+        threadLayout.updateAppearance(contentView: contentView)
+    }
+}
+
+class MainThreadElementYoutubePreviewCell: FeedElementYoutubePreviewCell {
+    let threadLayout = ThreadLayout(position: .main)
+    override var contentContainer: UIView { threadLayout.secondRow }
+    override var horizontalPadding: CGFloat { 0 }
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        threadLayout.install(in: contentView)
+    }
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    override func update(_ content: ParsedContent) {
+        super.update(content)
+        threadLayout.updateAppearance(contentView: contentView)
+    }
+    override func updateTheme() {
+        super.updateTheme()
+        threadLayout.updateAppearance(contentView: contentView)
+    }
+}
+
+class ChildThreadElementYoutubePreviewCell: FeedElementYoutubePreviewCell {
+    let threadLayout = ThreadLayout(position: .child)
+    override var contentContainer: UIView { threadLayout.secondRow }
+    override var horizontalPadding: CGFloat { 0 }
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        threadLayout.install(in: contentView)
+    }
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    override func update(_ content: ParsedContent) {
+        super.update(content)
+        threadLayout.updateAppearance(contentView: contentView)
+    }
+    override func updateTheme() {
+        super.updateTheme()
+        threadLayout.updateAppearance(contentView: contentView)
+    }
+}
+
+// MARK: - Music Preview
+
+class ParentThreadElementMusicPreviewCell: FeedElementMusicPreviewCell {
+    let threadLayout = ThreadLayout(position: .parent)
+    override var contentContainer: UIView { threadLayout.secondRow }
+    override var horizontalPadding: CGFloat { 0 }
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        threadLayout.install(in: contentView)
+    }
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    override func update(_ content: ParsedContent) {
+        super.update(content)
+        threadLayout.updateAppearance(contentView: contentView)
+    }
+    override func updateTheme() {
+        super.updateTheme()
+        threadLayout.updateAppearance(contentView: contentView)
+    }
+}
+
+class MainThreadElementMusicPreviewCell: FeedElementMusicPreviewCell {
+    let threadLayout = ThreadLayout(position: .main)
+    override var contentContainer: UIView { threadLayout.secondRow }
+    override var horizontalPadding: CGFloat { 0 }
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        threadLayout.install(in: contentView)
+    }
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    override func update(_ content: ParsedContent) {
+        super.update(content)
+        threadLayout.updateAppearance(contentView: contentView)
+    }
+    override func updateTheme() {
+        super.updateTheme()
+        threadLayout.updateAppearance(contentView: contentView)
+    }
+}
+
+class ChildThreadElementMusicPreviewCell: FeedElementMusicPreviewCell {
+    let threadLayout = ThreadLayout(position: .child)
+    override var contentContainer: UIView { threadLayout.secondRow }
+    override var horizontalPadding: CGFloat { 0 }
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        threadLayout.install(in: contentView)
+    }
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    override func update(_ content: ParsedContent) {
+        super.update(content)
+        threadLayout.updateAppearance(contentView: contentView)
+    }
+    override func updateTheme() {
+        super.updateTheme()
+        threadLayout.updateAppearance(contentView: contentView)
+    }
+}
+
+// MARK: - Tidal Preview
+
+class ParentThreadElementTidalPreviewCell: FeedElementTidalPreviewCell {
+    let threadLayout = ThreadLayout(position: .parent)
+    override var contentContainer: UIView { threadLayout.secondRow }
+    override var horizontalPadding: CGFloat { 0 }
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        threadLayout.install(in: contentView)
+    }
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    override func update(_ content: ParsedContent) {
+        super.update(content)
+        threadLayout.updateAppearance(contentView: contentView)
+    }
+    override func updateTheme() {
+        super.updateTheme()
+        threadLayout.updateAppearance(contentView: contentView)
+    }
+}
+
+class MainThreadElementTidalPreviewCell: FeedElementTidalPreviewCell {
+    let threadLayout = ThreadLayout(position: .main)
+    override var contentContainer: UIView { threadLayout.secondRow }
+    override var horizontalPadding: CGFloat { 0 }
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        threadLayout.install(in: contentView)
+    }
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    override func update(_ content: ParsedContent) {
+        super.update(content)
+        threadLayout.updateAppearance(contentView: contentView)
+    }
+    override func updateTheme() {
+        super.updateTheme()
+        threadLayout.updateAppearance(contentView: contentView)
+    }
+}
+
+class ChildThreadElementTidalPreviewCell: FeedElementTidalPreviewCell {
+    let threadLayout = ThreadLayout(position: .child)
+    override var contentContainer: UIView { threadLayout.secondRow }
+    override var horizontalPadding: CGFloat { 0 }
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        threadLayout.install(in: contentView)
+    }
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    override func update(_ content: ParsedContent) {
+        super.update(content)
+        threadLayout.updateAppearance(contentView: contentView)
+    }
+    override func updateTheme() {
+        super.updateTheme()
+        threadLayout.updateAppearance(contentView: contentView)
+    }
 }

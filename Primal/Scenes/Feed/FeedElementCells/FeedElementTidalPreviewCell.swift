@@ -38,20 +38,20 @@ class FeedElementTidalPreviewCell: FeedElementBaseCell, RegularFeedElementCell, 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
-        contentView.addSubview(webView)
+        contentContainer.addSubview(webView)
         webView
             .pinToSuperview(edges: .top, padding: 8)
             .pinToSuperview(edges: .bottom, padding: 0)
-            .pinToSuperview(edges: .horizontal, padding: 16)
+            .pinToSuperview(edges: .horizontal, padding: horizontalPadding)
         webView.alpha = 0
         webView.layer.cornerRadius = 12
         webView.clipsToBounds = true
         
-        contentView.addSubview(linkPreview)
+        contentContainer.addSubview(linkPreview)
         linkPreview
             .pinToSuperview(edges: .top, padding: 8)
             .pinToSuperview(edges: .bottom, padding: 0)
-            .pinToSuperview(edges: .horizontal, padding: 16)
+            .pinToSuperview(edges: .horizontal, padding: horizontalPadding)
             .constrainToSize(height: 100)
         
         linkPreview.addSubview(mainStack)

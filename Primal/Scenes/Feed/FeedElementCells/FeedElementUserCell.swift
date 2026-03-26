@@ -9,7 +9,10 @@ import UIKit
 
 class FeedElementBaseCell: UITableViewCell {
     weak var delegate: FeedElementCellDelegate?
-    
+
+    var contentContainer: UIView { contentView }
+    var horizontalPadding: CGFloat { 16 }
+
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
@@ -56,8 +59,8 @@ class FeedElementUserCell: FeedElementBaseCell, RegularFeedElementCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
-        contentView.addSubview(mainStack)
-        mainStack.pinToSuperview(edges: .top, padding: 12).pinToSuperview(edges: .horizontal, padding: 16)
+        contentContainer.addSubview(mainStack)
+        mainStack.pinToSuperview(edges: .top, padding: 12).pinToSuperview(edges: .horizontal, padding: horizontalPadding)
         let botC = mainStack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -6)
         botC.priority = .defaultLow
         botC.isActive = true
