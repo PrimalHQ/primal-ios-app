@@ -83,7 +83,7 @@ class TransactionViewDatasource: UITableViewDiffableDataSource<TwoSectionFeed, T
     
     private var cancellables: Set<AnyCancellable> = []
     
-    let transaction: PrimalShared.Transaction
+    private(set) var transaction: PrimalShared.Transaction
     init(transaction: PrimalShared.Transaction, tableView: UITableView, delegate: FeedElementCellDelegate) {
         self.transaction = transaction
         
@@ -156,6 +156,11 @@ class TransactionViewDatasource: UITableViewDiffableDataSource<TwoSectionFeed, T
         }
     }
     
+    func updateTransaction(_ transaction: PrimalShared.Transaction) {
+        self.transaction = transaction
+        setInfoCells()
+    }
+
     func elementForIndexPath(_ indexPath: IndexPath) -> NoteFeedElement? {
         guard indexPath.section == 1, let data = noteSectionCells[safe: indexPath.row], case .noteElement(_, let element) = data else { return nil }
         return element

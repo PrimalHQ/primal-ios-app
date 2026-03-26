@@ -47,7 +47,7 @@ class LiveVideoPlayerController: UIViewController {
     let smallHeader = LiveVideoSmallHeaderView()
     let smallVideoCoverView = UIView()
     
-    var player: VideoPlayer?
+    var player: LiveVideoPlayer?
     
     var live: ParsedLiveEvent { didSet { updateLabels() } }
     
@@ -87,20 +87,20 @@ class LiveVideoPlayerController: UIViewController {
     init(live: ParsedLiveEvent) {
         self.live = live
         if let url = live.videoURL {
-            player = VideoPlayer(url: url, originalURL: "", userPubkey: "", live: live)
+            player = LiveVideoPlayer(url: url, live: live)
         } else {
             player = nil
         }
-        
+
         print("Muted: \(LiveMuteManager.instance.isMuted(live.user.data.pubkey))") // to initialize the mute list
-        
+
         player?.play()
         liveVideoPlayer.player = player
-        
+
         super.init(nibName: nil, bundle: nil)
-        
+
         DispatchQueue.main.async {
-            self.player?.avPlayer.isMuted = false
+            self.player?.setMuted(false)
         }
         
         modalPresentationStyle = .overFullScreen
@@ -277,10 +277,7 @@ class LiveVideoPlayerController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
-        try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .moviePlayback)
-        try? AVAudioSession.sharedInstance().setActive(true)
-        
+
         player?.play()
     }
     
@@ -581,7 +578,7 @@ extension LiveVideoPlayerController: LivePlayerViewDelegate {
             present(activityViewController, animated: true, completion: nil)
         case .playReplay:
             guard let url = live.videoURL else { return }
-            player = VideoPlayer(url: url, originalURL: "", userPubkey: "", live: live)
+            player = LiveVideoPlayer(url: url, live: live)
             player?.play()
             liveVideoPlayer.player = player
         }

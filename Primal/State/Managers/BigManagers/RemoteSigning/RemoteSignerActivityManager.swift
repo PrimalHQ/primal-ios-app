@@ -169,10 +169,7 @@ class RemoteSignerActivityManager {
             let name = soundNames[safe: index],
             let player = RemoteSessionAudioPlayer(name: name)
         else { return }
-        
-        try? AVAudioSession.sharedInstance().setCategory(.playback, options: [.mixWithOthers])
-        try? AVAudioSession.sharedInstance().setActive(true)
-        
+
         lastPlayedIndex = index
         player.play()
         updateActivity()
@@ -196,21 +193,26 @@ class RemoteSessionAudioPlayer: GenericPlayer<AVAudioPlayer> {
         let url = URL(fileURLWithPath: path)
 
         guard let audioPlayer = try? AVAudioPlayer(contentsOf: url) else { return nil }
-            
+
         audioPlayer.numberOfLoops = -1
         audioPlayer.volume = RemoteSignerActivityManager.instance.isAudioMuted ? 0 : 1
-        
+
         super.init(playerInit: { audioPlayer })
     }
-    
+
+    override func play() {
+        VideoPlaybackManager.instance.setAudioSessionCategory(.playback, options: [.mixWithOthers])
+        super.play()
+    }
+
     override func setMuted(_ isMuted: Bool) {
         // CUSTOM MUTING
     }
-    
+
     func setMutedCustom(_ isMuted: Bool) {
         underlyingPlayer.isMuted = isMuted
     }
-    
+
     override func pause() {
         if VideoPlaybackManager.instance.currentlyPlaying === self { return } // Disable pausing if there isn't something else playing
         super.pause()

@@ -272,7 +272,6 @@
 		B907D3A02DBA5144002B86DA /* PopupReportContentController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B907D39F2DBA5144002B86DA /* PopupReportContentController.swift */; };
 		B907D3C12DBBF18B002B86DA /* LightningDevKit in Frameworks */ = {isa = PBXBuildFile; productRef = B907D3C02DBBF18B002B86DA /* LightningDevKit */; };
 		B90820272EE838A600E4422A /* RemoteSignerConnectionAutostartCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90820262EE8389600E4422A /* RemoteSignerConnectionAutostartCell.swift */; };
-		B90DB0672E58DDF500A67D4A /* VideoPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90DB0662E58DDF500A67D4A /* VideoPlayer.swift */; };
 		B90DB0692E5C71A200A67D4A /* videoLoadingScreenLight.json in Resources */ = {isa = PBXBuildFile; fileRef = B90DB0682E5C71A200A67D4A /* videoLoadingScreenLight.json */; };
 		B90DB06B2E5C753800A67D4A /* LiveVideoConfigController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90DB06A2E5C752700A67D4A /* LiveVideoConfigController.swift */; };
 		B90DB06D2E5CB90100A67D4A /* LiveMuteManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90DB06C2E5CB8FC00A67D4A /* LiveMuteManager.swift */; };
@@ -754,6 +753,8 @@
 		D2B3C4E5F6A7089012345679 /* CacheBreakdownView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2B3C4E5F6A7089012345678 /* CacheBreakdownView.swift */; };
 		D5A4266E6F84FB8044839C0E /* PollVoteDetailsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDBBAA6B683A9D0CB02B7060 /* PollVoteDetailsCell.swift */; };
 		E365D8456ACE78BF9DE4C077 /* OldWalletDetectedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5764AD3FE766D500CBC6420 /* OldWalletDetectedView.swift */; };
+		ED696C5B32C51E1E05C1EADD /* LiveVideoPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58BCEEB23F4CCE0243097494 /* LiveVideoPlayer.swift */; };
+		F8E7A8239A9F7E466C01EBF5 /* FeedVideoPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF3D490ED6A30BA8537BEBDF /* FeedVideoPlayer.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -825,6 +826,7 @@
 		251E11AFC9FB66D804B5217F /* PollVoteUserCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollVoteUserCell.swift; sourceTree = "<group>"; };
 		254BECF85EE9411B88FDCEFA /* PollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollView.swift; sourceTree = "<group>"; };
 		32167054FC4146F3845A370A /* ThreadElementPollCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadElementPollCell.swift; sourceTree = "<group>"; };
+		58BCEEB23F4CCE0243097494 /* LiveVideoPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveVideoPlayer.swift; sourceTree = "<group>"; };
 		661FE298A909D88F0B34B14F /* PollVotesDatasource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollVotesDatasource.swift; sourceTree = "<group>"; };
 		731729354B231F6AE303270F /* PollVoteTitleCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollVoteTitleCell.swift; sourceTree = "<group>"; };
 		930497A229FAD69B003938F2 /* Mentions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mentions.swift; sourceTree = "<group>"; };
@@ -1063,6 +1065,7 @@
 		A1B2C3D4E5F6A7B8C9D0E1F2 /* WalletDetectedPopupController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletDetectedPopupController.swift; sourceTree = "<group>"; };
 		A23B4E5D450372ED459567FF /* PollVotesFeedManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollVotesFeedManager.swift; sourceTree = "<group>"; };
 		A5764AD3FE766D500CBC6420 /* OldWalletDetectedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OldWalletDetectedView.swift; sourceTree = "<group>"; };
+		AF3D490ED6A30BA8537BEBDF /* FeedVideoPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedVideoPlayer.swift; sourceTree = "<group>"; };
 		B90032842BD0183600ADD2E5 /* NoteZapsRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteZapsRequest.swift; sourceTree = "<group>"; };
 		B90032872BD11DEA00ADD2E5 /* NoteReactionsParentController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteReactionsParentController.swift; sourceTree = "<group>"; };
 		B90032892BD266FF00ADD2E5 /* NoteZapsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteZapsViewController.swift; sourceTree = "<group>"; };
@@ -1111,7 +1114,6 @@
 		B906AB152C9B52C10089813F /* DatabaseManager+Profile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DatabaseManager+Profile.swift"; sourceTree = "<group>"; };
 		B907D39F2DBA5144002B86DA /* PopupReportContentController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupReportContentController.swift; sourceTree = "<group>"; };
 		B90820262EE8389600E4422A /* RemoteSignerConnectionAutostartCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSignerConnectionAutostartCell.swift; sourceTree = "<group>"; };
-		B90DB0662E58DDF500A67D4A /* VideoPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPlayer.swift; sourceTree = "<group>"; };
 		B90DB0682E5C71A200A67D4A /* videoLoadingScreenLight.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = videoLoadingScreenLight.json; sourceTree = "<group>"; };
 		B90DB06A2E5C752700A67D4A /* LiveVideoConfigController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveVideoConfigController.swift; sourceTree = "<group>"; };
 		B90DB06C2E5CB8FC00A67D4A /* LiveMuteManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveMuteManager.swift; sourceTree = "<group>"; };
@@ -1836,7 +1838,6 @@
 			isa = PBXGroup;
 			children = (
 				B904EA152F23B4F7006D195C /* Markdown */,
-				B9EDA58B2E4F5AEA003262E4 /* UserSearch */,
 				9E9F2F7229F6AB6400A9CDF3 /* Views */,
 				9E83DF752A573F1C00F2C379 /* Helpers */,
 				9E83DF6A2A573DE800F2C379 /* Protocols */,
@@ -2683,9 +2684,10 @@
 		B90DB0632E58DDDF00A67D4A /* Video */ = {
 			isa = PBXGroup;
 			children = (
+				AF3D490ED6A30BA8537BEBDF /* FeedVideoPlayer.swift */,
 				B9E0E6292EEB483A00F48B2A /* GenericPlayer.swift */,
+				58BCEEB23F4CCE0243097494 /* LiveVideoPlayer.swift */,
 				B914CD682A9E6B4A00CD0BD1 /* VideoPlaybackManager.swift */,
-				B90DB0662E58DDF500A67D4A /* VideoPlayer.swift */,
 			);
 			path = Video;
 			sourceTree = "<group>";
@@ -3714,13 +3716,6 @@
 			path = Gestures;
 			sourceTree = "<group>";
 		};
-		B9EDA58B2E4F5AEA003262E4 /* UserSearch */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = UserSearch;
-			sourceTree = "<group>";
-		};
 		B9F9331B2B88F6C40064B495 /* Premium */ = {
 			isa = PBXGroup;
 			children = (
@@ -4371,7 +4366,8 @@
 				B9C5A0E82F44ACD3007CB5D3 /* SecretsManager.swift in Sources */,
 				B90EF0F12B03F7AF00A7CD65 /* SettingsContentDisplayController.swift in Sources */,
 				B91EF0E42CECDE1600299ECF /* UserImageView.swift in Sources */,
-				B90DB0672E58DDF500A67D4A /* VideoPlayer.swift in Sources */,
+				F8E7A8239A9F7E466C01EBF5 /* FeedVideoPlayer.swift in Sources */,
+				ED696C5B32C51E1E05C1EADD /* LiveVideoPlayer.swift in Sources */,
 				B928F8722F30BFB400DBD9D0 /* BackupWalletIntroController.swift in Sources */,
 				B928F8732F30BFB400DBD9D0 /* BackupWalletPhraseController.swift in Sources */,
 				B928F8742F30BFB400DBD9D0 /* BackupWalletController.swift in Sources */,
@@ -4975,7 +4971,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.0.29;
+				MARKETING_VERSION = 3.0.33;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -5024,7 +5020,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.0.29;
+				MARKETING_VERSION = 3.0.33;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

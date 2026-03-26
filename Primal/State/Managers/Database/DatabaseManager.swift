@@ -190,10 +190,12 @@ private extension DatabaseManager {
             }
         }
         
-        // Migrations for future application versions will be inserted here:
-        // migrator.registerMigration(...) { db in
-        //     ...
-        // }
+        migrator.registerMigration("addDraftKindAndCustomTags") { db in
+            try db.alter(table: NoteDraft.databaseTableName) { t in
+                t.add(column: "kind", .integer).defaults(to: 1)
+                t.add(column: "customTags", .text)
+            }
+        }
         
         return migrator
     }

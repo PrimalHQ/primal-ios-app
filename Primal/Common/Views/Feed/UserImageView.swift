@@ -155,7 +155,7 @@ class UserImageView: UIView, Themeable {
         updateGlow(user)
         
         // Only show live indicator for ImageViews larger than 30
-        if showLivePill, height > 30, let live = LiveEventManager.instance.liveEvent(for: user.data.pubkey) {
+        if showLivePill, height > 30, LiveEventManager.instance.liveEvent(for: user.data.pubkey) != nil {
             if legendaryGradient.isHidden {
                 legendaryGradient.isHidden = false
                 legendaryBackgroundCircleView.isHidden = false

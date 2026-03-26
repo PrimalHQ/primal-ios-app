@@ -18,14 +18,16 @@ protocol PlayerProtocol: AnyObject {
     func play()
     func pause()
     func delayedPause()
-    
+
     func setMuted(_ isMuted: Bool)
-    
+
     var isPlaying: Bool { get }
+    var blocksAutoplay: Bool { get }
 }
 
 extension PlayerProtocol {
     var delayedPauseInterval: Int { 700 }
+    var blocksAutoplay: Bool { false }
 }
 
 class GenericPlayer<T: PlayableProtocol>: NSObject, PlayerProtocol {
@@ -47,7 +49,7 @@ class GenericPlayer<T: PlayableProtocol>: NSObject, PlayerProtocol {
         shouldPause = false
         isPlaying = true
         underlyingPlayer.playSpecial()
-        
+
         VideoPlaybackManager.instance.currentlyPlaying = self
     }
     

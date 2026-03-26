@@ -165,7 +165,7 @@ private extension PushNotificationsManager {
 
         guard !nwcNotifications.isEmpty, NwcServiceManager.shared.autoStartService else { return }
 
-        NwcServiceManager.shared.startService()
+        NwcServiceManager.shared.startService(showPopup: false)
         dismissNotifications(nwcNotifications)
     }
 }

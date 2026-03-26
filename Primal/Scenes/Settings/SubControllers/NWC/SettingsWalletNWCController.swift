@@ -69,7 +69,7 @@ final class SettingsWalletNWCController: UIViewController {
             if service.isServiceActive {
                 service.endService()
             } else {
-                service.startService()
+                service.startService(showPopup: true)
             }
         }), for: .touchUpInside)
         

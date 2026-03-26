@@ -150,6 +150,7 @@ final class ImagePickerManager: NSObject {
     
     weak var viewController: UIViewController?
     let pickImageCallback: (ImagePickerResult) -> Void
+    let selectionLimit: Int
     
     // Hold a strong reference to self during the picker presentation.
     var strongSelf: ImagePickerManager?
@@ -160,9 +161,10 @@ final class ImagePickerManager: NSObject {
     }
     
     @discardableResult
-    init(_ vc: UIViewController, mode: Mode = .dialog, allowVideo: Bool = false, _ callback: @escaping (ImagePickerResult) -> Void) {
+    init(_ vc: UIViewController, mode: Mode = .dialog, allowVideo: Bool = false, selectionLimit: Int = 1, _ callback: @escaping (ImagePickerResult) -> Void) {
         viewController = vc
         pickImageCallback = callback
+        self.selectionLimit = selectionLimit
         super.init()
         
         // Configure UIImagePickerController for camera mode.
@@ -207,7 +209,7 @@ final class ImagePickerManager: NSObject {
         strongSelf = self
         
         var config = PHPickerConfiguration()
-        config.selectionLimit = 1
+        config.selectionLimit = selectionLimit
         // If you allow video, set filter to .any, otherwise only images.
         config.filter = allowVideo ? PHPickerFilter.any(of: [.images, .videos]) : .images
         
@@ -258,69 +260,76 @@ extension ImagePickerManager: PHPickerViewControllerDelegate {
     
     func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
         picker.dismiss(animated: true, completion: nil)
+
+        guard !results.isEmpty else {
+            strongSelf = nil
+            return
+        }
+
+        for result in results {
+            processPickerResult(result)
+        }
+
+        // Release extra retain; async closures capture self to stay alive
         strongSelf = nil
-        
-        guard let result = results.first else { return }
+    }
+
+    private func processPickerResult(_ result: PHPickerResult) {
         let itemProvider = result.itemProvider
-        
+
         // Check for video first (if allowed).
         if itemProvider.hasItemConformingToTypeIdentifier("public.movie") {
-            strongSelf = self
-            
             let progressAlert = UIAlertController(title: "Processing", message: "Operation in progress...\n\n", preferredStyle: .alert)
-            
-            let progress = itemProvider.loadFileRepresentation(forTypeIdentifier: "public.movie") { [weak self] (url, error) in
+
+            let progress = itemProvider.loadFileRepresentation(forTypeIdentifier: "public.movie") { (url, error) in
                 if let error = error {
                     print("Error loading video: \(error)")
                     return
                 }
                 guard var url = url else { return }
-                    
+
                 do {
                     // Create a unique temporary file URL
                     let tempDirectory = FileManager.default.temporaryDirectory
                     let fileName = UUID().uuidString + "." + (url.pathExtension)
                     let tempURL = tempDirectory.appendingPathComponent(fileName)
-                    
+
                     // Copy the video file
                     try FileManager.default.copyItem(at: url, to: tempURL)
                     url = tempURL
                 } catch {
                     print("Error copying video: \(error.localizedDescription)")
                 }
-                
-                guard let thumbnail = self?.getThumbnailImage(forUrl: url) else { return }
-                
+
+                guard let thumbnail = self.getThumbnailImage(forUrl: url) else { return }
+
                 DispatchQueue.main.async {
                     DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(500)) {
                         progressAlert.dismiss(animated: true)
                     }
-                    self?.pickImageCallback(VideoMediaPickerResult(thumbnail: thumbnail, url: url))
-                    self?.strongSelf = nil
+                    self.pickImageCallback(VideoMediaPickerResult(thumbnail: thumbnail, url: url))
                 }
             }
-            
+
             // Add progress view
             let progressView = UIProgressView(progressViewStyle: .default)
             progressView.translatesAutoresizingMaskIntoConstraints = false
             progressView.progress = 0.0
-            
+
             progressAlert.view?.addSubview(progressView)
             progressView
                 .pinToSuperview(edges: .top, padding: 80)
                 .pinToSuperview(edges: .horizontal, padding: 20)
                 .constrainToSize(height: 8)
-            
+
             // Add cancel action
-            progressAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel) { [weak self] _ in
-                self?.strongSelf = nil
-            })
-            
+            progressAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+
             // Present
             DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
                 self.viewController?.present(progressAlert, animated: true, completion: nil)
             }
-            
+
             Publishers.CombineLatest(
                 progress.publisher(for: \.completedUnitCount),
                 progress.publisher(for: \.totalUnitCount)
@@ -332,7 +341,7 @@ extension ImagePickerManager: PHPickerViewControllerDelegate {
             .store(in: &cancellables)
             return
         }
-        
+
         // Check for GIF. We use "public.gif" to identify GIF images.
         if itemProvider.hasItemConformingToTypeIdentifier(UTType.gif.identifier) {
             itemProvider.loadFileRepresentation(forTypeIdentifier: UTType.gif.identifier) { (url, error) in
@@ -355,7 +364,7 @@ extension ImagePickerManager: PHPickerViewControllerDelegate {
             }
             return
         }
-        
+
         // Otherwise, handle standard images.
         if itemProvider.canLoadObject(ofClass: UIImage.self) {
             // Here we load the file representation so we can check the file type.

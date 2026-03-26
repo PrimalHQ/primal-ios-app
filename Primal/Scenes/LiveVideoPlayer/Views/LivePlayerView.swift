@@ -44,7 +44,7 @@ class LivePlayerView: UIView {
     
     var playerLayer: AVPlayerLayer { playerView.playerLayer }
     
-    var player: VideoPlayer? {
+    var player: LiveVideoPlayer? {
         didSet {
             streamEndedView.isHidden = player != nil
             playerLayer.player = player?.avPlayer
@@ -168,11 +168,8 @@ class LivePlayerView: UIView {
         }), for: .touchUpInside)
         
         muteButton.addAction(.init(handler: { [weak self] _ in
-            if self?.player?.avPlayer.isMuted == true {
-                VideoPlaybackManager.instance.isMuted = false
-            } else {
-                VideoPlaybackManager.instance.isMuted = true
-            }
+            guard let player = self?.player else { return }
+            player.setMuted(player.avPlayer.isMuted != true)
         }), for: .touchUpInside)
         
         seekPastButton.addAction(.init(handler: { [weak self] _ in

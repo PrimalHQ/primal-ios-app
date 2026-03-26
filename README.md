@@ -1,12 +1,4 @@
-<!-- Improved compatibility of back to top link: See: https://github.com/othneildrew/Best-README-Template/pull/73 -->
 <a name="readme-top"></a>
-<!--
-*** Thanks for checking out the Best-README-Template. If you have a suggestion
-*** that would make this better, please fork the repo and create a pull request
-*** or simply open an issue with the tag "enhancement".
-*** Don't forget to give the project a star!
-*** Thanks again! Now go create something AMAZING! :D
--->
 
 
 
@@ -43,8 +35,6 @@
     <a href="https://github.com/PrimalHQ/primal-ios-app">View Demo</a>
     ·
     <a href="https://github.com/PrimalHQ/primal-ios-app/issues">Report Bug</a>
-    ·
-    <a href="https://github.com/PrimalHQ/primal-ios-app/issues">Request Feature</a>
   </p>
 </div>
 
@@ -101,7 +91,16 @@
 
 ### Prerequisites
 
-Nothing special, just open the project in Xcode and build it.
+* **Xcode 26.3** is required to build the project
+
+### Building
+
+1. Clone the repo
+   ```sh
+   git clone https://github.com/PrimalHQ/primal-ios-app.git
+   ```
+2. Open `Primal.xcworkspace` in Xcode
+3. Build and run (Cmd+R)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -123,7 +122,6 @@ Distributed under the MIT License. See [LICENSE](LICENSE) for more information.
 ## Contact
 
 - Pavle - [@pavle](https://primal.net/pavle)
-- Nikola - [@nikola](https://primal.net/nikola)
 
 Project Link: [https://github.com/PrimalHQ/primal-ios-app](https://github.com/PrimalHQ/primal-ios-app)
 

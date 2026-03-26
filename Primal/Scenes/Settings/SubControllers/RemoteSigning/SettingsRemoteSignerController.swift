@@ -97,18 +97,6 @@ extension SettingsRemoteSignerController: UITableViewDelegate {
     }
 }
 
-extension RemoteAppConnection {
-    func defaultImage(size: CGFloat, color: UIColor = .foreground3, background: UIColor = .foreground.withAlphaComponent(0.1)) -> UIImage? {
-        return UIImage.create(letter: String(self.name?.first ?? "?"), size: size, color: color, backgroundColor: background)
-    }
-}
-
-extension RemoteAppSession {
-    func defaultImage(size: CGFloat, color: UIColor = .foreground3, background: UIColor = .foreground.withAlphaComponent(0.1)) -> UIImage? {
-        return UIImage.create(letter: String(self.name?.first ?? "?"), size: size, color: color, backgroundColor: background)
-    }
-}
-
 extension UIImage {
     /// Creates a circular image with a border and a centered string.
     static func create(

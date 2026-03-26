@@ -32,11 +32,26 @@ class PollInputView: UIView {
     
     func reset() {
         choicesStack.arrangedSubviews.forEach { $0.removeFromSuperview() }
-        
+
         // Start with 2 choices
         addChoiceField(placeholder: "Choice 1")
         addChoiceField(placeholder: "Choice 2")
 
+        updateLabels()
+    }
+
+    func restore(_ poll: PollData) {
+        choicesStack.arrangedSubviews.forEach { $0.removeFromSuperview() }
+
+        let count = max(poll.options.count, 2)
+        for i in 0..<count {
+            let field = addChoiceField(placeholder: "Choice \(i + 1)")
+            if i < poll.options.count {
+                field.text = poll.options[i]
+            }
+        }
+        addChoiceButton.alpha = count >= 5 ? 0 : 1
+        updateCloseButtons()
         updateLabels()
     }
 

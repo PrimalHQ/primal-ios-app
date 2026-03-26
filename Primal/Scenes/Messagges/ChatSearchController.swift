@@ -111,11 +111,12 @@ private extension ChatSearchController {
     
     func setBindings() {
         $userSearchText
-            .flatMap { [weak self] in
+            .handleEvents(receiveOutput: { [weak self] _ in
                 self?.userTable.reloadData()
-                
-                return SmartContactsManager.instance.userSearchPublisher($0)
-            }
+            })
+
+            .map { SmartContactsManager.instance.userSearchPublisher($0) }
+            .switchToLatest()
             .receive(on: DispatchQueue.main)
             .sink(receiveValue: { [weak self] result in
                 self?.users = result

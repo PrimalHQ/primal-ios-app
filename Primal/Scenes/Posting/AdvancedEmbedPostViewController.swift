@@ -118,7 +118,7 @@ private extension AdvancedEmbedPostViewController {
     }
     
     @objc func galleryButtonPressed() {
-        ImagePickerManager(self, mode: .gallery, allowVideo: true) { [weak self] result in
+        ImagePickerManager(self, mode: .gallery, allowVideo: true, selectionLimit: 0) { [weak self] result in
             self?.manager.processSelectedAsset(result)
         }
     }
@@ -347,6 +347,14 @@ private extension AdvancedEmbedPostViewController {
             pollInputView.isHidden = poll == nil
             clearButton.isHidden = poll != nil
             pollButton.isHidden = poll != nil
+        }
+        .store(in: &cancellables)
+        
+        manager.didRestoreDraftEvent.sink { [weak self] in
+            guard let self else { return }
+            if let poll = manager.pollOptions {
+                pollInputView.restore(poll)
+            }
         }
         .store(in: &cancellables)
     }

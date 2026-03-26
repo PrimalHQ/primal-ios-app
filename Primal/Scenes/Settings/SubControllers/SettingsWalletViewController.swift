@@ -220,7 +220,7 @@ private extension SettingsWalletViewController {
         
         externalWallet.switchView.addAction(.init(handler: { [weak self, weak externalWallet] _ in
             guard let externalWallet else { return }
-            let usePrimalWallet = externalWallet.switchView.isOn
+            let usePrimalWallet = !externalWallet.switchView.isOn
             
             Task { @MainActor in
                 try await WalletManager.instance.setUsePrimalWallet(usePrimalWallet)

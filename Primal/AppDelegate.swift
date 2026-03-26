@@ -80,7 +80,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         
         UITableView.appearance().sectionHeaderTopPadding = 0
         
-        try? AVAudioSession.sharedInstance().setCategory(.ambient, mode: .default)
+        VideoPlaybackManager.instance.setAudioSessionCategory(.ambient)
         
         PrimalEndpointsManager.instance.checkIfNecessary()
         
@@ -171,7 +171,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         if let extra = notification.request.content.userInfo["extra"] as? [String: Any],
            let eventKind = extra["event_kind"] as? Int, eventKind == 23194,
            NwcServiceManager.shared.autoStartService {
-            NwcServiceManager.shared.startService()
+            NwcServiceManager.shared.startService(showPopup: false)
             completionHandler([])
             return
         }
@@ -186,7 +186,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
             var waitForOpen = false
             
             if let eventKind = extra["event_kind"] as? Int, eventKind == 23194, NwcServiceManager.shared.autoStartService {
-                NwcServiceManager.shared.startService()
+                NwcServiceManager.shared.startService(showPopup: false)
                 completionHandler()
                 return
             }
