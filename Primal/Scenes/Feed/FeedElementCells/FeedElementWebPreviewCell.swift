@@ -21,11 +21,11 @@ class FeedElementWebPreviewCell<T: LinkPreview>: FeedElementBaseCell, RegularFee
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
-        contentView.addSubview(linkPresentation)
+        contentContainer.addSubview(linkPresentation)
         linkPresentation
             .pinToSuperview(edges: .top, padding: 8)
             .pinToSuperview(edges: .bottom, padding: 0)
-            .pinToSuperview(edges: .horizontal, padding: 16)
+            .pinToSuperview(edges: .horizontal, padding: horizontalPadding)
         
         linkPresentation.heightAnchor.constraint(lessThanOrEqualToConstant: 500).isActive = true
         linkPresentation.addGestureRecognizer(BindableTapGestureRecognizer(action: { [weak self] in

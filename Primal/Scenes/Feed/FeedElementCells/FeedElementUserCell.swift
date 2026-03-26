@@ -9,24 +9,44 @@ import UIKit
 
 class FeedElementBaseCell: UITableViewCell {
     weak var delegate: FeedElementCellDelegate?
-    
+
+    private(set) var threadLayout: ThreadLayout?
+
+    var contentContainer: UIView { threadLayout?.secondRow ?? contentView }
+    var horizontalPadding: CGFloat { threadLayout != nil ? 0 : 16 }
+
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        if let reuseIdentifier {
+            for position in ThreadPosition.allCases {
+                if reuseIdentifier.hasSuffix(position.rawValue) {
+                    threadLayout = ThreadLayout(position: position)
+                    break
+                }
+            }
+        }
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        
+        threadLayout?.install(in: contentView)
+
         selectionStyle = .none
         backgroundColor = .clear
         clipsToBounds = false
         contentView.clipsToBounds = false
     }
-    
+
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
-    
+
     func update(_ parsedContent: ParsedContent) {
-        contentView.backgroundColor = .background2
+        if threadLayout == nil {
+            contentView.backgroundColor = .background2
+        }
+        threadLayout?.updateAppearance(contentView: contentView)
     }
-    
+
     func updateTheme() {
-        contentView.backgroundColor = .background2
+        if threadLayout == nil {
+            contentView.backgroundColor = .background2
+        }
+        threadLayout?.updateAppearance(contentView: contentView)
     }
 }
 
@@ -56,8 +76,8 @@ class FeedElementUserCell: FeedElementBaseCell, RegularFeedElementCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
-        contentView.addSubview(mainStack)
-        mainStack.pinToSuperview(edges: .top, padding: 12).pinToSuperview(edges: .horizontal, padding: 16)
+        contentContainer.addSubview(mainStack)
+        mainStack.pinToSuperview(edges: .top, padding: 12).pinToSuperview(edges: .horizontal, padding: horizontalPadding)
         let botC = mainStack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -6)
         botC.priority = .defaultLow
         botC.isActive = true

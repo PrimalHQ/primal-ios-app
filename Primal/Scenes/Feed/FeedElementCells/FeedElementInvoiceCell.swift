@@ -15,11 +15,11 @@ class FeedElementInvoiceCell: FeedElementBaseCell, RegularFeedElementCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
-        contentView.addSubview(invoiceView)
+        contentContainer.addSubview(invoiceView)
         invoiceView
             .pinToSuperview(edges: .top, padding: 8)
             .pinToSuperview(edges: .bottom, padding: 0)
-            .pinToSuperview(edges: .horizontal, padding: 16)
+            .pinToSuperview(edges: .horizontal, padding: horizontalPadding)
         
         invoiceView.copyButton.addAction(.init(handler: { [unowned self] _ in
             delegate?.postCellDidTap(self, .copy(.invoice))

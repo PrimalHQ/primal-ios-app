@@ -19,11 +19,11 @@ class FeedElementPostPreviewCell: FeedElementBaseCell, RegularFeedElementCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
-        contentView.addSubview(postPreview)
+        contentContainer.addSubview(postPreview)
         postPreview
             .pinToSuperview(edges: .top, padding: 8)
             .pinToSuperview(edges: .bottom, padding: 0)
-            .pinToSuperview(edges: .horizontal, padding: 16)
+            .pinToSuperview(edges: .horizontal, padding: horizontalPadding)
         
         let previewTap = BindableTapGestureRecognizer { [unowned self] in
             delegate?.postCellDidTap(self, .embeddedPost)

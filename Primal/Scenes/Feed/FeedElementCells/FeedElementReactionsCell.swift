@@ -25,10 +25,14 @@ extension ElementReactionsCell {
 
 class FeedElementReactionsCell: FeedElementBaseCell, RegularFeedElementCell, ElementReactionsCell {
     static var cellID: String { "FeedElementReactionsCell" }
-    
+
+    var buttonLeadingPadding: CGFloat { threadLayout != nil ? -8 : 8 }
+    var buttonTrailingPadding: CGFloat { threadLayout != nil ? 16 : 32 }
+    var showsBottomBorder: Bool { threadLayout?.position != .parent }
+
     var bookmarkUpdater: AnyCancellable?
     var isShowingBookmarked = false
-    
+
     let bottomBorder = UIView()
     let replyButton = FeedReplyButton()
     let zapButton = FeedZapButton()
@@ -37,27 +41,29 @@ class FeedElementReactionsCell: FeedElementBaseCell, RegularFeedElementCell, Ele
     let zapPreview = ZapPreviewView()
     let bookmarkButton = UIButton()
     lazy var bottomButtonStack = UIStackView(arrangedSubviews: [replyButton, zapButton, likeButton, repostButton])
-    
+
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        
-        contentView.addSubview(bottomButtonStack)
+
+        contentContainer.addSubview(bottomButtonStack)
         bottomButtonStack
             .pinToSuperview(edges: .top, padding: 0)
             .pinToSuperview(edges: .bottom, padding: 0)
-            .pinToSuperview(edges: .leading, padding: 8)
-            .pinToSuperview(edges: .trailing, padding: 32)
-        
+            .pinToSuperview(edges: .leading, padding: buttonLeadingPadding)
+            .pinToSuperview(edges: .trailing, padding: buttonTrailingPadding)
+
         bottomButtonStack.distribution = .fillEqually
-        
-        contentView.addSubview(bookmarkButton)
+
+        contentContainer.addSubview(bookmarkButton)
         bookmarkButton
             .pin(to: bottomButtonStack, edges: .trailing, padding: -18)
             .centerToView(bottomButtonStack, axis: .vertical)
             .constrainToSize(width: 40)
-        
-        contentView.addSubview(bottomBorder)
-        bottomBorder.pinToSuperview(edges: [.horizontal, .bottom]).constrainToSize(height: 1)
+
+        if showsBottomBorder {
+            contentView.addSubview(bottomBorder)
+            bottomBorder.pinToSuperview(edges: [.horizontal, .bottom]).constrainToSize(height: 1)
+        }
         
         bottomButtonStack.distribution = .fillEqually
         bottomButtonStack.spacing = 12
