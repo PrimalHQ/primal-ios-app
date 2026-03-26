@@ -220,17 +220,31 @@ class LiveVideoChatController: UIViewController, Themeable {
                 self?.requestChat()
             }
             .store(in: &cancellables)
-        
+
         WalletManager.instance.zapEvent.delay(for: 0.3, scheduler: RunLoop.main).sink { [weak self] zap in
             guard let self, post.post.id == zap.postId, zap.user.data.pubkey == IdentityManager.instance.userHexPubkey else { return }
-            
-            self.comments.insert(ParsedLiveComment(user: zap.user, comment: self.parsedComment(zap.message, isZap: true), event: [:], zapAmount: zap.amountSats), at: 0)
+
+            // Skip if the real event already arrived via processNewEvent
+            let alreadyProcessed = comments.contains {
+                $0.user.data.pubkey == zap.user.data.pubkey &&
+                $0.zapAmount == zap.amountSats &&
+                $0.event["id"]?.stringValue != nil &&
+                abs($0.createdAt - zap.createdAt) < 30
+            }
+            guard !alreadyProcessed else { return }
+
+            self.comments.insert(ParsedLiveComment(
+                user: zap.user,
+                comment: self.parsedComment(zap.message, isZap: true),
+                event: ["created_at": .number(zap.createdAt)],
+                zapAmount: zap.amountSats
+            ), at: 0)
         }
         .store(in: &cancellables)
-        
+
         header.infoButton.addAction(.init(handler: { [weak self] _ in
             guard let videoVC = self?.parent as? LiveVideoPlayerController else { return }
-            
+
             videoVC.presentLivePopup(LiveVideoDetailsController(live: videoVC.live))
         }), for: .touchUpInside)
         
@@ -307,6 +321,13 @@ extension LiveVideoChatController: NantesLabelDelegate {
 }
 
 private extension LiveVideoChatController {
+    func removeOptimisticZapComment(pubkey: String, amount: Int) {
+        guard amount > 0, pubkey == IdentityManager.instance.userHexPubkey,
+              let index = comments.firstIndex(where: { $0.user.data.pubkey == pubkey && $0.zapAmount == amount && $0.event["id"]?.stringValue == nil })
+        else { return }
+        comments.remove(at: index)
+    }
+
     func setZaps(_ zaps: [ParsedZap]) {
         post.zaps = zaps.sorted(by: {
             guard $0.amountSats == $1.amountSats else { return $0.amountSats > $1.amountSats }
@@ -323,7 +344,7 @@ private extension LiveVideoChatController {
             
             return $0.createdAt < $1.createdAt
         })
-        WalletManager.instance.zapEvent.send(zap)
+        WalletManager.instance.animatingZap.send(zap)
         DispatchQueue.main.async {
             self.zapsInfoVC.reloadZaps()
         }
@@ -497,6 +518,7 @@ private extension LiveVideoChatController {
         pubkeysToFetch += content.extractUserMentionsAsPubkeys().filter { Self.userCache[$0] == nil }
         
         if let user = Self.userCache[userPubkey], pubkeysToFetch.isEmpty {
+            removeOptimisticZapComment(pubkey: userPubkey, amount: amount)
             self.comments.insert(ParsedLiveComment(user: user, comment: self.parsedComment(content, isZap: amount > 0), event: event, zapAmount: amount), at: 0)
             if let zap = self.jsonToZap(.object(event)) {
                 self.addZap(zap)
@@ -513,6 +535,7 @@ private extension LiveVideoChatController {
                     Self.userCache[user.data.pubkey] = user
                 }
                 
+                removeOptimisticZapComment(pubkey: userPubkey, amount: amount)
                 comments.insert(ParsedLiveComment(
                     user: Self.userCache[userPubkey] ?? .init(data: .init(pubkey: userPubkey)),
                     comment: parsedComment(content, isZap: amount > 0),
