@@ -14,6 +14,9 @@ class HeaderTextCell: FeedElementTextCell {
     let headerView = NoteUserHeaderView()
     private let bodyView = UIView()
     override var contentContainer: UIView { bodyView }
+    override var delegate: FeedElementCellDelegate? {
+        didSet { headerView.delegate = delegate }
+    }
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -29,8 +32,6 @@ class HeaderTextCell: FeedElementTextCell {
     override func update(_ content: ParsedContent) {
         super.update(content)
         headerView.update(content)
-        headerView.delegate = delegate
-        headerView.ownerCell = self
     }
 
     override func updateTheme() {
@@ -46,6 +47,9 @@ class HeaderImageGalleryCell: FeedElementImageGalleryCell {
     let headerView = NoteUserHeaderView()
     private let bodyView = UIView()
     override var contentContainer: UIView { bodyView }
+    override var delegate: FeedElementCellDelegate? {
+        didSet { headerView.delegate = delegate }
+    }
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -61,8 +65,6 @@ class HeaderImageGalleryCell: FeedElementImageGalleryCell {
     override func update(_ content: ParsedContent) {
         super.update(content)
         headerView.update(content)
-        headerView.delegate = delegate
-        headerView.ownerCell = self
     }
 
     override func updateTheme() {
@@ -78,6 +80,9 @@ class HeaderReactionsCell: FeedElementReactionsCell {
     let headerView = NoteUserHeaderView()
     private let bodyView = UIView()
     override var contentContainer: UIView { bodyView }
+    override var delegate: FeedElementCellDelegate? {
+        didSet { headerView.delegate = delegate }
+    }
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -93,8 +98,6 @@ class HeaderReactionsCell: FeedElementReactionsCell {
     override func update(_ content: ParsedContent) {
         super.update(content)
         headerView.update(content)
-        headerView.delegate = delegate
-        headerView.ownerCell = self
     }
 
     override func updateTheme() {
@@ -110,6 +113,9 @@ class HeaderZapGalleryCell: FeedElementSmallZapGalleryCell {
     let headerView = NoteUserHeaderView()
     private let bodyView = UIView()
     override var contentContainer: UIView { bodyView }
+    override var delegate: FeedElementCellDelegate? {
+        didSet { headerView.delegate = delegate }
+    }
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -125,8 +131,6 @@ class HeaderZapGalleryCell: FeedElementSmallZapGalleryCell {
     override func update(_ content: ParsedContent) {
         super.update(content)
         headerView.update(content)
-        headerView.delegate = delegate
-        headerView.ownerCell = self
     }
 
     override func updateTheme() {
@@ -142,6 +146,9 @@ class HeaderWebPreviewCell<T: LinkPreview>: FeedElementWebPreviewCell<T> {
     let headerView = NoteUserHeaderView()
     private let bodyView = UIView()
     override var contentContainer: UIView { bodyView }
+    override var delegate: FeedElementCellDelegate? {
+        didSet { headerView.delegate = delegate }
+    }
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -157,8 +164,6 @@ class HeaderWebPreviewCell<T: LinkPreview>: FeedElementWebPreviewCell<T> {
     override func update(_ content: ParsedContent) {
         super.update(content)
         headerView.update(content)
-        headerView.delegate = delegate
-        headerView.ownerCell = self
     }
 
     override func updateTheme() {
@@ -174,6 +179,9 @@ class HeaderYoutubePreviewCell: FeedElementYoutubePreviewCell {
     let headerView = NoteUserHeaderView()
     private let bodyView = UIView()
     override var contentContainer: UIView { bodyView }
+    override var delegate: FeedElementCellDelegate? {
+        didSet { headerView.delegate = delegate }
+    }
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -189,8 +197,6 @@ class HeaderYoutubePreviewCell: FeedElementYoutubePreviewCell {
     override func update(_ content: ParsedContent) {
         super.update(content)
         headerView.update(content)
-        headerView.delegate = delegate
-        headerView.ownerCell = self
     }
 
     override func updateTheme() {
@@ -206,6 +212,9 @@ class HeaderWebkitPreviewCell: FeedElementWebkitLinkPreviewCell {
     let headerView = NoteUserHeaderView()
     private let bodyView = UIView()
     override var contentContainer: UIView { bodyView }
+    override var delegate: FeedElementCellDelegate? {
+        didSet { headerView.delegate = delegate }
+    }
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -221,8 +230,6 @@ class HeaderWebkitPreviewCell: FeedElementWebkitLinkPreviewCell {
     override func update(_ content: ParsedContent) {
         super.update(content)
         headerView.update(content)
-        headerView.delegate = delegate
-        headerView.ownerCell = self
     }
 
     override func updateTheme() {
@@ -238,6 +245,9 @@ class HeaderSystemWebPreviewCell: FeedElementSystemWebPreviewCell {
     let headerView = NoteUserHeaderView()
     private let bodyView = UIView()
     override var contentContainer: UIView { bodyView }
+    override var delegate: FeedElementCellDelegate? {
+        didSet { headerView.delegate = delegate }
+    }
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -253,8 +263,6 @@ class HeaderSystemWebPreviewCell: FeedElementSystemWebPreviewCell {
     override func update(_ content: ParsedContent) {
         super.update(content)
         headerView.update(content)
-        headerView.delegate = delegate
-        headerView.ownerCell = self
     }
 
     override func updateTheme() {
@@ -270,6 +278,9 @@ class HeaderMusicPreviewCell: FeedElementMusicPreviewCell {
     let headerView = NoteUserHeaderView()
     private let bodyView = UIView()
     override var contentContainer: UIView { bodyView }
+    override var delegate: FeedElementCellDelegate? {
+        didSet { headerView.delegate = delegate }
+    }
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -285,8 +296,6 @@ class HeaderMusicPreviewCell: FeedElementMusicPreviewCell {
     override func update(_ content: ParsedContent) {
         super.update(content)
         headerView.update(content)
-        headerView.delegate = delegate
-        headerView.ownerCell = self
     }
 
     override func updateTheme() {
@@ -302,6 +311,9 @@ class HeaderTidalPreviewCell: FeedElementTidalPreviewCell {
     let headerView = NoteUserHeaderView()
     private let bodyView = UIView()
     override var contentContainer: UIView { bodyView }
+    override var delegate: FeedElementCellDelegate? {
+        didSet { headerView.delegate = delegate }
+    }
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -317,8 +329,6 @@ class HeaderTidalPreviewCell: FeedElementTidalPreviewCell {
     override func update(_ content: ParsedContent) {
         super.update(content)
         headerView.update(content)
-        headerView.delegate = delegate
-        headerView.ownerCell = self
     }
 
     override func updateTheme() {
@@ -334,6 +344,9 @@ class HeaderPostPreviewCell: FeedElementPostPreviewCell {
     let headerView = NoteUserHeaderView()
     private let bodyView = UIView()
     override var contentContainer: UIView { bodyView }
+    override var delegate: FeedElementCellDelegate? {
+        didSet { headerView.delegate = delegate }
+    }
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -349,8 +362,6 @@ class HeaderPostPreviewCell: FeedElementPostPreviewCell {
     override func update(_ content: ParsedContent) {
         super.update(content)
         headerView.update(content)
-        headerView.delegate = delegate
-        headerView.ownerCell = self
     }
 
     override func updateTheme() {
@@ -366,6 +377,9 @@ class HeaderZapPreviewCell: FeedElementZapPreviewCell {
     let headerView = NoteUserHeaderView()
     private let bodyView = UIView()
     override var contentContainer: UIView { bodyView }
+    override var delegate: FeedElementCellDelegate? {
+        didSet { headerView.delegate = delegate }
+    }
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -381,8 +395,6 @@ class HeaderZapPreviewCell: FeedElementZapPreviewCell {
     override func update(_ content: ParsedContent) {
         super.update(content)
         headerView.update(content)
-        headerView.delegate = delegate
-        headerView.ownerCell = self
     }
 
     override func updateTheme() {
@@ -398,6 +410,9 @@ class HeaderArticleCell: FeedElementArticleCell {
     let headerView = NoteUserHeaderView()
     private let bodyView = UIView()
     override var contentContainer: UIView { bodyView }
+    override var delegate: FeedElementCellDelegate? {
+        didSet { headerView.delegate = delegate }
+    }
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -413,8 +428,6 @@ class HeaderArticleCell: FeedElementArticleCell {
     override func update(_ content: ParsedContent) {
         super.update(content)
         headerView.update(content)
-        headerView.delegate = delegate
-        headerView.ownerCell = self
     }
 
     override func updateTheme() {
@@ -430,6 +443,9 @@ class HeaderInfoCell: FeedElementInfoCell {
     let headerView = NoteUserHeaderView()
     private let bodyView = UIView()
     override var contentContainer: UIView { bodyView }
+    override var delegate: FeedElementCellDelegate? {
+        didSet { headerView.delegate = delegate }
+    }
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -445,8 +461,6 @@ class HeaderInfoCell: FeedElementInfoCell {
     override func update(_ content: ParsedContent) {
         super.update(content)
         headerView.update(content)
-        headerView.delegate = delegate
-        headerView.ownerCell = self
     }
 
     override func updateTheme() {
@@ -462,6 +476,9 @@ class HeaderLivePreviewCell: FeedElementLivePreviewCell {
     let headerView = NoteUserHeaderView()
     private let bodyView = UIView()
     override var contentContainer: UIView { bodyView }
+    override var delegate: FeedElementCellDelegate? {
+        didSet { headerView.delegate = delegate }
+    }
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -477,8 +494,6 @@ class HeaderLivePreviewCell: FeedElementLivePreviewCell {
     override func update(_ content: ParsedContent) {
         super.update(content)
         headerView.update(content)
-        headerView.delegate = delegate
-        headerView.ownerCell = self
     }
 
     override func updateTheme() {
@@ -494,6 +509,9 @@ class HeaderInvoiceCell: FeedElementInvoiceCell {
     let headerView = NoteUserHeaderView()
     private let bodyView = UIView()
     override var contentContainer: UIView { bodyView }
+    override var delegate: FeedElementCellDelegate? {
+        didSet { headerView.delegate = delegate }
+    }
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -509,8 +527,6 @@ class HeaderInvoiceCell: FeedElementInvoiceCell {
     override func update(_ content: ParsedContent) {
         super.update(content)
         headerView.update(content)
-        headerView.delegate = delegate
-        headerView.ownerCell = self
     }
 
     override func updateTheme() {
@@ -526,6 +542,9 @@ class HeaderPollCell: FeedElementPollCell {
     let headerView = NoteUserHeaderView()
     private let bodyView = UIView()
     override var contentContainer: UIView { bodyView }
+    override var delegate: FeedElementCellDelegate? {
+        didSet { headerView.delegate = delegate }
+    }
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -541,8 +560,6 @@ class HeaderPollCell: FeedElementPollCell {
     override func update(_ content: ParsedContent) {
         super.update(content)
         headerView.update(content)
-        headerView.delegate = delegate
-        headerView.ownerCell = self
     }
 
     override func updateTheme() {
