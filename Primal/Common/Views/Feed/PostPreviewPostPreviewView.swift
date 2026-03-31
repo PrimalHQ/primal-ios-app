@@ -24,7 +24,6 @@ final class PostPreviewPostPreviewView: UIView, Themeable {
     let zapPreview = ZapPreviewView()
     let embeddedLive = LivePreviewView()
     let embeddedPoll = PollView()
-    let infoView = SimpleInfoView()
     
     let separatorLabel = UILabel()
     
@@ -115,28 +114,9 @@ final class PostPreviewPostPreviewView: UIView, Themeable {
         
         mainLabel.attributedText = content.attributedTextShort
         seeMoreLabel.isHidden = !mainLabel.isTruncated()
-        
-        if let customEvent = content.customEvent {
-            infoView.isHidden = false
-            infoView.set(
-                kind: .file,
-                text: customEvent.post.tags.first(where: { $0.first == "alt" })?[safe: 1] ??
-                        (customEvent.post.content.isEmpty ? "Unknown reference" : customEvent.post.content)
-            )
-        } else {
-            switch content.notFound {
-            case nil, .note:
-                infoView.isHidden = true
-            case .article:
-                infoView.isHidden = false
-                infoView.set(kind: .file, text: "Mentioned article not found.")
-            }
-        }
     }
     
     func updateTheme() {
-        infoView.updateTheme()
-        
         [timeLabel, separatorLabel, secondaryIdentifierLabel].forEach {
             $0.font = .appFont(withSize: FontSizeSelection.current.nameSize, weight: .regular)
             $0.textColor = .foreground3
@@ -208,7 +188,7 @@ private extension PostPreviewPostPreviewView {
         nameTimeStack.alignment = .center
         
         let mainStack = UIStackView(arrangedSubviews: [
-            nameTimeStack, mainLabel, seeMoreLabel, SpacerView(height: 6), invoiceView, mainImages, embeddedLive, linkPreview, zapPreview, infoView, embeddedPoll
+            nameTimeStack, mainLabel, seeMoreLabel, SpacerView(height: 6), invoiceView, mainImages, embeddedLive, linkPreview, zapPreview, embeddedPoll
         ])
         mainStack.axis = .vertical
         mainStack.setCustomSpacing(6, after: nameTimeStack)
