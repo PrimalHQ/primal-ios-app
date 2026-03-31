@@ -42,7 +42,7 @@ class FeedElementTidalPreviewCell: FeedElementBaseCell, RegularFeedElementCell, 
         webView
             .pinToSuperview(edges: .top, padding: 8)
             .pinToSuperview(edges: .bottom, padding: 0)
-            .pinToSuperview(edges: .horizontal, padding: horizontalPadding)
+            .pinToSuperview(edges: .leading, padding: leadingPadding).pinToSuperview(edges: .trailing, padding: horizontalPadding)
         webView.alpha = 0
         webView.layer.cornerRadius = 12
         webView.clipsToBounds = true
@@ -51,7 +51,7 @@ class FeedElementTidalPreviewCell: FeedElementBaseCell, RegularFeedElementCell, 
         linkPreview
             .pinToSuperview(edges: .top, padding: 8)
             .pinToSuperview(edges: .bottom, padding: 0)
-            .pinToSuperview(edges: .horizontal, padding: horizontalPadding)
+            .pinToSuperview(edges: .leading, padding: leadingPadding).pinToSuperview(edges: .trailing, padding: horizontalPadding)
             .constrainToSize(height: 100)
         
         linkPreview.addSubview(mainStack)

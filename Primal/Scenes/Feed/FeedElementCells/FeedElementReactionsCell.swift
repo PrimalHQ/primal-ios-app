@@ -26,7 +26,7 @@ extension ElementReactionsCell {
 class FeedElementReactionsCell: FeedElementBaseCell, RegularFeedElementCell, ElementReactionsCell {
     static var cellID: String { "FeedElementReactionsCell" }
 
-    var buttonLeadingPadding: CGFloat { threadLayout != nil ? -8 : 8 }
+    var buttonLeadingPadding: CGFloat { threadLayout != nil ? -8 : NoteUserHeaderView.contentLeadingPadding - 8 }
     var buttonTrailingPadding: CGFloat { threadLayout != nil ? 16 : 32 }
     var showsBottomBorder: Bool { threadLayout?.position != .parent }
 

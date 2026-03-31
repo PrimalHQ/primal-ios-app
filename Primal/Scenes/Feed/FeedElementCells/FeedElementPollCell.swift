@@ -19,7 +19,7 @@ class FeedElementPollCell: FeedElementBaseCell, RegularFeedElementCell {
         pollView
             .pinToSuperview(edges: .top, padding: 8)
             .pinToSuperview(edges: .bottom, padding: 0)
-            .pinToSuperview(edges: .horizontal, padding: horizontalPadding)
+            .pinToSuperview(edges: .leading, padding: leadingPadding).pinToSuperview(edges: .trailing, padding: horizontalPadding)
         
         pollView.totalVotesButton.addAction(.init(handler: { [weak self] _ in
             guard let self else { return }

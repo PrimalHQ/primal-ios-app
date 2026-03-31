@@ -13,6 +13,7 @@ class FeedElementBaseCell: UITableViewCell {
     private(set) var threadLayout: ThreadLayout?
 
     var contentContainer: UIView { threadLayout?.secondRow ?? contentView }
+    var leadingPadding: CGFloat { threadLayout != nil ? 0 : NoteUserHeaderView.contentLeadingPadding }
     var horizontalPadding: CGFloat { threadLayout != nil ? 0 : 16 }
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -77,7 +78,7 @@ class FeedElementUserCell: FeedElementBaseCell, RegularFeedElementCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         contentContainer.addSubview(mainStack)
-        mainStack.pinToSuperview(edges: .top, padding: 12).pinToSuperview(edges: .horizontal, padding: horizontalPadding)
+        mainStack.pinToSuperview(edges: .top, padding: 12).pinToSuperview(edges: .leading, padding: leadingPadding).pinToSuperview(edges: .trailing, padding: horizontalPadding)
         let botC = mainStack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -6)
         botC.priority = .defaultLow
         botC.isActive = true

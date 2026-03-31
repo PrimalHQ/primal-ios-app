@@ -32,14 +32,14 @@ class FeedElementWebkitLinkPreviewCell: FeedElementBaseCell, RegularFeedElementC
         webView
             .pinToSuperview(edges: .top, padding: 8)
             .pinToSuperview(edges: .bottom, padding: 0)
-            .pinToSuperview(edges: .horizontal, padding: horizontalPadding)
+            .pinToSuperview(edges: .leading, padding: leadingPadding).pinToSuperview(edges: .trailing, padding: horizontalPadding)
         webView.alpha = 0
         
         contentContainer.addSubview(linkPresentation)
         linkPresentation
             .pinToSuperview(edges: .top, padding: 8)
             .pinToSuperview(edges: .bottom, padding: 0)
-            .pinToSuperview(edges: .horizontal, padding: horizontalPadding)
+            .pinToSuperview(edges: .leading, padding: leadingPadding).pinToSuperview(edges: .trailing, padding: horizontalPadding)
         
         linkPresentation.heightAnchor.constraint(lessThanOrEqualToConstant: 500).isActive = true
         linkPresentation.addGestureRecognizer(BindableTapGestureRecognizer(action: { [weak self] in

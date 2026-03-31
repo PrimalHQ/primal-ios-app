@@ -33,7 +33,7 @@ class FeedElementImageGalleryCell: FeedElementBaseCell, RegularFeedElementCell {
         mainImages
             .pinToSuperview(edges: .top, padding: 10)
             .pinToSuperview(edges: .bottom, padding: 6)
-            .pinToSuperview(edges: .horizontal, padding: horizontalPadding)
+            .pinToSuperview(edges: .leading, padding: leadingPadding).pinToSuperview(edges: .trailing, padding: horizontalPadding)
         
         mainImages.imageDelegate = self
         

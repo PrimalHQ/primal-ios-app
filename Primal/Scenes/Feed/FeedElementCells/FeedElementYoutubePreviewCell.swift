@@ -60,14 +60,14 @@ class FeedElementYoutubePreviewCell: FeedElementBaseCell, RegularFeedElementCell
         webView
             .pinToSuperview(edges: .top, padding: 8)
             .pinToSuperview(edges: .bottom, padding: 0)
-            .pinToSuperview(edges: .horizontal, padding: horizontalPadding)
+            .pinToSuperview(edges: .leading, padding: leadingPadding).pinToSuperview(edges: .trailing, padding: horizontalPadding)
         webView.alpha = 0
         
         contentContainer.addSubview(linkPreview)
         linkPreview
             .pinToSuperview(edges: .top, padding: 8)
             .pinToSuperview(edges: .bottom, padding: 0)
-            .pinToSuperview(edges: .horizontal, padding: horizontalPadding)
+            .pinToSuperview(edges: .leading, padding: leadingPadding).pinToSuperview(edges: .trailing, padding: horizontalPadding)
         
         linkPreview.addSubview(mainStack)
         mainStack.pinToSuperview()

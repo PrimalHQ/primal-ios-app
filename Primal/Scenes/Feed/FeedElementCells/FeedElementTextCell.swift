@@ -63,7 +63,7 @@ private extension FeedElementTextCell {
     func setup() {
         contentContainer.addSubview(textStack)
         textStack
-            .pinToSuperview(edges: .horizontal, padding: horizontalPadding)
+            .pinToSuperview(edges: .leading, padding: leadingPadding).pinToSuperview(edges: .trailing, padding: horizontalPadding)
             .pinToSuperview(edges: .bottom)
             .pinToSuperview(edges: .top, padding: 4)
         

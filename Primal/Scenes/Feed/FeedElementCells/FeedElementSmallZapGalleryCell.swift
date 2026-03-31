@@ -23,7 +23,7 @@ class FeedElementSmallZapGalleryCell: FeedElementBaseCell, RegularFeedElementCel
         gallery
             .pinToSuperview(edges: .top, padding: 4)
             .pinToSuperview(edges: .bottom, padding: 1)
-            .pinToSuperview(edges: .horizontal, padding: horizontalPadding)
+            .pinToSuperview(edges: .leading, padding: leadingPadding).pinToSuperview(edges: .trailing, padding: horizontalPadding)
         
         gallery.addGestureRecognizer(BindableTapGestureRecognizer(action: { [unowned self] in
             delegate?.postCellDidTap(self, .zapDetails)

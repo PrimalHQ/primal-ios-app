@@ -60,7 +60,7 @@ class FeedElementMusicPreviewCell: FeedElementBaseCell, RegularFeedElementCell, 
         webView
             .pinToSuperview(edges: .top, padding: 8)
             .pinToSuperview(edges: .bottom, padding: 0)
-            .pinToSuperview(edges: .horizontal, padding: horizontalPadding)
+            .pinToSuperview(edges: .leading, padding: leadingPadding).pinToSuperview(edges: .trailing, padding: horizontalPadding)
         webView.alpha = 0
         webView.layer.cornerRadius = 12
         webView.clipsToBounds = true
@@ -69,7 +69,7 @@ class FeedElementMusicPreviewCell: FeedElementBaseCell, RegularFeedElementCell, 
         linkPreview
             .pinToSuperview(edges: .top, padding: 8)
             .pinToSuperview(edges: .bottom, padding: 0)
-            .pinToSuperview(edges: .horizontal, padding: horizontalPadding)
+            .pinToSuperview(edges: .leading, padding: leadingPadding).pinToSuperview(edges: .trailing, padding: horizontalPadding)
             .constrainToSize(height: 152)
         
         linkPreview.addSubview(mainStack)

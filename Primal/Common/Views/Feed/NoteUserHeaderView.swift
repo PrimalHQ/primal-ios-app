@@ -8,11 +8,14 @@
 import UIKit
 
 class NoteUserHeaderView: UIView {
+    static let headerAvatarSize: CGFloat = 42
+    static let contentLeadingPadding: CGFloat = 62
+
     weak var delegate: FeedElementCellDelegate?
     weak var ownerCell: UITableViewCell?
 
     let threeDotsButton = UIButton()
-    let profileImageView = UserImageView(height: FontSizeSelection.current.avatarSize)
+    let profileImageView = UserImageView(height: NoteUserHeaderView.headerAvatarSize)
     let checkbox = VerifiedView().constrainToAspect(1, priority: .required)
     let nameLabel = UILabel()
     let timeLabel = UILabel()
@@ -22,41 +25,51 @@ class NoteUserHeaderView: UIView {
     let replyingToView = ReplyingToView()
     lazy var nameStack = UIStackView([nameLabel, checkbox, nipLabel, separatorLabel, timeLabel])
     lazy var nameReplyStack = UIStackView(axis: .vertical, [nameStack, replyingToView])
-    lazy var nameSuperStack = UIStackView([profileImageView, nameReplyStack])
-    lazy var mainStack = UIStackView(axis: .vertical, [repostIndicator, nameSuperStack])
+    lazy var mainStack = UIStackView(axis: .vertical, [repostIndicator, nameReplyStack])
     let threeDotsSpacer = SpacerView(width: 20, priority: .required)
 
     let repostedByOverlayButton = UIButton()
 
     var checkboxHeightC: NSLayoutConstraint?
 
-    init(horizontalPadding: CGFloat = 16) {
+    init() {
         super.init(frame: .zero)
 
+        addSubview(profileImageView)
         addSubview(mainStack)
-        mainStack.pinToSuperview(edges: .top, padding: 12).pinToSuperview(edges: .horizontal, padding: horizontalPadding)
+        addSubview(threeDotsButton)
+        addSubview(repostedByOverlayButton)
+        
+        profileImageView
+            .pinToSuperview(edges: .leading, padding: 12)
+            .pin(to: nameReplyStack, edges: .top)
+
+        mainStack
+            .pinToSuperview(edges: .top, padding: 12)
+            .pinToSuperview(edges: .leading, padding: Self.contentLeadingPadding)
+            .pinToSuperview(edges: .trailing, padding: 16)
+        
         let botC = mainStack.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -6)
         botC.priority = .defaultLow
         botC.isActive = true
 
         mainStack.spacing = 4
         nameReplyStack.spacing = 4
-        nameSuperStack.spacing = 8
 
-        addSubview(threeDotsButton)
         threeDotsButton
             .constrainToSize(44)
-            .pinToSuperview(edges: .top, padding: 2)
+            .pinToSuperview(edges: .top, padding: 1)
             .pinToSuperview(edges: .trailing)
 
         nameStack.addArrangedSubview(threeDotsSpacer)
 
-        addSubview(repostedByOverlayButton)
         repostedByOverlayButton
             .constrainToSize(width: 100)
             .pin(to: repostIndicator, edges: .leading)
             .pin(to: repostIndicator, edges: .top, padding: -11)
             .pin(to: repostIndicator, edges: .bottom, padding: -5)
+        
+        repostIndicator.transform = .init(translationX: 12 - Self.contentLeadingPadding, y: 0)
 
         repostedByOverlayButton.addAction(.init(handler: { [weak self] _ in
             guard let self, let ownerCell else { return }
@@ -84,6 +97,7 @@ class NoteUserHeaderView: UIView {
         threeDotsButton.showsMenuAsPrimaryAction = true
 
         let tapArea = UIView()
+        tapArea.backgroundColor = .white.withAlphaComponent(0.001)
         addSubview(tapArea)
         tapArea
             .pin(to: profileImageView, edges: [.leading, .vertical])
@@ -120,15 +134,12 @@ class NoteUserHeaderView: UIView {
         if let parent = parsedContent.replyingTo {
             replyingToView.userNameLabel.text = parent.user.data.firstIdentifier
             replyingToView.isHidden = false
-            nameSuperStack.alignment = .top
         } else {
             replyingToView.isHidden = true
-            nameSuperStack.alignment = .center
         }
 
         threeDotsSpacer.isHidden = parsedContent.reposted != nil
-
-        threeDotsButton.transform = parsedContent.reposted != nil ? .init(translationX: 0, y: -6) : (parsedContent.replyingTo == nil ? .init(translationX: 0, y: 4) : .identity)
+        threeDotsButton.transform = parsedContent.reposted != nil ? .init(translationX: 0, y: -5) : .identity
 
         if let reposted = parsedContent.reposted?.users {
             repostIndicator.update(users: reposted)

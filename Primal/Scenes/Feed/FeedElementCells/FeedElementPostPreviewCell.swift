@@ -23,7 +23,7 @@ class FeedElementPostPreviewCell: FeedElementBaseCell, RegularFeedElementCell {
         postPreview
             .pinToSuperview(edges: .top, padding: 8)
             .pinToSuperview(edges: .bottom, padding: 0)
-            .pinToSuperview(edges: .horizontal, padding: horizontalPadding)
+            .pinToSuperview(edges: .leading, padding: leadingPadding).pinToSuperview(edges: .trailing, padding: horizontalPadding)
         
         let previewTap = BindableTapGestureRecognizer { [unowned self] in
             delegate?.postCellDidTap(self, .embeddedPost)

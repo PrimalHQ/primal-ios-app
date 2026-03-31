@@ -19,7 +19,7 @@ class FeedElementInvoiceCell: FeedElementBaseCell, RegularFeedElementCell {
         invoiceView
             .pinToSuperview(edges: .top, padding: 8)
             .pinToSuperview(edges: .bottom, padding: 0)
-            .pinToSuperview(edges: .horizontal, padding: horizontalPadding)
+            .pinToSuperview(edges: .leading, padding: leadingPadding).pinToSuperview(edges: .trailing, padding: horizontalPadding)
         
         invoiceView.copyButton.addAction(.init(handler: { [unowned self] _ in
             delegate?.postCellDidTap(self, .copy(.invoice))
