@@ -503,9 +503,11 @@ final class WalletManager {
         if let error = res.exceptionOrNull()?.description() { throw WalletError.serverError(error.split(separator: ":").last?.string ?? "") }
         guard let result = res.getOrNull() else { throw WalletError.serverError("Unable to pay invoice") }
 
-        // Extract preimage from the Kotlin SDK pay result for L402 proof-of-payment.
-        // The PrimalShared framework returns an opaque KMP type; we parse its description
-        // to access preimage/paymentHash until a typed Swift DTO is added to PrimalShared.
+        // Extract preimage/paymentHash from the Kotlin SDK pay result for L402 proof-of-payment.
+        // TODO: Replace with typed Swift DTO when PrimalShared exposes structured pay results.
+        // The KMP framework currently returns an opaque type; we parse its string description
+        // as a pragmatic workaround. Field renames in PrimalShared will produce nil (not crash),
+        // and callers should check PaymentResult.status to detect extraction failures.
         let desc = String(describing: result)
         var preimage: String?
         var paymentHash: String?
@@ -522,7 +524,8 @@ final class WalletManager {
             }
         }
 
-        return PaymentResult(preimage: preimage, paymentHash: paymentHash)
+        let status: PaymentResult.Status = (preimage != nil || paymentHash != nil) ? .completed : .completedNoProof
+        return PaymentResult(status: status, preimage: preimage, paymentHash: paymentHash)
     }
     
     // MARK: - Zapping
