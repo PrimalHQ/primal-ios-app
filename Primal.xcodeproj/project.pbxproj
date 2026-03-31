@@ -218,6 +218,7 @@
 		9EF4BFCE2A93CE1B003396AA /* loadingSpinnerBlue.json in Resources */ = {isa = PBXBuildFile; fileRef = 9EF4BFCD2A93CE1B003396AA /* loadingSpinnerBlue.json */; };
 		9EF4BFD02A955FB5003396AA /* NewPostButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EF4BFCF2A955FB5003396AA /* NewPostButton.swift */; };
 		A1B2C3D4E5F6A7B8C9D0E1F3 /* WalletDetectedPopupController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6A7B8C9D0E1F2 /* WalletDetectedPopupController.swift */; };
+		A1B2C3D4E5F6A7B8C9D0E1F5 /* HeaderCells.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6A7B8C9D0E1F6 /* HeaderCells.swift */; };
 		AA9CF3DB44709B5BC13CA5A8 /* GenerateAmountsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD61E893F7939D2AC33A6A4C /* GenerateAmountsTests.swift */; };
 		B90032852BD0183600ADD2E5 /* NoteZapsRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90032842BD0183600ADD2E5 /* NoteZapsRequest.swift */; };
 		B90032882BD11DEA00ADD2E5 /* NoteReactionsParentController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90032872BD11DEA00ADD2E5 /* NoteReactionsParentController.swift */; };
@@ -556,6 +557,7 @@
 		B9B9E5772CB57F700065DD7C /* ExploreZapsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9B9E5762CB57F700065DD7C /* ExploreZapsViewController.swift */; };
 		B9B9E5792CB57FE20065DD7C /* ExploreZapsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9B9E5782CB57FE20065DD7C /* ExploreZapsCell.swift */; };
 		B9B9E57B2CB6E2C00065DD7C /* SimpleInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9B9E57A2CB6E2C00065DD7C /* SimpleInfoView.swift */; };
+		B9BAE1DA2F7C11F200963DBF /* NoteUserHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6A7B8C9D0E1F4 /* NoteUserHeaderView.swift */; };
 		B9BCF3C02CDD7F340032BD0D /* PremiumOnboardingHomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9BCF3BF2CDD7F340032BD0D /* PremiumOnboardingHomeViewController.swift */; };
 		B9BCF3C32CDD80020032BD0D /* PremiumHomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9BCF3C22CDD80020032BD0D /* PremiumHomeViewController.swift */; };
 		B9C5A07D2F36258E007CB5D3 /* UgradeWalletFaqController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C5A07C2F362586007CB5D3 /* UgradeWalletFaqController.swift */; };
@@ -1046,6 +1048,8 @@
 		9EF4BFCD2A93CE1B003396AA /* loadingSpinnerBlue.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = loadingSpinnerBlue.json; sourceTree = "<group>"; };
 		9EF4BFCF2A955FB5003396AA /* NewPostButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewPostButton.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F6A7B8C9D0E1F2 /* WalletDetectedPopupController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletDetectedPopupController.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6A7B8C9D0E1F4 /* NoteUserHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteUserHeaderView.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6A7B8C9D0E1F6 /* HeaderCells.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeaderCells.swift; sourceTree = "<group>"; };
 		A23B4E5D450372ED459567FF /* PollVotesFeedManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollVotesFeedManager.swift; sourceTree = "<group>"; };
 		A5764AD3FE766D500CBC6420 /* OldWalletDetectedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OldWalletDetectedView.swift; sourceTree = "<group>"; };
 		AF3D490ED6A30BA8537BEBDF /* FeedVideoPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedVideoPlayer.swift; sourceTree = "<group>"; };
@@ -2215,6 +2219,7 @@
 				B91E570A2CC8258500C14809 /* GenericLoadingView.swift */,
 				B91E57172CD93C7100C14809 /* ZapPreviewView.swift */,
 				B91EF0E32CECDE1600299ECF /* UserImageView.swift */,
+				A1B2C3D4E5F6A7B8C9D0E1F4 /* NoteUserHeaderView.swift */,
 			);
 			path = Feed;
 			sourceTree = "<group>";
@@ -2503,6 +2508,14 @@
 				9EF4BFC32A8BE9C5003396AA /* IceWave.swift */,
 			);
 			path = Themes;
+			sourceTree = "<group>";
+		};
+		A1B2C3D4E5F6A7B8C9D0E1F7 /* Header */ = {
+			isa = PBXGroup;
+			children = (
+				A1B2C3D4E5F6A7B8C9D0E1F6 /* HeaderCells.swift */,
+			);
+			path = Header;
 			sourceTree = "<group>";
 		};
 		B90032832BD0180300ADD2E5 /* SocketRequests */ = {
@@ -3574,6 +3587,7 @@
 		B9E67E7B2D075D94006BB397 /* FeedElementCells */ = {
 			isa = PBXGroup;
 			children = (
+				A1B2C3D4E5F6A7B8C9D0E1F7 /* Header */,
 				B9E67EC92D13005C006BB397 /* Highlight */,
 				B9E67E972D088BDA006BB397 /* Thread */,
 				B9E67E7C2D075E35006BB397 /* FeedElementUserCell.swift */,
@@ -4030,6 +4044,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A1B2C3D4E5F6A7B8C9D0E1F3 /* WalletDetectedPopupController.swift in Sources */,
+				A1B2C3D4E5F6A7B8C9D0E1F5 /* HeaderCells.swift in Sources */,
 				B91EF0EB2CED1B4B00299ECF /* PremiumLearnMoreHeaderCell.swift in Sources */,
 				930497A329FAD69B003938F2 /* Mentions.swift in Sources */,
 				93CACB0529F525B6003BBCE5 /* tal.c in Sources */,
@@ -4465,6 +4481,7 @@
 				B94F2BEF2AE6E4340041181B /* WalletSpinnerViewController.swift in Sources */,
 				B906AB0D2C9B2D830089813F /* ProfileLastVisit.swift in Sources */,
 				93906B942A55B5D000962A94 /* NostrObject.swift in Sources */,
+				B9BAE1DA2F7C11F200963DBF /* NoteUserHeaderView.swift in Sources */,
 				B90EF0ED2AFC08E000A7CD65 /* ProfileTabSelectionView.swift in Sources */,
 				B9856EA52ED9C92B00B21500 /* RemoteSignerSignInController.swift in Sources */,
 				833EA0C20D72C751D9F90AF4 /* RemoteSignerSignInViews.swift in Sources */,

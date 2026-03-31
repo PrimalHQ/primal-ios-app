@@ -61,6 +61,10 @@ class ArticleEmbeddedPostDatasource: UITableViewDiffableDataSource<SingleSection
             case .loading:
                 cell = tableView.dequeueReusableCell(withIdentifier: "loading", for: indexPath)
                 (cell as? SkeletonLoaderCell)?.loaderView.play()
+            case let .noteHeader(content, element):
+                cell = tableView.dequeueReusableCell(withIdentifier: element.headerCellID, for: indexPath)
+                HomeFeedDatasource.configureNoteCell(cell, content: content, element: element, delegate: delegate)
+                cell.contentView.backgroundColor = .background3
             case let .note(content, element):
                 cell = tableView.dequeueReusableCell(withIdentifier: element.cellID, for: indexPath)
                 switch element {
@@ -77,7 +81,7 @@ class ArticleEmbeddedPostDatasource: UITableViewDiffableDataSource<SingleSection
                 default:
                     break
                 }
-                
+
                 if let cell = cell as? RegularFeedElementCell {
                     cell.update(content)
                     cell.delegate = delegate
@@ -93,13 +97,23 @@ class ArticleEmbeddedPostDatasource: UITableViewDiffableDataSource<SingleSection
     }
     
     func elementForIndexPath(_ indexPath: IndexPath) -> NoteFeedElement? {
-        guard indexPath.section == 0, let data = cells[safe: indexPath.row], case .note(_, let element) = data else { return nil }
-        return element
+        guard indexPath.section == 0, let data = cells[safe: indexPath.row] else { return nil }
+        switch data {
+        case .note(_, let element), .noteHeader(_, let element):
+            return element
+        default:
+            return nil
+        }
     }
-    
+
     func postForIndexPath(_ indexPath: IndexPath) -> ParsedContent? {
-        guard indexPath.section == 0, let data = cells[safe: indexPath.row], case .note(let content, _) = data else { return nil }
-        return content
+        guard indexPath.section == 0, let data = cells[safe: indexPath.row] else { return nil }
+        switch data {
+        case .note(let content, _), .noteHeader(let content, _):
+            return content
+        default:
+            return nil
+        }
     }
     
     func setPosts(_ posts: [ParsedContent]) {
