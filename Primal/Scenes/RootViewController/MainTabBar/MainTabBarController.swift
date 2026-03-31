@@ -529,6 +529,8 @@ private extension MainTabBarController {
             LiveEventManager.instance.addLiveEvent(event)
         }
         .store(in: &cancellables)
+
+        LiveEventManager.instance.startPeriodicRefresh()
     }
     
     func addCircleWalletButton() {
