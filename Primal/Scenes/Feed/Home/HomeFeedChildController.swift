@@ -24,7 +24,8 @@ class HomeFeedChildController: PostFeedViewController {
     override init(feed: FeedManager) {
         super.init(feed: feed)
         
-        dataSource = HomeFeedDatasource(tableView: table, delegate: self)
+        dataSource = GalleryFeedDatasource(tableView: table, delegate: self)
+//        dataSource = HomeFeedDatasource(tableView: table, delegate: self)
     }
     
     required init?(coder: NSCoder) {
