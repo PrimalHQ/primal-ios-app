@@ -12,6 +12,18 @@ enum GalleryFeedItem: Hashable {
     case loading
 }
 
+extension NoteFeedElement {
+    var galleryCellID: String {
+        switch self {
+        case .imageGallery: return GalleryFeedElementImageGalleryCell.galleryCellID
+        case .zapGallery:   return GalleryFeedElementZapGalleryCell.galleryCellID
+        case .reactions:    return GalleryFeedElementReactionsCell.galleryCellID
+        case .text:         return GalleryFeedElementTextCell.galleryCellID
+        default:            return GalleryFeedElementUserCell.galleryCellID
+        }
+    }
+}
+
 class GalleryFeedDatasource: UITableViewDiffableDataSource<SingleSection, GalleryFeedItem>, NoteFeedDatasource {
     var cells: [GalleryFeedItem] = [.loading]
     var cellCount: Int { cells.count }
@@ -25,27 +37,18 @@ class GalleryFeedDatasource: UITableViewDiffableDataSource<SingleSection, Galler
                 cell = tableView.dequeueReusableCell(withIdentifier: "loading", for: indexPath)
                 (cell as? SkeletonLoaderCell)?.loaderView.play()
             case let .note(content, element):
-                let cellID: String
-                switch element {
-                case .userInfo:     cellID = "GalleryUserCell"
-                case .imageGallery: cellID = "GalleryImageCell"
-                case .zapGallery:   cellID = "GalleryZapGalleryCell"
-                case .reactions:    cellID = "GalleryReactionsCell"
-                case .text:         cellID = "GalleryTextCell"
-                default:            cellID = "GalleryUserCell"
-                }
-                cell = tableView.dequeueReusableCell(withIdentifier: cellID, for: indexPath)
+                cell = tableView.dequeueReusableCell(withIdentifier: element.galleryCellID, for: indexPath)
                 HomeFeedDatasource.configureNoteCell(cell, content: content, element: element, delegate: delegate)
             }
 
             return cell
         }
 
-        tableView.register(FeedElementUserCell.self, forCellReuseIdentifier: "GalleryUserCell")
-        tableView.register(FeedElementImageGalleryCell.self, forCellReuseIdentifier: "GalleryImageCell")
-        tableView.register(FeedElementSmallZapGalleryCell.self, forCellReuseIdentifier: "GalleryZapGalleryCell")
-        tableView.register(FeedElementReactionsCell.self, forCellReuseIdentifier: "GalleryReactionsCell")
-        tableView.register(FeedElementTextCell.self, forCellReuseIdentifier: "GalleryTextCell")
+        tableView.register(GalleryFeedElementUserCell.self, forCellReuseIdentifier: GalleryFeedElementUserCell.galleryCellID)
+        tableView.register(GalleryFeedElementImageGalleryCell.self, forCellReuseIdentifier: GalleryFeedElementImageGalleryCell.galleryCellID)
+        tableView.register(GalleryFeedElementZapGalleryCell.self, forCellReuseIdentifier: GalleryFeedElementZapGalleryCell.galleryCellID)
+        tableView.register(GalleryFeedElementReactionsCell.self, forCellReuseIdentifier: GalleryFeedElementReactionsCell.galleryCellID)
+        tableView.register(GalleryFeedElementTextCell.self, forCellReuseIdentifier: GalleryFeedElementTextCell.galleryCellID)
         tableView.register(SkeletonLoaderCell.self, forCellReuseIdentifier: "loading")
 
         defaultRowAnimation = .fade
