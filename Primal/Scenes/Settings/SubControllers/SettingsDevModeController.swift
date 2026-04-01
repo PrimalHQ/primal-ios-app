@@ -120,24 +120,25 @@ private extension SettingsDevModeController {
             WalletManager.instance.$activeWallet
                 .receive(on: DispatchQueue.main)
                 .sink { [weak self] activeWallet in
-                    self?.updateWalletList(activeWallet: activeWallet, sparkWalletIds: sparkWalletIds)
+                    self?.updateWalletList(userId: userId, activeWallet: activeWallet, sparkWalletIds: sparkWalletIds)
                 }
                 .store(in: &cancellables)
         }
     }
 
-    func updateWalletList(activeWallet: Wallet?, sparkWalletIds: [String]) {
+    func updateWalletList(userId: String, activeWallet: UserWallet?, sparkWalletIds: [String]) {
         walletListStack.arrangedSubviews.forEach { $0.removeFromSuperview() }
 
         var seenIds: Set<String> = []
 
         // Active wallet first
         if let active = activeWallet {
-            let sats = Int((active.balanceInBtc?.doubleValue ?? 0) * .BTC_TO_SAT)
+            let wallet = active.wallet
+            let sats = Int((wallet.balanceInBtc?.doubleValue ?? 0) * .BTC_TO_SAT)
             let item = DevToolsWalletItemView()
-            item.configure(wallet: active, isActive: true, lightningAddress: active.lightningAddress, balanceInSats: sats)
+            item.configure(wallet: wallet, isActive: true, lightningAddress: active.lightningAddress, balanceInSats: sats)
             walletListStack.addArrangedSubview(item)
-            seenIds.insert(active.walletId)
+            seenIds.insert(wallet.walletId)
         }
 
         // Remaining Spark wallets (deduplicated)
@@ -146,7 +147,7 @@ private extension SettingsDevModeController {
             walletListStack.addArrangedSubview(item)
             Task { @MainActor in
                 let address = try? await WalletManager.instance.sparkWalletAccountRepository
-                    .getLightningAddress(walletId: walletId)
+                    .getLightningAddress(userId: userId, walletId: walletId)
                 item.configure(walletId: walletId, lightningAddress: address)
             }
         }

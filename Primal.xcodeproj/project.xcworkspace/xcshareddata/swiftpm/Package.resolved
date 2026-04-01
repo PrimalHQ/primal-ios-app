@@ -114,8 +114,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/PrimalHQ/primal-shared-ios",
       "state" : {
-        "revision" : "f165d54b5192d6e52f2b5a6ac9b7bee51483f9f7",
-        "version" : "0.1.19"
+        "revision" : "60098a94e9b9719d84659ff6ee5dda837e131b08",
+        "version" : "0.2.0"
       }
     },
     {
