@@ -64,7 +64,7 @@ private extension SettingsWalletViewController {
         
         let activeWallet = try await WalletManager.instance.walletAccountRepo.getActiveWallet(userId: IdentityManager.instance.userHexPubkey)
 
-        if let nwc = activeWallet as? Wallet.NWC {
+        if let nwc = activeWallet?.wallet as? Wallet.NWC {
             let disconnectButton = LargeRoundedButton(title: "Disconnect Wallet")
             let info = NWCInfoView()
 
@@ -75,7 +75,7 @@ private extension SettingsWalletViewController {
             ].forEach { nwcStack.addArrangedSubview($0) }
 
             info.relayLabel.text = nwc.relays.first
-            info.addressLabel.text = nwc.lightningAddress ?? "Unknown address"
+            info.addressLabel.text = activeWallet?.lightningAddress ?? "Unknown address"
             
             disconnectButton.addAction(.init(handler: { [weak self] _ in
                 Task { @MainActor in
