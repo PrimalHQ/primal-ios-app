@@ -68,6 +68,65 @@ private extension SettingsDevModeController {
 
         walletListStack.spacing = 8
 
+        // MARK: - NWC Audit Logs
+
+        let exportNwcLogsButton = SettingsInfoView(name: "Export NWC audit logs", desc: "", showIcon: .menuImageSave)
+        exportNwcLogsButton.addAction(.init(handler: { [weak self, weak exportNwcLogsButton] _ in
+            exportNwcLogsButton?.isEnabled = false
+            Task { @MainActor in
+                do {
+                    let repo = WalletRepositoryFactory.shared.createNwcLogRepository()
+                    let logs = try await repo.getNwcLogs()
+
+                    guard let self else { return }
+
+                    if logs.isEmpty {
+                        RootViewController.instance.view.showToast("No NWC logs found", extraPadding: 0)
+                    } else {
+                        CSVExporter.exportNwcLogs(logs, from: self)
+                    }
+                } catch {
+                    RootViewController.instance.view.showToast("Failed to export NWC logs", extraPadding: 0)
+                }
+                exportNwcLogsButton?.isEnabled = true
+            }
+        }), for: .touchUpInside)
+
+        // MARK: - Wallet Log Recording
+
+        let walletLogToggle = SettingsSwitchView("Record wallet logs")
+        walletLogToggle.switchView.isOn = WalletLogRecorder.instance.isRecording
+
+        walletLogToggle.switchView.addAction(.init(handler: { [weak walletLogToggle] _ in
+            guard let isOn = walletLogToggle?.switchView.isOn else { return }
+            if isOn {
+                WalletLogRecorder.instance.startRecording()
+            } else {
+                WalletLogRecorder.instance.stopRecording()
+            }
+        }), for: .valueChanged)
+
+        let exportWalletLogsButton = SettingsInfoView(name: "Export wallet logs", desc: "", showIcon: .menuImageSave)
+        exportWalletLogsButton.addAction(.init(handler: { [weak self] _ in
+            let urls = WalletLogRecorder.instance.logFileURLs()
+            guard !urls.isEmpty else {
+                RootViewController.instance.view.showToast("No wallet logs to export", extraPadding: 0)
+                return
+            }
+            guard let self else { return }
+            let activityVC = UIActivityViewController(activityItems: urls, applicationActivities: nil)
+            self.present(activityVC, animated: true)
+        }), for: .touchUpInside)
+
+        let clearWalletLogsButton = UIButton(configuration: .accentPill(text: "Clear Wallet Logs", font: .appFont(withSize: 16, weight: .semibold))).constrainToSize(height: 40)
+        clearWalletLogsButton.addAction(.init(handler: { [weak clearWalletLogsButton, weak walletLogToggle] _ in
+            clearWalletLogsButton?.isEnabled = false
+            WalletLogRecorder.instance.clearLogs()
+            walletLogToggle?.switchView.setOn(false, animated: true)
+            clearWalletLogsButton?.isEnabled = true
+            RootViewController.instance.view.showToast("Wallet logs cleared", extraPadding: 0)
+        }), for: .touchUpInside)
+
         let stack = UIStackView(axis: .vertical, [
             walletSwitcher, SpacerView(height: 10),
             descLabel("Enable wallet switcher popup on the wallet home screen"), SpacerView(height: 20),
@@ -75,6 +134,15 @@ private extension SettingsDevModeController {
             SettingsBorder(), SpacerView(height: 20),
             cacheBreakdownView, SpacerView(height: 12),
             clearCacheButton, SpacerView(height: 20),
+            SettingsBorder(), SpacerView(height: 20),
+            exportNwcLogsButton, SpacerView(height: 10),
+            descLabel("Export NWC request/response audit logs as CSV"), SpacerView(height: 20),
+            SettingsBorder(), SpacerView(height: 20),
+            walletLogToggle, SpacerView(height: 10),
+            descLabel("Record wallet SDK logs to disk for debugging"), SpacerView(height: 20),
+            exportWalletLogsButton, SpacerView(height: 10),
+            descLabel("Share recorded wallet log files"), SpacerView(height: 12),
+            clearWalletLogsButton, SpacerView(height: 20),
         ])
 
         let scroll = UIScrollView()
@@ -120,24 +188,25 @@ private extension SettingsDevModeController {
             WalletManager.instance.$activeWallet
                 .receive(on: DispatchQueue.main)
                 .sink { [weak self] activeWallet in
-                    self?.updateWalletList(activeWallet: activeWallet, sparkWalletIds: sparkWalletIds)
+                    self?.updateWalletList(userId: userId, activeWallet: activeWallet, sparkWalletIds: sparkWalletIds)
                 }
                 .store(in: &cancellables)
         }
     }
 
-    func updateWalletList(activeWallet: Wallet?, sparkWalletIds: [String]) {
+    func updateWalletList(userId: String, activeWallet: UserWallet?, sparkWalletIds: [String]) {
         walletListStack.arrangedSubviews.forEach { $0.removeFromSuperview() }
 
         var seenIds: Set<String> = []
 
         // Active wallet first
         if let active = activeWallet {
-            let sats = Int((active.balanceInBtc?.doubleValue ?? 0) * .BTC_TO_SAT)
+            let wallet = active.wallet
+            let sats = Int((wallet.balanceInBtc?.doubleValue ?? 0) * .BTC_TO_SAT)
             let item = DevToolsWalletItemView()
-            item.configure(wallet: active, isActive: true, lightningAddress: active.lightningAddress, balanceInSats: sats)
+            item.configure(wallet: wallet, isActive: true, lightningAddress: active.lightningAddress, balanceInSats: sats)
             walletListStack.addArrangedSubview(item)
-            seenIds.insert(active.walletId)
+            seenIds.insert(wallet.walletId)
         }
 
         // Remaining Spark wallets (deduplicated)
@@ -146,7 +215,7 @@ private extension SettingsDevModeController {
             walletListStack.addArrangedSubview(item)
             Task { @MainActor in
                 let address = try? await WalletManager.instance.sparkWalletAccountRepository
-                    .getLightningAddress(walletId: walletId)
+                    .getLightningAddress(userId: userId, walletId: walletId)
                 item.configure(walletId: walletId, lightningAddress: address)
             }
         }

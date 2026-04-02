@@ -26,7 +26,7 @@ final class WalletPickerController: UIViewController {
     private var cancellables: Set<AnyCancellable> = []
 
     private let table = UITableView()
-    private var wallets: [Wallet] = []
+    private var wallets: [UserWallet] = []
     private let callback: (Wallet) -> Void
 
     private var isEditMode = false
@@ -69,9 +69,9 @@ final class WalletPickerController: UIViewController {
         WalletManager.instance.walletAccountRepo.observeWalletsByUser(userId: userId)
             .toPublisher()
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] wallets in
-                guard let self, let wallets = wallets as? [Wallet] else { return }
-                self.wallets = wallets
+            .sink { [weak self] userWallets in
+                guard let self, let userWallets = userWallets as? [UserWallet] else { return }
+                self.wallets = userWallets
                 self.table.reloadData()
                 self.updatePreferredHeight()
             }
@@ -121,7 +121,8 @@ final class WalletPickerController: UIViewController {
             return
         }
 
-        guard let targetWallet = wallets.first(where: { $0.walletId == previewId }) else { return }
+        guard let targetUserWallet = wallets.first(where: { $0.wallet.walletId == previewId }) else { return }
+        let targetWallet = targetUserWallet.wallet
 
         let userId = IdentityManager.instance.userHexPubkey
 
@@ -233,8 +234,9 @@ extension WalletPickerController: UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = table.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-        let wallet = wallets[indexPath.row]
-        let isActive = wallet.walletId == WalletManager.instance.activeWallet?.walletId
+        let userWallet = wallets[indexPath.row]
+        let wallet = userWallet.wallet
+        let isActive = wallet.walletId == WalletManager.instance.activeWallet?.wallet.walletId
 
         let effectiveRegisteredId = isEditMode ? previewRegisteredWalletId : registeredWalletId
         let isRegistered = wallet.walletId == effectiveRegisteredId
@@ -251,7 +253,7 @@ extension WalletPickerController: UITableViewDataSource {
         if isEditMode && !isNWC {
             addressOverride = isRegistered ? registeredLightningAddress : nil
         } else {
-            addressOverride = wallet.lightningAddress
+            addressOverride = userWallet.lightningAddress
         }
 
         if let cell = cell as? WalletSelectionCell {
@@ -264,7 +266,8 @@ extension WalletPickerController: UITableViewDataSource {
 
 extension WalletPickerController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let wallet = wallets[indexPath.row]
+        let userWallet = wallets[indexPath.row]
+        let wallet = userWallet.wallet
 
         if isEditMode {
             guard !(wallet is Wallet.NWC) else { return }
@@ -280,7 +283,8 @@ extension WalletPickerController: UITableViewDelegate {
 extension WalletPickerController: WalletSelectionCellDelegate {
     func walletSelectionCellDidTapBolt(_ cell: WalletSelectionCell) {
         guard let indexPath = table.indexPath(for: cell) else { return }
-        let wallet = wallets[indexPath.row]
+        let userWallet = wallets[indexPath.row]
+        let wallet = userWallet.wallet
         guard !(wallet is Wallet.NWC) else { return }
         previewRegisteredWalletId = wallet.walletId
         table.reloadData()

@@ -252,11 +252,11 @@ class RemoteSignerSignInController: UIViewController {
             Task { @MainActor in
                 var nwcConnectionString: String?
 
-                if nwcRequested, let wallet = WalletManager.instance.activeWallet as? Wallet.Spark {
+                if nwcRequested, let spark = WalletManager.instance.activeWallet?.wallet as? Wallet.Spark {
                     let budgetKotlin: KotlinLong? = dailyBudget.map { KotlinLong(value: Int64($0)) }
                     nwcConnectionString = try await WalletManager.instance.nwcRepo.createNewWalletConnection(
                         userId: pubkey,
-                        walletId: wallet.walletId,
+                        walletId: spark.walletId,
                         appName: appName ?? "External App",
                         dailyBudget: budgetKotlin
                     ).getOrNull() as? String

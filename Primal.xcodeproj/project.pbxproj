@@ -578,6 +578,7 @@
 		B9C5A0E82F44ACD3007CB5D3 /* SecretsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C5A0E72F44ACD3007CB5D3 /* SecretsManager.swift */; };
 		B9C5A0EA2F44ACF0007CB5D3 /* secrets.plist in Resources */ = {isa = PBXBuildFile; fileRef = B9C5A0E92F44ACF0007CB5D3 /* secrets.plist */; };
 		B9C5A0F02F46206C007CB5D3 /* CSVExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C5A0EF2F462060007CB5D3 /* CSVExporter.swift */; };
+		B9C5A0F22F4A8B10007CB5D3 /* WalletLogRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C5A0F12F4A8B10007CB5D3 /* WalletLogRecorder.swift */; };
 		B9C672D42E1FEF5000243B45 /* LiveEventManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C672D32E1FEF5000243B45 /* LiveEventManager.swift */; };
 		B9C672D62E1FF65F00243B45 /* JSON+Extra.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C672D52E1FF65900243B45 /* JSON+Extra.swift */; };
 		B9C672D92E252D8600243B45 /* LiveVideoPlayerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C672D82E252D7E00243B45 /* LiveVideoPlayerController.swift */; };
@@ -1408,6 +1409,7 @@
 		B9C5A0E72F44ACD3007CB5D3 /* SecretsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecretsManager.swift; sourceTree = "<group>"; };
 		B9C5A0E92F44ACF0007CB5D3 /* secrets.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = secrets.plist; sourceTree = "<group>"; };
 		B9C5A0EF2F462060007CB5D3 /* CSVExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CSVExporter.swift; sourceTree = "<group>"; };
+		B9C5A0F12F4A8B10007CB5D3 /* WalletLogRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletLogRecorder.swift; sourceTree = "<group>"; };
 		B9C672D32E1FEF5000243B45 /* LiveEventManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveEventManager.swift; sourceTree = "<group>"; };
 		B9C672D52E1FF65900243B45 /* JSON+Extra.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "JSON+Extra.swift"; sourceTree = "<group>"; };
 		B9C672D82E252D7E00243B45 /* LiveVideoPlayerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveVideoPlayerController.swift; sourceTree = "<group>"; };
@@ -2042,6 +2044,7 @@
 				B91E57012CC6B5D100C14809 /* KeyboardManager.swift */,
 				B9C5A0E72F44ACD3007CB5D3 /* SecretsManager.swift */,
 				B9C672D32E1FEF5000243B45 /* LiveEventManager.swift */,
+				B9C5A0F12F4A8B10007CB5D3 /* WalletLogRecorder.swift */,
 			);
 			path = Managers;
 			sourceTree = "<group>";
@@ -4635,6 +4638,7 @@
 				D4A4B4C4D4E4F4A4B4C4D4E2 /* MainThreadElementImageGalleryCell.swift in Sources */,
 				B934ADAD2DAFDF1E0044E5B5 /* SettingsMutedWordsController.swift in Sources */,
 				B9C5A0F02F46206C007CB5D3 /* CSVExporter.swift in Sources */,
+				B9C5A0F22F4A8B10007CB5D3 /* WalletLogRecorder.swift in Sources */,
 				9E8834B42A3239E0005DB548 /* ProfileNavigationView.swift in Sources */,
 				B91E56F52CC0496E00C14809 /* AdvancedSearchFilterController.swift in Sources */,
 				93CACB0629F525B6003BBCE5 /* hash_u5.c in Sources */,
@@ -4956,7 +4960,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.0.35;
+				MARKETING_VERSION = 3.0.42;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -5005,7 +5009,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.0.35;
+				MARKETING_VERSION = 3.0.42;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -5465,7 +5469,7 @@
 			repositoryURL = "https://github.com/PrimalHQ/primal-shared-ios";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 0.1.19;
+				minimumVersion = 0.2.1;
 			};
 		};
 		B9F933162B867D860064B495 /* XCRemoteSwiftPackageReference "qrcode" */ = {

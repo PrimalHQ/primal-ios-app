@@ -9,6 +9,7 @@ import Foundation
 import GenericJSON
 import Combine
 import NostrSDK
+import UIKit
 
 struct ParsedLiveEvent: Hashable {
     let event: ProcessedLiveEvent
@@ -167,7 +168,20 @@ class LiveEventManager {
     }
     
     var cancellables: Set<AnyCancellable> = []
-    
+    private var refreshCancellable: AnyCancellable?
+
+    func startPeriodicRefresh() {
+        refreshCancellable = Publishers.Merge3(
+            Timer.publish(every: 30, on: .main, in: .default).autoconnect().map { _ in () },
+            Timer.publish(every: 3, on: .main, in: .default).autoconnect().first().map { _ in () },
+            NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification).dropFirst().map { _ in () }
+        )
+        .flatMap { _ in
+            SocketRequest(name: "live_events_from_follows", payload: ["user_pubkey": .string(IdentityManager.instance.userHexPubkey)]).publisher()
+        }
+        .sink { _ in }
+    }
+
     @MainActor
     func addLiveEvent(_ event: [String: JSON]) {
         guard let processed = ProcessedLiveEvent.fromEvent(event) else { return }
@@ -187,15 +201,6 @@ class LiveEventManager {
                     }
                 }
                 .store(in: &cancellables)
-        }
-    }
-    
-    @MainActor
-    func filterCurrentlyLive(_ lives: [ProcessedLiveEvent]) {
-        let currentlyLiveTags = Set(lives.map(\.dTag))
-        
-        liveEvents = liveEvents.filter { _, live in
-            currentlyLiveTags.contains(live.dTag)
         }
     }
     

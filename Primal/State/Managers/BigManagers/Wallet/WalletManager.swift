@@ -168,7 +168,7 @@ enum WalletSetupState {
 final class WalletManager {
     static let instance = WalletManager()
 
-    @Published private(set) var activeWallet: Wallet?
+    @Published private(set) var activeWallet: UserWallet?
     @Published private(set) var walletSetupState: WalletSetupState = .normal
     @Published private(set) var premiumState: PremiumState?
     @Published private(set) var btcToUsd: Double = UserDefaults.standard.btcToUsd
@@ -181,9 +181,9 @@ final class WalletManager {
         }
     }
     
-    var isNWCWalletActive: Bool { activeWallet is Wallet.NWC }
-    var walletID: String? { activeWallet?.walletId }
-    var maxBalance: Int { Int((activeWallet?.maxBalanceInBtc?.doubleValue ?? 0.00001) * .BTC_TO_SAT) }
+    var isNWCWalletActive: Bool { activeWallet?.wallet is Wallet.NWC }
+    var walletID: String? { activeWallet?.wallet.walletId }
+    var maxBalance: Int { Int((activeWallet?.wallet.maxBalanceInBtc?.doubleValue ?? 0.00001) * .BTC_TO_SAT) }
     var hasPremium: Bool { premiumState?.isExpired == false }
     var hasLegend: Bool { premiumState?.isLegend == true }
     var hasPremiumPublisher: AnyPublisher<Bool, Never> {
@@ -273,12 +273,12 @@ final class WalletManager {
         walletAccountRepo.observeActiveWallet(userId: pubkey)
             .toPublisher()
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] wallet in
-                guard let self, let wallet else { return }
+            .sink { [weak self] userWallet in
+                guard let self, let userWallet else { return }
                 let old = activeWallet
-                activeWallet = wallet
-                balance = Int((wallet.balanceInBtc?.doubleValue ?? 0) * Double(SAT_PER_BTC))
-                if let old, old.walletId != wallet.walletId, old.userId == wallet.userId {
+                activeWallet = userWallet
+                balance = Int((userWallet.wallet.balanceInBtc?.doubleValue ?? 0) * Double(SAT_PER_BTC))
+                if let old, old.wallet.walletId != userWallet.wallet.walletId, old.userId == userWallet.userId {
                     refresh()
                 }
             }
@@ -314,7 +314,7 @@ final class WalletManager {
 
         await saveSeedToKeychain(walletId: walletId, pubkey: pubkey)
 
-        return try? await sparkWalletAccountRepository.getLightningAddress(walletId: walletId)
+        return try? await sparkWalletAccountRepository.getLightningAddress(userId: pubkey, walletId: walletId)
     }
     
     func seedPhrase() async throws -> [String] {
@@ -338,10 +338,10 @@ final class WalletManager {
         if usePrimal {
             let primal = try await walletAccountRepo.findLastUsedWallet(userId: userPubkey, type: [WalletType.primal, WalletType.spark])
             if let primal {
-                try await walletAccountRepo.setActiveWallet(userId: userPubkey, walletId: primal.walletId)
+                try await walletAccountRepo.setActiveWallet(userId: userPubkey, walletId: primal.wallet.walletId)
             }
         } else if let nwc = try await walletAccountRepo.findLastUsedWallet(userId: userPubkey, type: .nwc) {
-            try await walletAccountRepo.setActiveWallet(userId: userPubkey, walletId: nwc.walletId)
+            try await walletAccountRepo.setActiveWallet(userId: userPubkey, walletId: nwc.wallet.walletId)
         }
     }
     
@@ -356,7 +356,7 @@ final class WalletManager {
         
         guard let nwc = try await walletAccountRepo.findLastUsedWallet(userId: pubkey, type: .nwc) else { return }
         
-        try await walletRepo.deleteWalletById(walletId: nwc.walletId)
+        try await walletRepo.deleteWalletById(walletId: nwc.wallet.walletId)
         
         try await setUsePrimalWallet()
     }
@@ -531,8 +531,7 @@ final class WalletManager {
         
         let data = ZapRequestData(
             zapperUserId: IdentityManager.instance.userHexPubkey,
-            recipientUserId: user.pubkey,
-            recipientLnUrlDecoded: address,
+            target: .Profile(recipientUserId: user.pubkey, recipientLnUrlDecoded: address),
             zapAmountInSats: UInt64(sats),
             zapComment: note,
             userZapRequestEvent: .init(id: zap.id, pubKey: zap.pubkey, createdAt: zap.created_at, kind: Int32(zap.kind), tags: NostrExtensions.shared.mapAsListOfJsonArray(tags: zap.tags), content: zap.content, sig: zap.sig)
@@ -618,7 +617,7 @@ extension WalletManager {
                     if prog is MigrationProgress.Completed {
                         Task { [weak self] in
                             guard let self else { return }
-                            if let walletId = try? await self.sparkWalletAccountRepository.findPersistedWalletId(userId: pubkey) {
+                            if let walletId = try? await self.sparkWalletAccountRepository.findAllPersistedWalletIds(userId: pubkey).first {
                                 await self.saveSeedToKeychain(walletId: walletId, pubkey: pubkey)
                             }
                         }
@@ -635,10 +634,10 @@ extension WalletManager {
     }
     
     func syncSparkWalletTransactions() async throws {
-        guard let wallet = activeWallet as? Wallet.Spark else { return }
-        
+        guard let spark = activeWallet?.wallet as? Wallet.Spark else { return }
+
         try await WalletRepositoryFactory.shared.createMigratePrimalTransactionsHandler(primalWalletApiClient: walletConnection, nostrEventSignatureHandler: SigningManager.instance, profileRepository: profileRepo)
-            .invoke(userId: IdentityManager.instance.userHexPubkey, targetSparkWalletId: wallet.walletId, maxPages: nil, onPageFetched: nil)
+            .invoke(userId: IdentityManager.instance.userHexPubkey, targetSparkWalletId: spark.walletId, maxPages: nil, onPageFetched: nil)
     }
 }
 
@@ -678,7 +677,8 @@ private extension WalletManager {
     func detectWalletSetupState(pubkey: String) async {
         do {
             let localWalletId = try await sparkWalletAccountRepository
-                .findPersistedWalletId(userId: pubkey)
+                .findAllPersistedWalletIds(userId: pubkey)
+                .first
 
             if let localWalletId {
                 // Back-fill keychain for existing users upgrading to this version

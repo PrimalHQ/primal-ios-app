@@ -39,11 +39,11 @@ class UgradeWalletFaqController: UIViewController {
         ),
         (
             question: "Are there any transaction fees that I need to pay to upgrade?",
-            answer: "No. Primal will cover all transaction fees required to upgrade all our users to their new self-custodial wallets."
+            answer: "No. Primal will cover all transaction fees required to upgrade all our users to their new non-custodial wallets."
         ),
         (
             question: "Does the new wallet support Nostr Wallet Connect?",
-            answer: "Yes. The new Primal wallet does support Nostr Wallet Connect, however it works a bit differently than the old one. Since the new wallet is self-custodial, the Primal mobile app needs to be running in order to sign NWC events. The NWC feature is best used in conjunction with the Primal remote signer."
+            answer: "Yes. The new Primal wallet does support Nostr Wallet Connect, however it works a bit differently than the old one. Since the new wallet is non-custodial, the Primal mobile app needs to be running in order to sign NWC events. The NWC feature is best used in conjunction with the Primal remote signer."
         ),
         (
             question: "I have existing NWC connections to the old Primal wallet. Will I have to re-create those with the new wallet? ",
