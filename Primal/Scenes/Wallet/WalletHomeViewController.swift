@@ -376,12 +376,12 @@ private extension WalletHomeViewController {
         let userId = IdentityManager.instance.userHexPubkey
         WalletManager.instance.$activeWallet.compactMap({ $0 })
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] wallet in
-                guard let self, wallet.userId == userId else { return }
-                let name = wallet is Wallet.Primal ? "Legacy Wallet" : "Wallet"
+            .sink { [weak self] userWallet in
+                guard let self, userWallet.userId == userId else { return }
+                let name = userWallet.wallet is Wallet.Primal ? "Legacy Wallet" : "Wallet"
                 title = name
                 if DevModeSettings.walletSwitcherEnabled {
-                    navTitleView.title = wallet.displayName
+                    navTitleView.title = userWallet.wallet.displayName
                 }
             }
             .store(in: &cancellables)
@@ -389,13 +389,14 @@ private extension WalletHomeViewController {
         let transactionsPublisher = Publishers.Merge3(
             WalletManager.instance.$parsedTransactions.first(),
             WalletManager.instance.$parsedTransactions.compactMap { $0.isEmpty ? nil : $0 },
-            WalletManager.instance.$activeWallet.compactMap({ $0?.walletId }).removeDuplicates().dropFirst().map({ _ in [] })
+            WalletManager.instance.$activeWallet.compactMap({ $0?.wallet.walletId }).removeDuplicates().dropFirst().map({ _ in [] })
         )
         
         Publishers.CombineLatest3(WalletManager.instance.$activeWallet, transactionsPublisher, WalletManager.instance.$walletSetupState)
         .debounce(for: 0.1, scheduler: DispatchQueue.main)
-        .sink { [weak self] wallet, transactions, setupState in
-            guard let self, wallet?.userId ?? userId == userId else { return }
+        .sink { [weak self] userWallet, transactions, setupState in
+            guard let self, userWallet?.userId ?? userId == userId else { return }
+            let wallet = userWallet?.wallet
 
             let grouping = Dictionary(grouping: transactions) {
                 Calendar.current.dateComponents([.day, .year, .month], from: Date(timeIntervalSince1970: TimeInterval($0.createdAt)))

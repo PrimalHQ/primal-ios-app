@@ -55,6 +55,7 @@ class HomeFeedChildController: PostFeedViewController {
         
         refreshControl.addAction(.init(handler: { [weak self] _ in
             self?.feed.refresh()
+            LiveEventManager.instance.startPeriodicRefresh()
         }), for: .valueChanged)
         
         setupPublishers()

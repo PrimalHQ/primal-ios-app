@@ -63,19 +63,19 @@ private extension SettingsWalletViewController {
         nwcStack.subviews.forEach { $0.removeFromSuperview() }
         
         let activeWallet = try await WalletManager.instance.walletAccountRepo.getActiveWallet(userId: IdentityManager.instance.userHexPubkey)
-        
-        if let nwc = activeWallet as? Wallet.NWC {
+
+        if let nwc = activeWallet?.wallet as? Wallet.NWC {
             let disconnectButton = LargeRoundedButton(title: "Disconnect Wallet")
             let info = NWCInfoView()
-            
+
             [
                 SettingsTitleView(title: "WALLET CONNECTED"), SpacerView(height: 10),
                 info, SpacerView(height: 16),
                 disconnectButton, SpacerView(height: 24)
             ].forEach { nwcStack.addArrangedSubview($0) }
-            
+
             info.relayLabel.text = nwc.relays.first
-            info.addressLabel.text = nwc.lightningAddress ?? "Unknown address"
+            info.addressLabel.text = activeWallet?.lightningAddress ?? "Unknown address"
             
             disconnectButton.addAction(.init(handler: { [weak self] _ in
                 Task { @MainActor in
@@ -195,7 +195,7 @@ private extension SettingsWalletViewController {
         
         // Hide restore button if the current wallet isn't spark
         Publishers.CombineLatest($useNWCWallet.removeDuplicates(), WalletManager.instance.$activeWallet)
-            .map { $0 || !($1 is Wallet.Spark) }
+            .map { $0 || !($1?.wallet is Wallet.Spark) }
             .receive(on: DispatchQueue.main)
             .assign(to: \.isHidden, on: restoreStack)
             .store(in: &cancellables)
@@ -203,7 +203,7 @@ private extension SettingsWalletViewController {
         // Hide backup button if the current wallet isn't spark or if it's already backed up
         Publishers.CombineLatest($useNWCWallet.removeDuplicates(), WalletManager.instance.$activeWallet)
             .map {
-                guard !$0, let spark = $1 as? Wallet.Spark else { return nil }
+                guard !$0, let spark = $1?.wallet as? Wallet.Spark else { return nil }
                 return spark
             }
             .receive(on: DispatchQueue.main)

@@ -111,7 +111,9 @@ class UserImageView: UIView, Themeable {
         legendaryGradient.isHidden = true
         legendaryBackgroundCircleView.isHidden = true
         animatedImageView.kf.cancelDownloadTask()
-        animatedImageView.image = UIImage(named: "Profile")        
+        animatedImageView.image = UIImage(named: "Profile")
+        
+        cachedLegendTheme = nil
     }
     
     func updateGlow(_ user: ParsedUser) {
@@ -120,11 +122,11 @@ class UserImageView: UIView, Themeable {
             legendaryBackgroundCircleView.isHidden = false
             legendaryGradient.setLegendGradient(theme)
             cachedLegendTheme = theme
-        } else {
-            legendaryGradient.isHidden = true
-            legendaryBackgroundCircleView.isHidden = true
-            cachedLegendTheme = nil
+            return
         }
+        legendaryGradient.isHidden = true
+        legendaryBackgroundCircleView.isHidden = true
+        cachedLegendTheme = nil
     }
     
     func setSharedUserImage(_ user: PrimalShared.ProfileData) {
@@ -138,6 +140,7 @@ class UserImageView: UIView, Themeable {
         } else {
             legendaryGradient.isHidden = true
             legendaryBackgroundCircleView.isHidden = true
+            cachedLegendTheme = nil
         }
 
         guard let image = user.avatarCdnImage, let url = URL(string: image.variants.first?.mediaUrl ?? image.sourceUrl) else {
