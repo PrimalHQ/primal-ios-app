@@ -80,9 +80,9 @@ class MigrateWalletPopupController: UIViewController {
         let text = NSMutableAttributedString(string:
 """
 Good news: Primal now features a new
-self-custodial wallet, which is a required upgrade for all users. 
+non-custodial wallet, which is a required upgrade for all users. 
 
-With one tap, we’ll move your funds and full transaction history to your new self-custodial wallet - so you fully control your bitcoin. 
+With one tap, we’ll move your funds and full transaction history to your new non-custodial wallet - so you fully control your bitcoin. 
 Questions?  Check out our  
 """
         , attributes: [
