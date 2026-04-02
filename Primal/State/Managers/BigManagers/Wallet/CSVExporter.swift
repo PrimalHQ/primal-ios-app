@@ -62,6 +62,59 @@ class CSVExporter {
         return "\"" + value.replacingOccurrences(of: "\"", with: "\"\"") + "\""
     }
 
+    // MARK: - NWC Audit Log CSV
+
+    private static let nwcCsvHeaders = [
+        "eventId", "connectionId", "walletId", "userId", "method",
+        "requestedAt", "completedAt", "status",
+        "errorCode", "errorMessage", "amountMsats",
+        "requestPayload", "responsePayload"
+    ]
+
+    static func buildNwcLogsCsv(_ logs: [NwcRequestLog]) -> String {
+        var lines = [nwcCsvHeaders.joined(separator: ",")]
+        for log in logs {
+            lines.append(nwcCsvRow(for: log))
+        }
+        return lines.joined(separator: "\n")
+    }
+
+    private static func nwcCsvRow(for log: NwcRequestLog) -> String {
+        let values: [String?] = [
+            log.eventId,
+            log.connectionId,
+            log.walletId,
+            log.userId,
+            log.method,
+            "\(log.requestedAt)",
+            log.completedAt.map { "\($0.int64Value)" },
+            log.requestState.name,
+            log.errorCode,
+            log.errorMessage,
+            log.amountMsats.map { "\($0.int64Value)" },
+            log.requestPayload,
+            log.responsePayload
+        ]
+        return values.map(csvEscaped).joined(separator: ",")
+    }
+
+    static func exportNwcLogs(_ logs: [NwcRequestLog], from viewController: UIViewController) {
+        let csv = buildNwcLogsCsv(logs)
+        let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent("nwc_audit_logs.csv")
+
+        do {
+            try csv.write(to: tempURL, atomically: true, encoding: .utf8)
+        } catch {
+            print("Failed to write NWC CSV: \(error)")
+            return
+        }
+
+        let activityVC = UIActivityViewController(activityItems: [tempURL], applicationActivities: nil)
+        viewController.present(activityVC, animated: true)
+    }
+
+    // MARK: - Transaction CSV
+
     static func exportTransactions(_ transactions: [Transaction], walletType: String, from viewController: UIViewController) {
         let csv = buildTransactionsCsv(transactions)
         let fileName = "\(walletType)_transactions.csv"

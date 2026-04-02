@@ -89,7 +89,11 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         
         WalletRepositoryFactory.shared.doInit(enableDbEncryption: true, enableConsoleLogs: true, breezApiKey: SecretsManager.instance.breezApiKey)
         AccountRepositoryFactory.shared.doInit(enableDbEncryption: true, enableConsoleLogs: true)
-        
+
+        if WalletLogRecorder.instance.isRecording {
+            WalletLogRecorder.instance.startRecording()
+        }
+
         _ = RemoteSignerManager.instance
         
         UNUserNotificationCenter.current().delegate = self
