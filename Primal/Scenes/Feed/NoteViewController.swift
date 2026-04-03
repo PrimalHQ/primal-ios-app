@@ -198,9 +198,13 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
         return true
     }
     
-    func setBarsToTransform(_ transform: CGFloat) {        
+    func setBarsToTransform(_ transform: CGFloat) {
         prevTransform = transform
-        navigationController?.navigationBar.transform = .init(translationX: 0, y: transform)
+        if let navBarVC: any PrimalNavigationBarController = findParent() {
+            navBarVC.primalNavigationBar.transform = .init(translationX: 0, y: transform)
+        } else {
+            navigationController?.navigationBar.transform = .init(translationX: 0, y: transform)
+        }
         navigationBorder.transform = .init(translationX: 0, y: transform)
         mainTabBarController?.vStack.transform = .init(translationX: 0, y: -transform)
     }
@@ -533,7 +537,12 @@ private extension NoteViewController {
         table.contentInset = .init(top: 100, left: 0, bottom: 150, right: 0)
         
         DispatchQueue.main.async {
-            self.topBarHeight = RootViewController.instance.view.safeAreaInsets.top + 50 - 12 // 50 is nav bar height without safe area
+            let hasPrimalNavBar: Bool = (self.findParent() as (any PrimalNavigationBarController)?) != nil
+            if hasPrimalNavBar {
+                self.topBarHeight = 64 - 12 // table starts at safe area, only need PrimalNavigationBar height
+            } else {
+                self.topBarHeight = RootViewController.instance.view.safeAreaInsets.top + 50 - 12 // 50 is nav bar height without safe area
+            }
             self.table.contentInset = .init(top: self.adjustedTopBarHeight, left: 0, bottom: 150, right: 0)
             self.table.contentOffset = .init(x: 0, y: -self.adjustedTopBarHeight)
         }
@@ -550,7 +559,6 @@ private extension NoteViewController {
             DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
                 guard let self else { return }
                 
-                if let menu: MenuContainerController = self.findParent(), menu.isOpen { return }
                 if self.navigationController?.topViewController?.isParent(self) != true { return }
                     
                 self.animateBarsToVisible()

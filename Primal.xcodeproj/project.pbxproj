@@ -178,7 +178,8 @@
 		9E9F2F9A29F6ABA800A9CDF3 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9F2F9829F6ABA800A9CDF3 /* SceneDelegate.swift */; };
 		9E9F2F9B29F6ABA800A9CDF3 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9F2F9929F6ABA800A9CDF3 /* AppDelegate.swift */; };
 		9EB219E62A0676760037C3E5 /* RobotoFlex-All.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9EB219E52A0676760037C3E5 /* RobotoFlex-All.ttf */; };
-		9EB219E92A067B990037C3E5 /* MenuContainerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EB219E82A067B990037C3E5 /* MenuContainerController.swift */; };
+		A1F2B3C4D5E6F7A8B9C0D1E2 /* MenuController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F2B3C4D5E6F7A8B9C0D1E3 /* MenuController.swift */; };
+		B2A3C4D5E6F7A8B9C0D1E2F3 /* PrimalNavigationBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2A3C4D5E6F7A8B9C0D1E2F4 /* PrimalNavigationBar.swift */; };
 		9EB219EC2A06D2AF0037C3E5 /* splashAlpha.json in Resources */ = {isa = PBXBuildFile; fileRef = 9EB219EA2A06D2AF0037C3E5 /* splashAlpha.json */; };
 		9EB219ED2A06D2AF0037C3E5 /* splash.json in Resources */ = {isa = PBXBuildFile; fileRef = 9EB219EB2A06D2AF0037C3E5 /* splash.json */; };
 		9EB219EF2A06FD610037C3E5 /* MainLogo.png in Resources */ = {isa = PBXBuildFile; fileRef = 9EB219EE2A06FD610037C3E5 /* MainLogo.png */; };
@@ -1016,7 +1017,8 @@
 		9E9F2F9829F6ABA800A9CDF3 /* SceneDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		9E9F2F9929F6ABA800A9CDF3 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		9EB219E52A0676760037C3E5 /* RobotoFlex-All.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "RobotoFlex-All.ttf"; sourceTree = "<group>"; };
-		9EB219E82A067B990037C3E5 /* MenuContainerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuContainerController.swift; sourceTree = "<group>"; };
+		A1F2B3C4D5E6F7A8B9C0D1E3 /* MenuController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuController.swift; sourceTree = "<group>"; };
+		B2A3C4D5E6F7A8B9C0D1E2F4 /* PrimalNavigationBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimalNavigationBar.swift; sourceTree = "<group>"; };
 		9EB219EA2A06D2AF0037C3E5 /* splashAlpha.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = splashAlpha.json; sourceTree = "<group>"; };
 		9EB219EB2A06D2AF0037C3E5 /* splash.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = splash.json; sourceTree = "<group>"; };
 		9EB219EE2A06FD610037C3E5 /* MainLogo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MainLogo.png; path = Assets.xcassets/LogoPrimary.imageset/MainLogo.png; sourceTree = "<group>"; };
@@ -2442,6 +2444,7 @@
 				B90EF0EC2AFC08E000A7CD65 /* ProfileTabSelectionView.swift */,
 				B9EDA58C2E4F5B0F003262E4 /* UsersTableView.swift */,
 				B98DD8A82C3F1F9600E8369A /* ArticleFeedView.swift */,
+				B2A3C4D5E6F7A8B9C0D1E2F4 /* PrimalNavigationBar.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -2449,7 +2452,7 @@
 		9EB219E72A067B7B0037C3E5 /* Menu */ = {
 			isa = PBXGroup;
 			children = (
-				9EB219E82A067B990037C3E5 /* MenuContainerController.swift */,
+				A1F2B3C4D5E6F7A8B9C0D1E3 /* MenuController.swift */,
 			);
 			path = Menu;
 			sourceTree = "<group>";
@@ -4228,7 +4231,8 @@
 				B95A41992F59B88300387448 /* PollManager.swift in Sources */,
 				9ED02D7529FBE92D008040BC /* FollowSuggestionsRequest.swift in Sources */,
 				B94F2BC02AD446840041181B /* TransactionCell.swift in Sources */,
-				9EB219E92A067B990037C3E5 /* MenuContainerController.swift in Sources */,
+				A1F2B3C4D5E6F7A8B9C0D1E2 /* MenuController.swift in Sources */,
+				B2A3C4D5E6F7A8B9C0D1E2F3 /* PrimalNavigationBar.swift in Sources */,
 				B98DD8C62C59118E00E8369A /* ArticleSelectionMenuView.swift in Sources */,
 				9ED4160F2A4B7A8500892235 /* Notification.swift in Sources */,
 				B9C5A07F2F362B12007CB5D3 /* UpgradeWalletStartController.swift in Sources */,

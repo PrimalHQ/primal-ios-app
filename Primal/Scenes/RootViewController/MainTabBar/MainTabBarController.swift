@@ -26,11 +26,11 @@ enum MainTab: String {
 }
 
 final class MainTabBarController: UIViewController, Themeable {
-    lazy var home = MainNavigationController(rootViewController: MenuContainerController(child: HomeFeedViewController()))
-    lazy var reads = MainNavigationController(rootViewController: MenuContainerController(child: ReadsViewController()))
-    lazy var wallet = MainNavigationController(rootViewController: MenuContainerController(child: WalletHomeViewController()))
-    lazy var notifications = MainNavigationController(rootViewController: MenuContainerController(child: NotificationsViewController()))
-    lazy var explore = MainNavigationController(rootViewController: MenuContainerController(child: ExploreViewController()))
+    lazy var home = MainNavigationController(rootViewController: HomeFeedViewController())
+    lazy var reads = MainNavigationController(rootViewController: ReadsViewController())
+    lazy var wallet = MainNavigationController(rootViewController: WalletHomeViewController())
+    lazy var notifications = MainNavigationController(rootViewController: NotificationsViewController())
+    lazy var explore = MainNavigationController(rootViewController: ExploreViewController())
 
     let vcParentView = UIView()
     let noConnectionView = NoConnectionView().constrainToSize(height: 44)
@@ -78,13 +78,6 @@ final class MainTabBarController: UIViewController, Themeable {
     var deeplinkCancellable: AnyCancellable?
     
     let chatManager = ChatManager()
-    var newMessageCount = 0 {
-        didSet {
-            for tab in tabs {
-                (navForTab(tab).viewControllers.first as? MenuContainerController)?.newMessageCount = newMessageCount
-            }
-        }
-    }
     
     var newNotifications: Int = 0 {
         didSet {
@@ -116,11 +109,6 @@ final class MainTabBarController: UIViewController, Themeable {
         setup()
         
         chatManager.updateChatCount()
-        chatManager.$newMessagesCount.removeDuplicates().receive(on: DispatchQueue.main)
-            .sink { [weak self] newMessages in
-                self?.newMessageCount = newMessages
-            }
-            .store(in: &cancellables)
     }
     
     deinit {
@@ -151,21 +139,6 @@ final class MainTabBarController: UIViewController, Themeable {
             .store(in: &cancellables)
     }
 
-    func hideForMenu() {
-        UIView.animate(withDuration: 0.3) {
-            self.buttonStack.alpha = 0
-            self.circleWalletButton.alpha = 0
-            self.showTabBarBorder = false
-        }
-    }
-
-    func showButtons() {
-        UIView.animate(withDuration: 0.3) {
-            self.buttonStack.alpha = 1
-            self.circleWalletButton.alpha = 1
-            self.showTabBarBorder = true
-        }
-    }
 
     var updateChildren = false
     func updateTheme() {

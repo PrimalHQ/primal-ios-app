@@ -60,7 +60,7 @@ final class NotificationFeedViewController: NoteViewController {
     let idJsonID: JSON = .string(IdentityManager.instance.userHexPubkey)
     
     var parentNotificatonVC: NotificationsViewController? {
-        parent?.parent as? NotificationsViewController
+        parent as? NotificationsViewController
     }
     
     init(tab: Tab) {
@@ -258,18 +258,15 @@ final class NotificationFeedViewController: NoteViewController {
     
     override func setBarsToTransform(_ transform: CGFloat) {
         super.setBarsToTransform(transform)
-        
-        if let mainVC = parentNotificatonVC {
-            mainVC.tabSelectionView.transform = .init(translationX: 0, y: transform)
-            mainVC.border.transform = .init(translationX: 0, y: transform)
 
+        if let mainVC = parentNotificatonVC {
             let percent = abs(transform / barsMaxTransform)
-            let scale = 0.1 + ((1 - percent) * 0.9)  // when percent is 0 scale is 1, when percent is 1 scale is 0.1
+            let scale = 0.1 + ((1 - percent) * 0.9)
 
             mainVC.postButton.alpha = 1 - percent
             mainVC.postButton.transform = .init(scaleX: scale, y: scale).rotated(by: percent * .pi / 2)
             mainVC.postButtonParent.transform = .init(translationX: 0, y: -transform)
-        }        
+        }
     }
     
     override func performEvent(_ event: PostCellEvent, withPost post: ParsedContent, inCell cell: UITableViewCell?) {

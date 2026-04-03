@@ -10,9 +10,11 @@ import UIKit
 import SafariServices
 import GenericJSON
 
-final class ReadsViewController: UIViewController, Themeable {
+final class ReadsViewController: UIViewController, Themeable, PrimalNavigationBarController {
+    let primalNavigationBar = PrimalNavigationBar()
+
     var cancellables: Set<AnyCancellable> = []
-    
+
     lazy var navTitleView = DropdownNavigationView(title: "Nostr Reads")
     let border = UIView().constrainToSize(height: 1)
     let pageVC = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal)
@@ -35,16 +37,15 @@ final class ReadsViewController: UIViewController, Themeable {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
-        navigationController?.setNavigationBarHidden(false, animated: animated)
+
+        navigationController?.setNavigationBarHidden(true, animated: animated)
         mainTabBarController?.setTabBarHidden(false, animated: animated)
     }
     
     func updateTheme() {
         view.backgroundColor = .background
-        
-        navigationItem.rightBarButtonItem = customSearchButton(type: .reads)
-        
+
+        primalNavigationBar.updateTheme()
         navTitleView.updateTheme()
         
         border.backgroundColor = .background3
@@ -67,6 +68,7 @@ final class ReadsViewController: UIViewController, Themeable {
     func setFeed(_ feed: PrimalFeed) {
         currentFeed = feed
         navTitleView.title = feed.name
+        primalNavigationBar.title = feed.name
         pageVC.setViewControllers([ArticleFeedViewController(feed: feed)], direction: .forward, animated: false)
     }
     
@@ -138,31 +140,38 @@ extension ReadsViewController: UIPageViewControllerDelegate {
             self.navTitleView.completeTransition(newTitle: feed.name)
         }
         currentFeed = feed
+        primalNavigationBar.title = feed.name
     }
 }
 
 private extension ReadsViewController {
     func setup() {
         updateTheme()
-        navigationItem.titleView = navTitleView
-        
+
         pageVC.willMove(toParent: self)
-        
+
         view.addSubview(pageVC.view)
         pageVC.view.pinToSuperview()
-        
+
         addChild(pageVC)
         pageVC.didMove(toParent: self)
-        
-        navTitleView.button.addAction(.init(handler: { [weak self] _ in
+
+        view.addSubview(border)
+        border.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .top, safeArea: true)
+
+        addNavigationBar()
+        primalNavigationBar.showChevron = true
+        primalNavigationBar.subtitle = "Latest reads from your network"
+        primalNavigationBar.onTitleTapped = { [weak self] in
             guard let currentFeed = self?.currentFeed else { return }
             self?.present(FeedPickerController(currentFeed: currentFeed, type: .article) { feed in
                 self?.setFeed(feed)
             }, animated: true)
-        }), for: .touchUpInside)
-        
-        view.addSubview(border)
-        border.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .top, safeArea: true)
+        }
+        primalNavigationBar.onAvatarTapped = { [weak self] in
+            guard let self, let profile = IdentityManager.instance.parsedUser else { return }
+            show(ProfileViewController(profile: profile), sender: nil)
+        }
     }
 }
 

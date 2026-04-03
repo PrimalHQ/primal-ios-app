@@ -18,7 +18,6 @@ class HomeFeedChildController: PostFeedViewController {
     @Published var isScrolling = false
     @Published var didReachEnd = false
     
-    weak var menuContainer: MenuContainerController?
     weak var tabController: MainTabBarController?
 
     override init(feed: FeedManager) {
@@ -71,10 +70,9 @@ class HomeFeedChildController: PostFeedViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        menuContainer = findParent()
         tabController = findParent()
         
-        navigationController?.setNavigationBarHidden(false, animated: animated)
+        navigationController?.setNavigationBarHidden(true, animated: animated)
     }
     
     func callOnLoad() {
@@ -136,7 +134,7 @@ class HomeFeedChildController: PostFeedViewController {
     
     weak var parentHomeVC: HomeFeedViewController?
     override func setBarsToTransform(_ transform: CGFloat) {
-        guard menuContainer?.isOpen != true, view.window != nil else { return }
+        guard view.window != nil else { return }
         
         super.setBarsToTransform(transform)
         

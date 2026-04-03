@@ -27,14 +27,16 @@ extension UIButton.Configuration {
     }
 }
 
-final class HomeFeedViewController: UIViewController, Themeable {
+final class HomeFeedViewController: UIViewController, Themeable, PrimalNavigationBarController {
+    let primalNavigationBar = PrimalNavigationBar()
+
     let postButtonParent = UIView()
     let postButton = NewPostButton()
-    
+
     lazy var navTitleView = DropdownNavigationView(title: "Latest")
-    
+
     let pageVC = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal, options: nil)
-    
+
     var cancellables: Set<AnyCancellable> = []
     
     weak var firstFeedVC: HomeFeedChildController?
@@ -59,23 +61,13 @@ final class HomeFeedViewController: UIViewController, Themeable {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        navTitleView.title = "Latest"
-        navigationItem.titleView = navTitleView
-        
-        navTitleView.button.addAction(.init(handler: { [weak self] _ in
-            guard let self else { return }
-            present(FeedPickerController(currentFeed: currentFeed, type: .note, callback: { [weak self] feed in
-                self?.setFeed(feed)
-            }), animated: true)
-        }), for: .touchUpInside)
-        
+
         pageVC.willMove(toParent: self)
         addChild(pageVC)
         pageVC.didMove(toParent: self)
         view.addSubview(pageVC.view)
-        pageVC.view.pinToSuperview()
-        
+        pageVC.view.pinToSuperview(edges: [.horizontal, .bottom]).pinToSuperview(edges: .top, safeArea: true)
+
         postButton.addAction(.init(handler: { [weak self] _ in
             self?.present(AdvancedEmbedPostViewController(), animated: true)
         }), for: .touchUpInside)
@@ -83,32 +75,45 @@ final class HomeFeedViewController: UIViewController, Themeable {
         postButtonParent.addSubview(postButton)
         postButton.constrainToSize(56).pinToSuperview(padding: 8)
         postButtonParent.pinToSuperview(edges: .trailing).pinToSuperview(edges: .bottom, padding: 56, safeArea: true)
-        
+
         pageVC.dataSource = self
         pageVC.delegate = self
         view.addGestureRecognizer(DropdownNavigationViewGesture(vc: self))
-        
-        navigationItem.rightBarButtonItem = customSearchButton()
+
+        addNavigationBar()
+        primalNavigationBar.showChevron = true
+        primalNavigationBar.subtitle = "Notes from your follows"
+        primalNavigationBar.onTitleTapped = { [weak self] in
+            guard let self else { return }
+            present(FeedPickerController(currentFeed: currentFeed, type: .note, callback: { [weak self] feed in
+                self?.setFeed(feed)
+            }), animated: true)
+        }
+        primalNavigationBar.onAvatarTapped = { [weak self] in
+            guard let self, let profile = IdentityManager.instance.parsedUser else { return }
+            show(ProfileViewController(profile: profile), sender: nil)
+        }
+
         updateTitle()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
-        navigationController?.setNavigationBarHidden(false, animated: animated)
+
+        navigationController?.setNavigationBarHidden(true, animated: animated)
         mainTabBarController?.setTabBarHidden(false, animated: animated)
     }
-    
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        navigationController?.setNavigationBarHidden(false, animated: animated)
+        navigationController?.setNavigationBarHidden(true, animated: animated)
     }
     
     func updateTheme() {
         updateTitle()
-        
-        navigationItem.rightBarButtonItem = customSearchButton()
-        
+
+        primalNavigationBar.updateTheme()
+
         pageVC.children.forEach {
             ($0 as? Themeable)?.updateTheme()
             let views: [Themeable] = $0.view.findAllSubviews()
@@ -119,6 +124,7 @@ final class HomeFeedViewController: UIViewController, Themeable {
     func updateTitle() {
         navTitleView.title = currentFeed.name
         navTitleView.updateTheme()
+        primalNavigationBar.title = currentFeed.name
     }
     
     var currentFeed: PrimalFeed {
@@ -132,6 +138,7 @@ final class HomeFeedViewController: UIViewController, Themeable {
     func setFeed(_ feed: PrimalFeed) {
         currentFeed = feed
         navTitleView.title = feed.name
+        primalNavigationBar.title = feed.name
         pageVC.setViewControllers([HomeFeedChildController(feed: .init(newFeed: feed))], direction: .forward, animated: false)
     }
     
@@ -200,6 +207,7 @@ extension HomeFeedViewController: UIPageViewControllerDelegate {
             self.navTitleView.completeTransition(newTitle: feed.name)
         }
         currentFeed = feed
+        primalNavigationBar.title = feed.name
     }
 }
 
