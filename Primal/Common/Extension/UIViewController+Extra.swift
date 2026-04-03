@@ -8,12 +8,16 @@
 import UIKit
 
 extension UIViewController {
-    var topSafeAreaSpacer: UIView {
-        let spacer = UIView()
-        view.insertSubview(spacer, at: 0)
-        spacer.pinToSuperview(edges: [.horizontal, .top])
-        spacer.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
-        return spacer
+    var mainTabBarController: MainTabBarController? {
+        parent as? MainTabBarController ?? parent?.mainTabBarController
+    }
+    
+    func smartPresent(_ vc: UIViewController) {
+        if let presentedViewController {
+            presentedViewController.smartPresent(vc)
+            return
+        }
+        present(vc, animated: true)
     }
 }
 

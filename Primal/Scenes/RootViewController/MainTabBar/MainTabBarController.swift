@@ -13,20 +13,6 @@ import GenericJSON
 import AVFoundation
 import PrimalShared
 
-extension UIViewController {
-    var mainTabBarController: MainTabBarController? {
-        parent as? MainTabBarController ?? parent?.mainTabBarController
-    }
-    
-    func smartPresent(_ vc: UIViewController) {
-        if let presentedViewController {
-            presentedViewController.smartPresent(vc)
-            return
-        }
-        present(vc, animated: true)
-    }
-}
-
 enum MainTab: String {
     case home, reads, wallet, notifications, explore
     
