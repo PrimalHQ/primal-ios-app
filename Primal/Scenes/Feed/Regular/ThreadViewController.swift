@@ -94,7 +94,7 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
         super.init(feed: FeedManager(threadId: threadId))
         
         feed.parsedPosts = startingPosts
-        feed.requestThread(postId: threadId, includeParent: startingPosts.count < 2)
+        feed.requestThread(postId: threadId)
         
 //        inputManager.extractReferences = false
         dataSource = ThreadFeedDatasource(threadID: threadId, tableView: table, delegate: self)
@@ -257,7 +257,7 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
         let replyController = AdvancedEmbedPostViewController(replyId: id, replyingTo: mainObject, onPost: { [weak self] in
             guard let self else { return }
             didPostNewComment = true
-            feed.requestThread(postId: id, includeParent: false)
+            feed.requestThread(postId: id)
         })
 
         present(replyController, animated: true)
@@ -680,7 +680,7 @@ private extension ThreadViewController {
         usersTableView.isHidden = true
         
         refreshControl.addAction(.init(handler: { [unowned self] _ in
-            feed.requestThread(postId: id, includeParent: true)
+            feed.requestThread(postId: id)
         }), for: .valueChanged)
         
         NSLayoutConstraint.activate([
