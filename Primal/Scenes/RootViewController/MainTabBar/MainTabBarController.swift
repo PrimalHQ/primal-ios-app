@@ -355,11 +355,9 @@ private extension MainTabBarController {
             .dropFirst()
             .sink { _ in
                 PrimalEndpointsManager.instance.checkIfNecessary()
+                Connection.reconnect()
                 DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
-                    Connection.reconnect()
-                    DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
-                        RelaysPostbox.instance.reconnect()
-                    }
+                    RelaysPostbox.instance.reconnect()
                 }
             }
             .store(in: &cancellables)

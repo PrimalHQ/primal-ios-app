@@ -49,10 +49,10 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
     
     @Published var posts: [ParsedContent] = [] {
         didSet {
-            if view.window == nil { return }
-            
             dataSource.setPosts(posts)
-            
+
+            guard view.window != nil else { return }
+
             DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
                 self.playVideoOnScroll()
             }
