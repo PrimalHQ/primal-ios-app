@@ -121,6 +121,7 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
     var adjustedTopBarHeight: CGFloat { topBarHeight }
     var barsMaxTransform: CGFloat { topBarHeight }
     var prevPosition: CGFloat = 0
+    var prevDelta: CGFloat = 0
     var prevTransform: CGFloat = 0
 
     var isVisibleOnScreen: Bool {
@@ -160,11 +161,16 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         let newPosition = scrollView.contentOffset.y
         let delta = newPosition - prevPosition
-        prevPosition = newPosition
+        defer {
+            prevPosition = newPosition
+            prevDelta = delta
+        }
         
-        // System sometimes updates table contentOffset without moving the cells
-        // so if delta is larger than 300 we ignore it
-        if abs(delta) > 300 { return }
+        // We ignore the first update in the opposite direction to ignore the system updates when changing the layout
+        if prevDelta.sign != delta.sign { return }
+        
+        // Aldo ignore if delta is larger than 150, it is usually a system update
+        if abs(delta) > 150 { return }
         
         if FullScreenVideoPlayerController.instance == nil && VideoPlaybackManager.instance.autoPlay {
             if abs(delta) > 50 {
