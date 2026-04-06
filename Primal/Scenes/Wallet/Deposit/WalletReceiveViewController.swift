@@ -33,6 +33,7 @@ final class WalletReceiveViewController: UIViewController, Themeable {
     private let bitcoinImage = UIImage(named: "qr-btc")
     
     var monitorTask: Task<(), any Error>?
+    var monitorInvoice: String? = "start"
     
     lazy var customLightningAddressButton = UIButton(
         configuration: .accent("get a custom lightning address", font: .appFont(withSize: 16, weight: .regular)),
@@ -117,8 +118,6 @@ private extension WalletReceiveViewController {
         let wallet = WalletManager.instance
         wallet.pendingDepositsSyncer?.start()
         
-        guard let walletID = wallet.walletID else { return }
-        
         let text: String
         if let sats = additionalInfo?.satoshi {
             text = "\(sats) sats received"
@@ -128,9 +127,12 @@ private extension WalletReceiveViewController {
         
         let invoice = invoice?.isEmail == true ? nil : invoice
         
+        guard monitorInvoice != invoice, let walletID = wallet.walletID else { return }
+        
+        monitorInvoice = invoice
         monitorTask?.cancel()
         monitorTask = Task { @MainActor [weak self] in
-            let result = try await wallet.walletRepo.awaitLightningPayment(walletId: walletID, invoice: invoice, timeout: .max)
+            let result = try await wallet.walletRepo.awaitLightningPayment(walletId: walletID, invoice: invoice, timeout: 300)
             
             if result.getOrNull() != nil, let self, self.navigationController?.topViewController == self {
                 navigationController?.pushViewController(WalletTransferSummaryController(.success(title: text, description: [])), animated: true)
