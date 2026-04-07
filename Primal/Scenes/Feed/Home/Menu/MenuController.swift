@@ -244,10 +244,10 @@ private extension MenuController {
     }
 
     func showVC(_ viewController: UIViewController) {
-        let presenter = presentingViewController
+        let nav: UINavigationController? = presentingViewController?.findInChildren()
         animateOut { [weak self] in
             self?.dismiss(animated: false) {
-                presenter?.show(viewController, sender: nil)
+                nav?.pushViewController(viewController, animated: true)
             }
         }
     }

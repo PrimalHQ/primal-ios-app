@@ -8,13 +8,10 @@
 import UIKit
 import Combine
 
-final class ExploreViewController: PrimalPageController {
-    private let searchView = SearchHeaderView()
-    
-    private var cancellables: Set<AnyCancellable> = []
-    
-    private let configButton = UIButton(configuration: .simpleImage(.searchConfig))
-    
+final class ExploreViewController: PrimalPageController, PrimalNavigationBarController {
+    let primalNavigationBar = PrimalNavigationBar()
+    let navBarBackground = UIView()
+
     let postButtonParent = UIView()
     let postButton = NewPostButton()
     
@@ -38,35 +35,44 @@ final class ExploreViewController: PrimalPageController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
-        navigationItem.rightBarButtonItem = .init(customView: configButton)
-        
+
+        navigationController?.setNavigationBarHidden(true, animated: animated)
         mainTabBarController?.setTabBarHidden(false, animated: animated)
     }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        
-        navigationController?.setNavigationBarHidden(false, animated: animated)
-    }
-    
+
     override func updateTheme() {
         super.updateTheme()
-        
-        searchView.updateTheme()
-        
-        configButton.tintColor = .foreground
+
+        primalNavigationBar.updateTheme()
+        navBarBackground.backgroundColor = .background
     }
 }
 
 private extension ExploreViewController {
     func setup() {
-        navigationItem.titleView = searchView
-        searchView.addTarget(self, action: #selector(searchTapped), for: .touchDown)
-        configButton.addAction(.init(handler: { [weak self] _ in
-            self?.present(AdvancedSearchController(), animated: true)
-        }), for: .touchUpInside)
-        
+        // Replace tabSelectionView's top constraint from safe area to nav bar bottom
+        for constraint in view.constraints where constraint.firstItem === tabSelectionView && constraint.firstAttribute == .top {
+            constraint.isActive = false
+        }
+
+        navBarBackground.backgroundColor = .background
+        view.addSubview(navBarBackground)
+        navBarBackground.pinToSuperview(edges: [.horizontal, .top])
+
+        view.addSubview(primalNavigationBar)
+        primalNavigationBar.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .top, safeArea: true)
+
+        tabSelectionView.topAnchor.constraint(equalTo: primalNavigationBar.bottomAnchor, constant: -10).isActive = true
+        navBarBackground.bottomAnchor.constraint(equalTo: primalNavigationBar.bottomAnchor).isActive = true
+
+        primalNavigationBar.title = "Explore"
+        primalNavigationBar.subtitle = "All of Nostr"
+        primalNavigationBar.showChevron = false
+        primalNavigationBar.onAvatarTapped = { [weak self] in
+            guard let self else { return }
+            MenuController().present(from: self)
+        }
+
         postButton.addAction(.init(handler: { [weak self] _ in
             self?.present(AdvancedEmbedPostViewController(), animated: true)
         }), for: .touchUpInside)
@@ -74,9 +80,5 @@ private extension ExploreViewController {
         postButtonParent.addSubview(postButton)
         postButton.constrainToSize(56).pinToSuperview(padding: 8)
         postButtonParent.pinToSuperview(edges: .trailing).pinToSuperview(edges: .bottom, padding: 56, safeArea: true)
-    }
-    
-    @objc func searchTapped() {
-        navigationController?.fadeTo(SearchViewController())
     }
 }
