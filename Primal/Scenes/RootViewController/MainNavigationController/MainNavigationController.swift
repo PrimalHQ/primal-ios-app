@@ -30,6 +30,12 @@ class MainNavigationController: UINavigationController, Themeable, UIGestureReco
     
     weak var backGestureDelegate: UIGestureRecognizerDelegate?
     
+    required init?(coder aDecoder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    init(rootViewController: UIViewController, hideNavigationBar: Bool = false) {
+        super.init(rootViewController: rootViewController)
+        setNavigationBarHidden(hideNavigationBar, animated: false)
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -45,6 +51,10 @@ class MainNavigationController: UINavigationController, Themeable, UIGestureReco
         delegate = self
         
         updateAppearance()
+    }
+    
+    override func setNavigationBarHidden(_ hidden: Bool, animated: Bool) {
+        super.setNavigationBarHidden(hidden, animated: animated)
     }
     
     func updateTheme() {

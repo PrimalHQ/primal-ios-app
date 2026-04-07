@@ -171,7 +171,7 @@ private extension ReadsViewController {
         }
         primalNavigationBar.onAvatarTapped = { [weak self] in
             guard let self else { return }
-            MenuController(title: currentFeed?.name ?? "", subtitle: currentFeed?.description ?? "").present(from: self)
+            MenuController().present(from: self)
         }
     }
 }

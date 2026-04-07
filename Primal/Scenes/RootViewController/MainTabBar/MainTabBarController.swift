@@ -26,11 +26,11 @@ enum MainTab: String {
 }
 
 final class MainTabBarController: UIViewController, Themeable {
-    lazy var home = MainNavigationController(rootViewController: HomeFeedViewController())
-    lazy var reads = MainNavigationController(rootViewController: ReadsViewController())
-    lazy var wallet = MainNavigationController(rootViewController: WalletHomeViewController())
-    lazy var notifications = MainNavigationController(rootViewController: NotificationsViewController())
-    lazy var explore = MainNavigationController(rootViewController: ExploreViewController())
+    lazy var home = MainNavigationController(rootViewController: HomeFeedViewController(), hideNavigationBar: true)
+    lazy var reads = MainNavigationController(rootViewController: ReadsViewController(), hideNavigationBar: true)
+    lazy var wallet = MainNavigationController(rootViewController: WalletHomeViewController(), hideNavigationBar: true)
+    lazy var notifications = MainNavigationController(rootViewController: NotificationsViewController(), hideNavigationBar: true)
+    lazy var explore = MainNavigationController(rootViewController: ExploreViewController(), hideNavigationBar: true)
 
     let vcParentView = UIView()
     let noConnectionView = NoConnectionView().constrainToSize(height: 44)

@@ -33,12 +33,7 @@ final class MenuController: UIViewController, Themeable {
 
     private var cancellables: Set<AnyCancellable> = []
 
-    private let navTitle: String
-    private let navSubtitle: String
-
-    init(title: String, subtitle: String) {
-        self.navTitle = title
-        self.navSubtitle = subtitle
+    init() {
         super.init(nibName: nil, bundle: nil)
         modalPresentationStyle = .overFullScreen
         overrideUserInterfaceStyle = Theme.current.userInterfaceStyle
@@ -54,6 +49,10 @@ final class MenuController: UIViewController, Themeable {
     }
 
     func present(from vc: UIViewController) {
+        if let navBarVC = vc.primalNavBarController {
+            primalNavigationBar.title = navBarVC.primalNavigationBar.title
+            primalNavigationBar.subtitle = navBarVC.primalNavigationBar.subtitle
+        }
         vc.present(self, animated: false) { [self] in
             animateIn()
         }
@@ -139,8 +138,6 @@ private extension MenuController {
         contentView.topAnchor.constraint(equalTo: primalNavigationBar.bottomAnchor).isActive = true
         navBarBackground.bottomAnchor.constraint(equalTo: primalNavigationBar.bottomAnchor).isActive = true
 
-        primalNavigationBar.title = navTitle
-        primalNavigationBar.subtitle = navSubtitle
         primalNavigationBar.showChevron = false
         primalNavigationBar.onAvatarTapped = { [weak self] in
             self?.dismissAnimated()

@@ -41,7 +41,6 @@ final class ExploreViewController: PrimalPageController {
         
         navigationItem.rightBarButtonItem = .init(customView: configButton)
         
-        navigationController?.setNavigationBarHidden(false, animated: animated)
         mainTabBarController?.setTabBarHidden(false, animated: animated)
     }
     

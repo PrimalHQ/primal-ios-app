@@ -101,7 +101,7 @@ final class NotificationFeedViewController: NoteViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override var adjustedTopBarHeight: CGFloat { topBarHeight + 60 }
+    override var adjustedTopBarHeight: CGFloat { topBarHeight + 60 + 64 }
     override var barsMaxTransform: CGFloat { adjustedTopBarHeight }
     
     func setup() {
@@ -121,13 +121,6 @@ final class NotificationFeedViewController: NoteViewController {
     }
     
     var lastRefresh = Date.distantPast
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
-        navigationController?.setNavigationBarHidden(false, animated: animated)
-        mainTabBarController?.setTabBarHidden(false, animated: animated)
-    }
-    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
@@ -256,18 +249,7 @@ final class NotificationFeedViewController: NoteViewController {
             .store(in: &cancellables)
     }
     
-    override func setBarsToTransform(_ transform: CGFloat) {
-        super.setBarsToTransform(transform)
-
-        if let mainVC = parentNotificatonVC {
-            let percent = abs(transform / barsMaxTransform)
-            let scale = 0.1 + ((1 - percent) * 0.9)
-
-            mainVC.postButton.alpha = 1 - percent
-            mainVC.postButton.transform = .init(scaleX: scale, y: scale).rotated(by: percent * .pi / 2)
-            mainVC.postButtonParent.transform = .init(translationX: 0, y: -transform)
-        }
-    }
+    override func setBarsToTransform(_ transform: CGFloat) { }
     
     override func performEvent(_ event: PostCellEvent, withPost post: ParsedContent, inCell cell: UITableViewCell?) {
         switch event {

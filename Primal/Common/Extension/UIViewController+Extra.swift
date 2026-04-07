@@ -12,7 +12,7 @@ extension UIViewController {
         parent as? MainTabBarController ?? parent?.mainTabBarController
     }
     
-    var primalNavBarController: PrimalNavigationBarController? { findParent() }
+    var primalNavBarController: PrimalNavigationBarController? { self as? PrimalNavigationBarController ?? findParent() }
     
     func smartPresent(_ vc: UIViewController) {
         if let presentedViewController {
