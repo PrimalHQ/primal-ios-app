@@ -69,6 +69,7 @@ final class ReadsViewController: UIViewController, Themeable, PrimalNavigationBa
         currentFeed = feed
         navTitleView.title = feed.name
         primalNavigationBar.title = feed.name
+        primalNavigationBar.subtitle = feed.description
         pageVC.setViewControllers([ArticleFeedViewController(feed: feed)], direction: .forward, animated: false)
     }
     
@@ -141,6 +142,7 @@ extension ReadsViewController: UIPageViewControllerDelegate {
         }
         currentFeed = feed
         primalNavigationBar.title = feed.name
+        primalNavigationBar.subtitle = feed.description
     }
 }
 
@@ -161,12 +163,11 @@ private extension ReadsViewController {
 
         addNavigationBar()
         primalNavigationBar.showChevron = true
-        primalNavigationBar.subtitle = "Latest reads from your network"
         primalNavigationBar.onTitleTapped = { [weak self] in
-            guard let currentFeed = self?.currentFeed else { return }
-            self?.present(FeedPickerController(currentFeed: currentFeed, type: .article) { feed in
+            guard let self, let currentFeed else { return }
+            FeedsSelectionController(currentFeed: currentFeed, type: .article) { [weak self] feed in
                 self?.setFeed(feed)
-            }, animated: true)
+            }.present(from: self)
         }
         primalNavigationBar.onAvatarTapped = { [weak self] in
             guard let self, let profile = IdentityManager.instance.parsedUser else { return }

@@ -82,12 +82,11 @@ final class HomeFeedViewController: UIViewController, Themeable, PrimalNavigatio
 
         addNavigationBar()
         primalNavigationBar.showChevron = true
-        primalNavigationBar.subtitle = "Notes from your follows"
         primalNavigationBar.onTitleTapped = { [weak self] in
             guard let self else { return }
-            present(FeedPickerController(currentFeed: currentFeed, type: .note, callback: { [weak self] feed in
+            FeedsSelectionController(currentFeed: currentFeed, type: .note) { [weak self] feed in
                 self?.setFeed(feed)
-            }), animated: true)
+            }.present(from: self)
         }
         primalNavigationBar.onAvatarTapped = { [weak self] in
             guard let self, let profile = IdentityManager.instance.parsedUser else { return }
@@ -125,6 +124,7 @@ final class HomeFeedViewController: UIViewController, Themeable, PrimalNavigatio
         navTitleView.title = currentFeed.name
         navTitleView.updateTheme()
         primalNavigationBar.title = currentFeed.name
+        primalNavigationBar.subtitle = currentFeed.description
     }
     
     var currentFeed: PrimalFeed {
@@ -139,6 +139,7 @@ final class HomeFeedViewController: UIViewController, Themeable, PrimalNavigatio
         currentFeed = feed
         navTitleView.title = feed.name
         primalNavigationBar.title = feed.name
+        primalNavigationBar.subtitle = feed.description
         pageVC.setViewControllers([HomeFeedChildController(feed: .init(newFeed: feed))], direction: .forward, animated: false)
     }
     
@@ -208,6 +209,7 @@ extension HomeFeedViewController: UIPageViewControllerDelegate {
         }
         currentFeed = feed
         primalNavigationBar.title = feed.name
+        primalNavigationBar.subtitle = feed.description
     }
 }
 

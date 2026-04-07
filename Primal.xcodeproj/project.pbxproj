@@ -495,7 +495,7 @@
 		B98DD8D52C6259B100E8369A /* ArticleFeedManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98DD8D42C6259B100E8369A /* ArticleFeedManager.swift */; };
 		B98DD8DB2C65055B00E8369A /* MediaManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98DD8DA2C65055B00E8369A /* MediaManager.swift */; };
 		B98DD8DE2C6661B500E8369A /* FeedMarketplaceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98DD8DD2C6661B500E8369A /* FeedMarketplaceController.swift */; };
-		B98DD8E02C66634A00E8369A /* FeedPickerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98DD8DF2C66634A00E8369A /* FeedPickerController.swift */; };
+
 		B98DD8E22C666B4B00E8369A /* PostRequestResult+FeedPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98DD8E12C666B4B00E8369A /* PostRequestResult+FeedPicker.swift */; };
 		B98DD8E42C666D5D00E8369A /* FeedMarketplaceCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98DD8E32C666D5D00E8369A /* FeedMarketplaceCell.swift */; };
 		B98DD8E62C667EE800E8369A /* FeedPreviewParentController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B98DD8E52C667EE800E8369A /* FeedPreviewParentController.swift */; };
@@ -1329,7 +1329,7 @@
 		B98DD8D42C6259B100E8369A /* ArticleFeedManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArticleFeedManager.swift; sourceTree = "<group>"; };
 		B98DD8DA2C65055B00E8369A /* MediaManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaManager.swift; sourceTree = "<group>"; };
 		B98DD8DD2C6661B500E8369A /* FeedMarketplaceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedMarketplaceController.swift; sourceTree = "<group>"; };
-		B98DD8DF2C66634A00E8369A /* FeedPickerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedPickerController.swift; sourceTree = "<group>"; };
+
 		B98DD8E12C666B4B00E8369A /* PostRequestResult+FeedPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PostRequestResult+FeedPicker.swift"; sourceTree = "<group>"; };
 		B98DD8E32C666D5D00E8369A /* FeedMarketplaceCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedMarketplaceCell.swift; sourceTree = "<group>"; };
 		B98DD8E52C667EE800E8369A /* FeedPreviewParentController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedPreviewParentController.swift; sourceTree = "<group>"; };
@@ -3121,7 +3121,7 @@
 		B98DD8DC2C66619400E8369A /* FeedPicker */ = {
 			isa = PBXGroup;
 			children = (
-				B98DD8DF2C66634A00E8369A /* FeedPickerController.swift */,
+
 				B98DD8C92C5CFDB800E8369A /* FeedsSelectionController.swift */,
 				B98DD8DD2C6661B500E8369A /* FeedMarketplaceController.swift */,
 				B98DD8E52C667EE800E8369A /* FeedPreviewParentController.swift */,
@@ -4438,7 +4438,7 @@
 				B914CD7B2AA8A23700CD0BD1 /* ChatManager.swift in Sources */,
 				B94F2BCF2AD995250041181B /* WalletNavView.swift in Sources */,
 				9EE07ABE2A1CFDB800FB6C86 /* Theme.swift in Sources */,
-				B98DD8E02C66634A00E8369A /* FeedPickerController.swift in Sources */,
+
 				B9E67DD92EF47389002D7952 /* RemoteSignerDisclosureController.swift in Sources */,
 				B91E57092CC7EE9C00C14809 /* BookmarkedArticleFeedController.swift in Sources */,
 				B9B290512B457EE10069C87F /* WalletSendAmountController.swift in Sources */,

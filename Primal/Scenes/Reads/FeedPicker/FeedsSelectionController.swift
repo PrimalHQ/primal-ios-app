@@ -151,9 +151,12 @@ extension PrimalFeed {
 
 final class FeedsSelectionController: UIViewController {
     var cancellables: Set<AnyCancellable> = []
-    
+
     let table = UITableView()
-    
+    let primalNavigationBar = PrimalNavigationBar()
+    let contentView = UIView()
+    let navBarBackground = UIView()
+
     var callback: (PrimalFeed) -> Void
     
     lazy var feeds = PrimalFeed.getActiveFeeds(type)
@@ -183,6 +186,8 @@ final class FeedsSelectionController: UIViewController {
         self.currentFeed = currentFeed
         self.type = type
         super.init(nibName: nil, bundle: nil)
+        modalPresentationStyle = .overFullScreen
+        overrideUserInterfaceStyle = Theme.current.userInterfaceStyle
         setup()
         
         if let lastFetch = PrimalFeed.lastTimeFeedsFetched[type], abs(lastFetch.timeIntervalSinceNow) < 30 {
@@ -246,6 +251,12 @@ final class FeedsSelectionController: UIViewController {
         table.reloadData()
     }
     
+    func present(from vc: UIViewController) {
+        vc.present(self, animated: false) { [self] in
+            animateIn()
+        }
+    }
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -316,61 +327,80 @@ private extension FeedsSelectionController {
     }
     
     func setup() {
-        view.backgroundColor = .background2
-        
-        let pullBarParent = UIView()
-        let pullBar = UIView()
-        pullBarParent.addSubview(pullBar)
-        pullBar.pinToSuperview(edges: .vertical).centerToSuperview(axis: .horizontal)
-        
-        let title = UILabel()
-        switch type {
-        case .note:
-            title.text = "Home Feeds"
-        case .article:
-            title.text = "Reads Feeds"
-        }
-        title.font = .appFont(withSize: 20, weight: .bold)
-        title.textColor = .foreground
-        title.setContentCompressionResistancePriority(.required, for: .vertical)
-        title.textAlignment = .center
-        
         table.showsVerticalScrollIndicator = false
         table.register(FeedSelectionCell.self, forCellReuseIdentifier: "cell")
         table.dataSource = self
         table.delegate = self
         table.separatorStyle = .none
         table.backgroundColor = .background2
-        
+
         let botMenu = UIStackView([addFeedButton, UIView(), editButton, doneButton])
         botMenu.isLayoutMarginsRelativeArrangement = true
         botMenu.layoutMargins = .init(top: 5, left: 16, bottom: 0, right: 16)
-        
-        let stack = UIStackView(arrangedSubviews: [
-            pullBarParent, SpacerView(height: 20, priority: .required),
-            title, SpacerView(height: 14, priority: .required),
+
+        let contentStack = UIStackView(arrangedSubviews: [
             table, SpacerView(height: 1, color: .background3, priority: .required),
             botMenu
         ])
-        table.pinToSuperview(edges: .horizontal)
-        
-        view.addSubview(stack)
-        stack.pinToSuperview(edges: .top, padding: 16).pinToSuperview(edges: .bottom, safeArea: true).pinToSuperview(edges: .horizontal)
-        stack.axis = .vertical
-        
-        pullBar.constrainToSize(width: 60, height: 5)
-        pullBar.backgroundColor = .foreground.withAlphaComponent(0.8)
-        pullBar.layer.cornerRadius = 2.5
-        
+        contentStack.axis = .vertical
+
+        contentView.addSubview(contentStack)
+        contentStack.pinToSuperview()
+        contentView.backgroundColor = .background2
+
+        view.addSubview(contentView)
+        contentView.pinToSuperview(edges: [.horizontal, .bottom])
+
+        navBarBackground.backgroundColor = .background
+        view.addSubview(navBarBackground)
+        navBarBackground.pinToSuperview(edges: [.horizontal, .top])
+
+        view.addSubview(primalNavigationBar)
+        primalNavigationBar.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .top, safeArea: true)
+
+        contentView.topAnchor.constraint(equalTo: primalNavigationBar.bottomAnchor).isActive = true
+        navBarBackground.bottomAnchor.constraint(equalTo: primalNavigationBar.bottomAnchor).isActive = true
+
+        primalNavigationBar.title = currentFeed.name
+        primalNavigationBar.subtitle = currentFeed.description
+        primalNavigationBar.showChevron = true
+        primalNavigationBar.onTitleTapped = { [weak self] in
+            self?.dismissAnimated()
+        }
+
         addFeedButton.addAction(.init(handler: { [weak self] _ in
             guard let self else { return }
             show(FeedMarketplaceController(type: type), sender: nil)
         }), for: .touchUpInside)
-        
+
         editButton.addAction(.init(handler: { [weak self] _ in self?.startEditing() }), for: .touchUpInside)
         doneButton.addAction(.init(handler: { [weak self] _ in self?.endEditing() }), for: .touchUpInside)
-        
+
         endEditing()
+
+        contentView.transform = CGAffineTransform(translationX: 0, y: -UIScreen.main.bounds.height)
+    }
+
+    func animateIn() {
+        UIView.animate(withDuration: 0.35, delay: 0, usingSpringWithDamping: 0.9, initialSpringVelocity: 0, options: []) { [self] in
+            contentView.transform = .identity
+            primalNavigationBar.chevronView.transform = CGAffineTransform(rotationAngle: .pi)
+        }
+    }
+
+    func animateOut(completion: (() -> Void)? = nil) {
+        UIView.animate(withDuration: 0.25, delay: 0, options: .curveEaseIn) { [self] in
+            contentView.transform = CGAffineTransform(translationX: 0, y: -contentView.bounds.height)
+            primalNavigationBar.chevronView.transform = .identity
+        } completion: { _ in
+            completion?()
+        }
+    }
+
+    func dismissAnimated() {
+        animateOut { [weak self] in
+            self?.dismiss(animated: false)
+        }
     }
 }
 
@@ -445,8 +475,15 @@ extension FeedsSelectionController: UITableViewDelegate {
 
         currentFeed = feeds[indexPath.row]
         table.reloadData()
-        dismiss(animated: true)
         callback(currentFeed)
+
+        UIView.transition(with: primalNavigationBar.titleLabel, duration: 0.25, options: .transitionCrossDissolve) { [self] in
+            primalNavigationBar.title = currentFeed.name
+        }
+        UIView.transition(with: primalNavigationBar.subtitleLabel, duration: 0.25, options: .transitionCrossDissolve) { [self] in
+            primalNavigationBar.subtitle = currentFeed.description
+        }
+        dismissAnimated()
     }
 }
 

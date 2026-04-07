@@ -72,25 +72,20 @@ private extension PrimalNavigationBar {
         chevronView.setContentHuggingPriority(.required, for: .horizontal)
         chevronView.setContentCompressionResistancePriority(.required, for: .horizontal)
 
-        let titleRow = UIStackView(arrangedSubviews: [titleLabel, chevronView])
+        let titleRow = UIStackView(spacing: 8, [titleLabel, chevronView])
         titleRow.alignment = .center
-        titleRow.spacing = 8
 
-        let leftStack = UIStackView(arrangedSubviews: [titleRow, subtitleLabel])
-        leftStack.axis = .vertical
-        leftStack.spacing = 2
+        let leftStack = UIStackView(axis: .vertical, spacing: 2, [titleRow, subtitleLabel])
+        leftStack.alignment = .leading
+        
+        let mainStack = UIStackView(spacing: 12, [leftStack, userImageView])
+        mainStack.alignment = .center
 
-        addSubview(leftStack)
-        leftStack
+        addSubview(mainStack)
+        mainStack
             .pinToSuperview(edges: .leading, padding: 20)
-            .centerToSuperview(axis: .vertical)
-
-        addSubview(userImageView)
-        userImageView
             .pinToSuperview(edges: .trailing, padding: 16)
             .centerToSuperview(axis: .vertical)
-
-        leftStack.trailingAnchor.constraint(lessThanOrEqualTo: userImageView.leadingAnchor, constant: -12).isActive = true
 
         addSubview(titleButton)
         titleButton.pin(to: leftStack)
