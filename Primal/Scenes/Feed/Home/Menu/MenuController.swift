@@ -31,6 +31,10 @@ final class MenuController: UIViewController, Themeable {
     private let followersDescLabel = UILabel()
     private let themeButton = UIButton()
 
+    private var originalTitle = ""
+    private var originalSubtitle = ""
+    private var originalShowChevron = false
+
     private var cancellables: Set<AnyCancellable> = []
 
     init() {
@@ -52,7 +56,11 @@ final class MenuController: UIViewController, Themeable {
         if let navBarVC = vc.primalNavBarController {
             primalNavigationBar.title = navBarVC.primalNavigationBar.title
             primalNavigationBar.subtitle = navBarVC.primalNavigationBar.subtitle
+            primalNavigationBar.showChevron = navBarVC.primalNavigationBar.showChevron
         }
+        originalTitle = primalNavigationBar.title
+        originalSubtitle = primalNavigationBar.subtitle
+        originalShowChevron = primalNavigationBar.showChevron
         vc.present(self, animated: false) { [self] in
             animateIn()
         }
@@ -138,7 +146,6 @@ private extension MenuController {
         contentView.topAnchor.constraint(equalTo: primalNavigationBar.bottomAnchor).isActive = true
         navBarBackground.bottomAnchor.constraint(equalTo: primalNavigationBar.bottomAnchor).isActive = true
 
-        primalNavigationBar.showChevron = false
         primalNavigationBar.onAvatarTapped = { [weak self] in
             self?.dismissAnimated()
         }
@@ -264,14 +271,28 @@ private extension MenuController {
     func animateIn() {
         UIView.animate(withDuration: 0.35, delay: 0, usingSpringWithDamping: 0.9, initialSpringVelocity: 0, options: []) { [self] in
             contentView.transform = .identity
+            primalNavigationBar.chevronView.alpha = 0
+        }
+        UIView.transition(with: primalNavigationBar.titleLabel, duration: 0.35, options: .transitionCrossDissolve) { [self] in
+            primalNavigationBar.title = "Account"
+        }
+        UIView.transition(with: primalNavigationBar.subtitleLabel, duration: 0.35, options: .transitionCrossDissolve) { [self] in
+            primalNavigationBar.subtitle = "Options and settings"
         }
     }
 
     func animateOut(completion: (() -> Void)? = nil) {
         UIView.animate(withDuration: 0.25, delay: 0, options: [.curveEaseIn, .beginFromCurrentState]) { [self] in
             contentView.transform = CGAffineTransform(translationX: 0, y: -contentView.bounds.height)
+            primalNavigationBar.chevronView.alpha = originalShowChevron ? 1 : 0
         } completion: { _ in
             completion?()
+        }
+        UIView.transition(with: primalNavigationBar.titleLabel, duration: 0.25, options: .transitionCrossDissolve) { [self] in
+            primalNavigationBar.title = originalTitle
+        }
+        UIView.transition(with: primalNavigationBar.subtitleLabel, duration: 0.25, options: .transitionCrossDissolve) { [self] in
+            primalNavigationBar.subtitle = originalSubtitle
         }
     }
 
