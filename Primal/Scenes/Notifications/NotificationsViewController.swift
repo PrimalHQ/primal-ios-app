@@ -29,13 +29,13 @@ final class NotificationsViewController: PrimalPageController {
         
         setup()
     }
-    
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
-        mainTabBarController?.newNotifications = 0
+
+        mainTabBarController?.freezeNotificationCount()
     }
-    
+
     func setup() {
         title = "Notifications"
         

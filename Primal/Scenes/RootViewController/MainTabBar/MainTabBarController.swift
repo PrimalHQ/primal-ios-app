@@ -100,10 +100,12 @@ final class MainTabBarController: UIViewController, Themeable {
         }
     }
     
+    private var notificationsFrozen = false
+
     var newNotifications: Int = 0 {
         didSet {
-            if newNotifications == oldValue { return }
-            
+            if notificationsFrozen || newNotifications == oldValue { return }
+
             notificationIndicator.isHidden = newNotifications < 1
         }
     }
@@ -204,6 +206,16 @@ final class MainTabBarController: UIViewController, Themeable {
         
         UIView.animate(withDuration: 0.3) {
             self.vStack.transform = hidden ? .init(translationX: 0, y: self.vStack.bounds.height + 10) : .identity
+        }
+    }
+    
+    func freezeNotificationCount() {
+        notificationsFrozen = true
+        notificationIndicator.isHidden = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5) { [weak self] in
+            guard let self else { return }
+            notificationsFrozen = false
+            notificationIndicator.isHidden = newNotifications < 1
         }
     }
     
@@ -343,11 +355,9 @@ private extension MainTabBarController {
             .dropFirst()
             .sink { _ in
                 PrimalEndpointsManager.instance.checkIfNecessary()
+                Connection.reconnect()
                 DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
-                    Connection.reconnect()
-                    DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
-                        RelaysPostbox.instance.reconnect()
-                    }
+                    RelaysPostbox.instance.reconnect()
                 }
             }
             .store(in: &cancellables)
