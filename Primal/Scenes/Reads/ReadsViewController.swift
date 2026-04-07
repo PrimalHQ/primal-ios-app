@@ -170,8 +170,8 @@ private extension ReadsViewController {
             }.present(from: self)
         }
         primalNavigationBar.onAvatarTapped = { [weak self] in
-            guard let self, let profile = IdentityManager.instance.parsedUser else { return }
-            show(ProfileViewController(profile: profile), sender: nil)
+            guard let self else { return }
+            MenuController(title: currentFeed?.name ?? "", subtitle: currentFeed?.description ?? "").present(from: self)
         }
     }
 }

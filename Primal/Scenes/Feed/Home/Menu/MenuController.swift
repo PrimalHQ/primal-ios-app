@@ -11,6 +11,10 @@ import Kingfisher
 import FLAnimatedImage
 
 final class MenuController: UIViewController, Themeable {
+    let primalNavigationBar = PrimalNavigationBar()
+    let contentView = UIView()
+    let navBarBackground = UIView()
+
     private let profileImage = UserImageView(height: 52)
     private let nameLabel = UILabel()
     private let checkbox1 = VerifiedView()
@@ -29,13 +33,36 @@ final class MenuController: UIViewController, Themeable {
 
     private var cancellables: Set<AnyCancellable> = []
 
+    private let navTitle: String
+    private let navSubtitle: String
+
+    init(title: String, subtitle: String) {
+        self.navTitle = title
+        self.navSubtitle = subtitle
+        super.init(nibName: nil, bundle: nil)
+        modalPresentationStyle = .overFullScreen
+        overrideUserInterfaceStyle = Theme.current.userInterfaceStyle
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         setup()
     }
 
+    func present(from vc: UIViewController) {
+        vc.present(self, animated: false) { [self] in
+            animateIn()
+        }
+    }
+
     func updateTheme() {
-        view.backgroundColor = .background
+        contentView.backgroundColor = .background
+        navBarBackground.backgroundColor = .background
+        primalNavigationBar.updateTheme()
 
         themeButton.setImage(.themeButton, for: .normal)
         themeButton.tintColor = .foreground3
@@ -79,11 +106,11 @@ private extension MenuController {
 
         profileImageRow.pinToSuperview(edges: .horizontal)
 
-        view.addSubview(mainStack)
+        contentView.addSubview(mainStack)
         mainStack
             .pinToSuperview(edges: .leading, padding: 34)
             .pinToSuperview(edges: .trailing, padding: 80)
-            .pinToSuperview(edges: .top, padding: 70)
+            .pinToSuperview(edges: .top, padding: 20)
             .pinToSuperview(edges: .bottom, padding: 80, safeArea: true)
         mainStack.axis = .vertical
         mainStack.alignment = .leading
@@ -92,11 +119,34 @@ private extension MenuController {
         mainStack.setCustomSpacing(10, after: domainLabel)
         mainStack.setCustomSpacing(44, after: followStack)
 
-        view.addSubview(notificationIndicator)
+        contentView.addSubview(notificationIndicator)
         notificationIndicator.pin(to: messages, edges: .top, padding: 4).pinToSuperview(edges: .leading, padding: 150)
 
-        view.addSubview(premiumIndicator)
+        contentView.addSubview(premiumIndicator)
         premiumIndicator.pin(to: premium, edges: .top, padding: 4).pinToSuperview(edges: .leading, padding: 137)
+
+        contentView.backgroundColor = .background
+        view.addSubview(contentView)
+        contentView.pinToSuperview(edges: [.horizontal, .bottom])
+
+        navBarBackground.backgroundColor = .background
+        view.addSubview(navBarBackground)
+        navBarBackground.pinToSuperview(edges: [.horizontal, .top])
+
+        view.addSubview(primalNavigationBar)
+        primalNavigationBar.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .top, safeArea: true)
+
+        contentView.topAnchor.constraint(equalTo: primalNavigationBar.bottomAnchor).isActive = true
+        navBarBackground.bottomAnchor.constraint(equalTo: primalNavigationBar.bottomAnchor).isActive = true
+
+        primalNavigationBar.title = navTitle
+        primalNavigationBar.subtitle = navSubtitle
+        primalNavigationBar.showChevron = false
+        primalNavigationBar.onAvatarTapped = { [weak self] in
+            self?.dismissAnimated()
+        }
+
+        contentView.transform = CGAffineTransform(translationX: 0, y: -UIScreen.main.bounds.height)
 
         buttonsStack.axis = .vertical
         buttonsStack.alignment = .leading
@@ -157,11 +207,11 @@ private extension MenuController {
         bookmarks.addAction(.init(handler: { [weak self] _ in self?.showVC(PublicBookmarksViewController()) }), for: .touchUpInside)
         premium.addAction(.init(handler: { [weak self] _ in self?.showVC(PremiumViewController()) }), for: .touchUpInside)
         redeemCode.addAction(.init(handler: { [weak self] _ in
-            self?.present(ScanAnythingController(), animated: true)
+            self?.presentVC(ScanAnythingController())
         }), for: .touchUpInside)
 
         remoteLogin.addAction(.init(handler: { [weak self] _ in
-            self?.present(ScanAnythingController(style: .remoteLogin), animated: true)
+            self?.presentVC(ScanAnythingController(style: .remoteLogin))
         }), for: .touchUpInside)
 
         profile.addTarget(self, action: #selector(profilePressed), for: .touchUpInside)
@@ -197,7 +247,41 @@ private extension MenuController {
     }
 
     func showVC(_ viewController: UIViewController) {
-        show(viewController, sender: nil)
+        let presenter = presentingViewController
+        animateOut { [weak self] in
+            self?.dismiss(animated: false) {
+                presenter?.show(viewController, sender: nil)
+            }
+        }
+    }
+
+    func presentVC(_ viewController: UIViewController) {
+        let presenter = presentingViewController
+        animateOut { [weak self] in
+            self?.dismiss(animated: false) {
+                presenter?.present(viewController, animated: true)
+            }
+        }
+    }
+
+    func animateIn() {
+        UIView.animate(withDuration: 0.35, delay: 0, usingSpringWithDamping: 0.9, initialSpringVelocity: 0, options: []) { [self] in
+            contentView.transform = .identity
+        }
+    }
+
+    func animateOut(completion: (() -> Void)? = nil) {
+        UIView.animate(withDuration: 0.25, delay: 0, options: [.curveEaseIn, .beginFromCurrentState]) { [self] in
+            contentView.transform = CGAffineTransform(translationX: 0, y: -contentView.bounds.height)
+        } completion: { _ in
+            completion?()
+        }
+    }
+
+    func dismissAnimated() {
+        animateOut { [weak self] in
+            self?.dismiss(animated: false)
+        }
     }
 
     func update(_ user: ParsedUser) {

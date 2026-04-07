@@ -57,8 +57,8 @@ private extension NotificationsViewController {
         primalNavigationBar.subtitle = "All notifications"
         primalNavigationBar.showChevron = false
         primalNavigationBar.onAvatarTapped = { [weak self] in
-            guard let self, let profile = IdentityManager.instance.parsedUser else { return }
-            show(ProfileViewController(profile: profile), sender: nil)
+            guard let self else { return }
+            MenuController(title: "Notifications", subtitle: "All notifications").present(from: self)
         }
 
         postButton.addAction(.init(handler: { [weak self] _ in
