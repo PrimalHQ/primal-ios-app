@@ -14,7 +14,7 @@ class FeedElementZapPreviewCell: FeedElementBaseCell, RegularFeedElementCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
-        contentView.addSubview(zapPreview)
+        contentContainer.addSubview(zapPreview)
         zapPreview
             .pinToSuperview(edges: .top, padding: 8)
             .pinToSuperview(edges: .horizontal, padding: 0)

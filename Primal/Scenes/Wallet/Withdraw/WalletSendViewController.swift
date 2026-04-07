@@ -7,6 +7,7 @@
 
 import Combine
 import FLAnimatedImage
+import PrimalShared
 import UIKit
 
 final class WalletSendViewController: UIViewController, Themeable {
@@ -278,36 +279,38 @@ private extension WalletSendViewController {
             nipLabel.numberOfLines = 1
             nipLabel.lineBreakMode = .byTruncatingMiddle
             
-            PrimalWalletRequest(type: .onchainPaymentTiers(address: destination.address, amount: destination.startingAmount.satsToBitcoinString())).publisher()
-                .receive(on: DispatchQueue.main)
-                .sink { [weak self] res in
-                    self?.tiers = res.tiers.map {
-                        var price: String = "\($0.estimatedFee.amount) \($0.estimatedFee.currency)"
-                        if let amount = Double($0.estimatedFee.amount) {
-                            let sats = Int(amount * .BTC_TO_SAT)
-                            price = "\(sats.localized()) sats"
-                        }
-                        
-                        let min = $0.estimatedDeliveryDurationInMin
-                        var time = min.localized() + " min"
-                        
-                        if min >= 120 {
-                            let hours = min / 60
-                            
-                            if hours >= 24 {
-                                let days = hours / 24
-                                
-                                time = "\(days) day"
-                            } else {
-                                time = "\(hours) hour"
-                            }
-                        }
-                        
-                        let minSats: Int? = Double($0.minimumAmount?.amount ?? "").map { Int($0 * .BTC_TO_SAT) }
-                        return .init(name: $0._label, price: price, length: time, id: $0.id, minAmountSats: minSats)
+            Task { @MainActor [weak self] in
+                guard let walletId = WalletManager.instance.walletID else { return }
+                let userId = IdentityManager.instance.userHexPubkey
+                let amountBtc = destination.startingAmount.satsToBitcoinString()
+
+                guard let result = try? await WalletManager.instance.transactionFeeRepo
+                    .fetchMiningFees(userId: userId, walletId: walletId, onChainAddress: destination.address, amountInBtc: amountBtc),
+                    let feeTiers = result.getOrNull() as? [OnChainTransactionFeeTier]
+                else { return }
+
+                self?.tiers = feeTiers.map { tier in
+                    var price = tier.txFeeInBtc
+                    if let btc = Double(tier.txFeeInBtc) {
+                        let sats = Int(btc * .BTC_TO_SAT)
+                        price = "\(sats.localized()) sats"
                     }
+
+                    let min = tier.confirmationEstimationInMin?.intValue ?? 0
+                    var time = "\(min) min"
+                    if min >= 120 {
+                        let hours = min / 60
+                        if hours >= 24 {
+                            time = "\(hours / 24) day"
+                        } else {
+                            time = "\(hours) hour"
+                        }
+                    }
+
+                    let minSats: Int? = Double(tier.minAmountInBtc ?? "").map { Int($0 * .BTC_TO_SAT) }
+                    return .init(name: tier.label ?? tier.tierId, price: price, length: time, id: tier.tierId, minAmountSats: minSats)
                 }
-                .store(in: &cancellables)
+            }
         } else {
             nipLabel.numberOfLines = 2
         }

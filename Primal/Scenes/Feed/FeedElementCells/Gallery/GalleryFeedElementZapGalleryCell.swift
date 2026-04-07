@@ -1,58 +1,63 @@
 //
-//  FeedElementSmallZapGalleryCell.swift
+//  GalleryFeedElementZapGalleryCell.swift
 //  Primal
 //
-//  Created by Pavle Stevanović on 9.12.24..
+//  Created by Pavle Stevanović on 1.4.26..
 //
 
 import UIKit
 
-class ThreadElementSmallZapGalleryCell: ThreadElementBaseCell, RegularFeedElementCell {
-    static var cellID: String { "FeedElementSmallZapGalleryCell" }
-    
+class GalleryFeedElementZapGalleryCell: UITableViewCell, RegularFeedElementCell {
+    static var cellID: String { galleryCellID }
+    static let galleryCellID = "GalleryFeedElementZapGalleryCell"
+
+    weak var delegate: FeedElementCellDelegate?
+
     var lastContentId: String?
     let gallery = SmallZapGalleryView()
-    
-    override init(position: ThreadPosition, style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(position: position, style: style, reuseIdentifier: reuseIdentifier)
-        
+
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+
+        selectionStyle = .none
+        backgroundColor = .clear
+        contentView.backgroundColor = .background2
+
         gallery.singleLine = true
         gallery.delegate = self
-        
-        secondRow.addSubview(gallery)
+
+        contentView.addSubview(gallery)
         gallery
-            .pinToSuperview(edges: .top, padding: 8)
+            .pinToSuperview(edges: .top, padding: 4)
             .pinToSuperview(edges: .bottom, padding: 1)
-            .pinToSuperview(edges: .horizontal, padding: 0)
-        
+            .pinToSuperview(edges: .leading, padding: 16).pinToSuperview(edges: .trailing, padding: 16)
+
         gallery.addGestureRecognizer(BindableTapGestureRecognizer(action: { [unowned self] in
             delegate?.postCellDidTap(self, .zapDetails)
         }))
     }
-    
+
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
-    
-    override func update(_ parsedContent: ParsedContent) {
-        super.update(parsedContent)
-        
+
+    func update(_ parsedContent: ParsedContent) {
         if parsedContent.post.id != lastContentId {
             gallery.setZaps([])
             lastContentId = parsedContent.post.id
         }
-        
+
         gallery.setZaps(parsedContent.zaps)
     }
 }
 
-extension ThreadElementSmallZapGalleryCell: ZapGalleryViewDelegate {
+extension GalleryFeedElementZapGalleryCell: ZapGalleryViewDelegate {
     func menuConfigurationForZap(_ zap: ParsedZap) -> UIContextMenuConfiguration? {
         delegate?.menuConfigurationForZap(zap)
     }
-    
+
     func mainActionForZap(_ zap: ParsedZap) {
         delegate?.mainActionForZap(zap)
     }
-    
+
     func zapTapped(_ zap: ParsedZap) {
         delegate?.postCellDidTap(self, .zapDetails)
     }

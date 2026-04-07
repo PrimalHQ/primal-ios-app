@@ -29,11 +29,11 @@ class FeedElementImageGalleryCell: FeedElementBaseCell, RegularFeedElementCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
-        contentView.addSubview(mainImages)
+        contentContainer.addSubview(mainImages)
         mainImages
             .pinToSuperview(edges: .top, padding: 10)
             .pinToSuperview(edges: .bottom, padding: 6)
-            .pinToSuperview(edges: .horizontal, padding: 16)
+            .pinToSuperview(edges: .leading, padding: leadingPadding).pinToSuperview(edges: .trailing, padding: horizontalPadding)
         
         mainImages.imageDelegate = self
         

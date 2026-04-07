@@ -74,6 +74,52 @@ extension NoteFeedElement {
             return FeedElementReactionsCell.cellID
         }
     }
+
+    var headerCellID: String {
+        switch self {
+        case .userInfo:
+            return FeedElementUserCell.cellID
+        case .text:
+            return HeaderTextCell.headerID
+        case .zapGallery:
+            return HeaderZapGalleryCell.headerID
+        case .imageGallery:
+            return HeaderImageGalleryCell.headerID
+        case .webPreview(let webPreviewType, _):
+            switch webPreviewType {
+            case .small:
+                return HeaderWebPreviewCell<SmallLinkPreview>.headerID
+            case .large:
+                return HeaderWebPreviewCell<SmallLinkPreview>.headerID + "Large"
+            case .youtube:
+                return HeaderYoutubePreviewCell.headerID
+            case .webkit:
+                return HeaderWebkitPreviewCell.headerID
+            case .system:
+                return HeaderSystemWebPreviewCell.headerID
+            case .music:
+                return HeaderMusicPreviewCell.headerID
+            case .tidal:
+                return HeaderTidalPreviewCell.headerID
+            }
+        case .postPreview:
+            return HeaderPostPreviewCell.headerID
+        case .zapPreview:
+            return HeaderZapPreviewCell.headerID
+        case .article:
+            return HeaderArticleCell.headerID
+        case .live:
+            return HeaderLivePreviewCell.headerID
+        case .info:
+            return HeaderInfoCell.headerID
+        case .invoice:
+            return HeaderInvoiceCell.headerID
+        case .poll:
+            return HeaderPollCell.headerID
+        case .reactions:
+            return HeaderReactionsCell.headerID
+        }
+    }
 }
 
 protocol RegularFeedDatasourceProtocol {
@@ -81,6 +127,44 @@ protocol RegularFeedDatasourceProtocol {
 }
 
 extension RegularFeedDatasourceProtocol {
+    func registerHeaderCells(_ tableView: UITableView) {
+        tableView.register(HeaderTextCell.self, forCellReuseIdentifier: HeaderTextCell.headerID)
+        tableView.register(HeaderImageGalleryCell.self, forCellReuseIdentifier: HeaderImageGalleryCell.headerID)
+        tableView.register(HeaderReactionsCell.self, forCellReuseIdentifier: HeaderReactionsCell.headerID)
+        tableView.register(HeaderZapGalleryCell.self, forCellReuseIdentifier: HeaderZapGalleryCell.headerID)
+        tableView.register(HeaderPostPreviewCell.self, forCellReuseIdentifier: HeaderPostPreviewCell.headerID)
+        tableView.register(HeaderZapPreviewCell.self, forCellReuseIdentifier: HeaderZapPreviewCell.headerID)
+        tableView.register(HeaderArticleCell.self, forCellReuseIdentifier: HeaderArticleCell.headerID)
+        tableView.register(HeaderInfoCell.self, forCellReuseIdentifier: HeaderInfoCell.headerID)
+        tableView.register(HeaderLivePreviewCell.self, forCellReuseIdentifier: HeaderLivePreviewCell.headerID)
+        tableView.register(HeaderInvoiceCell.self, forCellReuseIdentifier: HeaderInvoiceCell.headerID)
+        tableView.register(HeaderPollCell.self, forCellReuseIdentifier: HeaderPollCell.headerID)
+
+        tableView.register(HeaderWebPreviewCell<SmallLinkPreview>.self, forCellReuseIdentifier: HeaderWebPreviewCell<SmallLinkPreview>.headerID)
+        tableView.register(HeaderWebPreviewCell<LargeLinkPreview>.self, forCellReuseIdentifier: HeaderWebPreviewCell<LargeLinkPreview>.headerID + "Large")
+        tableView.register(HeaderSystemWebPreviewCell.self, forCellReuseIdentifier: HeaderSystemWebPreviewCell.headerID)
+        tableView.register(HeaderWebkitPreviewCell.self, forCellReuseIdentifier: HeaderWebkitPreviewCell.headerID)
+        tableView.register(HeaderYoutubePreviewCell.self, forCellReuseIdentifier: HeaderYoutubePreviewCell.headerID)
+        tableView.register(HeaderMusicPreviewCell.self, forCellReuseIdentifier: HeaderMusicPreviewCell.headerID)
+        tableView.register(HeaderTidalPreviewCell.self, forCellReuseIdentifier: HeaderTidalPreviewCell.headerID)
+    }
+
+    /// Converts posts into (content, headerElement, remainingElements) tuples.
+    /// Removes .userInfo and makes the next element the header. If only .reactions remains, uses .text as header.
+    func convertPostsToHeaderCells(_ posts: [ParsedContent], short: Bool = true) -> [(ParsedContent, NoteFeedElement, [NoteFeedElement])] {
+        convertPostsToCells(posts, short: short).map { content, elements in
+            var remaining = elements
+            if let first = remaining.first, case .userInfo = first {
+                remaining.removeFirst()
+            }
+            if remaining.isEmpty || (remaining.count == 1 && remaining[0] == .reactions) {
+                return (content, .text, remaining)
+            }
+            let header = remaining.removeFirst()
+            return (content, header, remaining)
+        }
+    }
+
     func registerCells(_ tableView: UITableView) {
         tableView.register(FeedElementUserCell.self, forCellReuseIdentifier: FeedElementUserCell.cellID)
         tableView.register(FeedElementTextCell.self, forCellReuseIdentifier: FeedElementTextCell.cellID)

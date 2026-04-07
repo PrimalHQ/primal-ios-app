@@ -338,6 +338,13 @@ private extension LiveVideoChatController {
     }
     
     func addZap(_ zap: ParsedZap) {
+        // Remove optimistic zap added by NoteViewController's zapEvent handler
+        // Optimistic zaps have UUID-formatted receiptIds, real zaps have hex event IDs
+        if let index = post.zaps.firstIndex(where: {
+            $0.user.data.pubkey == zap.user.data.pubkey && $0.amountSats == zap.amountSats && UUID(uuidString: $0.receiptId) != nil
+        }) {
+            post.zaps.remove(at: index)
+        }
         post.zaps.append(zap)
         post.zaps.sort(by: {
             guard $0.amountSats == $1.amountSats else { return $0.amountSats > $1.amountSats }

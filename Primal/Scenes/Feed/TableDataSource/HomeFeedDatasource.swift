@@ -9,6 +9,7 @@ import Combine
 import UIKit
 
 enum HomeFeedItem: Hashable {
+    case noteHeader(content: ParsedContent, element: NoteFeedElement)
     case noteElement(content: ParsedContent, element: NoteFeedElement)
     case live([ParsedUser])
     case loading
@@ -37,31 +38,19 @@ class HomeFeedDatasource: UITableViewDiffableDataSource<SingleSection, HomeFeedI
             case .live(let users):
                 cell = tableView.dequeueReusableCell(withIdentifier: "live", for: indexPath)
                 (cell as? LivePreviewFeedCell)?.setUsers(users, delegate: delegate)
+            case .noteHeader(let content, let element):
+                cell = tableView.dequeueReusableCell(withIdentifier: element.headerCellID, for: indexPath)
+                HomeFeedDatasource.configureNoteCell(cell, content: content, element: element, delegate: delegate)
             case .noteElement(let content, let element):
                 cell = tableView.dequeueReusableCell(withIdentifier: element.cellID, for: indexPath)
-                switch element {
-                case .webPreview(_, let metadata):
-                    (cell as? WebPreviewCell)?.updateWebPreview(metadata)
-                case .postPreview(let embedded):
-                    if let cell = cell as? RegularFeedElementCell {
-                        cell.update(embedded)
-                        cell.delegate = delegate
-                    }
-                    return cell
-                default:
-                    break
-                }
-                
-                if let cell = cell as? RegularFeedElementCell {
-                    cell.update(content)
-                    cell.delegate = delegate
-                }
+                HomeFeedDatasource.configureNoteCell(cell, content: content, element: element, delegate: delegate)
             }
             
             return cell
         }
         
         registerCells(tableView)
+        registerHeaderCells(tableView)
         tableView.register(LivePreviewFeedCell.self, forCellReuseIdentifier: "live")
         
         defaultRowAnimation = .none
@@ -73,14 +62,44 @@ class HomeFeedDatasource: UITableViewDiffableDataSource<SingleSection, HomeFeedI
         .store(in: &cancellables)
     }
     
-    func elementForIndexPath(_ indexPath: IndexPath) -> NoteFeedElement? {
-        guard indexPath.section == 0, let data = cells[safe: indexPath.row], case .noteElement(_, let element) = data else { return nil }
-        return element
+    static func configureNoteCell(_ cell: UITableViewCell, content: ParsedContent, element: NoteFeedElement, delegate: FeedElementCellDelegate?) {
+        switch element {
+        case .webPreview(_, let metadata):
+            (cell as? WebPreviewCell)?.updateWebPreview(metadata)
+        case .postPreview(let embedded):
+            if let cell = cell as? RegularFeedElementCell {
+                cell.update(embedded)
+                cell.delegate = delegate
+            }
+            return
+        default:
+            break
+        }
+
+        if let cell = cell as? RegularFeedElementCell {
+            cell.update(content)
+            cell.delegate = delegate
+        }
     }
-    
+
+    func elementForIndexPath(_ indexPath: IndexPath) -> NoteFeedElement? {
+        guard indexPath.section == 0, let data = cells[safe: indexPath.row] else { return nil }
+        switch data {
+        case .noteElement(_, let element), .noteHeader(_, let element):
+            return element
+        default:
+            return nil
+        }
+    }
+
     func postForIndexPath(_ indexPath: IndexPath) -> ParsedContent? {
-        guard indexPath.section == 0, let data = cells[safe: indexPath.row], case .noteElement(let content, _) = data else { return nil }
-        return content
+        guard indexPath.section == 0, let data = cells[safe: indexPath.row] else { return nil }
+        switch data {
+        case .noteElement(let content, _), .noteHeader(let content, _):
+            return content
+        default:
+            return nil
+        }
     }
     
     func setPosts(_ posts: [ParsedContent]) {
@@ -96,8 +115,10 @@ class HomeFeedDatasource: UITableViewDiffableDataSource<SingleSection, HomeFeedI
             cells.append(.live(live))
         }
         
-        let postCells: [HomeFeedItem] = convertPostsToCells(posts).flatMap { post, elements in
-            elements.map { .noteElement(content: post, element: $0) }
+        let postCells: [HomeFeedItem] = convertPostsToHeaderCells(posts).flatMap { content, header, elements in
+            var items: [HomeFeedItem] = [.noteHeader(content: content, element: header)]
+            items += elements.map { .noteElement(content: content, element: $0) }
+            return items
         }
         
         cells.append(contentsOf: postCells)

@@ -61,9 +61,9 @@ class FeedElementTextCell: FeedElementBaseCell, RegularFeedElementCell {
 
 private extension FeedElementTextCell {
     func setup() {
-        contentView.addSubview(textStack)
+        contentContainer.addSubview(textStack)
         textStack
-            .pinToSuperview(edges: .horizontal, padding: 16)
+            .pinToSuperview(edges: .leading, padding: leadingPadding).pinToSuperview(edges: .trailing, padding: horizontalPadding)
             .pinToSuperview(edges: .bottom)
             .pinToSuperview(edges: .top, padding: 4)
         

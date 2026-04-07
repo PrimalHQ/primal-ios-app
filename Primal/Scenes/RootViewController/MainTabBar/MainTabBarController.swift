@@ -13,20 +13,6 @@ import GenericJSON
 import AVFoundation
 import PrimalShared
 
-extension UIViewController {
-    var mainTabBarController: MainTabBarController? {
-        parent as? MainTabBarController ?? parent?.mainTabBarController
-    }
-    
-    func smartPresent(_ vc: UIViewController) {
-        if let presentedViewController {
-            presentedViewController.smartPresent(vc)
-            return
-        }
-        present(vc, animated: true)
-    }
-}
-
 enum MainTab: String {
     case home, reads, wallet, notifications, explore
     
@@ -40,11 +26,11 @@ enum MainTab: String {
 }
 
 final class MainTabBarController: UIViewController, Themeable {
-    lazy var home = MainNavigationController(rootViewController: MenuContainerController(child: HomeFeedViewController()))
-    lazy var reads = MainNavigationController(rootViewController: MenuContainerController(child: ReadsViewController()))
-    lazy var wallet = MainNavigationController(rootViewController: MenuContainerController(child: WalletHomeViewController()))
-    lazy var notifications = MainNavigationController(rootViewController: MenuContainerController(child: NotificationsViewController()))
-    lazy var explore = MainNavigationController(rootViewController: MenuContainerController(child: ExploreViewController()))
+    lazy var home = MainNavigationController(rootViewController: HomeFeedViewController())
+    lazy var reads = MainNavigationController(rootViewController: ReadsViewController())
+    lazy var wallet = MainNavigationController(rootViewController: WalletHomeViewController())
+    lazy var notifications = MainNavigationController(rootViewController: NotificationsViewController())
+    lazy var explore = MainNavigationController(rootViewController: ExploreViewController())
 
     let vcParentView = UIView()
     let noConnectionView = NoConnectionView().constrainToSize(height: 44)
@@ -92,18 +78,13 @@ final class MainTabBarController: UIViewController, Themeable {
     var deeplinkCancellable: AnyCancellable?
     
     let chatManager = ChatManager()
-    var newMessageCount = 0 {
-        didSet {
-            for tab in tabs {
-                (navForTab(tab).viewControllers.first as? MenuContainerController)?.newMessageCount = newMessageCount
-            }
-        }
-    }
     
+    private var notificationsFrozen = false
+
     var newNotifications: Int = 0 {
         didSet {
-            if newNotifications == oldValue { return }
-            
+            if notificationsFrozen || newNotifications == oldValue { return }
+
             notificationIndicator.isHidden = newNotifications < 1
         }
     }
@@ -130,11 +111,6 @@ final class MainTabBarController: UIViewController, Themeable {
         setup()
         
         chatManager.updateChatCount()
-        chatManager.$newMessagesCount.removeDuplicates().receive(on: DispatchQueue.main)
-            .sink { [weak self] newMessages in
-                self?.newMessageCount = newMessages
-            }
-            .store(in: &cancellables)
     }
     
     deinit {
@@ -165,21 +141,6 @@ final class MainTabBarController: UIViewController, Themeable {
             .store(in: &cancellables)
     }
 
-    func hideForMenu() {
-        UIView.animate(withDuration: 0.3) {
-            self.buttonStack.alpha = 0
-            self.circleWalletButton.alpha = 0
-            self.showTabBarBorder = false
-        }
-    }
-
-    func showButtons() {
-        UIView.animate(withDuration: 0.3) {
-            self.buttonStack.alpha = 1
-            self.circleWalletButton.alpha = 1
-            self.showTabBarBorder = true
-        }
-    }
 
     var updateChildren = false
     func updateTheme() {
@@ -204,6 +165,16 @@ final class MainTabBarController: UIViewController, Themeable {
         
         UIView.animate(withDuration: 0.3) {
             self.vStack.transform = hidden ? .init(translationX: 0, y: self.vStack.bounds.height + 10) : .identity
+        }
+    }
+    
+    func freezeNotificationCount() {
+        notificationsFrozen = true
+        notificationIndicator.isHidden = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5) { [weak self] in
+            guard let self else { return }
+            notificationsFrozen = false
+            notificationIndicator.isHidden = newNotifications < 1
         }
     }
     
@@ -343,11 +314,9 @@ private extension MainTabBarController {
             .dropFirst()
             .sink { _ in
                 PrimalEndpointsManager.instance.checkIfNecessary()
+                Connection.reconnect()
                 DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
-                    Connection.reconnect()
-                    DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
-                        RelaysPostbox.instance.reconnect()
-                    }
+                    RelaysPostbox.instance.reconnect()
                 }
             }
             .store(in: &cancellables)
