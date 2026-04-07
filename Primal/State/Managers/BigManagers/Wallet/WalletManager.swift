@@ -219,10 +219,17 @@ final class WalletManager {
         nostrEventSignatureHandler: SigningManager.instance,
         profileRepository: profileRepo
     )
+    private let eventRepo: EventRepository
     private var transactionsSnapshot: IosPagingSnapshot<Transaction>?
-    
+
+    lazy var transactionFeeRepo = WalletRepositoryFactory.shared.createTransactionFeeRepository(
+        primalWalletApiClient: walletConnection,
+        nostrEventSignatureHandler: SigningManager.instance,
+        eventRepository: eventRepo
+    )
+
     private init() {
-        let eventRepo = PrimalRepositoryFactory.shared.createEventRepository(cachingPrimalApiClient: regConnection, mediaCacher: MediaCacher.instance)
+        eventRepo = PrimalRepositoryFactory.shared.createEventRepository(cachingPrimalApiClient: regConnection, mediaCacher: MediaCacher.instance)
         
         profileRepo = PrimalRepositoryFactory.shared.createProfileRepository(cachingPrimalApiClient: regConnection, primalPublisher: SigningManager.instance, mediaCacher: MediaCacher.instance)
         

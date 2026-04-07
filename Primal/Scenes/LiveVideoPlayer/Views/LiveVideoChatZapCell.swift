@@ -76,6 +76,7 @@ class LiveVideoChatZapView: UIView {
         
         commentLabel.setContentCompressionResistancePriority(.required, for: .vertical)
         zapInfoLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
+        userNameLabel.setContentHuggingPriority(.required, for: .horizontal)
         zapAmountLabel.setContentHuggingPriority(.required, for: .horizontal)
         zapInfoLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
         
