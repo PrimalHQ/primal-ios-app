@@ -15,7 +15,6 @@ final class MenuController: UIViewController, Themeable {
     let contentView = UIView()
     let navBarBackground = UIView()
 
-    private let profileImage = UserImageView(height: 52)
     private let nameLabel = UILabel()
     private let checkbox1 = VerifiedView()
     private let domainLabel = UILabel()
@@ -88,8 +87,6 @@ private extension MenuController {
     func setup() {
         updateTheme()
 
-        let profileImageRow = UIStackView([profileImage, UIView()])
-
         let barcodeButton = UIButton()
         barcodeButton.setImage(UIImage(named: "barcode"), for: .normal)
         let titleStack = UIStackView(arrangedSubviews: [nameLabel, checkbox1, barcodeButton])
@@ -106,22 +103,19 @@ private extension MenuController {
 
         let buttonsStack = UIStackView(arrangedSubviews: [profile, premium, messages, bookmarks, remoteLogin, redeemCode, settings, signOut])
         [
-            profileImageRow, titleStack, domainLabel, followStack,
+            titleStack, domainLabel, followStack,
             buttonsStack, UIView(), themeButton
         ]
         .forEach { mainStack.addArrangedSubview($0) }
 
-        profileImageRow.pinToSuperview(edges: .horizontal)
-
         contentView.addSubview(mainStack)
         mainStack
-            .pinToSuperview(edges: .leading, padding: 34)
+            .pinToSuperview(edges: .leading, padding: 18)
             .pinToSuperview(edges: .trailing, padding: 80)
             .pinToSuperview(edges: .top, padding: 20)
             .pinToSuperview(edges: .bottom, padding: 80, safeArea: true)
         mainStack.axis = .vertical
         mainStack.alignment = .leading
-        mainStack.setCustomSpacing(15, after: profileImageRow)
         mainStack.setCustomSpacing(18, after: titleStack)
         mainStack.setCustomSpacing(10, after: domainLabel)
         mainStack.setCustomSpacing(44, after: followStack)
@@ -168,9 +162,15 @@ private extension MenuController {
         followStack.setCustomSpacing(16, after: followingDescLabel)
 
         let npubs = LoginManager.instance.loggedInNpubs()
+        
+        let profileImageRow = UIStackView(axis: .vertical, spacing: 24, [])
+        contentView.addSubview(profileImageRow)
+        profileImageRow
+            .centerToView(primalNavigationBar.userImageView, axis: .horizontal)
+            .pin(to: barcodeButton, edges: .top)
 
         for npub in npubs.dropFirst().prefix(3) {
-            let avatarImage = UserImageView(height: 24)
+            let avatarImage = UserImageView(height: 26)
 
             LoginManager.instance.$loadedProfiles.receive(on: DispatchQueue.main)
                 .sink { users in
@@ -180,7 +180,6 @@ private extension MenuController {
                 }
                 .store(in: &cancellables)
 
-            profileImageRow.addArrangedSubview(SpacerView(width: 18))
             profileImageRow.addArrangedSubview(avatarImage)
 
             let button = UIView().constrainToSize(36)
@@ -222,8 +221,7 @@ private extension MenuController {
         settings.addTarget(self, action: #selector(settingsButtonPressed), for: .touchUpInside)
         signOut.addTarget(self, action: #selector(signoutPressed), for: .touchUpInside)
         themeButton.addTarget(self, action: #selector(themeButtonPressed), for: .touchUpInside)
-        profileImage.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(profilePressed)))
-
+        
         IdentityManager.instance.$parsedUser.compactMap({ $0 }).receive(on: DispatchQueue.main).sink { [weak self] user in
             self?.update(user)
         }
@@ -303,8 +301,6 @@ private extension MenuController {
     }
 
     func update(_ user: ParsedUser) {
-        profileImage.setUserImage(user)
-
         let user = user.data
         if user.displayName.isEmpty {
             if CheckNip05Manager.instance.isVerified(user) {

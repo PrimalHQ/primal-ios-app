@@ -83,7 +83,7 @@ private extension PrimalNavigationBar {
 
         addSubview(mainStack)
         mainStack
-            .pinToSuperview(edges: .leading, padding: 20)
+            .pinToSuperview(edges: .leading, padding: 18)
             .pinToSuperview(edges: .trailing, padding: 16)
             .centerToSuperview(axis: .vertical)
 
