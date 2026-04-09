@@ -29,6 +29,7 @@ final class MenuController: UIViewController, Themeable {
     private let followingDescLabel = UILabel()
     private let followersDescLabel = UILabel()
     private let themeButton = UIButton()
+    private let closeButton = UIButton(configuration: .accent18("Close"))
 
     private var originalTitle = ""
     private var originalSubtitle = ""
@@ -108,12 +109,25 @@ private extension MenuController {
         ]
         .forEach { mainStack.addArrangedSubview($0) }
 
+        let botMenu = UIStackView([UIView(), closeButton])
+        botMenu.isLayoutMarginsRelativeArrangement = true
+        botMenu.layoutMargins = .init(top: 5, left: 16, bottom: 0, right: 16)
+        let separator = SpacerView(height: 1, color: .background3, priority: .required)
+
         contentView.addSubview(mainStack)
+        contentView.addSubview(separator)
+        contentView.addSubview(botMenu)
+
         mainStack
             .pinToSuperview(edges: .leading, padding: 18)
             .pinToSuperview(edges: .trailing, padding: 80)
             .pinToSuperview(edges: .top, padding: 20)
-            .pinToSuperview(edges: .bottom, padding: 80, safeArea: true)
+        mainStack.bottomAnchor.constraint(equalTo: separator.topAnchor).isActive = true
+
+        separator.pinToSuperview(edges: .horizontal)
+        botMenu.pinToSuperview(edges: .horizontal)
+        botMenu.topAnchor.constraint(equalTo: separator.bottomAnchor).isActive = true
+        botMenu.pinToSuperview(edges: .bottom, safeArea: true)
         mainStack.axis = .vertical
         mainStack.alignment = .leading
         mainStack.setCustomSpacing(18, after: titleStack)
@@ -143,6 +157,8 @@ private extension MenuController {
         primalNavigationBar.onAvatarTapped = { [weak self] in
             self?.dismissAnimated()
         }
+
+        closeButton.addAction(.init(handler: { [weak self] _ in self?.dismissAnimated() }), for: .touchUpInside)
 
         contentView.transform = CGAffineTransform(translationX: 0, y: -UIScreen.main.bounds.height)
 

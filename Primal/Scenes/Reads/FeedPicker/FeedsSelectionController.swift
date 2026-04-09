@@ -162,8 +162,9 @@ final class FeedsSelectionController: UIViewController {
     lazy var feeds = PrimalFeed.getActiveFeeds(type)
     
     let addFeedButton = UIButton(configuration: .accent18("Add Custom Feed"))
-    let editButton = UIButton(configuration: .accent18("Edit"))
+    let editButton = UIButton(configuration: .accent18("Edit Feeds"))
     let doneButton = UIButton(configuration: .accent18("Done"))
+    let closeButton = UIButton(configuration: .accent18("Close"))
 
     lazy var restoreDefaultsFooter: UIView = {
         let button = UIButton(configuration: .accent18("Restore Default Feeds"))
@@ -275,6 +276,7 @@ private extension FeedsSelectionController {
         editButton.isHidden = true
         doneButton.isHidden = false
         addFeedButton.isHidden = false
+        closeButton.isHidden = true
 
         isEditing = true
         table.dragDelegate = self
@@ -287,6 +289,7 @@ private extension FeedsSelectionController {
         editButton.isHidden = LoginManager.instance.method() == .nsec ? false : true
         doneButton.isHidden = true
         addFeedButton.isHidden = true
+        closeButton.isHidden = false
 
         isEditing = false
         table.dragDelegate = nil
@@ -334,7 +337,7 @@ private extension FeedsSelectionController {
         table.separatorStyle = .none
         table.backgroundColor = .background2
 
-        let botMenu = UIStackView([addFeedButton, UIView(), editButton, doneButton])
+        let botMenu = UIStackView([editButton, addFeedButton, UIView(), doneButton, closeButton])
         botMenu.isLayoutMarginsRelativeArrangement = true
         botMenu.layoutMargins = .init(top: 5, left: 16, bottom: 0, right: 16)
 
@@ -375,6 +378,7 @@ private extension FeedsSelectionController {
 
         editButton.addAction(.init(handler: { [weak self] _ in self?.startEditing() }), for: .touchUpInside)
         doneButton.addAction(.init(handler: { [weak self] _ in self?.endEditing() }), for: .touchUpInside)
+        closeButton.addAction(.init(handler: { [weak self] _ in self?.dismissAnimated() }), for: .touchUpInside)
 
         endEditing()
 
