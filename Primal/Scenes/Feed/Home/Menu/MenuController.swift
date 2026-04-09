@@ -283,7 +283,7 @@ private extension MenuController {
     }
 
     func animateIn() {
-        UIView.animate(withDuration: 0.35, delay: 0, usingSpringWithDamping: 0.9, initialSpringVelocity: 0, options: []) { [self] in
+        UIView.animate(withDuration: 0.35) { [self] in
             contentView.transform = .identity
             primalNavigationBar.chevronView.alpha = 0
         }

@@ -101,7 +101,7 @@ final class NotificationFeedViewController: NoteViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override var adjustedTopBarHeight: CGFloat { topBarHeight + 60 + 64 }
+    override var adjustedTopBarHeight: CGFloat { topBarHeight + 60 + PrimalNavigationBar.height }
     override var barsMaxTransform: CGFloat { adjustedTopBarHeight }
     
     func setup() {

@@ -75,7 +75,7 @@ private extension ExplorePeopleViewController {
             self?.feedManager.refresh()
         }))
         
-        table.contentInset = .init(top: 157 + 16, left: 0, bottom: 80, right: 0)
+        table.contentInset = .init(top: PrimalNavigationBar.height + 109, left: 0, bottom: 80, right: 0)
         table.scrollIndicatorInsets = .init(top: 60, left: 0, bottom: 50, right: 0)
         
         view.addSubview(loadingView)

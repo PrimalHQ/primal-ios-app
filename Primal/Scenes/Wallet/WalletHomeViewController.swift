@@ -333,7 +333,7 @@ private extension WalletHomeViewController {
         }), for: .touchUpInside)
         updateNavigationTitleView()
 
-        let navBarSpacer = SpacerView(height: 64)
+        let navBarSpacer = SpacerView(height: PrimalNavigationBar.height)
         let stack = UIStackView(axis: .vertical, [navBarSpacer, walletActionBar, table])
         view.addSubview(stack)
         // It's necessary to keep the table longer than the view itself, so when the navbar expands and table shortens, we don't see any empty parts of the table

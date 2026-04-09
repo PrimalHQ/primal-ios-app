@@ -80,8 +80,35 @@ final class RootViewController: UIViewController {
         return AVPictureInPictureController(playerLayer: livePlayer.playerView.playerLayer)
     }
     
-    private init() {
-        super.init(nibName: nil, bundle: nil)
+    override var prefersStatusBarHidden: Bool {
+        if let presentedViewController {
+            return presentedViewController.prefersStatusBarHidden
+        }
+        return false
+    }
+    
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        guard let style = currentChild?.preferredStatusBarStyle else {
+            return Theme.current.statusBarStyle
+        }
+        
+        if case .default = style {
+            return Theme.current.statusBarStyle
+        }
+        
+        return style
+    }
+    
+    override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+        if presentedViewController is ImageGalleryController || presentedViewController?.presentedViewController is AVPlayerViewController {
+            return .allButUpsideDown
+        }
+        return .portrait
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+    
         quickReset(isFirstTime: true)
         addIntro()
         
@@ -123,7 +150,7 @@ final class RootViewController: UIViewController {
             }
         }.store(in: &cancellables)
         
-        didFinishInit = true        
+        didFinishInit = true
         
         let notesDeeplink = NotificationCenter.default.publisher(for: .primalNoteLink)
             .compactMap { $0.object as? String }
@@ -159,36 +186,6 @@ final class RootViewController: UIViewController {
         let move = LivePlayerMoveGesture()
         
         [move, liveTap].forEach { livePlayer.addGestureRecognizer($0) }
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    override var prefersStatusBarHidden: Bool {
-        if let presentedViewController {
-            return presentedViewController.prefersStatusBarHidden
-        }
-        return false
-    }
-    
-    override var preferredStatusBarStyle: UIStatusBarStyle {
-        guard let style = currentChild?.preferredStatusBarStyle else {
-            return Theme.current.statusBarStyle
-        }
-        
-        if case .default = style {
-            return Theme.current.statusBarStyle
-        }
-        
-        return style
-    }
-    
-    override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-        if presentedViewController is ImageGalleryController || presentedViewController?.presentedViewController is AVPlayerViewController {
-            return .allButUpsideDown
-        }
-        return .portrait
     }
     
     override func viewDidAppear(_ animated: Bool) {

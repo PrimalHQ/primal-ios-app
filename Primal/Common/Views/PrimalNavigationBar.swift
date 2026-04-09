@@ -10,10 +10,10 @@ import UIKit
 
 enum ChromeSize {
     case small, regular, medium, large
-    
+
     static let current: ChromeSize = {
         let screenWidth = RootViewController.instance.view.frame.size.width
-        
+
         if screenWidth < 380 { return .small }
         if screenWidth < 405 { return .regular }
         if screenWidth < 430 { return .medium }
@@ -33,10 +33,55 @@ extension PrimalNavigationBarController {
 }
 
 final class PrimalNavigationBar: UIView, Themeable {
+    static let height: CGFloat = {
+        switch ChromeSize.current {
+        case .small: return 64
+        case .regular: return 70
+        case .medium: return 76
+        case .large: return 83
+        }
+    }()
+
+    private static let titleFontSize: CGFloat = {
+        switch ChromeSize.current {
+        case .small: return 24
+        case .regular: return 26
+        case .medium: return 28
+        case .large: return 30
+        }
+    }()
+
+    private static let subtitleFontSize: CGFloat = {
+        switch ChromeSize.current {
+        case .small: return 14
+        case .regular: return 15
+        case .medium: return 15
+        case .large: return 17
+        }
+    }()
+
+    private static let avatarSize: CGFloat = {
+        switch ChromeSize.current {
+        case .small: return 37
+        case .regular: return 41
+        case .medium: return 43
+        case .large: return 45
+        }
+    }()
+
+    private static let chevronSize: CGFloat = {
+        switch ChromeSize.current {
+        case .small: return 10
+        case .regular: return 10
+        case .medium: return 10
+        case .large: return 12
+        }
+    }()
+
     let titleLabel = UILabel()
     let chevronView = UIImageView(image: UIImage(named: "navChevron"))
     let subtitleLabel = UILabel()
-    let userImageView = UserImageView(height: 36)
+    let userImageView = UserImageView(height: PrimalNavigationBar.avatarSize)
     let border = SpacerView(height: 1, color: .background3)
 
     private let titleButton = UIButton()
@@ -78,14 +123,16 @@ final class PrimalNavigationBar: UIView, Themeable {
 
 private extension PrimalNavigationBar {
     func setup() {
-        constrainToSize(height: 64)
+        constrainToSize(height: Self.height)
 
         addSubview(border)
         border.pinToSuperview(edges: [.horizontal, .bottom])
-        
-        titleLabel.font = .appFont(withSize: 20, weight: .bold)
-        subtitleLabel.font = .appFont(withSize: 14, weight: .regular)
 
+        titleLabel.font = .appFont(withSize: Self.titleFontSize, weight: .bold)
+        subtitleLabel.font = .appFont(withSize: Self.subtitleFontSize, weight: .regular)
+
+        chevronView.constrainToSize(Self.chevronSize)
+        chevronView.contentMode = .scaleAspectFit
         chevronView.setContentHuggingPriority(.required, for: .horizontal)
         chevronView.setContentCompressionResistancePriority(.required, for: .horizontal)
 

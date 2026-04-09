@@ -68,7 +68,7 @@ private extension ExploreTopicsViewController {
         collectionView.delegate = self
         collectionView.register(HashtagCollectionViewCell.self, forCellWithReuseIdentifier: "cell")
         collectionView.register(HashtagLoadingCollectionViewCell.self, forCellWithReuseIdentifier: "loading")
-        collectionView.contentInset = .init(top: 157, left: 0, bottom: 80, right: 0)
+        collectionView.contentInset = .init(top: PrimalNavigationBar.height + 93, left: 0, bottom: 80, right: 0)
         collectionView.scrollIndicatorInsets = .init(top: 60, left: 0, bottom: 50, right: 0)
         collectionView.refreshControl = .init(frame: .zero, primaryAction: .init(handler: { [weak self] _ in
             self?.refresh()
