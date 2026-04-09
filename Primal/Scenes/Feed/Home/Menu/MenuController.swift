@@ -66,7 +66,7 @@ final class MenuController: UIViewController, Themeable {
     }
 
     func updateTheme() {
-        contentView.backgroundColor = .background
+        contentView.backgroundColor = .background5
         navBarBackground.backgroundColor = .background
         primalNavigationBar.updateTheme()
 

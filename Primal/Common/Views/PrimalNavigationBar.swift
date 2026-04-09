@@ -24,6 +24,7 @@ final class PrimalNavigationBar: UIView, Themeable {
     let chevronView = UIImageView(image: UIImage(named: "navChevron"))
     let subtitleLabel = UILabel()
     let userImageView = UserImageView(height: 36)
+    let border = SpacerView(height: 1, color: .background3)
 
     private let titleButton = UIButton()
     private let avatarButton = UIButton()
@@ -66,6 +67,9 @@ private extension PrimalNavigationBar {
     func setup() {
         constrainToSize(height: 64)
 
+        addSubview(border)
+        border.pinToSuperview(edges: [.horizontal, .bottom])
+        
         titleLabel.font = .appFont(withSize: 20, weight: .bold)
         subtitleLabel.font = .appFont(withSize: 14, weight: .regular)
 

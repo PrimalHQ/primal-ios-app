@@ -17,11 +17,15 @@ enum MainTab: String {
     case home, reads, wallet, notifications, explore
     
     var tabImage: UIImage? {
-        UIImage(named: "tabIcon-\(rawValue)")
+        if #available(iOS 26.0, *) { return UIImage(named: "tabIcon2-\(rawValue)") }
+
+        return UIImage(named: "tabIcon-\(rawValue)")
     }
     
     var selectedTabImage: UIImage? {
-        UIImage(named: "selectedTabIcon-\(rawValue)")
+        if #available(iOS 26.0, *) { return UIImage(named: "tabIcon2-\(rawValue)") }
+
+        return UIImage(named: "selectedTabIcon-\(rawValue)")
     }
 }
 
