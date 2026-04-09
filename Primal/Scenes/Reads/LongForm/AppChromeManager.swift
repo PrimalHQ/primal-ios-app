@@ -92,7 +92,7 @@ class AppChromeManager: NSObject, UIScrollViewDelegate {
         
         controller.navigationController?.navigationBar.transform = .init(translationX: 0, y: topTransform)
         extraTopView?.transform = .init(translationX: 0, y: topTransform)
-        controller.mainTabBarController?.vStack.transform = .init(translationX: 0, y: botTransform)
+        controller.mainTabBarController?.tabBarContainerView.transform = .init(translationX: 0, y: botTransform)
         extraBottomView?.transform = .init(translationX: 0, y: botTransform)
     }
     

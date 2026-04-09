@@ -212,7 +212,7 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
             navigationController?.navigationBar.transform = .init(translationX: 0, y: transform)
         }
         navigationBorder.transform = .init(translationX: 0, y: transform)
-        mainTabBarController?.vStack.transform = .init(translationX: 0, y: -transform)
+        mainTabBarController?.tabBarContainerView.transform = .init(translationX: 0, y: -transform)
     }
     
     func animateBarsToTransform(_ transform: CGFloat) {

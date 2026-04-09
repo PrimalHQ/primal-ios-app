@@ -18,7 +18,7 @@ class ArticleChromeManager: AppChromeManager {
         let botTransform = min(-botTransform, bottomBarHeight)
         
         controller.navigationController?.navigationBar.transform = .init(translationX: 0, y: topTransform)
-        controller.mainTabBarController?.vStack.transform = .init(translationX: 0, y: botTransform)
+        controller.mainTabBarController?.tabBarContainerView.transform = .init(translationX: 0, y: botTransform)
         
         let botProgress = (botTransform / bottomBarHeight)
         let xScale = 1 - botProgress

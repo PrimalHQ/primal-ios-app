@@ -74,6 +74,13 @@ final class MainTabBarController: UIViewController, Themeable {
     
     private let tabs: [MainTab] = [.home, .reads, .wallet, .notifications, .explore]
     
+    private var nativeTabBar: UITabBar?
+
+    var tabBarContainerView: UIView {
+        if #available(iOS 26.0, *), let nativeTabBar { return nativeTabBar }
+        return vStack
+    }
+
     var continousConnection: ContinuousConnection?
     var deeplinkCancellable: AnyCancellable?
     
@@ -85,6 +92,10 @@ final class MainTabBarController: UIViewController, Themeable {
         didSet {
             if notificationsFrozen || newNotifications == oldValue { return }
 
+            if #available(iOS 26.0, *), let nativeTabBar {
+                nativeTabBar.items?[safe: 3]?.badgeValue = newNotifications > 0 ? "\(newNotifications)" : nil
+                return
+            }
             notificationIndicator.isHidden = newNotifications < 1
         }
     }
@@ -98,8 +109,12 @@ final class MainTabBarController: UIViewController, Themeable {
     var currentTab: MainTab { tabs[safe: currentPageIndex] ?? .home }
     
     var showTabBarBorder: Bool {
-        get { navigationBorder.alpha > 0.1 }
+        get {
+            if #available(iOS 26.0, *), nativeTabBar != nil { return true }
+            return navigationBorder.alpha > 0.1
+        }
         set {
+            if #available(iOS 26.0, *), nativeTabBar != nil { return }
             navigationBorder.alpha = newValue ? 1 : 0
             circleBorderView.alpha = newValue ? 1 : 0
         }
@@ -146,6 +161,11 @@ final class MainTabBarController: UIViewController, Themeable {
     func updateTheme() {
         view.backgroundColor = .background
 
+        if #available(iOS 26.0, *), let nativeTabBar {
+            nativeTabBar.tintColor = .accent
+            nativeTabBar.unselectedItemTintColor = .foreground3
+        }
+
         updateButtons()
 
         if updateChildren {
@@ -153,28 +173,37 @@ final class MainTabBarController: UIViewController, Themeable {
                 $0.updateThemeIfThemeable()
             }
         }
-        
+
         navigationBorder.backgroundColor = .background3
     }
     
     func setTabBarHidden(_ hidden: Bool, animated: Bool) {
+        let targetView = tabBarContainerView
         if !animated {
-            vStack.transform = hidden ? .init(translationX: 0, y: vStack.bounds.height + 10) : .identity
+            targetView.transform = hidden ? .init(translationX: 0, y: targetView.bounds.height + 10) : .identity
             return
         }
-        
+
         UIView.animate(withDuration: 0.3) {
-            self.vStack.transform = hidden ? .init(translationX: 0, y: self.vStack.bounds.height + 10) : .identity
+            targetView.transform = hidden ? .init(translationX: 0, y: targetView.bounds.height + 10) : .identity
         }
     }
     
     func freezeNotificationCount() {
         notificationsFrozen = true
-        notificationIndicator.isHidden = true
+        if #available(iOS 26.0, *), let nativeTabBar {
+            nativeTabBar.items?[safe: 3]?.badgeValue = nil
+        } else {
+            notificationIndicator.isHidden = true
+        }
         DispatchQueue.main.asyncAfter(deadline: .now() + 5) { [weak self] in
             guard let self else { return }
             notificationsFrozen = false
-            notificationIndicator.isHidden = newNotifications < 1
+            if #available(iOS 26.0, *), let nativeTabBar {
+                nativeTabBar.items?[safe: 3]?.badgeValue = newNotifications > 0 ? "\(newNotifications)" : nil
+            } else {
+                notificationIndicator.isHidden = newNotifications < 1
+            }
         }
     }
     
@@ -194,12 +223,13 @@ final class MainTabBarController: UIViewController, Themeable {
     }
     
     func showToast(_ message: String, icon: UIImage? = UIImage(named: "toastCheckmark")) {
-        let isTabBarHidden = vStack.transform != .identity
-        
+        let bar = tabBarContainerView
+        let isTabBarHidden = bar.transform != .identity
+
         if isTabBarHidden {
             view.showToast(message, icon: icon, extraPadding: 0)
         } else {
-            vStack.showToast(message, icon: icon, extraPadding: 95)
+            bar.showToast(message, icon: icon, extraPadding: 95)
         }
     }
     
@@ -279,36 +309,18 @@ private extension MainTabBarController {
         nav.view.pinToSuperview()
         nav.didMove(toParent: self)
         
-        view.addSubview(vStack)
-        vStack.pinToSuperview(edges: [.bottom, .horizontal])
-        safeAreaSpacer.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
-        
+        if #available(iOS 26.0, *) {
+            setupNativeTabBar()
+        } else {
+            setupCustomTabBar()
+        }
+
         indicatorStack.spacing = 8
         indicatorStack.isUserInteractionEnabled = false
         view.addSubview(indicatorStack)
         indicatorStack
             .pinToSuperview(edges: .horizontal, padding: 12)
             .pinToSuperview(edges: .top, padding: 60, safeArea: true)
-        
-        let background = ThemeableView().setTheme { $0.backgroundColor = .background }
-        buttonStackParent.addSubview(background)
-        background.pinToSuperview(edges: [.top, .horizontal]).pinToSuperview(edges: .bottom, padding: -100)
-        
-        buttonStackParent.addSubview(buttonStack)
-        buttonStack
-            .pinToSuperview(edges: [.horizontal, .top])
-            .pinToSuperview(edges: .bottom, padding: -8)
-            .constrainToSize(height: 56)
-        buttonStack.distribution = .fillEqually
-        
-        buttonStack.addSubview(notificationIndicator)
-        
-        if let imageView = buttons.dropLast().last?.imageView {
-            notificationIndicator.pin(to: imageView, edges: [.top, .trailing], padding: -4)
-        }
-        notificationIndicator.isHidden = true
-        
-        vStack.axis = .vertical
         
         NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)
             .dropFirst()
@@ -481,17 +493,22 @@ private extension MainTabBarController {
         }
         
         updateButtons()
-        addCircleWalletButton()
-        
+
         view.addSubview(animationView)
         animationView.isHidden = true
         animationView.isUserInteractionEnabled = false
-        animationView.constrainToSize(width: 375, height: 100).centerToView(circleWalletButton)
-        
-        zip(buttons, tabs).forEach { button, tab in
-            button.addAction(.init(handler: { [weak self] _ in
-                self?.menuButtonPressedForTab(tab)
-            }), for: .touchUpInside)
+
+        if #available(iOS 26.0, *), let nativeTabBar {
+            animationView.constrainToSize(width: 375, height: 100).centerToView(nativeTabBar)
+        } else {
+            addCircleWalletButton()
+            animationView.constrainToSize(width: 375, height: 100).centerToView(circleWalletButton)
+
+            zip(buttons, tabs).forEach { button, tab in
+                button.addAction(.init(handler: { [weak self] _ in
+                    self?.menuButtonPressedForTab(tab)
+                }), for: .touchUpInside)
+            }
         }
         
         Connection.regular.continuousConnectionCancellable(name: "live_events_from_follows", request: ["user_pubkey": .string(IdentityManager.instance.userHexPubkey)]) { event in
@@ -502,6 +519,56 @@ private extension MainTabBarController {
         LiveEventManager.instance.startPeriodicRefresh()
     }
     
+    @available(iOS 26.0, *)
+    func setupNativeTabBar() {
+        let tabBar = UITabBar()
+        tabBar.delegate = self
+        tabBar.items = tabs.enumerated().map { index, tab in
+            let item = UITabBarItem(title: nil, image: tab.tabImage, tag: index)
+            item.selectedImage = tab.selectedTabImage
+            return item
+        }
+        tabBar.selectedItem = tabBar.items?[safe: currentPageIndex]
+        tabBar.tintColor = .accent
+        tabBar.unselectedItemTintColor = .foreground3
+
+        view.addSubview(tabBar)
+        tabBar.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            tabBar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            tabBar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            tabBar.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+        ])
+
+        nativeTabBar = tabBar
+    }
+
+    func setupCustomTabBar() {
+        view.addSubview(vStack)
+        vStack.pinToSuperview(edges: [.bottom, .horizontal])
+        safeAreaSpacer.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
+
+        let background = ThemeableView().setTheme { $0.backgroundColor = .background }
+        buttonStackParent.addSubview(background)
+        background.pinToSuperview(edges: [.top, .horizontal]).pinToSuperview(edges: .bottom, padding: -100)
+
+        buttonStackParent.addSubview(buttonStack)
+        buttonStack
+            .pinToSuperview(edges: [.horizontal, .top])
+            .pinToSuperview(edges: .bottom, padding: -8)
+            .constrainToSize(height: 56)
+        buttonStack.distribution = .fillEqually
+
+        buttonStack.addSubview(notificationIndicator)
+
+        if let imageView = buttons.dropLast().last?.imageView {
+            notificationIndicator.pin(to: imageView, edges: [.top, .trailing], padding: -4)
+        }
+        notificationIndicator.isHidden = true
+
+        vStack.axis = .vertical
+    }
+
     func addCircleWalletButton() {
         buttonStackParent.insertSubview(circleBorderView, at: 0)
         circleBorderView.pinToSuperview(edges: .top, padding: -7).centerToSuperview(axis: .horizontal)
@@ -524,10 +591,14 @@ private extension MainTabBarController {
     }
     
     func updateButtons() {
+        if #available(iOS 26.0, *), let nativeTabBar {
+            nativeTabBar.selectedItem = nativeTabBar.items?[safe: currentPageIndex]
+            return
+        }
         circleWalletButton.updateTheme()
         for (index, button) in buttons.enumerated() {
             button.tintColor = index == currentPageIndex ? .foreground : .foreground3
-            
+
             button.setImage(index == currentPageIndex ? tabs[index].selectedTabImage : tabs[index].tabImage, for: .normal)
         }
     }
@@ -570,6 +641,12 @@ private extension MainTabBarController {
                 $0.setContentOffset(.zero, animated: true)
             }
         }
+    }
+}
+
+extension MainTabBarController: UITabBarDelegate {
+    func tabBar(_ tabBar: UITabBar, didSelect item: UITabBarItem) {
+        menuButtonPressedForTab(tabs[item.tag])
     }
 }
 
