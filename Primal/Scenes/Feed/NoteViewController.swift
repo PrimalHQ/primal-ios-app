@@ -159,6 +159,8 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        return
+        
         let newPosition = scrollView.contentOffset.y
         let delta = newPosition - prevPosition
         defer {
