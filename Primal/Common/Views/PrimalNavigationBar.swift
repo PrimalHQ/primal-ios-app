@@ -8,6 +8,19 @@
 import Combine
 import UIKit
 
+enum ChromeSize {
+    case small, regular, medium, large
+    
+    static let current: ChromeSize = {
+        let screenWidth = RootViewController.instance.view.frame.size.width
+        
+        if screenWidth < 380 { return .small }
+        if screenWidth < 405 { return .regular }
+        if screenWidth < 430 { return .medium }
+        return .large
+    }()
+}
+
 protocol PrimalNavigationBarController: UIViewController {
     var primalNavigationBar: PrimalNavigationBar { get }
 }
