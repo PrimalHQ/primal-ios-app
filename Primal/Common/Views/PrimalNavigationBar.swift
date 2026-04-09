@@ -12,8 +12,6 @@ enum ChromeSize {
     case small, regular, medium, large
 
     static let current: ChromeSize = {
-        return .regular
-        
         let screenWidth = RootViewController.instance.view.frame.size.width
 
         if screenWidth < 380 { return .small }

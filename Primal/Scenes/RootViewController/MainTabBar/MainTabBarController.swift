@@ -176,8 +176,8 @@ final class MainTabBarController: UIViewController, Themeable {
         view.backgroundColor = .background
 
         if #available(iOS 26.0, *), let nativeTabBar {
-            nativeTabBar.tintColor = .accent
-            nativeTabBar.unselectedItemTintColor = .foreground3
+            nativeTabBar.tintColor = .foreground
+            nativeTabBar.unselectedItemTintColor = .foreground.withAlphaComponent(0.75)
         }
 
         updateButtons()
@@ -566,20 +566,46 @@ private extension MainTabBarController {
         let tabBar = UITabBar()
         tabBar.delegate = self
         tabBar.items = tabs.enumerated().map { index, tab in
+            let imageYOffset: CGFloat = {
+                switch ChromeSize.current {
+                case .small:    return 5
+                case .large:    return 1
+                default:        return 2
+                }
+            }()
+            
             let image = tab.tabImage?.scalePreservingAspectRatio(size: iconSize).withRenderingMode(.alwaysTemplate)
+                .withAlignmentRectInsets(.init(top: imageYOffset, left: 0, bottom: -imageYOffset, right: 0))
             let selectedImage = tab.selectedTabImage?.scalePreservingAspectRatio(size: iconSize).withRenderingMode(.alwaysTemplate)
+                .withAlignmentRectInsets(.init(top: imageYOffset, left: 0, bottom: -imageYOffset, right: 0))
             let item = UITabBarItem(title: tab.tabTitle, image: image, tag: index)
             item.selectedImage = selectedImage
             return item
         }
         tabBar.selectedItem = tabBar.items?[safe: currentPageIndex]
-        tabBar.tintColor = .accent
-        tabBar.unselectedItemTintColor = .foreground3
+        tabBar.tintColor = .foreground
+        tabBar.unselectedItemTintColor = .foreground.withAlphaComponent(0.75)
 
         let fontSize = Self.tabBarFontSize
-        let normalAttrs: [NSAttributedString.Key: Any] = [.font: UIFont.appFont(withSize: fontSize, weight: .medium)]
-        let selectedAttrs: [NSAttributedString.Key: Any] = [.font: UIFont.appFont(withSize: fontSize, weight: .semibold)]
-        let titleOffset = UIOffset(horizontal: 0, vertical: -5)
+        let normalAttrs: [NSAttributedString.Key: Any] = [
+            .font: UIFont.appFont(withSize: fontSize, weight: .regular),
+            .foregroundColor: UIColor.foreground.withAlphaComponent(0.75)
+        ]
+        let selectedAttrs: [NSAttributedString.Key: Any] = [
+            .font: UIFont.appFont(withSize: fontSize, weight: .regular),
+            .foregroundColor: UIColor.foreground
+        ]
+        
+        let offset: CGFloat = {
+            switch ChromeSize.current {
+            case .small:    return 3
+            case .regular:  return 2
+            case .medium:   return 2
+            case .large:    return 1
+            }
+        }()
+        
+        let titleOffset = UIOffset(horizontal: 0, vertical: offset)
         let appearance = UITabBarAppearance()
         appearance.stackedLayoutAppearance.normal.titleTextAttributes = normalAttrs
         appearance.stackedLayoutAppearance.normal.titlePositionAdjustment = titleOffset
@@ -593,7 +619,7 @@ private extension MainTabBarController {
             tabBar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             tabBar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             tabBar.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            tabBar.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -Self.tabBarHeight),
+            tabBar.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 13 - Self.tabBarHeight),
         ])
 
         nativeTabBar = tabBar
