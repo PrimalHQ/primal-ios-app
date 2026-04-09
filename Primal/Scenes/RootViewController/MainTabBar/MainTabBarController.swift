@@ -15,13 +15,23 @@ import PrimalShared
 
 enum MainTab: String {
     case home, reads, wallet, notifications, explore
-    
+
+    var tabTitle: String {
+        switch self {
+        case .home:             return "Feeds"
+        case .reads:            return "Reads"
+        case .wallet:           return "Wallet"
+        case .notifications:    return "Alerts"
+        case .explore:          return "Explore"
+        }
+    }
+
     var tabImage: UIImage? {
         if #available(iOS 26.0, *) { return UIImage(named: "tabIcon2-\(rawValue)") }
 
         return UIImage(named: "tabIcon-\(rawValue)")
     }
-    
+
     var selectedTabImage: UIImage? {
         if #available(iOS 26.0, *) { return UIImage(named: "tabIcon2-\(rawValue)") }
 
@@ -523,18 +533,59 @@ private extension MainTabBarController {
         LiveEventManager.instance.startPeriodicRefresh()
     }
     
+    static let tabBarHeight: CGFloat = {
+        switch ChromeSize.current {
+        case .small:    return 54
+        case .regular:  return 60
+        case .medium:   return 60
+        case .large:    return 64
+        }
+    }()
+
+    private static let tabBarFontSize: CGFloat = {
+        switch ChromeSize.current {
+        case .small:    return 9
+        case .regular:  return 10
+        case .medium:   return 10
+        case .large:    return 11
+        }
+    }()
+
+    private static let tabBarIconSize: CGFloat = {
+        switch ChromeSize.current {
+        case .small:    return 24
+        case .regular:  return 28
+        case .medium:   return 28
+        case .large:    return 30
+        }
+    }()
+
     @available(iOS 26.0, *)
     func setupNativeTabBar() {
+        let iconSize = Self.tabBarIconSize
         let tabBar = UITabBar()
         tabBar.delegate = self
         tabBar.items = tabs.enumerated().map { index, tab in
-            let item = UITabBarItem(title: nil, image: tab.tabImage, tag: index)
-            item.selectedImage = tab.selectedTabImage
+            let image = tab.tabImage?.scalePreservingAspectRatio(size: iconSize).withRenderingMode(.alwaysTemplate)
+            let selectedImage = tab.selectedTabImage?.scalePreservingAspectRatio(size: iconSize).withRenderingMode(.alwaysTemplate)
+            let item = UITabBarItem(title: tab.tabTitle, image: image, tag: index)
+            item.selectedImage = selectedImage
             return item
         }
         tabBar.selectedItem = tabBar.items?[safe: currentPageIndex]
         tabBar.tintColor = .accent
         tabBar.unselectedItemTintColor = .foreground3
+
+        let fontSize = Self.tabBarFontSize
+        let normalAttrs: [NSAttributedString.Key: Any] = [.font: UIFont.appFont(withSize: fontSize, weight: .medium)]
+        let selectedAttrs: [NSAttributedString.Key: Any] = [.font: UIFont.appFont(withSize: fontSize, weight: .semibold)]
+        let titleOffset = UIOffset(horizontal: 0, vertical: -5)
+        let appearance = UITabBarAppearance()
+        appearance.stackedLayoutAppearance.normal.titleTextAttributes = normalAttrs
+        appearance.stackedLayoutAppearance.normal.titlePositionAdjustment = titleOffset
+        appearance.stackedLayoutAppearance.selected.titleTextAttributes = selectedAttrs
+        appearance.stackedLayoutAppearance.selected.titlePositionAdjustment = titleOffset
+        tabBar.standardAppearance = appearance
 
         view.addSubview(tabBar)
         tabBar.translatesAutoresizingMaskIntoConstraints = false
@@ -542,6 +593,7 @@ private extension MainTabBarController {
             tabBar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             tabBar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             tabBar.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            tabBar.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -Self.tabBarHeight),
         ])
 
         nativeTabBar = tabBar

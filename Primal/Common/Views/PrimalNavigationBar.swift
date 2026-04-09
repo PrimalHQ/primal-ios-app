@@ -12,6 +12,8 @@ enum ChromeSize {
     case small, regular, medium, large
 
     static let current: ChromeSize = {
+        return .regular
+        
         let screenWidth = RootViewController.instance.view.frame.size.width
 
         if screenWidth < 380 { return .small }
@@ -115,6 +117,7 @@ final class PrimalNavigationBar: UIView, Themeable {
 
     func updateTheme() {
         backgroundColor = .background
+        border.backgroundColor = .background3
         titleLabel.textColor = .foreground
         subtitleLabel.textColor = .foreground5
         chevronView.image = UIImage(named: "navChevron")?.withTintColor(.foreground).withRenderingMode(.alwaysOriginal)
