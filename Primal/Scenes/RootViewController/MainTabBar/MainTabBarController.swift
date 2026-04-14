@@ -90,7 +90,6 @@ final class MainTabBarController: UIViewController, Themeable {
     
     private var nativeTabBar: UITabBar?
     private var collapsedTabBarButton: UIButton?
-    var onCollapsedTabBarTapped: (() -> Void)?
 
     var tabBarContainerView: UIView {
         if #available(iOS 26.0, *), let nativeTabBar { return nativeTabBar }
@@ -194,7 +193,20 @@ final class MainTabBarController: UIViewController, Themeable {
     }
     
     func setTabBarHidden(_ hidden: Bool, animated: Bool) {
+        let currentNav = navForTab(currentTab)
+        let collapsed = currentNav.viewControllers.count == 1
+        
+        if #available(iOS 26.0, *), collapsed {
+            if hidden {
+                setTabBarCollapsed(text: "Test", icon: .feedPicker, animated: animated)
+            } else {
+                setTabBarExpanded(animated: animated)
+            }
+            return
+        }
+    
         let targetView = tabBarContainerView
+        
         if !animated {
             targetView.transform = hidden ? .init(translationX: 0, y: targetView.bounds.height + 10) : .identity
             return
@@ -213,7 +225,7 @@ final class MainTabBarController: UIViewController, Themeable {
         } else {
             button = CollapsedTabBarButton()
             button.addAction(.init(handler: { [weak self] _ in
-                self?.onCollapsedTabBarTapped?()
+                self?.setTabBarExpanded(animated: true)
             }), for: .touchUpInside)
             view.addSubview(button)
             button.translatesAutoresizingMaskIntoConstraints = false
