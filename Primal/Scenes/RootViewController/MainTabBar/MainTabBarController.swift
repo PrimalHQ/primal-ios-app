@@ -237,28 +237,26 @@ final class MainTabBarController: UIViewController, Themeable {
                 }
             }), for: .touchUpInside)
             view.addSubview(button)
-            button.translatesAutoresizingMaskIntoConstraints = false
-            NSLayoutConstraint.activate([
-                button.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-                button.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -8),
-            ])
+            button.centerToSuperview(axis: .horizontal).pinToSuperview(edges: .bottom, padding: -8, safeArea: true)
             collapsedTabBarButton = button
         }
 
         button.configure(text: text, icon: icon)
         button.alpha = 0
-        button.transform = .init(translationX: 0, y: 40)
+        button.transform = .init(scaleX: 0.2, y: 0.2)
 
         let showCollapsed = {
             button.alpha = 1
             button.transform = .identity
         }
         let hideTabBar = { [self] in
-            tabBarContainerView.transform = .init(translationX: 0, y: tabBarContainerView.bounds.height + 10)
+            tabBarContainerView.alpha = 0
+            tabBarContainerView.transform = .init(scaleX: 0.2, y: 0.2)
+                .concatenating(.init(translationX: 0, y: tabBarContainerView.bounds.height / 2))
         }
 
         if animated {
-            UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 0.85, initialSpringVelocity: 0) {
+            UIView.animate(withDuration: 0.35, delay: 0, usingSpringWithDamping: 0.85, initialSpringVelocity: 0) {
                 hideTabBar()
                 showCollapsed()
             }
@@ -270,15 +268,16 @@ final class MainTabBarController: UIViewController, Themeable {
 
     func setTabBarExpanded(animated: Bool = true) {
         let showTabBar = { [self] in
+            tabBarContainerView.alpha = 1
             tabBarContainerView.transform = .identity
         }
         let hideCollapsed = { [self] in
             collapsedTabBarButton?.alpha = 0
-            collapsedTabBarButton?.transform = .init(translationX: 0, y: 40)
+            collapsedTabBarButton?.transform = .init(scaleX: 0.2, y: 0.2)
         }
 
         if animated {
-            UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 0.85, initialSpringVelocity: 0) {
+            UIView.animate(withDuration: 0.35, delay: 0, usingSpringWithDamping: 0.85, initialSpringVelocity: 0) {
                 showTabBar()
                 hideCollapsed()
             } completion: { [self] _ in
