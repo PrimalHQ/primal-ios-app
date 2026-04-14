@@ -89,6 +89,8 @@ final class MainTabBarController: UIViewController, Themeable {
     private let tabs: [MainTab] = [.home, .reads, .wallet, .notifications, .explore]
     
     private var nativeTabBar: UITabBar?
+    private var collapsedTabBarButton: UIButton?
+    var onCollapsedTabBarTapped: (() -> Void)?
 
     var tabBarContainerView: UIView {
         if #available(iOS 26.0, *), let nativeTabBar { return nativeTabBar }
@@ -203,6 +205,73 @@ final class MainTabBarController: UIViewController, Themeable {
         }
     }
     
+    @available(iOS 26.0, *)
+    func setTabBarCollapsed(text: String, icon: UIImage?, animated: Bool = true) {
+        let button: CollapsedTabBarButton
+        if let existing = collapsedTabBarButton as? CollapsedTabBarButton {
+            button = existing
+        } else {
+            button = CollapsedTabBarButton()
+            button.addAction(.init(handler: { [weak self] _ in
+                self?.onCollapsedTabBarTapped?()
+            }), for: .touchUpInside)
+            view.addSubview(button)
+            button.translatesAutoresizingMaskIntoConstraints = false
+            NSLayoutConstraint.activate([
+                button.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+                button.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -8),
+            ])
+            collapsedTabBarButton = button
+        }
+
+        button.configure(text: text, icon: icon)
+        button.alpha = 0
+        button.transform = .init(translationX: 0, y: 40)
+
+        let showCollapsed = {
+            button.alpha = 1
+            button.transform = .identity
+        }
+        let hideTabBar = { [self] in
+            tabBarContainerView.transform = .init(translationX: 0, y: tabBarContainerView.bounds.height + 10)
+        }
+
+        if animated {
+            UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 0.85, initialSpringVelocity: 0) {
+                hideTabBar()
+                showCollapsed()
+            }
+        } else {
+            hideTabBar()
+            showCollapsed()
+        }
+    }
+
+    func setTabBarExpanded(animated: Bool = true) {
+        let showTabBar = { [self] in
+            tabBarContainerView.transform = .identity
+        }
+        let hideCollapsed = { [self] in
+            collapsedTabBarButton?.alpha = 0
+            collapsedTabBarButton?.transform = .init(translationX: 0, y: 40)
+        }
+
+        if animated {
+            UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 0.85, initialSpringVelocity: 0) {
+                showTabBar()
+                hideCollapsed()
+            } completion: { [self] _ in
+                collapsedTabBarButton?.removeFromSuperview()
+                collapsedTabBarButton = nil
+            }
+        } else {
+            showTabBar()
+            hideCollapsed()
+            collapsedTabBarButton?.removeFromSuperview()
+            collapsedTabBarButton = nil
+        }
+    }
+
     func freezeNotificationCount() {
         notificationsFrozen = true
         if #available(iOS 26.0, *), let nativeTabBar {
