@@ -295,9 +295,9 @@ final class WalletManager {
         walletSessionProvider.setActiveUserId(userId: pubkey)
 
         Task {
-            // call ensure primal wallet exists will have no action if it shouldn't do anything
+            guard (try? await walletAccountRepo.getActiveWallet(userId: pubkey)) == nil else { return }
             _ = try? await EnsurePrimalWalletExistsUseCase(primalWalletAccountRepository: primalWalletRepo, walletAccountRepository: walletAccountRepo)
-                .invoke(userId: pubkey, setAsActive: false)
+                .invoke(userId: pubkey, setAsActive: true)
             await detectWalletSetupState(pubkey: pubkey)
         }
 
