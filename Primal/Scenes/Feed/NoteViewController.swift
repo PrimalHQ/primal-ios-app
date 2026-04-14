@@ -113,7 +113,7 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
     var adjustedTopBarHeight: CGFloat { topBarHeight }
     var barsMaxTransform: CGFloat { topBarHeight }
     var prevPosition: CGFloat = 0
-    var prevDelta: CGFloat = 0
+    var accumulatedDelta: CGFloat = 0
     var barsHidden: Bool = false
 
     var isVisibleOnScreen: Bool {
@@ -153,17 +153,8 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         let newPosition = scrollView.contentOffset.y
         let delta = newPosition - prevPosition
-        defer {
-            prevPosition = newPosition
-            prevDelta = delta
-        }
-
-        // We ignore the first update in the opposite direction to ignore the system updates when changing the layout
-        if prevDelta.sign != delta.sign { return }
-
-        // Aldo ignore if delta is larger than 150, it is usually a system update
-        if abs(delta) > 150 { return }
-
+        defer { prevPosition = newPosition }
+        
         if FullScreenVideoPlayerController.instance == nil && VideoPlaybackManager.instance.autoPlay {
             if abs(delta) > 50 {
                 VideoPlaybackManager.instance.currentlyPlayingFeedVideo?.delayedPause()
@@ -172,12 +163,27 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
             }
         }
 
+        // Ignore large system-driven jumps (layout changes, inset adjustments).
+        if abs(delta) > 150 || (delta.sign != accumulatedDelta.sign && accumulatedDelta != 0) {
+            accumulatedDelta = 0
+            return
+        }
+
         if newPosition <= 0 {
+            accumulatedDelta = 0
             updateBarsHidden(false)
-        } else if delta > 0 {
+            return
+        }
+
+        accumulatedDelta += delta
+
+        let threshold: CGFloat = 100
+        if accumulatedDelta > threshold {
             updateBarsHidden(true)
-        } else if delta < 0 {
+            accumulatedDelta = 0
+        } else if accumulatedDelta < -threshold {
             updateBarsHidden(false)
+            accumulatedDelta = 0
         }
     }
 
