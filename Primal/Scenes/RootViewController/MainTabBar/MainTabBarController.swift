@@ -227,7 +227,14 @@ final class MainTabBarController: UIViewController, Themeable {
         } else {
             button = CollapsedTabBarButton()
             button.addAction(.init(handler: { [weak self] _ in
-                self?.setTabBarExpanded(animated: true)
+                guard let self else { return }
+                let nav = navForTab(currentTab)
+                if let noteVC: NoteViewController = nav.topViewController?.findInChildren() ?? nav.topViewController as? NoteViewController {
+                    noteVC.table.setContentOffset(noteVC.table.contentOffset, animated: false)
+                    noteVC.updateBarsHidden(false)
+                } else {
+                    setTabBarExpanded(animated: true)
+                }
             }), for: .touchUpInside)
             view.addSubview(button)
             button.translatesAutoresizingMaskIntoConstraints = false
