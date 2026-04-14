@@ -144,9 +144,8 @@ class HomeFeedChildController: PostFeedViewController {
         parentHomeVC = parentHomeVC ?? findParent()
 
         let apply = { [self] in
-            parentHomeVC?.postButton.alpha = 1 - percent
             parentHomeVC?.postButton.transform = .init(scaleX: scale, y: scale).rotated(by: percent * .pi / 2)
-            parentHomeVC?.postButtonParent.transform = hidden ? .init(translationX: 0, y: barsMaxTransform) : .identity
+            parentHomeVC?.postButtonParent.transform = hidden ? .init(translationX: 0, y: 200) : .identity
 
             newPostsViewParent.transform = hidden ? .init(translationX: 0, y: -barsMaxTransform) : .identity
 

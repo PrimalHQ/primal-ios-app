@@ -194,25 +194,28 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
 
     /// Override point for subclasses. Applies the hidden/shown state to bars.
     func setBarsHidden(_ hidden: Bool, animated: Bool) {
-        let navTransform: CGAffineTransform = hidden ? .init(translationX: 0, y: -barsMaxTransform) : .identity
-        let tabTransform: CGAffineTransform = hidden ? .init(translationX: 0, y: barsMaxTransform) : .identity
+        mainTabBarController?.setTabBarHidden(hidden, animated: animated)
 
-        self.mainTabBarController?.setTabBarHidden(hidden, animated: animated)
-        
-        let apply = {
-            if let navBarVC: any PrimalNavigationBarController = self.findParent() {
-                navBarVC.primalNavigationBar.transform = navTransform
-                navBarVC.primalNavigationBar.alpha = hidden ? 0 : 1
-            } else {
-                self.navigationController?.navigationBar.transform = navTransform
+        if let navBarVC: any PrimalNavigationBarController = findParent() {
+            navBarVC.setNavigationBarHidden(hidden, animated: animated)
+        } else {
+            let navTransform: CGAffineTransform = hidden ? .init(translationX: 0, y: -barsMaxTransform) : .identity
+            let apply = { [self] in
+                navigationController?.navigationBar.transform = navTransform
             }
-            self.navigationBorder.transform = navTransform
+            if animated {
+                UIView.animate(withDuration: 0.3) { apply() }
+            } else {
+                apply()
+            }
         }
 
+        let borderTransform: CGAffineTransform = hidden ? .init(translationX: 0, y: -barsMaxTransform) : .identity
+        let applyBorder = { self.navigationBorder.transform = borderTransform }
         if animated {
-            UIView.animate(withDuration: 0.3, animations: apply)
+            UIView.animate(withDuration: 0.3, animations: applyBorder)
         } else {
-            apply()
+            applyBorder()
         }
     }
 

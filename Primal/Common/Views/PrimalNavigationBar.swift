@@ -26,10 +26,42 @@ protocol PrimalNavigationBarController: UIViewController {
     
 }
 
+private let navBarCoverViewTag = 94201
+
 extension PrimalNavigationBarController {
     func addNavigationBar() {
         view.addSubview(primalNavigationBar)
         primalNavigationBar.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .top, safeArea: true)
+
+        addNavBarCoverIfNeeded()
+    }
+
+    var navBarCoverView: UIView? { view.viewWithTag(navBarCoverViewTag) }
+
+    @discardableResult
+    func addNavBarCoverIfNeeded() -> UIView {
+        if let existing = navBarCoverView { return existing }
+
+        let cover = ThemeableView().setTheme { $0.backgroundColor = .background }
+        cover.tag = navBarCoverViewTag
+        view.addSubview(cover)
+        cover.pinToSuperview(edges: [.top, .horizontal])
+        cover.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
+        return cover
+    }
+
+    func setNavigationBarHidden(_ hidden: Bool, animated: Bool) {
+        addNavBarCoverIfNeeded()
+
+        let apply = { [self] in
+            primalNavigationBar.transform = hidden ? .init(translationX: 0, y: -PrimalNavigationBar.height) : .identity
+        }
+
+        if animated {
+            UIView.animate(withDuration: 0.3, animations: apply)
+        } else {
+            apply()
+        }
     }
 }
 
