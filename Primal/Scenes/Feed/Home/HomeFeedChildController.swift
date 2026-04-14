@@ -133,23 +133,32 @@ class HomeFeedChildController: PostFeedViewController {
     }
     
     weak var parentHomeVC: HomeFeedViewController?
-    override func setBarsToTransform(_ transform: CGFloat) {
+    override func setBarsHidden(_ hidden: Bool, animated: Bool) {
         guard view.window != nil else { return }
-        
-        super.setBarsToTransform(transform)
-        
-        let percent = abs(transform / barsMaxTransform)
-        let scale = 0.1 + ((1 - percent) * 0.9)  // when percent is 0 scale is 1, when percent is 1 scale is 0.1
+
+        super.setBarsHidden(hidden, animated: animated)
+
+        let percent: CGFloat = hidden ? 1 : 0
+        let scale = 0.1 + ((1 - percent) * 0.9)
 
         parentHomeVC = parentHomeVC ?? findParent()
-        parentHomeVC?.postButton.alpha = 1 - percent
-        parentHomeVC?.postButton.transform = .init(scaleX: scale, y: scale).rotated(by: percent * .pi / 2)
-        parentHomeVC?.postButtonParent.transform = .init(translationX: 0, y: -transform)
-        
-        newPostsViewParent.transform = .init(translationX: 0, y: transform)
-        
-        tabController?.indicatorStack.alpha = 1 - percent
-        tabController?.indicatorStack.transform = .init(translationX: 0, y: transform)
+
+        let apply = { [self] in
+            parentHomeVC?.postButton.alpha = 1 - percent
+            parentHomeVC?.postButton.transform = .init(scaleX: scale, y: scale).rotated(by: percent * .pi / 2)
+            parentHomeVC?.postButtonParent.transform = hidden ? .init(translationX: 0, y: barsMaxTransform) : .identity
+
+            newPostsViewParent.transform = hidden ? .init(translationX: 0, y: -barsMaxTransform) : .identity
+
+            tabController?.indicatorStack.alpha = 1 - percent
+            tabController?.indicatorStack.transform = hidden ? .init(translationX: 0, y: -barsMaxTransform) : .identity
+        }
+
+        if animated {
+            UIView.animate(withDuration: 0.3, animations: apply)
+        } else {
+            apply()
+        }
         
         if /*feed.newPosts.0 == 0 &&*/ table.contentOffset.y < 0 {
             newPostsViewParent.alpha = min((1 - (percent * 4)).clamped(to: 0...1), 1 - min(100, -2 * table.contentOffset.y) / 100)

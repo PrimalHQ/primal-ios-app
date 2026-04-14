@@ -106,15 +106,7 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
             VideoPlaybackManager.instance.currentlyPlaying?.delayedPause()
         }
         
-        if animated {
-            if prevTransform != 0 {
-                animateBarsToVisible()
-            }
-        } else {
-            if prevTransform != 0 {
-                setBarsToTransform(0)
-            }
-        }
+        updateBarsHidden(false, animated: animated)
     }
     
     var topBarHeight: CGFloat = 100
@@ -122,7 +114,7 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
     var barsMaxTransform: CGFloat { topBarHeight }
     var prevPosition: CGFloat = 0
     var prevDelta: CGFloat = 0
-    var prevTransform: CGFloat = 0
+    var barsHidden: Bool = false
 
     var isVisibleOnScreen: Bool {
         guard UIApplication.shared.applicationState == .active else { return false }
@@ -159,21 +151,19 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        return
-        
         let newPosition = scrollView.contentOffset.y
         let delta = newPosition - prevPosition
         defer {
             prevPosition = newPosition
             prevDelta = delta
         }
-        
+
         // We ignore the first update in the opposite direction to ignore the system updates when changing the layout
         if prevDelta.sign != delta.sign { return }
-        
+
         // Aldo ignore if delta is larger than 150, it is usually a system update
         if abs(delta) > 150 { return }
-        
+
         if FullScreenVideoPlayerController.instance == nil && VideoPlaybackManager.instance.autoPlay {
             if abs(delta) > 50 {
                 VideoPlaybackManager.instance.currentlyPlayingFeedVideo?.delayedPause()
@@ -181,62 +171,55 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
                 playVideoOnScroll()
             }
         }
-        
-        let theoreticalNewTransform = (prevTransform - delta).clamped(to: -barsMaxTransform...0)
-        let newTransform = newPosition <= -topBarHeight ? 0 : theoreticalNewTransform
-        
-        setBarsToTransform(newTransform)
+
+        if newPosition <= 0 {
+            updateBarsHidden(false)
+        } else if delta > 0 {
+            updateBarsHidden(true)
+        } else if delta < 0 {
+            updateBarsHidden(false)
+        }
     }
-    
-    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
-        if decelerate { return }
-        setBarsDependingOnPosition()
-    }
-    
-    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        setBarsDependingOnPosition()
-    }
-    
-    func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
-        setBarsDependingOnPosition()
-    }
-    
+
+    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) { }
+
+    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) { }
+
+    func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) { }
+
     func scrollViewShouldScrollToTop(_ scrollView: UIScrollView) -> Bool {
-        animateBarsToVisible()
+        updateBarsHidden(false)
         return true
     }
-    
-    func setBarsToTransform(_ transform: CGFloat) {
-        prevTransform = transform
-        if let navBarVC: any PrimalNavigationBarController = findParent() {
-            navBarVC.primalNavigationBar.transform = .init(translationX: 0, y: transform)
+
+    /// Override point for subclasses. Applies the hidden/shown state to bars.
+    func setBarsHidden(_ hidden: Bool, animated: Bool) {
+        let navTransform: CGAffineTransform = hidden ? .init(translationX: 0, y: -barsMaxTransform) : .identity
+        let tabTransform: CGAffineTransform = hidden ? .init(translationX: 0, y: barsMaxTransform) : .identity
+
+        self.mainTabBarController?.setTabBarHidden(hidden, animated: animated)
+        
+        let apply = {
+            if let navBarVC: any PrimalNavigationBarController = self.findParent() {
+                navBarVC.primalNavigationBar.transform = navTransform
+                navBarVC.primalNavigationBar.alpha = hidden ? 0 : 1
+            } else {
+                self.navigationController?.navigationBar.transform = navTransform
+            }
+            self.navigationBorder.transform = navTransform
+        }
+
+        if animated {
+            UIView.animate(withDuration: 0.3, animations: apply)
         } else {
-            navigationController?.navigationBar.transform = .init(translationX: 0, y: transform)
-        }
-        navigationBorder.transform = .init(translationX: 0, y: transform)
-        mainTabBarController?.tabBarContainerView.transform = .init(translationX: 0, y: -transform)
-    }
-    
-    func animateBarsToTransform(_ transform: CGFloat) {
-        UIView.animate(withDuration: 0.2) {
-            self.setBarsToTransform(transform)
+            apply()
         }
     }
-    
-    func animateBarsToVisible() {
-        animateBarsToTransform(0)
-    }
-    
-    func animateBarsToInvisible() {
-        animateBarsToTransform(-barsMaxTransform)
-    }
-    
-    func setBarsDependingOnPosition() {
-        if prevTransform < -(barsMaxTransform / 2) && table.contentOffset.y > 0 {
-            animateBarsToInvisible()
-        } else {
-            animateBarsToVisible()
-        }
+
+    func updateBarsHidden(_ hidden: Bool, animated: Bool = true) {
+        guard barsHidden != hidden else { return }
+        barsHidden = hidden
+        setBarsHidden(hidden, animated: animated)
     }
     
     @discardableResult
@@ -569,7 +552,7 @@ private extension NoteViewController {
                 
                 if self.navigationController?.topViewController?.isParent(self) != true { return }
                     
-                self.animateBarsToVisible()
+                self.updateBarsHidden(false)
             }
         }
         

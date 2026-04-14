@@ -193,17 +193,25 @@ final class ProfileViewController: PostFeedViewController, ArticleCellController
         navigationBar.updateSize(offest - navigationBar.maxSize)
     }
     
-    override func setBarsToTransform(_ transform: CGFloat) {
-        super.setBarsToTransform(transform)
-        
-        navigationBar.transform = .init(translationX: 0, y: transform)
-        
-        let percent = abs(transform / barsMaxTransform)
-        let scale = 0.1 + ((1 - percent) * 0.9)  // when percent is 0 scale is 1, when percent is 1 scale is 0.1
+    override func setBarsHidden(_ hidden: Bool, animated: Bool) {
+        super.setBarsHidden(hidden, animated: animated)
 
-        postButton.alpha = 1 - percent
-        postButton.transform = .init(scaleX: scale, y: scale).rotated(by: percent * .pi / 2)
-        postButtonParent.transform = .init(translationX: 0, y: -transform)
+        let percent: CGFloat = hidden ? 1 : 0
+        let scale = 0.1 + ((1 - percent) * 0.9)
+
+        let apply = { [self] in
+            navigationBar.transform = hidden ? .init(translationX: 0, y: -barsMaxTransform) : .identity
+
+            postButton.alpha = 1 - percent
+            postButton.transform = .init(scaleX: scale, y: scale).rotated(by: percent * .pi / 2)
+            postButtonParent.transform = hidden ? .init(translationX: 0, y: barsMaxTransform) : .identity
+        }
+
+        if animated {
+            UIView.animate(withDuration: 0.3, animations: apply)
+        } else {
+            apply()
+        }
     }
 }
 

@@ -59,7 +59,7 @@ class HighlightCommentsController: NoteViewController {
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
-    override func setBarsToTransform(_ transform: CGFloat) { return }
+    override func setBarsHidden(_ hidden: Bool, animated: Bool) { }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) { /* NO ACTION */ }
     

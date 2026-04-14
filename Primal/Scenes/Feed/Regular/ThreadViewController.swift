@@ -231,15 +231,23 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
         replyingToLabel.attributedText = replyToString(name: post.user.data.name)
     }
     
-    override func setBarsToTransform(_ transform: CGFloat) {
-        var transform = transform
-        if (!didMoveToMain && mainPositionInThread != 0) || posts.count < 10 /*|| inputManager.isEditing*/ {
-            transform = 0
+    override func setBarsHidden(_ hidden: Bool, animated: Bool) {
+        var hidden = hidden
+        if (!didMoveToMain && mainPositionInThread != 0) || posts.count < 10 {
+            hidden = false
         }
-        
-        super.setBarsToTransform(transform)
-        
-        inputParent.transform = .init(translationX: 0, y: -transform)
+
+        super.setBarsHidden(hidden, animated: animated)
+
+        let apply = { [self] in
+            inputParent.transform = hidden ? .init(translationX: 0, y: barsMaxTransform) : .identity
+        }
+
+        if animated {
+            UIView.animate(withDuration: 0.3, animations: apply)
+        } else {
+            apply()
+        }
     }
     
     var wasDragged = false

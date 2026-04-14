@@ -23,6 +23,7 @@ enum ChromeSize {
 
 protocol PrimalNavigationBarController: UIViewController {
     var primalNavigationBar: PrimalNavigationBar { get }
+    
 }
 
 extension PrimalNavigationBarController {

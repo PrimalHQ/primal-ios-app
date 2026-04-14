@@ -33,8 +33,6 @@ final class HomeFeedViewController: UIViewController, Themeable, PrimalNavigatio
     let postButtonParent = UIView()
     let postButton = NewPostButton()
 
-    lazy var navTitleView = DropdownNavigationView(title: "Latest")
-
     let pageVC = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal, options: nil)
 
     var cancellables: Set<AnyCancellable> = []
@@ -78,7 +76,6 @@ final class HomeFeedViewController: UIViewController, Themeable, PrimalNavigatio
 
         pageVC.dataSource = self
         pageVC.delegate = self
-        view.addGestureRecognizer(DropdownNavigationViewGesture(vc: self))
 
         addNavigationBar()
         primalNavigationBar.showChevron = true
@@ -121,8 +118,6 @@ final class HomeFeedViewController: UIViewController, Themeable, PrimalNavigatio
     }
     
     func updateTitle() {
-        navTitleView.title = currentFeed.name
-        navTitleView.updateTheme()
         primalNavigationBar.title = currentFeed.name
         primalNavigationBar.subtitle = currentFeed.description
     }
@@ -137,7 +132,6 @@ final class HomeFeedViewController: UIViewController, Themeable, PrimalNavigatio
     private var cachedFeedToRight: PrimalFeed?
     func setFeed(_ feed: PrimalFeed) {
         currentFeed = feed
-        navTitleView.title = feed.name
         primalNavigationBar.title = feed.name
         primalNavigationBar.subtitle = feed.description
         pageVC.setViewControllers([HomeFeedChildController(feed: .init(newFeed: feed))], direction: .forward, animated: false)
@@ -193,7 +187,6 @@ extension HomeFeedViewController: UIPageViewControllerDataSource {
 extension HomeFeedViewController: UIPageViewControllerDelegate {
     func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {
         guard completed else {
-            navTitleView.cancelTransition()
             return
         }
         
@@ -204,22 +197,9 @@ extension HomeFeedViewController: UIPageViewControllerDelegate {
             let feed = allFeeds.first(where: { $0.hasEqualSpec(articleFeed.feed.newFeed) })
         else { return }
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
-            self.navTitleView.completeTransition(newTitle: feed.name)
-        }
         currentFeed = feed
         primalNavigationBar.title = feed.name
         primalNavigationBar.subtitle = feed.description
-    }
-}
-
-extension HomeFeedViewController: DropdownNavigationViewGestureController {
-    func feedNameLeftOfCurrentFeed() -> String? {
-        feedToLeftOfCurrentFeed()?.name
-    }
-    
-    func feedNameRightOfCurrentFeed() -> String? {
-        feedToRightOfCurrentFeed()?.name
     }
 }
 

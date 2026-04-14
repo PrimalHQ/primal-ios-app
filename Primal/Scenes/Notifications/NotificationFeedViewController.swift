@@ -249,7 +249,7 @@ final class NotificationFeedViewController: NoteViewController {
             .store(in: &cancellables)
     }
     
-    override func setBarsToTransform(_ transform: CGFloat) { }
+    override func setBarsHidden(_ hidden: Bool, animated: Bool) { }
     
     override func performEvent(_ event: PostCellEvent, withPost post: ParsedContent, inCell cell: UITableViewCell?) {
         switch event {
