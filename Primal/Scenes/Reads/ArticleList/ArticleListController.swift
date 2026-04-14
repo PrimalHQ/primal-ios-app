@@ -79,7 +79,7 @@ private extension ArticleListController {
         view.addSubview(table)
         table
             .pinToSuperview(edges: .horizontal)
-            .pinToSuperview(edges: .top, padding: 6, safeArea: true)
+            .pinToSuperview(edges: .top, padding: PrimalNavigationBar.height + 6, safeArea: true)
             .pinToSuperview(edges: .bottom, padding: 48, safeArea: true)
         table.dataSource = self
         table.delegate = self

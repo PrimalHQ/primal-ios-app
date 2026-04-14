@@ -547,7 +547,7 @@ private extension NoteViewController {
         DispatchQueue.main.async {
             let hasPrimalNavBar: Bool = (self.findParent() as (any PrimalNavigationBarController)?) != nil
             if hasPrimalNavBar {
-                self.topBarHeight = 64 - 12 // table starts at safe area, only need PrimalNavigationBar height
+                self.topBarHeight = PrimalNavigationBar.height - 4 // table starts at safe area, only need PrimalNavigationBar height
             } else {
                 self.topBarHeight = RootViewController.instance.view.safeAreaInsets.top + 50 - 12 // 50 is nav bar height without safe area
             }
