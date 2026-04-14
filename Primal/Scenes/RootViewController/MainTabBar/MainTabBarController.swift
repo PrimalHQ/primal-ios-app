@@ -198,7 +198,9 @@ final class MainTabBarController: UIViewController, Themeable {
         
         if #available(iOS 26.0, *), collapsed {
             if hidden {
-                setTabBarCollapsed(text: "Test", icon: .feedPicker, animated: animated)
+                let rootVC = currentNav.viewControllers.first as? MainTabBarRootViewController
+                let title = rootVC?.collapsedTabBarTitle ?? currentTab.tabTitle
+                setTabBarCollapsed(text: title, icon: currentTab.tabImage, animated: animated)
             } else {
                 setTabBarExpanded(animated: animated)
             }
