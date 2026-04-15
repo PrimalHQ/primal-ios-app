@@ -52,8 +52,7 @@ final class MainTabBarController: UIViewController, Themeable {
     lazy var indicatorStack = UIStackView(axis: .vertical, [noConnectionView, remoteSignerView])
     
     lazy var buttons = tabs.map { _ in UIButton() }
-    let notificationIndicator = NotificationsIndicator()
-    
+
     private let buttonStackParent = UIView()
     private(set) lazy var vStack = UIStackView(arrangedSubviews: [navigationBorder, buttonStackParent, safeAreaSpacer])
     private let safeAreaSpacer = UIView()
@@ -107,11 +106,11 @@ final class MainTabBarController: UIViewController, Themeable {
         didSet {
             if notificationsFrozen || newNotifications == oldValue { return }
 
-            if #available(iOS 26.0, *), let nativeTabBar {
-                nativeTabBar.items?[safe: 3]?.badgeValue = newNotifications > 0 ? "\(newNotifications)" : nil
+            if #available(iOS 26.0, *), nativeTabBar != nil {
+                updateNativeNotificationsTabItemImage()
                 return
             }
-            notificationIndicator.isHidden = newNotifications < 1
+            updateNotificationsTabButtonImage()
         }
     }
 
@@ -150,7 +149,7 @@ final class MainTabBarController: UIViewController, Themeable {
     var runOnce = true
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
+
         guard runOnce else { return }
         runOnce = false
         let userId = IdentityManager.instance.userHexPubkey
@@ -179,6 +178,7 @@ final class MainTabBarController: UIViewController, Themeable {
         if #available(iOS 26.0, *), let nativeTabBar {
             nativeTabBar.tintColor = .foreground
             nativeTabBar.unselectedItemTintColor = .foreground.withAlphaComponent(0.75)
+            updateNativeNotificationsTabItemImage()
         }
 
         updateButtons()
@@ -294,18 +294,18 @@ final class MainTabBarController: UIViewController, Themeable {
 
     func freezeNotificationCount() {
         notificationsFrozen = true
-        if #available(iOS 26.0, *), let nativeTabBar {
-            nativeTabBar.items?[safe: 3]?.badgeValue = nil
+        if #available(iOS 26.0, *), nativeTabBar != nil {
+            updateNativeNotificationsTabItemImage(showingDot: false)
         } else {
-            notificationIndicator.isHidden = true
+            updateNotificationsTabButtonImage(showingDot: false)
         }
         DispatchQueue.main.asyncAfter(deadline: .now() + 5) { [weak self] in
             guard let self else { return }
             notificationsFrozen = false
-            if #available(iOS 26.0, *), let nativeTabBar {
-                nativeTabBar.items?[safe: 3]?.badgeValue = newNotifications > 0 ? "\(newNotifications)" : nil
+            if #available(iOS 26.0, *), nativeTabBar != nil {
+                updateNativeNotificationsTabItemImage()
             } else {
-                notificationIndicator.isHidden = newNotifications < 1
+                updateNotificationsTabButtonImage()
             }
         }
     }
@@ -640,33 +640,35 @@ private extension MainTabBarController {
         }
     }()
 
-    private static let tabBarIconSize: CGFloat = {
-        switch ChromeSize.current {
-        case .small:    return 24
-        case .regular:  return 28
-        case .medium:   return 28
-        case .large:    return 30
-        }
-    }()
+    @available(iOS 26.0, *)
+    private func nativeTabBarImage(_ image: UIImage?) -> UIImage? {
+        image?.scalePreservingAspectRatio(size: NotificationsTabIconComposer.iconSize)
+            .withRenderingMode(.alwaysTemplate)
+            .withAlignmentRectInsets(.init(
+                top: NotificationsTabIconComposer.nativeTabBarImageYOffset,
+                left: 0,
+                bottom: -NotificationsTabIconComposer.nativeTabBarImageYOffset,
+                right: 0))
+    }
 
     @available(iOS 26.0, *)
     func setupNativeTabBar() {
-        let iconSize = Self.tabBarIconSize
         let tabBar = UITabBar()
         tabBar.delegate = self
         tabBar.items = tabs.enumerated().map { index, tab in
-            let imageYOffset: CGFloat = {
-                switch ChromeSize.current {
-                case .small:    return 5
-                case .large:    return 1
-                default:        return 2
-                }
-            }()
-            
-            let image = tab.tabImage?.scalePreservingAspectRatio(size: iconSize).withRenderingMode(.alwaysTemplate)
-                .withAlignmentRectInsets(.init(top: imageYOffset, left: 0, bottom: -imageYOffset, right: 0))
-            let selectedImage = tab.selectedTabImage?.scalePreservingAspectRatio(size: iconSize).withRenderingMode(.alwaysTemplate)
-                .withAlignmentRectInsets(.init(top: imageYOffset, left: 0, bottom: -imageYOffset, right: 0))
+            let isNotifications = tab == .notifications
+            let showingDot = isNotifications && newNotifications > 0
+            let image: UIImage?
+            let selectedImage: UIImage?
+            if showingDot {
+                image = NotificationsTabIconComposer.composedIcon(
+                    tint: .foreground.withAlphaComponent(0.75), forNativeBar: true)
+                selectedImage = NotificationsTabIconComposer.composedIcon(
+                    tint: .foreground, forNativeBar: true)
+            } else {
+                image = nativeTabBarImage(tab.tabImage)
+                selectedImage = nativeTabBarImage(tab.selectedTabImage)
+            }
             let item = UITabBarItem(title: tab.tabTitle, image: image, tag: index)
             item.selectedImage = selectedImage
             return item
@@ -714,6 +716,23 @@ private extension MainTabBarController {
         nativeTabBar = tabBar
     }
 
+    @available(iOS 26.0, *)
+    private func updateNativeNotificationsTabItemImage(showingDot: Bool? = nil) {
+        guard let tabBar = nativeTabBar,
+              let item = tabBar.items?[safe: 3] else { return }
+        let dotVisible = showingDot ?? (newNotifications > 0)
+        if dotVisible {
+            item.image = NotificationsTabIconComposer.composedIcon(
+                tint: .foreground.withAlphaComponent(0.75), forNativeBar: true)
+            item.selectedImage = NotificationsTabIconComposer.composedIcon(
+                tint: .foreground, forNativeBar: true)
+        } else {
+            item.image = nativeTabBarImage(MainTab.notifications.tabImage)
+            item.selectedImage = nativeTabBarImage(MainTab.notifications.selectedTabImage)
+        }
+    }
+
+
     func setupCustomTabBar() {
         view.addSubview(vStack)
         vStack.pinToSuperview(edges: [.bottom, .horizontal])
@@ -729,13 +748,6 @@ private extension MainTabBarController {
             .pinToSuperview(edges: .bottom, padding: -8)
             .constrainToSize(height: 56)
         buttonStack.distribution = .fillEqually
-
-        buttonStack.addSubview(notificationIndicator)
-
-        if let imageView = buttons.dropLast().last?.imageView {
-            notificationIndicator.pin(to: imageView, edges: [.top, .trailing], padding: -4)
-        }
-        notificationIndicator.isHidden = true
 
         vStack.axis = .vertical
     }
@@ -770,8 +782,31 @@ private extension MainTabBarController {
         for (index, button) in buttons.enumerated() {
             button.tintColor = index == currentPageIndex ? .foreground : .foreground3
 
-            button.setImage(index == currentPageIndex ? tabs[index].selectedTabImage : tabs[index].tabImage, for: .normal)
+            let tab = tabs[index]
+            let selected = index == currentPageIndex
+            let image: UIImage? = (tab == .notifications)
+                ? imageForNotificationsTab(selected: selected, showingDot: newNotifications > 0)
+                : (selected ? tab.selectedTabImage : tab.tabImage)
+            button.setImage(image, for: .normal)
         }
+    }
+
+    private func imageForNotificationsTab(selected: Bool, showingDot: Bool) -> UIImage? {
+        if showingDot {
+            return NotificationsTabIconComposer.composedIcon(
+                tint: selected ? .foreground : .foreground3, forNativeBar: false)
+        }
+        return selected ? MainTab.notifications.selectedTabImage : MainTab.notifications.tabImage
+    }
+
+    private func updateNotificationsTabButtonImage(showingDot: Bool? = nil) {
+        guard let index = tabs.firstIndex(of: .notifications),
+              let button = buttons[safe: index] else { return }
+        let dotVisible = showingDot ?? (newNotifications > 0)
+        button.setImage(
+            imageForNotificationsTab(selected: index == currentPageIndex, showingDot: dotVisible),
+            for: .normal
+        )
     }
 
     func menuButtonPressedForTab(_ tab: MainTab) {
@@ -877,29 +912,3 @@ final class NumberedNotificationIndicator: UIView, Themeable {
     }
 }
 
-final class NotificationsIndicator: UIView, Themeable {
-    private let innerCircleView = UIView()
-    
-    init() {
-        super.init(frame: .zero)
-     
-        constrainToSize(11)
-        
-        addSubview(innerCircleView)
-        innerCircleView.constrainToSize(8).centerToSuperview()
-        
-        layer.cornerRadius = 5.5
-        innerCircleView.layer.cornerRadius = 4
-        
-        updateTheme()
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    func updateTheme() {
-        backgroundColor = .background
-        innerCircleView.backgroundColor = .accent
-    }
-}
