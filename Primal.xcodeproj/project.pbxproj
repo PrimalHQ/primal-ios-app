@@ -116,8 +116,6 @@
 		9E69249E2A02830100CAC54C /* HomeFeedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E69249D2A02830100CAC54C /* HomeFeedViewController.swift */; };
 		9E6924A02A02838D00CAC54C /* ThreadViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E69249F2A02838D00CAC54C /* ThreadViewController.swift */; };
 		9E6924A42A02925F00CAC54C /* MainTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E6924A32A02925F00CAC54C /* MainTabBarController.swift */; };
-		C0LLAP5ED1AB8A7B00000001 /* CollapsedTabBarButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0LLAP5ED1AB8A7B00000002 /* CollapsedTabBarButton.swift */; };
-		D1A2B3C4E5F6071800000001 /* MainTabBarRootViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A2B3C4E5F6071800000002 /* MainTabBarRootViewController.swift */; };
 		9E6B38C929F937B100144073 /* LinkableLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E6B38C829F937B100144073 /* LinkableLabel.swift */; };
 		9E6B38CB29F9487F00144073 /* Request.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E6B38CA29F9487F00144073 /* Request.swift */; };
 		9E6B38CE29F954D500144073 /* RootViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E6B38CD29F954D500144073 /* RootViewController.swift */; };
@@ -735,6 +733,7 @@
 		B9FAC64E2D395D5F00B57EF6 /* FeedElementMusicPreviewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9FAC64D2D395D5F00B57EF6 /* FeedElementMusicPreviewCell.swift */; };
 		B9FAC6582D42B53A00B57EF6 /* SettingsWalletNWCController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9FAC6572D42B53A00B57EF6 /* SettingsWalletNWCController.swift */; };
 		B9FAC65B2D42C5FA00B57EF6 /* SettingsNewNWCController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9FAC65A2D42C5FA00B57EF6 /* SettingsNewNWCController.swift */; };
+		C0LLAP5ED1AB8A7B00000001 /* CollapsedTabBarButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0LLAP5ED1AB8A7B00000002 /* CollapsedTabBarButton.swift */; };
 		C1A2B3D4E5F6A7B8C9D0E1F3 /* ThreadLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1A2B3D4E5F6A7B8C9D0E1F2 /* ThreadLayout.swift */; };
 		C1A3B7E82F3A1D0100ABCDEF /* WalletPickerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1A3B7E72F3A1D0100ABCDEF /* WalletPickerController.swift */; };
 		C1AF0077EAB9C68DF1F2B816 /* PrimalScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AF0E693616ED45B0E46466 /* PrimalScheme.swift */; };
@@ -742,6 +741,7 @@
 		C1AF0E7F59461BB9839F1D44 /* NostrScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AF0C03B5BEAE4C6902AD25 /* NostrScheme.swift */; };
 		C7F8A2B3D4E5061798A3B1C2 /* PrimalPremiumLogoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7F8A2B3D4E5061798A3B1C3 /* PrimalPremiumLogoView.swift */; };
 		D1A1B1C1D1E1F1A1B1C1D1E2 /* MainThreadElementTextCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A1B1C1D1E1F1A1B1C1D1E1 /* MainThreadElementTextCell.swift */; };
+		D1A2B3C4E5F6071800000001 /* MainTabBarRootViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A2B3C4E5F6071800000002 /* MainTabBarRootViewController.swift */; };
 		D2A2B2C2D2E2F2A2B2C2D2E2 /* MainThreadElementReactionsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A2B2C2D2E2F2A2B2C2D2E1 /* MainThreadElementReactionsCell.swift */; };
 		D2B3C4E5F6A7089012345679 /* CacheBreakdownView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2B3C4E5F6A7089012345678 /* CacheBreakdownView.swift */; };
 		D3A3B3C3D3E3F3A3B3C3D3E2 /* MainThreadElementSmallZapGalleryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3A3B3C3D3E3F3A3B3C3D3E1 /* MainThreadElementSmallZapGalleryCell.swift */; };
@@ -957,8 +957,6 @@
 		9E69249D2A02830100CAC54C /* HomeFeedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeFeedViewController.swift; sourceTree = "<group>"; };
 		9E69249F2A02838D00CAC54C /* ThreadViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadViewController.swift; sourceTree = "<group>"; };
 		9E6924A32A02925F00CAC54C /* MainTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabBarController.swift; sourceTree = "<group>"; };
-		C0LLAP5ED1AB8A7B00000002 /* CollapsedTabBarButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollapsedTabBarButton.swift; sourceTree = "<group>"; };
-		D1A2B3C4E5F6071800000002 /* MainTabBarRootViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabBarRootViewController.swift; sourceTree = "<group>"; };
 		9E6B38C829F937B100144073 /* LinkableLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkableLabel.swift; sourceTree = "<group>"; };
 		9E6B38CA29F9487F00144073 /* Request.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Request.swift; sourceTree = "<group>"; };
 		9E6B38CD29F954D500144073 /* RootViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootViewController.swift; sourceTree = "<group>"; };
@@ -1566,6 +1564,7 @@
 		B9FAC6572D42B53A00B57EF6 /* SettingsWalletNWCController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsWalletNWCController.swift; sourceTree = "<group>"; };
 		B9FAC65A2D42C5FA00B57EF6 /* SettingsNewNWCController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsNewNWCController.swift; sourceTree = "<group>"; };
 		BD61E893F7939D2AC33A6A4C /* GenerateAmountsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenerateAmountsTests.swift; sourceTree = "<group>"; };
+		C0LLAP5ED1AB8A7B00000002 /* CollapsedTabBarButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollapsedTabBarButton.swift; sourceTree = "<group>"; };
 		C1A2B3D4E5F6A7B8C9D0E1F2 /* ThreadLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadLayout.swift; sourceTree = "<group>"; };
 		C1A3B7E72F3A1D0100ABCDEF /* WalletPickerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletPickerController.swift; sourceTree = "<group>"; };
 		C1A609C097C4C1C66B1ED84C /* RemoteSignerSignInViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSignerSignInViews.swift; sourceTree = "<group>"; };
@@ -1574,6 +1573,7 @@
 		C1AF0E693616ED45B0E46466 /* PrimalScheme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PrimalScheme.swift; sourceTree = "<group>"; };
 		C7F8A2B3D4E5061798A3B1C3 /* PrimalPremiumLogoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimalPremiumLogoView.swift; sourceTree = "<group>"; };
 		D1A1B1C1D1E1F1A1B1C1D1E1 /* MainThreadElementTextCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainThreadElementTextCell.swift; sourceTree = "<group>"; };
+		D1A2B3C4E5F6071800000002 /* MainTabBarRootViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabBarRootViewController.swift; sourceTree = "<group>"; };
 		D2A2B2C2D2E2F2A2B2C2D2E1 /* MainThreadElementReactionsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainThreadElementReactionsCell.swift; sourceTree = "<group>"; };
 		D2B3C4E5F6A7089012345678 /* CacheBreakdownView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheBreakdownView.swift; sourceTree = "<group>"; };
 		D3A3B3C3D3E3F3A3B3C3D3E1 /* MainThreadElementSmallZapGalleryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainThreadElementSmallZapGalleryCell.swift; sourceTree = "<group>"; };
@@ -4968,7 +4968,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.5.1;
+				MARKETING_VERSION = 3.5.2;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -5017,7 +5017,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.5.1;
+				MARKETING_VERSION = 3.5.2;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
