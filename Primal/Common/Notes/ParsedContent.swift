@@ -204,59 +204,15 @@ extension ParsedContent {
     }
     
     func contentStringForText(text: String, style: ParsedContentTextStyle = .regular) -> NSAttributedString {
-        let specialStyle: Bool = ContentDisplaySettings.hugeFonts && {
-            switch style {
-            case .threadChildren, .notifications, .embedded:
-                return false
-            default:
-                break
-            }
-            
-            if !highlights.isEmpty {
-                let highlightLengthCount = highlights.reduce(0, { $0 + $1.length })
-                
-                if text.count - highlightLengthCount > 42 {
-                    return false
-                }
-                return text.filter({ $0.isNewline }).count < 2
-            }
-            
-            if text.count > 42 {
-                return false
-            }
-            
-            return !text.contains(where: { $0.isNewline })
-        }()
-        
         let fs = FontSizeSelection.current
         let paragraph = NSMutableParagraphStyle()
-        
-        var fontSize = style.fontSize
-        if specialStyle {
-            switch FontSizeSelection.current {
-            case .small:
-                fontSize = 20
-                paragraph.maximumLineHeight = 25
-            case .standard:
-                fontSize = 21
-                paragraph.maximumLineHeight = 26
-            case .large:
-                fontSize = 24
-                paragraph.maximumLineHeight = 28
-            case .huge:
-                fontSize = 26
-                paragraph.maximumLineHeight = 30
-            }
-        } else {
-            paragraph.lineSpacing = fs.contentLineSpacing
-            paragraph.maximumLineHeight = style.maximumLineHeight
-        }
-        
+        paragraph.lineSpacing = fs.contentLineSpacing
+        paragraph.maximumLineHeight = style.maximumLineHeight
+
         let result = NSMutableAttributedString(string: text, attributes: [
             .foregroundColor: style.color,
-            .font: UIFont.appFont(withSize: fontSize, weight: .regular),
-            .paragraphStyle: paragraph,
-            .baselineOffset: specialStyle ? 4 : 0
+            .font: UIFont.appFont(withSize: style.fontSize, weight: .regular),
+            .paragraphStyle: paragraph
         ])
         
         for element in httpUrls where element.position + element.length <= result.length {

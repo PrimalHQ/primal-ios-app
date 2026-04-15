@@ -68,8 +68,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             .autoPlayVideosKey: true,
             .animatedAvatarsKey: true,
             .fullScreenFeedKey: false,
-            .autoDarkModeKey: true,
-            .hugeFontKey: true
+            .autoDarkModeKey: true
         ])
         
         // Delete in 2027
