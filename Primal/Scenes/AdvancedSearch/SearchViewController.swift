@@ -90,7 +90,7 @@ private extension SearchViewController {
     
     func setup() {
         navigationItem.titleView = searchView
-        navigationItem.rightBarButtonItem = .init(customView: configButton)
+        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: configButton).hidingGlassBackground()
         updateTheme()
         setBindings()
         

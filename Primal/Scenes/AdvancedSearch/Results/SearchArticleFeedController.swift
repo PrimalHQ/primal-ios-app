@@ -37,7 +37,7 @@ class SearchArticleFeedController: ArticleFeedViewController {
         
         table.register(SearchPremiumCell.self, forCellReuseIdentifier: "premiumCell")
         
-        navigationItem.rightBarButtonItem = .init(customView: saveButton)
+        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: saveButton).hidingGlassBackground()
         updateSaveButton()
         
         view.addSubview(navigationBorder)

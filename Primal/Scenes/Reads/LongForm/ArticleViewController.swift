@@ -190,7 +190,10 @@ private extension ArticleViewController {
     
     func setup() {
         updateTheme()
-        navigationItem.rightBarButtonItems = [.init(customView: threeDotsButton), .init(customView: bookmarkNavButton)]
+        navigationItem.rightBarButtonItems = [
+            UIBarButtonItem(customView: threeDotsButton).hidingGlassBackground(),
+            UIBarButtonItem(customView: bookmarkNavButton).hidingGlassBackground()
+        ]
         threeDotsButton.setImage(.init(named: "threeDots"), for: .normal)
         threeDotsButton.showsMenuAsPrimaryAction = true
         updateMenu()

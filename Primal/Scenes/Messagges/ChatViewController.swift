@@ -287,7 +287,7 @@ private extension ChatViewController {
         imageView.centerToSuperview()
         parent.addSubview(button)
         button.pinToSuperview()
-        return .init(customView: parent)
+        return UIBarButtonItem(customView: parent).hidingGlassBackground()
     }
     
     @objc func inputSwippedDown() {

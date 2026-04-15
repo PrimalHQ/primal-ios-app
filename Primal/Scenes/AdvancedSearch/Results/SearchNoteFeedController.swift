@@ -55,7 +55,7 @@ class SearchNoteFeedController: NoteFeedViewController {
             }
         }), for: .touchUpInside)
         
-        navigationItem.rightBarButtonItem = .init(customView: saveButton)
+        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: saveButton).hidingGlassBackground()
         updateSaveButton()
         
         navigationBorder.removeConstraints(navigationBorder.constraints)

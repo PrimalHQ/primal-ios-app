@@ -7,6 +7,16 @@
 
 import UIKit
 
+extension UIBarButtonItem {
+    @discardableResult
+    func hidingGlassBackground() -> UIBarButtonItem {
+        if #available(iOS 26.0, *) {
+            hidesSharedBackground = true
+        }
+        return self
+    }
+}
+
 extension UIViewController {
     var mainTabBarController: MainTabBarController? {
         parent as? MainTabBarController ?? parent?.mainTabBarController
@@ -56,7 +66,7 @@ extension UIViewController {
             }
             nav.popViewController(animated: true)
         }), for: .touchUpInside)
-        return UIBarButtonItem(customView: button)
+        return UIBarButtonItem(customView: button).hidingGlassBackground()
     }
     
     func customSearchButton(scope: SearchScope = .global, type: SearchType = .notes) -> UIBarButtonItem {
@@ -71,13 +81,13 @@ extension UIViewController {
         button.addAction(.init(handler: { [weak self] _ in
             self?.navigationController?.fadeTo(SearchViewController(scope: scope, type: type))
         }), for: .touchUpInside)
-        return .init(customView: view)
+        return UIBarButtonItem(customView: view).hidingGlassBackground()
     }
-    
+
     func backButtonWithColor(_ color: UIColor) -> UIBarButtonItem {
         let button = backButtonWithColorNoAction(color)
         button.addTarget(self, action: #selector(backButtonPressed), for: .touchUpInside)
-        return UIBarButtonItem(customView: button)
+        return UIBarButtonItem(customView: button).hidingGlassBackground()
     }
     
     func backButtonWithColorNoAction(_ color: UIColor) -> UIButton {
@@ -94,7 +104,7 @@ extension UIViewController {
         button.setImage(image, for: .normal)
         button.addTarget(self, action: #selector(backButtonPressed), for: .touchUpInside)
         button.constrainToSize(44)
-        return UIBarButtonItem(customView: button)
+        return UIBarButtonItem(customView: button).hidingGlassBackground()
     }
     
     var finalChild: UIViewController {
