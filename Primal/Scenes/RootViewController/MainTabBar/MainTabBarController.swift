@@ -237,7 +237,7 @@ final class MainTabBarController: UIViewController, Themeable {
                 }
             }), for: .touchUpInside)
             view.addSubview(button)
-            button.centerToSuperview(axis: .horizontal).pinToSuperview(edges: .bottom, padding: -8, safeArea: true)
+            button.centerToSuperview(axis: .horizontal).pinToSuperview(edges: .bottom, padding: 21)
             collapsedTabBarButton = button
         }
 
