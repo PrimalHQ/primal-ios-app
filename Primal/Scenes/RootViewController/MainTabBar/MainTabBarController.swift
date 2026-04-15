@@ -662,7 +662,7 @@ private extension MainTabBarController {
             let selectedImage: UIImage?
             if showingDot {
                 image = NotificationsTabIconComposer.composedIcon(
-                    tint: .foreground.withAlphaComponent(0.75), forNativeBar: true)
+                    tint: .foreground, forNativeBar: true)
                 selectedImage = NotificationsTabIconComposer.composedIcon(
                     tint: .foreground, forNativeBar: true)
             } else {
@@ -723,7 +723,7 @@ private extension MainTabBarController {
         let dotVisible = showingDot ?? (newNotifications > 0)
         if dotVisible {
             item.image = NotificationsTabIconComposer.composedIcon(
-                tint: .foreground.withAlphaComponent(0.75), forNativeBar: true)
+                tint: .foreground, forNativeBar: true)
             item.selectedImage = NotificationsTabIconComposer.composedIcon(
                 tint: .foreground, forNativeBar: true)
         } else {
