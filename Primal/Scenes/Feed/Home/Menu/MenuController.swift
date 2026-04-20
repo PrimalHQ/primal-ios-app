@@ -18,18 +18,17 @@ final class MenuController: UIViewController, Themeable {
     private let nameLabel = UILabel()
     private let checkbox1 = VerifiedView()
     private let domainLabel = UILabel()
-    private let followingLabel = UILabel()
-    private let followersLabel = UILabel()
+    private let followLabel = UILabel()
     private let mainStack = UIStackView()
 
     private let premiumIndicator = NumberedNotificationIndicator()
     private let notificationIndicator = NumberedNotificationIndicator()
 
     private let profileImageButton = UIButton()
-    private let followingDescLabel = UILabel()
-    private let followersDescLabel = UILabel()
     private let themeButton = UIButton()
     private let closeButton = UIButton(configuration: .accent18("Close"))
+
+    private var lastUserStats: NostrUserProfileInfo?
 
     private var originalTitle = ""
     private var originalSubtitle = ""
@@ -79,11 +78,25 @@ final class MenuController: UIViewController, Themeable {
         domainLabel.font = .appFont(withSize: MenuSizes.nipLabelFontSize, weight: .regular)
         domainLabel.textColor = .foreground5
 
-        [followersDescLabel, followingDescLabel, followersLabel, followingLabel].forEach {
-            $0.font = .appFont(withSize: MenuSizes.followingLabelFontSize, weight: .regular)
-            $0.textColor = .foreground5
-        }
-        [followersLabel, followingLabel].forEach { $0.textColor = .extraColorMenu }
+        updateFollowLabel()
+    }
+
+    private func updateFollowLabel() {
+        let font = UIFont.appFont(withSize: MenuSizes.followingLabelFontSize, weight: .regular)
+        let numberAttrs: [NSAttributedString.Key: Any] = [.font: font, .foregroundColor: UIColor.extraColorMenu]
+        let descAttrs: [NSAttributedString.Key: Any] = [.font: font, .foregroundColor: UIColor.foreground5]
+
+        let follows = lastUserStats?.follows ?? 0
+        let followers = lastUserStats?.followers ?? 0
+
+        let text = NSMutableAttributedString()
+        text.append(.init(string: "\(follows.localized()) ", attributes: numberAttrs))
+        text.append(.init(string: "Following", attributes: descAttrs))
+        text.append(.init(string: "   ", attributes: [.font: font, .kern: 4]))
+        text.append(.init(string: "\(followers.localized()) ", attributes: numberAttrs))
+        text.append(.init(string: "Followers", attributes: descAttrs))
+
+        followLabel.attributedText = text
     }
 }
 
@@ -94,7 +107,6 @@ private extension MenuController {
         let barcodeButton = UIButton()
         barcodeButton.setImage(UIImage(named: "barcode")?.scalePreservingAspectRatio(size: MenuSizes.qrCodeSize), for: .normal)
         let titleStack = UIStackView(arrangedSubviews: [nameLabel, checkbox1, barcodeButton])
-        let followStack = UIStackView(arrangedSubviews: [followingLabel, followingDescLabel, followersLabel, followersDescLabel])
 
         let profile = MenuItemButton(title: "PROFILE", image: .menuSidebarProfile)
         let premium = MenuItemButton(title: "PREMIUM", image: .menuSidebarPremium)
@@ -106,7 +118,7 @@ private extension MenuController {
         let signOut = MenuItemButton(title: "SIGN OUT", image: .menuSidebarSignout)
 
         let buttonsStack = UIStackView(arrangedSubviews: [profile, premium, messages, bookmarks, remoteLogin, redeemCode, settings, signOut])
-        let nnfStack = UIStackView(axis: .vertical, spacing: MenuSizes.nnfStackSpacing, [titleStack, domainLabel, followStack])
+        let nnfStack = UIStackView(axis: .vertical, spacing: MenuSizes.nnfStackSpacing, [titleStack, domainLabel, followLabel])
         nnfStack.alignment = .leading
         [
             nnfStack,
@@ -174,11 +186,6 @@ private extension MenuController {
         titleStack.setCustomSpacing(12, after: checkbox1)
 
         checkbox1.constrainToSize(MenuSizes.checkboxSize)
-
-        followersDescLabel.text = "Followers"
-        followingDescLabel.text = "Following"
-        followStack.spacing = 4
-        followStack.setCustomSpacing(16, after: followingDescLabel)
 
         let npubs = LoginManager.instance.loggedInNpubs()
         
@@ -250,8 +257,8 @@ private extension MenuController {
         IdentityManager.instance.$userStats.receive(on: DispatchQueue.main).sink { [weak self] stats in
             guard let stats, let self else { return }
 
-            self.followersLabel.text = stats.followers.localized()
-            self.followingLabel.text = stats.follows.localized()
+            self.lastUserStats = stats
+            self.updateFollowLabel()
         }
         .store(in: &cancellables)
 
