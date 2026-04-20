@@ -163,7 +163,7 @@ private extension PrimalNavigationBar {
         border.pinToSuperview(edges: [.horizontal, .bottom])
 
         titleLabel.font = .appFont(withSize: Self.titleFontSize, weight: .bold)
-        subtitleLabel.font = .appFont(withSize: Self.subtitleFontSize, weight: .regular)
+        subtitleLabel.font = .appFont(withSize: Self.subtitleFontSize, weight: .semibold)
 
         chevronView.constrainToSize(Self.chevronSize)
         chevronView.contentMode = .scaleAspectFit

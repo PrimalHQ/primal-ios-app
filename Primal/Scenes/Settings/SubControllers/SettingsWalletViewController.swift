@@ -44,7 +44,6 @@ final class SettingsWalletViewController: UIViewController, SettingsController, 
         super.viewWillAppear(animated)
         
         navigationController?.setNavigationBarHidden(false, animated: animated)
-        mainTabBarController?.setTabBarHidden(false, animated: animated)
         
         minTransaction.descLabel.text = "\(UserDefaults.standard.minimumZapValue) sats"
         

@@ -91,3 +91,4 @@ iOSInjectionProject/
 .DS_Store
 CLAUDE.md
 Primal/secrets.plist
+/.claude

@@ -22,6 +22,7 @@ class HeaderTextCell: FeedElementTextCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
         let stack = UIStackView(axis: .vertical, [headerView, bodyView])
+        stack.spacing = -2
         contentView.addSubview(stack)
         stack.pinToSuperview()
         headerView.ownerCell = self

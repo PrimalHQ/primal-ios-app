@@ -76,8 +76,11 @@ final class MenuController: UIViewController, Themeable {
 
         nameLabel.textColor = .foreground
 
-        [domainLabel, followersDescLabel, followingDescLabel, followersLabel, followingLabel].forEach {
-            $0.font = .appFont(withSize: 15, weight: .regular)
+        domainLabel.font = .appFont(withSize: MenuSizes.nipLabelFontSize, weight: .regular)
+        domainLabel.textColor = .foreground5
+
+        [followersDescLabel, followingDescLabel, followersLabel, followingLabel].forEach {
+            $0.font = .appFont(withSize: MenuSizes.followingLabelFontSize, weight: .regular)
             $0.textColor = .foreground5
         }
         [followersLabel, followingLabel].forEach { $0.textColor = .extraColorMenu }
@@ -89,7 +92,7 @@ private extension MenuController {
         updateTheme()
 
         let barcodeButton = UIButton()
-        barcodeButton.setImage(UIImage(named: "barcode"), for: .normal)
+        barcodeButton.setImage(UIImage(named: "barcode")?.scalePreservingAspectRatio(size: MenuSizes.qrCodeSize), for: .normal)
         let titleStack = UIStackView(arrangedSubviews: [nameLabel, checkbox1, barcodeButton])
         let followStack = UIStackView(arrangedSubviews: [followingLabel, followingDescLabel, followersLabel, followersDescLabel])
 
@@ -103,8 +106,10 @@ private extension MenuController {
         let signOut = MenuItemButton(title: "SIGN OUT", image: .menuSidebarSignout)
 
         let buttonsStack = UIStackView(arrangedSubviews: [profile, premium, messages, bookmarks, remoteLogin, redeemCode, settings, signOut])
+        let nnfStack = UIStackView(axis: .vertical, spacing: MenuSizes.nnfStackSpacing, [titleStack, domainLabel, followStack])
+        nnfStack.alignment = .leading
         [
-            titleStack, domainLabel, followStack,
+            nnfStack,
             buttonsStack, UIView(), themeButton
         ]
         .forEach { mainStack.addArrangedSubview($0) }
@@ -130,9 +135,7 @@ private extension MenuController {
         botMenu.pinToSuperview(edges: .bottom, safeArea: true)
         mainStack.axis = .vertical
         mainStack.alignment = .leading
-        mainStack.setCustomSpacing(18, after: titleStack)
-        mainStack.setCustomSpacing(10, after: domainLabel)
-        mainStack.setCustomSpacing(44, after: followStack)
+        mainStack.setCustomSpacing(MenuSizes.nnfToMenuButtonsSpacing, after: nnfStack)
 
         contentView.addSubview(notificationIndicator)
         notificationIndicator.pin(to: messages, edges: .top, padding: 4).pinToSuperview(edges: .leading, padding: 150)
@@ -164,13 +167,13 @@ private extension MenuController {
 
         buttonsStack.axis = .vertical
         buttonsStack.alignment = .leading
-        buttonsStack.spacing = 16
+        buttonsStack.spacing = MenuSizes.menuButtonsStackSpacing
 
         titleStack.alignment = .center
         titleStack.spacing = 4
         titleStack.setCustomSpacing(12, after: checkbox1)
 
-        checkbox1.transform = .init(scaleX: 1.15, y: 1.15)
+        checkbox1.constrainToSize(MenuSizes.checkboxSize)
 
         followersDescLabel.text = "Followers"
         followingDescLabel.text = "Following"
@@ -186,7 +189,7 @@ private extension MenuController {
             .pin(to: barcodeButton, edges: .top)
 
         for npub in npubs.dropFirst().prefix(3) {
-            let avatarImage = UserImageView(height: 26)
+            let avatarImage = UserImageView(height: MenuSizes.accountImageSize)
 
             LoginManager.instance.$loadedProfiles.receive(on: DispatchQueue.main)
                 .sink { users in
@@ -210,7 +213,8 @@ private extension MenuController {
         profileImageRow.alignment = .center
 
         let manageAccountsButton = ThemeableButton().setTheme {
-            $0.configuration = .simpleImage(npubs.count < 2 ? .addAccount : .moreAccounts)
+            let baseIcon: UIImage = npubs.count < 2 ? .addAccount : .moreAccounts
+            $0.configuration = .simpleImage(baseIcon.scalePreservingAspectRatio(size: MenuSizes.accountImageSize))
             $0.tintColor = .foreground2
         }
         profileImageRow.addArrangedSubview(manageAccountsButton)
@@ -219,7 +223,7 @@ private extension MenuController {
             self?.present(PopupAccountSwitchingController(), animated: true)
         }), for: .touchUpInside)
 
-        nameLabel.font = .appFont(withSize: 16, weight: .bold)
+        nameLabel.font = .appFont(withSize: MenuSizes.profileNameFontSize, weight: .bold)
 
         barcodeButton.addAction(.init(handler: { [weak self] _ in self?.showVC(ProfileQRController()) }), for: .touchUpInside)
         messages.addAction(.init(handler: { [weak self] _ in self?.showVC(MessagesViewController()) }), for: .touchUpInside)
@@ -382,7 +386,7 @@ final class MenuItemButton: MyButton, Themeable {
     }
 
     let titleLabel = UILabel()
-    let imageView = UIImageView().constrainToSize(20)
+    let imageView = UIImageView().constrainToSize(MenuSizes.menuButtonIconSize)
 
     init(title: String, image: UIImage?) {
         self.title = title.capitalized
@@ -406,7 +410,7 @@ final class MenuItemButton: MyButton, Themeable {
 
     func updateTheme() {
         titleLabel.attributedText = .init(string: title, attributes: [
-            .font: UIFont.appFont(withSize: 18.2, weight: .regular),
+            .font: UIFont.appFont(withSize: MenuSizes.menuButtonFontSize, weight: .regular),
             .kern: 0.2,
             .foregroundColor: isPressed ? UIColor.foreground : UIColor.foreground3
         ])
