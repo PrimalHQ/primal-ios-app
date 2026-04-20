@@ -69,7 +69,7 @@ final class WalletHomeViewController: UIViewController, Themeable, PrimalNavigat
     
     private var tableData: [Section] = [] {
         didSet {
-            guard navigationController?.topViewController == parent, view.window != nil else { return }
+            guard navigationController?.topViewController == self, view.window != nil else { return }
             
             table.reloadData()
         }
