@@ -219,10 +219,16 @@ private extension MenuController {
 
         profileImageRow.alignment = .center
 
-        let manageAccountsButton = ThemeableButton().setTheme {
+        let manageAccountsButtonSize = MenuSizes.accountImageSize + 4
+        let manageAccountsButton = ThemeableButton().constrainToSize(manageAccountsButtonSize).setTheme {
             let baseIcon: UIImage = npubs.count < 2 ? .addAccount : .moreAccounts
-            $0.configuration = .simpleImage(baseIcon.scalePreservingAspectRatio(size: MenuSizes.accountImageSize))
-            $0.tintColor = .foreground2
+            var config = UIButton.Configuration.filled()
+            config.cornerStyle = .capsule
+            config.baseBackgroundColor = .background3
+            config.baseForegroundColor = .foreground.withAlphaComponent(0.8)
+            config.image = baseIcon.scalePreservingAspectRatio(size: MenuSizes.accountImageSize)
+            config.contentInsets = .zero
+            $0.configuration = config
         }
         profileImageRow.addArrangedSubview(manageAccountsButton)
 
