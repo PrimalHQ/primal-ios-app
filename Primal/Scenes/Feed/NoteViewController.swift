@@ -416,7 +416,7 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
             guard let thread = open(post: post) as? ThreadViewController else { return }
         
             DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(200)) {
-                thread.replyBoxTapped()
+                thread.openReplyComposer()
             }
         case .embeddedPost:
             guard
