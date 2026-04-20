@@ -214,12 +214,11 @@ private extension MenuController {
 
         let manageAccountsButtonSize = MenuSizes.accountImageSize + 4
         let manageAccountsButton = ThemeableButton().constrainToSize(manageAccountsButtonSize).setTheme {
-            let baseIcon: UIImage = npubs.count < 2 ? .addAccount : .moreAccounts
             var config = UIButton.Configuration.filled()
             config.cornerStyle = .capsule
             config.baseBackgroundColor = .background3
             config.baseForegroundColor = .foreground.withAlphaComponent(0.8)
-            config.image = baseIcon.scalePreservingAspectRatio(size: MenuSizes.accountImageSize)
+            config.image = npubs.count < 2 ? .addAccount : .moreAccounts
             config.contentInsets = .zero
             $0.configuration = config
         }
