@@ -25,7 +25,6 @@ final class MenuController: UIViewController, Themeable {
     private let notificationIndicator = NumberedNotificationIndicator()
 
     private let profileImageButton = UIButton()
-    private let themeButton = UIButton()
     private let closeButton = UIButton(configuration: .accent18("Close"))
 
     private var lastUserStats: NostrUserProfileInfo?
@@ -69,9 +68,6 @@ final class MenuController: UIViewController, Themeable {
         contentView.backgroundColor = .background5
         navBarBackground.backgroundColor = .background
         primalNavigationBar.updateTheme()
-
-        themeButton.setImage(.themeButton, for: .normal)
-        themeButton.tintColor = .foreground3
 
         nameLabel.textColor = .foreground
 
@@ -120,11 +116,8 @@ private extension MenuController {
         let buttonsStack = UIStackView(arrangedSubviews: [profile, premium, messages, bookmarks, remoteLogin, redeemCode, settings, signOut])
         let nnfStack = UIStackView(axis: .vertical, spacing: MenuSizes.nnfStackSpacing, [titleStack, domainLabel, followLabel])
         nnfStack.alignment = .leading
-        [
-            nnfStack,
-            buttonsStack, UIView(), themeButton
-        ]
-        .forEach { mainStack.addArrangedSubview($0) }
+        
+        [nnfStack,buttonsStack, UIView()].forEach { mainStack.addArrangedSubview($0) }
 
         let botMenu = UIStackView([UIView(), closeButton])
         botMenu.isLayoutMarginsRelativeArrangement = true
@@ -247,7 +240,6 @@ private extension MenuController {
         profile.addTarget(self, action: #selector(profilePressed), for: .touchUpInside)
         settings.addTarget(self, action: #selector(settingsButtonPressed), for: .touchUpInside)
         signOut.addTarget(self, action: #selector(signoutPressed), for: .touchUpInside)
-        themeButton.addTarget(self, action: #selector(themeButtonPressed), for: .touchUpInside)
         
         IdentityManager.instance.$parsedUser.compactMap({ $0 }).receive(on: DispatchQueue.main).sink { [weak self] user in
             self?.update(user)
@@ -359,16 +351,6 @@ private extension MenuController {
 
     @objc func settingsButtonPressed() {
         showVC(SettingsMainViewController())
-    }
-
-    @objc func themeButtonPressed() {
-        ContentDisplaySettings.autoDarkMode = false
-        switch Theme.current.kind {
-        case .midnightWave:
-            Theme.defaultTheme = IceWave.instance
-        case .iceWave:
-            Theme.defaultTheme = MidnightWave.instance
-        }
     }
 
     @objc func signoutPressed() {
