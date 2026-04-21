@@ -88,7 +88,7 @@ final class MenuController: UIViewController, Themeable {
         let text = NSMutableAttributedString()
         text.append(.init(string: "\(follows.localized()) ", attributes: numberAttrs))
         text.append(.init(string: "Following", attributes: descAttrs))
-        text.append(.init(string: "   ", attributes: [.font: font, .kern: 4]))
+        text.append(.init(string: " ", attributes: [.font: font, .kern: 4]))
         text.append(.init(string: "\(followers.localized()) ", attributes: numberAttrs))
         text.append(.init(string: "Followers", attributes: descAttrs))
 
@@ -326,23 +326,9 @@ private extension MenuController {
 
     func update(_ user: ParsedUser) {
         let user = user.data
-        if user.displayName.isEmpty {
-            if CheckNip05Manager.instance.isVerified(user) {
-                nameLabel.text = user.parsedNip
-            } else {
-                nameLabel.text = user.name
-            }
-            domainLabel.isHidden = true
-        } else {
-            nameLabel.text = user.displayName
-            if CheckNip05Manager.instance.isVerified(user) {
-                domainLabel.text = user.parsedNip
-            } else {
-                domainLabel.text = user.name
-            }
-            domainLabel.isHidden = false
-        }
-
+        
+        nameLabel.text = user.displayName.isEmpty ? user.name : user.displayName
+        domainLabel.text = user.parsedNip
         checkbox1.user = user
     }
 
