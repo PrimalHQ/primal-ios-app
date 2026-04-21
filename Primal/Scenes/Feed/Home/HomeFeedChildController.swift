@@ -119,6 +119,12 @@ class HomeFeedChildController: PostFeedViewController {
     override func scrollViewDidScroll(_ scrollView: UIScrollView) {
         super.scrollViewDidScroll(scrollView)
         
+        if /*feed.newPosts.0 == 0 &&*/ table.contentOffset.y < 0 {
+            newPostsViewParent.alpha = 1 - (min(100, -2 * table.contentOffset.y) / 100)
+        } else {
+            newPostsViewParent.alpha = 1
+        }
+        
         if scrollView.contentOffset.y > scrollView.contentSize.height - 2000 {
             didReachEnd = true
         } else {
@@ -141,10 +147,9 @@ class HomeFeedChildController: PostFeedViewController {
         let percent: CGFloat = hidden ? 1 : 0
 
         parentHomeVC = parentHomeVC ?? findParent()
+        let postButtonParent = parentHomeVC?.postButtonParent
 
         let apply = { [self] in
-            parentHomeVC?.postButtonParent.alpha = hidden ? 0 : 1
-
             newPostsViewParent.transform = hidden ? .init(translationX: 0, y: -barsMaxTransform) : .identity
 
             tabController?.indicatorStack.alpha = 1 - percent
@@ -153,16 +158,26 @@ class HomeFeedChildController: PostFeedViewController {
 
         if animated {
             UIView.animate(withDuration: 0.3, animations: apply)
+            if let postButtonParent {
+                if hidden {
+                    UIView.transition(with: postButtonParent, duration: 0.3, options: .transitionCrossDissolve) {
+                        postButtonParent.isHidden = hidden
+                    }
+                } else {
+                    postButtonParent.alpha = 0
+                    postButtonParent.isHidden = false
+                    UIView.animate(withDuration: 0.2) {
+                        postButtonParent.alpha = 1
+                    }
+                }
+            }
         } else {
             apply()
-        }
-        
-        if /*feed.newPosts.0 == 0 &&*/ table.contentOffset.y < 0 {
-            newPostsViewParent.alpha = min((1 - (percent * 4)).clamped(to: 0...1), 1 - min(100, -2 * table.contentOffset.y) / 100)
-        } else {
-            newPostsViewParent.alpha = (1 - (percent * 4)).clamped(to: 0...1)
+            postButtonParent?.isHidden = true
         }
     }
+    
+    
     
     override func updateTheme() {
         super.updateTheme()
