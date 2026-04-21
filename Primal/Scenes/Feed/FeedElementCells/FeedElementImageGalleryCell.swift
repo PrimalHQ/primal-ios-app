@@ -33,18 +33,23 @@ class FeedElementImageGalleryCell: FeedElementBaseCell, RegularFeedElementCell {
         mainImages
             .pinToSuperview(edges: .top, padding: 10)
             .pinToSuperview(edges: .bottom, padding: 6)
-            .pinToSuperview(edges: .leading, padding: leadingPadding).pinToSuperview(edges: .trailing, padding: horizontalPadding)
-        
+            .pinToSuperview(edges: .leading, padding: leadingPadding)
+
+        mainImages.trailingAnchor.constraint(lessThanOrEqualTo: contentContainer.trailingAnchor, constant: -horizontalPadding).isActive = true
+        let widthFill = mainImages.trailingAnchor.constraint(equalTo: contentContainer.trailingAnchor, constant: -horizontalPadding)
+        widthFill.priority = .defaultLow
+        widthFill.isActive = true
+
         mainImages.imageDelegate = self
-        
+
         let height = mainImages.heightAnchor.constraint(equalTo: mainImages.widthAnchor, multiplier: 1)
         [height].forEach {
             $0.priority = .defaultHigh
             $0.isActive = true
         }
         imageAspectConstraint = height
-        
-        mainImages.heightAnchor.constraint(lessThanOrEqualToConstant: 500).isActive = true
+
+        mainImages.heightAnchor.constraint(lessThanOrEqualToConstant: 480).isActive = true
     }
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
