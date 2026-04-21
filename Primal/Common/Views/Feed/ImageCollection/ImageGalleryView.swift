@@ -81,8 +81,10 @@ final class ImageGalleryView: UIView {
         collection.register(TripleImageGalleryCell.self, forCellWithReuseIdentifier: "triple")
         collection.register(QuadrupleImageGalleryCell.self, forCellWithReuseIdentifier: "quadruple")
         
-        collection.layer.cornerRadius = 8
+        collection.layer.cornerRadius = 12
         collection.layer.masksToBounds = true
+        collection.layer.borderWidth = 1
+        collection.layer.borderColor = UIColor.background3.cgColor
         collection.backgroundColor = .background2
         collection.showsHorizontalScrollIndicator = false
         
