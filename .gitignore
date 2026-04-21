@@ -92,3 +92,6 @@ iOSInjectionProject/
 CLAUDE.md
 Primal/secrets.plist
 /.claude
+
+# sourcekit-lsp (xcode-build-server) — machine-specific, absolute paths
+buildServer.json
