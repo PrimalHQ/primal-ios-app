@@ -139,13 +139,11 @@ class HomeFeedChildController: PostFeedViewController {
         super.setBarsHidden(hidden, animated: animated)
 
         let percent: CGFloat = hidden ? 1 : 0
-        let scale = 0.1 + ((1 - percent) * 0.9)
 
         parentHomeVC = parentHomeVC ?? findParent()
 
         let apply = { [self] in
-            parentHomeVC?.postButton.transform = .init(scaleX: scale, y: scale).rotated(by: percent * .pi / 2)
-            parentHomeVC?.postButtonParent.transform = hidden ? .init(translationX: 0, y: 200) : .identity
+            parentHomeVC?.postButtonParent.alpha = hidden ? 0 : 1
 
             newPostsViewParent.transform = hidden ? .init(translationX: 0, y: -barsMaxTransform) : .identity
 

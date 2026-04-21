@@ -254,7 +254,7 @@ final class MainTabBarController: UIViewController, Themeable {
         let hideTabBar = { [self] in
             tabBarContainerView.alpha = 0
             tabBarContainerView.transform = .init(scaleX: 0.2, y: 0.2)
-                .concatenating(.init(translationX: 0, y: tabBarContainerView.bounds.height / 2))
+                .concatenating(.init(translationX: 0, y: tabBarContainerView.bounds.height / 4))
         }
 
         if animated {
