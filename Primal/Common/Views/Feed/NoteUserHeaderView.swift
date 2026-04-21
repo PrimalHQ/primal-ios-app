@@ -58,8 +58,8 @@ class NoteUserHeaderView: UIView {
 
         threeDotsButton
             .constrainToSize(44)
-            .pinToSuperview(edges: .top, padding: 1)
             .pinToSuperview(edges: .trailing)
+            .centerToView(nameStack, axis: .vertical)
 
         nameStack.addArrangedSubview(threeDotsSpacer)
 
@@ -69,7 +69,7 @@ class NoteUserHeaderView: UIView {
             .pin(to: repostIndicator, edges: .top, padding: -11)
             .pin(to: repostIndicator, edges: .bottom, padding: -5)
         
-        repostIndicator.transform = .init(translationX: 12 - Self.contentLeadingPadding, y: 0)
+        repostIndicator.transform = .init(translationX: 12 + Self.headerAvatarSize - 14 - Self.contentLeadingPadding, y: 0)
 
         repostedByOverlayButton.addAction(.init(handler: { [weak self] _ in
             guard let self, let ownerCell else { return }
@@ -137,9 +137,6 @@ class NoteUserHeaderView: UIView {
         } else {
             replyingToView.isHidden = true
         }
-
-        threeDotsSpacer.isHidden = parsedContent.reposted != nil
-        threeDotsButton.transform = parsedContent.reposted != nil ? .init(translationX: 0, y: -5) : .identity
 
         if let reposted = parsedContent.reposted?.users {
             repostIndicator.update(users: reposted)

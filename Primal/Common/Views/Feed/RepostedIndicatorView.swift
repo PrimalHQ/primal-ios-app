@@ -16,11 +16,11 @@ final class RepostedIndicatorView: MyButton {
         
         let repostedImageView = UIImageView(image: UIImage(named: "feedRepost")?.scalePreservingAspectRatio(size: 14).withRenderingMode(.alwaysTemplate))
         let stack = UIStackView(arrangedSubviews: [
-            repostedImageView, nameLabel, repostedLabel, SpacerView(width: 20, priority: .required), UIView()
+            repostedImageView, nameLabel, repostedLabel
         ])
-        
+
         stack.alignment = .center
-        stack.spacing = 4
+        stack.spacing = 8
         
         nameLabel.font = .appFont(withSize: 14, weight: .regular)
         nameLabel.textColor = .foreground3
