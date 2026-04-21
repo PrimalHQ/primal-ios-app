@@ -42,7 +42,7 @@ class NoteUserHeaderView: UIView {
         
         profileImageView
             .pinToSuperview(edges: .leading, padding: 12)
-            .pin(to: nameReplyStack, edges: .top)
+            .pin(to: nameReplyStack, edges: .top, padding: 2)
 
         mainStack
             .pinToSuperview(edges: .top, padding: 12)
