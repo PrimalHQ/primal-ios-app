@@ -160,7 +160,7 @@ class HomeFeedChildController: PostFeedViewController {
             UIView.animate(withDuration: 0.3, animations: apply)
             if let postButtonParent {
                 if hidden {
-                    UIView.transition(with: postButtonParent, duration: 0.3, options: .transitionCrossDissolve) {
+                    UIView.transition(with: postButtonParent, duration: 0.25, options: .transitionCrossDissolve) {
                         postButtonParent.isHidden = hidden
                     }
                 } else {

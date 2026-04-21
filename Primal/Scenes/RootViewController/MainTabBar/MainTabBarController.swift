@@ -233,37 +233,56 @@ final class MainTabBarController: UIViewController, Themeable {
                 let nav = navForTab(currentTab)
                 if let noteVC: NoteViewController = nav.topViewController?.findInChildren() ?? nav.topViewController as? NoteViewController {
                     noteVC.table.setContentOffset(noteVC.table.contentOffset, animated: false)
-                    noteVC.updateBarsHidden(false)
+                    DispatchQueue.main.async {
+                        noteVC.updateBarsHidden(false)                        
+                    }
                 } else {
                     setTabBarExpanded(animated: true)
                 }
             }), for: .touchUpInside)
-            view.addSubview(button)
+            view.insertSubview(button, belowSubview: nativeTabBar ?? vStack)
             button.centerToSuperview(axis: .horizontal).pinToSuperview(edges: .bottom, padding: 21)
             collapsedTabBarButton = button
         }
 
         button.configure(text: text, icon: icon)
         button.alpha = 0
-        button.transform = .init(scaleX: 0.2, y: 0.2)
+        button.transform = .init(scaleX: 4.5, y: 3)
+        button.imageView?.transform = .init(scaleX: (1.0 / 4.5) * 0.5, y: (1.0 / 3) * 0.5)
+        button.titleLabel?.transform = .init(scaleX: (1.0 / 4.5) * 0.5, y: (1.0 / 3) * 0.5)
 
         let showCollapsed = {
             button.alpha = 1
             button.transform = .identity
+            button.imageView?.transform = .identity
+            button.titleLabel?.transform = .identity
         }
-        let hideTabBar = { [self] in
-            tabBarContainerView.alpha = 0
+        
+        let hideTabBar1 = { [self] in
             tabBarContainerView.transform = .init(scaleX: 0.2, y: 0.2)
-                .concatenating(.init(translationX: 0, y: tabBarContainerView.bounds.height / 4))
+                .concatenating(.init(translationX: 0, y: 10))
+        }
+        let hideTabBar2 = { [self] in
+            tabBarContainerView.alpha = 0
         }
 
         if animated {
-            UIView.animate(withDuration: 0.35, delay: 0, usingSpringWithDamping: 0.85, initialSpringVelocity: 0) {
-                hideTabBar()
+            UIView.animate(withDuration: 0.3) {
+                hideTabBar1()
+            }
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(200)) {
+                UIView.animate(withDuration: 0.1) {
+                    hideTabBar2()
+                }
+            }
+            
+            UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.85, initialSpringVelocity: 0) {
                 showCollapsed()
             }
         } else {
-            hideTabBar()
+            hideTabBar1()
+            hideTabBar2()
             showCollapsed()
         }
     }
@@ -273,19 +292,19 @@ final class MainTabBarController: UIViewController, Themeable {
         guard let collapsedTabBarButton else { return }
         self.collapsedTabBarButton = nil
         
-        let hideCollapsed = {
-            collapsedTabBarButton.alpha = 0
-            collapsedTabBarButton.transform = .init(scaleX: 0.2, y: 0.2)
+        guard animated else {
+            collapsedTabBarButton.removeFromSuperview()
+            return
         }
-
-        if animated {
-            UIView.animate(withDuration: 0.35, delay: 0, usingSpringWithDamping: 0.85, initialSpringVelocity: 0) {
-                hideCollapsed()
-            } completion: { _ in
-                collapsedTabBarButton.removeFromSuperview()
-            }
-        } else {
-            hideCollapsed()
+        
+        UIView.animate(withDuration: 0.05) {
+            collapsedTabBarButton.imageView?.alpha = 0
+            collapsedTabBarButton.titleLabel?.alpha = 0
+        }
+        
+        UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.85, initialSpringVelocity: 0) {
+            collapsedTabBarButton.transform = .init(scaleX: 3, y: 1.7).translatedBy(x: 0, y: -7)
+        } completion: { _ in
             collapsedTabBarButton.removeFromSuperview()
         }
     }
@@ -299,7 +318,7 @@ final class MainTabBarController: UIViewController, Themeable {
         }
         
         if animated {
-            UIView.animate(withDuration: 0.35, delay: 0, usingSpringWithDamping: 0.85, initialSpringVelocity: 0) {
+            UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.85, initialSpringVelocity: 0) {
                 showTabBar()
             }
         } else {
