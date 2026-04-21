@@ -152,7 +152,7 @@ final class PostPreviewView: UIView, Themeable {
             $0.textColor = .foreground3
         }
         
-        backgroundColor = .background4
+        backgroundColor = .background2
         layer.borderColor = UIColor.background3.cgColor
         
         nameLabel.textColor = .foreground
@@ -170,7 +170,7 @@ final class PostPreviewView: UIView, Themeable {
 
 private extension PostPreviewView {
     func setup() {
-        layer.cornerRadius = 8
+        layer.cornerRadius = 12
         layer.borderWidth = 1
         
         separatorLabel.text = "·"
