@@ -78,7 +78,7 @@ private extension LinkPreview {
         imageView.contentMode = .scaleAspectFill
         imageView.image = UIImage(named: "webPreviewIcon")
                 
-        layer.cornerRadius = 8
+        layer.cornerRadius = 12
         layer.masksToBounds = true
         layer.borderWidth = 1
         

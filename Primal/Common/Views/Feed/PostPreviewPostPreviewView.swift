@@ -176,7 +176,7 @@ private extension PostPreviewPostPreviewView {
         seeMoreLabel.setContentCompressionResistancePriority(.required, for: .vertical)
         
         mainImages.layer.masksToBounds = true
-        mainImages.layer.cornerRadius = 8
+        mainImages.layer.cornerRadius = 12
         mainImages.isHidden = true
         mainImages.heightAnchor.constraint(lessThanOrEqualToConstant: 500).isActive = true
         

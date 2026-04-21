@@ -22,7 +22,7 @@ class SimpleInfoView: UIView, Themeable {
         stack.spacing = 8
         stack.alignment = .center
         
-        layer.cornerRadius = 8
+        layer.cornerRadius = 12
         
         label.numberOfLines = 3
         label.lineBreakMode = .byTruncatingTail
