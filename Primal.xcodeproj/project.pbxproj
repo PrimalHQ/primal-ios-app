@@ -115,7 +115,6 @@
 		9E69249C2A0262CE00CAC54C /* ImageGalleryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E69249B2A0262CE00CAC54C /* ImageGalleryView.swift */; };
 		9E69249E2A02830100CAC54C /* HomeFeedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E69249D2A02830100CAC54C /* HomeFeedViewController.swift */; };
 		9E6924A02A02838D00CAC54C /* ThreadViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E69249F2A02838D00CAC54C /* ThreadViewController.swift */; };
-		B9F1A8D12E0420041A000001 /* ThreadReplyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9F1A8D02E0420041A000001 /* ThreadReplyViewController.swift */; };
 		9E6924A42A02925F00CAC54C /* MainTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E6924A32A02925F00CAC54C /* MainTabBarController.swift */; };
 		9E6B38C929F937B100144073 /* LinkableLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E6B38C829F937B100144073 /* LinkableLabel.swift */; };
 		9E6B38CB29F9487F00144073 /* Request.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E6B38CA29F9487F00144073 /* Request.swift */; };
@@ -722,6 +721,7 @@
 		B9EDA58A2E4CB61C003262E4 /* LiveVideoUserDetailsViewControllerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9EDA5892E4CB61C003262E4 /* LiveVideoUserDetailsViewControllerProtocol.swift */; };
 		B9EDA58D2E4F5B15003262E4 /* UsersTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9EDA58C2E4F5B0F003262E4 /* UsersTableView.swift */; };
 		B9EDA58F2E4F5EA5003262E4 /* LiveChatTextViewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9EDA58E2E4F5E9F003262E4 /* LiveChatTextViewManager.swift */; };
+		B9F1A8D12E0420041A000001 /* ThreadReplyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9F1A8D02E0420041A000001 /* ThreadReplyViewController.swift */; };
 		B9F933182B867D860064B495 /* QRCode in Frameworks */ = {isa = PBXBuildFile; productRef = B9F933172B867D860064B495 /* QRCode */; };
 		B9F9331A2B88EBE40064B495 /* CheckNip05Request.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9F933192B88EBE40064B495 /* CheckNip05Request.swift */; };
 		B9F9331D2B88F72E0064B495 /* PremiumViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9F9331C2B88F72E0064B495 /* PremiumViewController.swift */; };
@@ -959,7 +959,6 @@
 		9E69249B2A0262CE00CAC54C /* ImageGalleryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageGalleryView.swift; sourceTree = "<group>"; };
 		9E69249D2A02830100CAC54C /* HomeFeedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeFeedViewController.swift; sourceTree = "<group>"; };
 		9E69249F2A02838D00CAC54C /* ThreadViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadViewController.swift; sourceTree = "<group>"; };
-		B9F1A8D02E0420041A000001 /* ThreadReplyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadReplyViewController.swift; sourceTree = "<group>"; };
 		9E6924A32A02925F00CAC54C /* MainTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabBarController.swift; sourceTree = "<group>"; };
 		9E6B38C829F937B100144073 /* LinkableLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkableLabel.swift; sourceTree = "<group>"; };
 		9E6B38CA29F9487F00144073 /* Request.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Request.swift; sourceTree = "<group>"; };
@@ -1556,6 +1555,7 @@
 		B9EDA5892E4CB61C003262E4 /* LiveVideoUserDetailsViewControllerProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveVideoUserDetailsViewControllerProtocol.swift; sourceTree = "<group>"; };
 		B9EDA58C2E4F5B0F003262E4 /* UsersTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsersTableView.swift; sourceTree = "<group>"; };
 		B9EDA58E2E4F5E9F003262E4 /* LiveChatTextViewManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveChatTextViewManager.swift; sourceTree = "<group>"; };
+		B9F1A8D02E0420041A000001 /* ThreadReplyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadReplyViewController.swift; sourceTree = "<group>"; };
 		B9F933192B88EBE40064B495 /* CheckNip05Request.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckNip05Request.swift; sourceTree = "<group>"; };
 		B9F9331C2B88F72E0064B495 /* PremiumViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumViewController.swift; sourceTree = "<group>"; };
 		B9F9331E2B8904570064B495 /* CheckNip05Manager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckNip05Manager.swift; sourceTree = "<group>"; };
@@ -4980,7 +4980,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.5.3;
+				MARKETING_VERSION = 3.5.4;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -5029,7 +5029,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.5.3;
+				MARKETING_VERSION = 3.5.4;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

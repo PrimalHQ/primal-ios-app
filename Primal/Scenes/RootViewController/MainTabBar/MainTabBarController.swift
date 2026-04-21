@@ -207,6 +207,8 @@ final class MainTabBarController: UIViewController, Themeable {
             return
         }
     
+        removeCollapsedTabBar(animated: animated)
+        
         let targetView = tabBarContainerView
         
         if !animated {
@@ -266,29 +268,42 @@ final class MainTabBarController: UIViewController, Themeable {
         }
     }
 
-    func setTabBarExpanded(animated: Bool = true) {
-        let showTabBar = { [self] in
-            tabBarContainerView.alpha = 1
-            tabBarContainerView.transform = .identity
-        }
-        let hideCollapsed = { [self] in
-            collapsedTabBarButton?.alpha = 0
-            collapsedTabBarButton?.transform = .init(scaleX: 0.2, y: 0.2)
+    
+    func removeCollapsedTabBar(animated: Bool = true) {
+        guard let collapsedTabBarButton else { return }
+        self.collapsedTabBarButton = nil
+        
+        let hideCollapsed = {
+            collapsedTabBarButton.alpha = 0
+            collapsedTabBarButton.transform = .init(scaleX: 0.2, y: 0.2)
         }
 
         if animated {
             UIView.animate(withDuration: 0.35, delay: 0, usingSpringWithDamping: 0.85, initialSpringVelocity: 0) {
-                showTabBar()
                 hideCollapsed()
-            } completion: { [self] _ in
-                collapsedTabBarButton?.removeFromSuperview()
-                collapsedTabBarButton = nil
+            } completion: { _ in
+                collapsedTabBarButton.removeFromSuperview()
+            }
+        } else {
+            hideCollapsed()
+            collapsedTabBarButton.removeFromSuperview()
+        }
+    }
+    
+    func setTabBarExpanded(animated: Bool = true) {
+        removeCollapsedTabBar(animated: animated)
+        
+        let showTabBar = { [self] in
+            tabBarContainerView.alpha = 1
+            tabBarContainerView.transform = .identity
+        }
+        
+        if animated {
+            UIView.animate(withDuration: 0.35, delay: 0, usingSpringWithDamping: 0.85, initialSpringVelocity: 0) {
+                showTabBar()
             }
         } else {
             showTabBar()
-            hideCollapsed()
-            collapsedTabBarButton?.removeFromSuperview()
-            collapsedTabBarButton = nil
         }
     }
 
