@@ -30,7 +30,11 @@ class WalletInAppPurchaseController: UIViewController, Themeable {
     }
   
     func updateTheme() {
-        view.backgroundColor = .background4
+        if #available(iOS 26.0, *) {
+            // Liquid Glass — no opaque background
+        } else {
+            view.backgroundColor = .background4
+        }
     }
 }
 
@@ -63,6 +67,9 @@ private extension WalletInAppPurchaseController {
             presentationController.detents = [.custom(resolver: { _ in
                 400
             })]
+            if #available(iOS 17.0, *) {
+                presentationController.traitOverrides.userInterfaceStyle = Theme.current.userInterfaceStyle
+            }
         }
                 
         let satsCurrencyLabel = ThemeableLabel().setTheme { $0.textColor = .foreground4 }

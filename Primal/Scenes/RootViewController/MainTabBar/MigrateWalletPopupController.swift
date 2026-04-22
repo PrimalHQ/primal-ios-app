@@ -19,15 +19,23 @@ class MigrateWalletPopupController: UIViewController {
         
         sheetPresentationController?.detents = [.custom(resolver: { _ in
             let mainScale = RootViewController.instance.view.frame.size.width / 375
-            
+
             return 486 * mainScale - 30
         })]
-        
+
         sheetPresentationController?.prefersGrabberVisible = true
+
+        if #available(iOS 17.0, *) {
+            sheetPresentationController?.traitOverrides.userInterfaceStyle = Theme.current.userInterfaceStyle
+        }
     }
-    
+
     override func viewDidLoad() {
-        view.backgroundColor = .background4
+        if #available(iOS 26.0, *) {
+            // Liquid Glass — no opaque background
+        } else {
+            view.backgroundColor = .background4
+        }
         
         let mainView = UIView().constrainToSize(width: 375, height: 486)
         view.addSubview(mainView)

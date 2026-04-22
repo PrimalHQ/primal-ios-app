@@ -162,7 +162,11 @@ private extension PopupZapPollVoteViewController {
     }
 
     func setup() {
-        view.backgroundColor = .background4
+        if #available(iOS 26.0, *) {
+            // Liquid Glass — no opaque background
+        } else {
+            view.backgroundColor = .background4
+        }
 
         let pullBar = UIView()
         pullBar.constrainToSize(width: 60, height: 5)
@@ -301,6 +305,9 @@ private extension PopupZapPollVoteViewController {
         let sheetHeight = contentHeight + 180
         if let pc = presentationController as? UISheetPresentationController {
             pc.detents = [.custom(resolver: { _ in sheetHeight })]
+            if #available(iOS 17.0, *) {
+                pc.traitOverrides.userInterfaceStyle = Theme.current.userInterfaceStyle
+            }
         }
 
         let mainStack = UIStackView(axis: .vertical, [

@@ -36,6 +36,9 @@ final class PopupPollTypeController: UIViewController {
         if let pc = presentationController as? UISheetPresentationController {
             pc.detents = [.custom(resolver: { _ in 270 })]
             pc.prefersGrabberVisible = true
+            if #available(iOS 17.0, *) {
+                pc.traitOverrides.userInterfaceStyle = Theme.current.userInterfaceStyle
+            }
         }
     }
     
@@ -50,7 +53,11 @@ final class PopupPollTypeController: UIViewController {
     }
 
     private func setup() {
-        view.backgroundColor = .background4
+        if #available(iOS 26.0, *) {
+            // Liquid Glass — no opaque background
+        } else {
+            view.backgroundColor = .background4
+        }
 
         let titleLabel = UILabel("Select poll type", color: .foreground, font: .appFont(withSize: 20, weight: .bold))
 

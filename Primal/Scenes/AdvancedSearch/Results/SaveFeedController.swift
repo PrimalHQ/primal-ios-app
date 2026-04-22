@@ -36,9 +36,16 @@ class SaveFeedController: UIViewController {
                     return 355
                 })
             ]
+            if #available(iOS 17.0, *) {
+                sheetPresentationController.traitOverrides.userInterfaceStyle = Theme.current.userInterfaceStyle
+            }
         }
-        
-        view.backgroundColor = .background4
+
+        if #available(iOS 26.0, *) {
+            // Liquid Glass — no opaque background
+        } else {
+            view.backgroundColor = .background4
+        }
                 
         let pullBar = UIView().constrainToSize(width: 60, height: 5)
         pullBar.backgroundColor = .foreground

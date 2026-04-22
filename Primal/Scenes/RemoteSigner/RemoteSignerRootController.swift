@@ -84,6 +84,9 @@ class RemoteSignerRootController: UIViewController {
                 return self?.child.preferredContentSize.height ?? 600
             }), .large()]
             sheet.prefersGrabberVisible = true // Add a grabber for resizing
+            if #available(iOS 17.0, *) {
+                sheet.traitOverrides.userInterfaceStyle = Theme.current.userInterfaceStyle
+            }
         }
     }
     

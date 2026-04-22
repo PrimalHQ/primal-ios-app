@@ -30,10 +30,18 @@ class WalletDetectedPopupController: UIViewController {
         })]
 
         sheetPresentationController?.prefersGrabberVisible = true
+
+        if #available(iOS 17.0, *) {
+            sheetPresentationController?.traitOverrides.userInterfaceStyle = Theme.current.userInterfaceStyle
+        }
     }
 
     override func viewDidLoad() {
-        view.backgroundColor = .background4
+        if #available(iOS 26.0, *) {
+            // Liquid Glass — no opaque background
+        } else {
+            view.backgroundColor = .background4
+        }
         
         let height = isDiscontinued ? Self.discontinuedHeight : Self.regularHeight
 

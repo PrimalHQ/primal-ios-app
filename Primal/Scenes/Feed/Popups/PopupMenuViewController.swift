@@ -34,24 +34,31 @@ final class PopupMenuViewController: UIViewController {
 
 private extension PopupMenuViewController {
     func setup() {
-        view.backgroundColor = .background4
+        if #available(iOS 26.0, *) {
+            // Liquid Glass — no opaque background
+        } else {
+            view.backgroundColor = .background4
+        }
         let messageLabel = UILabel()
         if let pc = presentationController as? UISheetPresentationController {
             pc.detents = [
                 .custom(resolver: { [weak self] _ in
                     guard let self else { return 285 }
-                    
+
                     if self.actions.count > 1 {
                         let buttonsCount = CGFloat(self.actions.count)
                         let buttonHeight = buttonsCount * 58
                         let buttonSpace = buttonsCount > 1.1 ? (buttonsCount - 1) * 28 : 0
-                        
+
                         return buttonHeight + buttonSpace + 24 + 89 + messageLabel.sizeThatFits(.init(width: self.view.frame.width - 64, height: .infinity)).height
                     }
-                    
+
                     return 98 + 24 + 89 + messageLabel.sizeThatFits(.init(width: self.view.frame.width - 64, height: .infinity)).height
                 })
             ]
+            if #available(iOS 17.0, *) {
+                pc.traitOverrides.userInterfaceStyle = Theme.current.userInterfaceStyle
+            }
         }
         
         let pullBarParent = UIView()

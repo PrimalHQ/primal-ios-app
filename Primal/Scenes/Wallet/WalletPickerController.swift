@@ -53,6 +53,9 @@ final class WalletPickerController: UIViewController {
                 guard let self else { return 300 }
                 return max(300, self.preferredContentSize.height)
             })]
+            if #available(iOS 17.0, *) {
+                sheet.traitOverrides.userInterfaceStyle = Theme.current.userInterfaceStyle
+            }
         }
     }
 
@@ -152,7 +155,11 @@ final class WalletPickerController: UIViewController {
     }
 
     private func setup() {
-        view.backgroundColor = .background2
+        if #available(iOS 26.0, *) {
+            // Liquid Glass — no opaque background
+        } else {
+            view.backgroundColor = .background2
+        }
         overrideUserInterfaceStyle = Theme.current.userInterfaceStyle
 
         let pullBarParent = UIView()
