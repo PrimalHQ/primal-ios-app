@@ -45,13 +45,14 @@ class NewPostButton: UIButton, Themeable {
 
         if hidden {
             UIView.transition(with: self, duration: 0.25, options: .transitionCrossDissolve) {
+                self.transform = .init(scaleX: 0.2, y: 0.2)
                 self.isHidden = true
             }
         } else {
             alpha = 0
-            transform = .init(scaleX: 0.6, y: 0.6)
+            transform = .init(scaleX: 0.2, y: 0.2)
             isHidden = false
-            UIView.animate(withDuration: 0.2) {
+            UIView.animate(withDuration: 0.25) {
                 self.alpha = 1
                 self.transform = .identity
             }
@@ -64,7 +65,7 @@ class NewPostButton: UIButton, Themeable {
         isExcited = excited
         
         UIView.animate(withDuration: 0.1) {
-            self.transform = excited ? .init(scaleX: 0.9, y: 0.9) : .identity
+            self.transform = excited ? .init(scaleX: 0.8, y: 0.8) : .identity
         }
     }
 }
