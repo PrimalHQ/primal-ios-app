@@ -14,7 +14,7 @@ class ArticleChromeManager: AppChromeManager {
 
         let navTransform: CGAffineTransform = hidden ? .init(translationX: 0, y: -topBarHeight) : .identity
         let tabBar = controller.mainTabBarController
-        let tabTransform = tabBar?.targetTransformForTabBarState(hidden: hidden, compressed: tabBar?.isCompressed ?? false) ?? .identity
+        let tabTransform = tabBar?.targetTransformForTabBarState(hidden: hidden, excited: tabBar?.isExcited ?? false) ?? .identity
 
         let apply = { [self] in
             controller.navigationController?.navigationBar.transform = navTransform

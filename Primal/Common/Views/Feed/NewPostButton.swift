@@ -8,6 +8,8 @@
 import UIKit
 
 class NewPostButton: UIButton, Themeable {
+    private var isExcited = false
+    
     init() {
         super.init(frame: .zero)
         constrainToSize(56)
@@ -32,9 +34,12 @@ class NewPostButton: UIButton, Themeable {
     }
 
     func setHidden(_ hidden: Bool, animated: Bool) {
+        isExcited = false
+        
         guard animated else {
             isHidden = hidden
             alpha = 1
+            transform = .identity
             return
         }
 
@@ -44,10 +49,22 @@ class NewPostButton: UIButton, Themeable {
             }
         } else {
             alpha = 0
+            transform = .init(scaleX: 0.6, y: 0.6)
             isHidden = false
             UIView.animate(withDuration: 0.2) {
                 self.alpha = 1
+                self.transform = .identity
             }
+        }
+    }
+    
+    func setIsExcited(_ excited: Bool) {
+        guard isExcited != excited, !isHidden else { return }
+        
+        isExcited = excited
+        
+        UIView.animate(withDuration: 0.1) {
+            self.transform = excited ? .init(scaleX: 0.9, y: 0.9) : .identity
         }
     }
 }

@@ -20,8 +20,6 @@ class HomeFeedChildController: PostFeedViewController {
     
     weak var tabController: MainTabBarController?
 
-    override var usesCompressedTabBar: Bool { true }
-
     override init(feed: FeedManager) {
         super.init(feed: feed)
 
@@ -119,6 +117,9 @@ class HomeFeedChildController: PostFeedViewController {
     }
     
     override func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let newPosition = scrollView.contentOffset.y
+        let delta = newPosition - prevPosition
+        
         super.scrollViewDidScroll(scrollView)
         
         if /*feed.newPosts.0 == 0 &&*/ table.contentOffset.y < 0 {
@@ -137,6 +138,20 @@ class HomeFeedChildController: PostFeedViewController {
         
         if scrollView.contentOffset.y < 100 {
             feed.didShowPost(0)
+        }
+
+        if newPosition <= 0 {
+            accumulatedDelta = 0
+            updateBarsHidden(false)
+            parentHomeVC?.postButton.setIsExcited(false)
+            return
+        }
+
+        if !barsHidden {
+            parentHomeVC?.postButton.setIsExcited(delta > 0)
+            if delta != 0 {
+                mainTabBarController?.setIsExcited(barsHidden ? delta < 0 : delta > 0)
+            }
         }
     }
     
@@ -165,8 +180,6 @@ class HomeFeedChildController: PostFeedViewController {
 
         parentHomeVC?.postButton.setHidden(hidden, animated: animated)
     }
-    
-    
     
     override func updateTheme() {
         super.updateTheme()

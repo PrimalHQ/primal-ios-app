@@ -106,9 +106,6 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
             VideoPlaybackManager.instance.currentlyPlaying?.delayedPause()
         }
 
-        if usesCompressedTabBar, #available(iOS 26.0, *) {
-            uncompressTabBar()
-        }
         updateBarsHidden(false, animated: animated)
     }
     
@@ -118,8 +115,6 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
     var prevPosition: CGFloat = 0
     var accumulatedDelta: CGFloat = 0
     var barsHidden: Bool = false
-
-    var usesCompressedTabBar: Bool { false }
 
     var isVisibleOnScreen: Bool {
         guard UIApplication.shared.applicationState == .active else { return false }
@@ -174,53 +169,15 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
             return
         }
 
-        let compressionEnabled: Bool = {
-            guard usesCompressedTabBar else { return false }
-            if #available(iOS 26.0, *) { return true }
-            return false
-        }()
-
-        if newPosition <= 0 {
-            accumulatedDelta = 0
-            if compressionEnabled {
-                uncompressTabBar()
-            }
-            updateBarsHidden(false)
-            return
-        }
-
-        if compressionEnabled, !barsHidden {
-            mainTabBarController?.setIsCompressed(delta > 0, animated: true)
-        }
-
         accumulatedDelta += delta
 
-        let threshold: CGFloat = compressionEnabled ? 40 : 100
+        let threshold: CGFloat = 40
         if accumulatedDelta > threshold {
             updateBarsHidden(true)
             accumulatedDelta = 0
         } else if accumulatedDelta < -threshold {
-            if compressionEnabled {
-                uncompressTabBar()
-            }
             updateBarsHidden(false)
             accumulatedDelta = 0
-        }
-    }
-
-    private func uncompressTabBar() {
-        guard let tabBar = mainTabBarController, tabBar.isCompressed else { return }
-        if barsHidden {
-            // Let the subsequent hide→show animation produce identity in one motion.
-            tabBar.isCompressed = false
-        } else {
-            tabBar.setIsCompressed(false, animated: true)
-        }
-    }
-
-    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
-        if usesCompressedTabBar, #available(iOS 26.0, *) {
-            uncompressTabBar()
         }
     }
 

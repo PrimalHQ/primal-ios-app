@@ -95,31 +95,34 @@ final class MainTabBarController: UIViewController, Themeable {
         return vStack
     }
 
-    var isCompressed: Bool = false
-
-    func targetTransformForTabBarState(hidden: Bool, compressed: Bool) -> CGAffineTransform {
+    var isExcited: Bool = false
+    func targetTransformForTabBarState(hidden: Bool, excited: Bool) -> CGAffineTransform {
         var t = CGAffineTransform.identity
-        if compressed, #available(iOS 26.0, *) {
-            t = CGAffineTransform(scaleX: 0.95, y: 0.95)
-        }
         if hidden {
             let translation = tabBarContainerView.bounds.height + 10
             t = t.concatenating(CGAffineTransform(translationX: 0, y: translation))
         }
+        if excited, #available(iOS 26.0, *) {
+            t = CGAffineTransform(scaleX: 0.95, y: 0.95)
+        }
         return t
     }
 
-    func setIsCompressed(_ compressed: Bool, animated: Bool) {
-        guard compressed != isCompressed else { return }
-        isCompressed = compressed
+    func setIsExcited(_ excited: Bool) {
+        guard excited != isExcited else { return }
+        isExcited = excited
+        
         let currentlyHidden = tabBarContainerView.transform.ty != 0
-        let target = targetTransformForTabBarState(hidden: currentlyHidden, compressed: compressed)
-        let apply = { self.tabBarContainerView.transform = target }
-        if animated {
-            UIView.animate(withDuration: 0.25, delay: 0, options: [.curveEaseInOut], animations: apply)
-        } else {
-            apply()
+        
+        if currentlyHidden {
+            collapsedTabBarButton?.transform = isExcited ? CGAffineTransform(scaleX: 1.05, y: 1.05) : .identity
+            return
         }
+        
+        let target = targetTransformForTabBarState(hidden: currentlyHidden, excited: excited)
+        let apply = { self.tabBarContainerView.transform = target }
+        
+        UIView.animate(withDuration: 0.25, delay: 0, options: [.curveEaseInOut], animations: apply)
     }
 
     var continousConnection: ContinuousConnection?
@@ -237,7 +240,7 @@ final class MainTabBarController: UIViewController, Themeable {
         removeCollapsedTabBar(animated: animated)
 
         let targetView = tabBarContainerView
-        let newTransform = targetTransformForTabBarState(hidden: hidden, compressed: isCompressed)
+        let newTransform = targetTransformForTabBarState(hidden: hidden, excited: isExcited)
 
         if !animated {
             targetView.transform = newTransform
