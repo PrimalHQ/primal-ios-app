@@ -95,6 +95,33 @@ final class MainTabBarController: UIViewController, Themeable {
         return vStack
     }
 
+    var isCompressed: Bool = false
+
+    func targetTransformForTabBarState(hidden: Bool, compressed: Bool) -> CGAffineTransform {
+        var t = CGAffineTransform.identity
+        if compressed, #available(iOS 26.0, *) {
+            t = CGAffineTransform(scaleX: 0.95, y: 0.95)
+        }
+        if hidden {
+            let translation = tabBarContainerView.bounds.height + 10
+            t = t.concatenating(CGAffineTransform(translationX: 0, y: translation))
+        }
+        return t
+    }
+
+    func setIsCompressed(_ compressed: Bool, animated: Bool) {
+        guard compressed != isCompressed else { return }
+        isCompressed = compressed
+        let currentlyHidden = tabBarContainerView.transform.ty != 0
+        let target = targetTransformForTabBarState(hidden: currentlyHidden, compressed: compressed)
+        let apply = { self.tabBarContainerView.transform = target }
+        if animated {
+            UIView.animate(withDuration: 0.25, delay: 0, options: [.curveEaseInOut], animations: apply)
+        } else {
+            apply()
+        }
+    }
+
     var continousConnection: ContinuousConnection?
     var deeplinkCancellable: AnyCancellable?
     
@@ -208,16 +235,17 @@ final class MainTabBarController: UIViewController, Themeable {
         }
     
         removeCollapsedTabBar(animated: animated)
-        
+
         let targetView = tabBarContainerView
-        
+        let newTransform = targetTransformForTabBarState(hidden: hidden, compressed: isCompressed)
+
         if !animated {
-            targetView.transform = hidden ? .init(translationX: 0, y: targetView.bounds.height + 10) : .identity
+            targetView.transform = newTransform
             return
         }
 
         UIView.animate(withDuration: 0.3) {
-            targetView.transform = hidden ? .init(translationX: 0, y: targetView.bounds.height + 10) : .identity
+            targetView.transform = newTransform
         }
     }
     
@@ -361,7 +389,7 @@ final class MainTabBarController: UIViewController, Themeable {
     
     func showToast(_ message: String, icon: UIImage? = UIImage(named: "toastCheckmark")) {
         let bar = tabBarContainerView
-        let isTabBarHidden = bar.transform != .identity
+        let isTabBarHidden = bar.transform.ty != 0
 
         if isTabBarHidden {
             view.showToast(message, icon: icon, extraPadding: 0)

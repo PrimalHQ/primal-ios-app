@@ -13,11 +13,12 @@ class ArticleChromeManager: AppChromeManager {
         guard let controller = viewController else { return }
 
         let navTransform: CGAffineTransform = hidden ? .init(translationX: 0, y: -topBarHeight) : .identity
-        let tabTransform: CGAffineTransform = hidden ? .init(translationX: 0, y: bottomBarHeight) : .identity
+        let tabBar = controller.mainTabBarController
+        let tabTransform = tabBar?.targetTransformForTabBarState(hidden: hidden, compressed: tabBar?.isCompressed ?? false) ?? .identity
 
         let apply = { [self] in
             controller.navigationController?.navigationBar.transform = navTransform
-            controller.mainTabBarController?.tabBarContainerView.transform = tabTransform
+            tabBar?.tabBarContainerView.transform = tabTransform
 
             if hidden {
                 extraBottomView?.subviews.first?.alpha = 0

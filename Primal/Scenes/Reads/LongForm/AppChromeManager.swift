@@ -72,13 +72,15 @@ class AppChromeManager: NSObject, UIScrollViewDelegate {
         guard let controller = viewController else { return }
 
         let navTransform: CGAffineTransform = hidden ? .init(translationX: 0, y: -topBarHeight) : .identity
-        let tabTransform: CGAffineTransform = hidden ? .init(translationX: 0, y: bottomBarHeight) : .identity
+        let tabBar = controller.mainTabBarController
+        let tabTransform = tabBar?.targetTransformForTabBarState(hidden: hidden, compressed: tabBar?.isCompressed ?? false) ?? .identity
+        let extraBottomTransform: CGAffineTransform = hidden ? .init(translationX: 0, y: bottomBarHeight) : .identity
 
         let apply = { [self] in
             controller.navigationController?.navigationBar.transform = navTransform
             extraTopView?.transform = navTransform
-            controller.mainTabBarController?.tabBarContainerView.transform = tabTransform
-            extraBottomView?.transform = tabTransform
+            tabBar?.tabBarContainerView.transform = tabTransform
+            extraBottomView?.transform = extraBottomTransform
         }
 
         if animated {

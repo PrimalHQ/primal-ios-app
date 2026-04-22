@@ -20,9 +20,11 @@ class HomeFeedChildController: PostFeedViewController {
     
     weak var tabController: MainTabBarController?
 
+    override var usesCompressedTabBar: Bool { true }
+
     override init(feed: FeedManager) {
         super.init(feed: feed)
-        
+
 //        dataSource = GalleryFeedDatasource(tableView: table, delegate: self)
         dataSource = HomeFeedDatasource(tableView: table, delegate: self)
     }
