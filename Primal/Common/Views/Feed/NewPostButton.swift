@@ -23,11 +23,31 @@ class NewPostButton: UIButton, Themeable {
         if #available(iOS 26.0, *) {
             config = UIButton.Configuration.glass()
         }
-        
+
         config.image = UIImage(named: "addPostPlus")?.withRenderingMode(.alwaysTemplate)
         config.baseForegroundColor = .foreground
         config.baseBackgroundColor = .accent
         config.cornerStyle = .capsule
         configuration = config
+    }
+
+    func setHidden(_ hidden: Bool, animated: Bool) {
+        guard animated else {
+            isHidden = hidden
+            alpha = 1
+            return
+        }
+
+        if hidden {
+            UIView.transition(with: self, duration: 0.25, options: .transitionCrossDissolve) {
+                self.isHidden = true
+            }
+        } else {
+            alpha = 0
+            isHidden = false
+            UIView.animate(withDuration: 0.2) {
+                self.alpha = 1
+            }
+        }
     }
 }

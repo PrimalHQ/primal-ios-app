@@ -149,7 +149,6 @@ class HomeFeedChildController: PostFeedViewController {
         let percent: CGFloat = hidden ? 1 : 0
 
         parentHomeVC = parentHomeVC ?? findParent()
-        let postButtonParent = parentHomeVC?.postButtonParent
 
         let apply = { [self] in
             newPostsViewParent.transform = hidden ? .init(translationX: 0, y: -barsMaxTransform) : .identity
@@ -160,23 +159,11 @@ class HomeFeedChildController: PostFeedViewController {
 
         if animated {
             UIView.animate(withDuration: 0.3, animations: apply)
-            if let postButtonParent {
-                if hidden {
-                    UIView.transition(with: postButtonParent, duration: 0.25, options: .transitionCrossDissolve) {
-                        postButtonParent.isHidden = hidden
-                    }
-                } else {
-                    postButtonParent.alpha = 0
-                    postButtonParent.isHidden = false
-                    UIView.animate(withDuration: 0.2) {
-                        postButtonParent.alpha = 1
-                    }
-                }
-            }
         } else {
             apply()
-            postButtonParent?.isHidden = true
         }
+
+        parentHomeVC?.postButton.setHidden(hidden, animated: animated)
     }
     
     
