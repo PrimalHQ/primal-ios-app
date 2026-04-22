@@ -155,6 +155,11 @@ class HomeFeedChildController: PostFeedViewController {
         }
     }
     
+    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        parentHomeVC?.postButton.setIsExcited(false)
+        mainTabBarController?.setIsExcited(false)
+    }
+    
     weak var parentHomeVC: HomeFeedViewController?
     override func setBarsHidden(_ hidden: Bool, animated: Bool) {
         guard view.window != nil else { return }
