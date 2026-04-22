@@ -149,9 +149,9 @@ class HomeFeedChildController: PostFeedViewController {
 
         if !barsHidden {
             parentHomeVC?.postButton.setIsExcited(delta > 0)
-            if delta != 0 {
-                mainTabBarController?.setIsExcited(barsHidden ? delta < 0 : delta > 0)
-            }
+        }
+        if delta != 0 {
+            mainTabBarController?.setIsExcited(barsHidden ? delta < 0 : delta > 0)
         }
     }
     

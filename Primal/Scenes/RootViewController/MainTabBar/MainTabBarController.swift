@@ -115,7 +115,9 @@ final class MainTabBarController: UIViewController, Themeable {
         let currentlyHidden = tabBarContainerView.transform.ty != 0
         
         if currentlyHidden {
-            collapsedTabBarButton?.transform = isExcited ? CGAffineTransform(scaleX: 1.05, y: 1.05) : .identity
+            UIView.animate(withDuration: 0.25, delay: 0, options: [.curveEaseInOut]) {
+                self.collapsedTabBarButton?.transform = excited ? CGAffineTransform(scaleX: 1.1, y: 1.1) : .identity
+            }
             return
         }
         
