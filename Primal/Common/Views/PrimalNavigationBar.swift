@@ -120,6 +120,17 @@ final class PrimalNavigationBar: UIView, Themeable {
     private let titleButton = UIButton()
     private let avatarButton = UIButton()
 
+    fileprivate lazy var leftStack: UIStackView = {
+        let titleRow = UIStackView(spacing: 8, [titleLabel, chevronView])
+        titleRow.alignment = .center
+        let stack = UIStackView(axis: .vertical, spacing: 2, [titleRow, subtitleLabel])
+        stack.alignment = .leading
+        return stack
+    }()
+
+    fileprivate weak var transitionView: UIView?
+    fileprivate var transitionConstraint: NSLayoutConstraint?
+
     private var cancellables: Set<AnyCancellable> = []
 
     var title: String = "" {
@@ -170,13 +181,7 @@ private extension PrimalNavigationBar {
         chevronView.setContentHuggingPriority(.required, for: .horizontal)
         chevronView.setContentCompressionResistancePriority(.required, for: .horizontal)
 
-        let titleRow = UIStackView(spacing: 8, [titleLabel, chevronView])
-        titleRow.alignment = .center
-
-        let leftStack = UIStackView(axis: .vertical, spacing: 2, [titleRow, subtitleLabel])
-        leftStack.alignment = .leading
-        
-        let mainStack = UIStackView(spacing: 12, [leftStack, userImageView])
+        let mainStack = UIStackView(spacing: 6, [leftStack, UIView(), userImageView])
         mainStack.alignment = .center
 
         addSubview(mainStack)
@@ -206,5 +211,156 @@ private extension PrimalNavigationBar {
             .store(in: &cancellables)
 
         updateTheme()
+    }
+}
+
+extension PrimalNavigationBar {
+    func startTransition(left: Bool, newTitle: String, newSubtitle: String) {
+        transitionView?.removeFromSuperview()
+
+        let overlay = UIView()
+        overlay.backgroundColor = .background
+        overlay.clipsToBounds = true
+        addSubview(overlay)
+        
+        overlay
+            .pinToSuperview(edges: .vertical)
+            .pin(to: leftStack, edges: left ? .leading : .trailing)
+        
+        let mirrorBar = PrimalNavigationBar()
+        mirrorBar.title = newTitle
+        mirrorBar.subtitle = newSubtitle
+        mirrorBar.showChevron = showChevron
+        
+        let mirrorView = mirrorBar.leftStack
+
+        overlay.addSubview(mirrorView)
+        mirrorView.pin(to: leftStack, edges: .leading).centerToView(leftStack, axis: .vertical)
+        
+        let overlayBar = SpacerView(width: 10, color: .background)
+        overlay.addSubview(overlayBar)
+        overlayBar.pinToSuperview(edges: .vertical).pinToSuperview(edges: left ? .trailing : .leading)
+        
+        let widthC = overlay.widthAnchor.constraint(equalToConstant: 0)
+        widthC.priority = .defaultHigh
+        
+        let edgeC: NSLayoutConstraint
+        if left {
+            edgeC = overlay.leadingAnchor.constraint(equalTo: leftStack.leadingAnchor)
+        } else {
+            edgeC = overlay.trailingAnchor.constraint(equalTo: leftStack.trailingAnchor)
+            edgeC.priority = .init(1)
+            
+            let otherEdgeC = overlay.trailingAnchor.constraint(greaterThanOrEqualTo: mirrorView.trailingAnchor)
+            otherEdgeC.priority = .init(999)
+            otherEdgeC.isActive = true
+        }
+        
+        NSLayoutConstraint.activate([
+            edgeC, widthC,
+            overlay.trailingAnchor.constraint(lessThanOrEqualTo: userImageView.leadingAnchor)
+        ])
+        
+        transitionView = overlay
+        transitionConstraint = widthC
+
+        bringSubviewToFront(avatarButton)
+        bringSubviewToFront(titleButton)
+    }
+
+    func updateTransition(percent: CGFloat) {
+        transitionConstraint?.constant = bounds.width * percent.clamped(to: 0...1)
+    }
+
+    func cancelTransition() {
+        transitionConstraint?.constant = 0
+        UIView.animate(withDuration: 0.1) {
+            self.layoutIfNeeded()
+        }
+    }
+
+    func completeTransitionAnimated(newTitle: String, newSubtitle: String) {
+        transitionConstraint?.constant = bounds.width
+        UIView.animate(withDuration: 0.1) {
+            self.layoutIfNeeded()
+        } completion: { _ in
+            self.transitionView?.removeFromSuperview()
+            self.title = newTitle
+            self.subtitle = newSubtitle
+        }
+    }
+
+    func completeTransition(newTitle: String, newSubtitle: String) {
+        transitionView?.removeFromSuperview()
+        title = newTitle
+        subtitle = newSubtitle
+    }
+}
+
+protocol FeedTitleSwipeController: PrimalNavigationBarController {
+    var pageVC: UIPageViewController { get }
+
+    func feedToLeftOfCurrentFeed() -> PrimalFeed?
+    func feedToRightOfCurrentFeed() -> PrimalFeed?
+}
+
+final class FeedTitleSwipeGesture: UIPanGestureRecognizer {
+    weak var vc: FeedTitleSwipeController?
+
+    private var oldTransition: (left: Bool, String)?
+
+    init(vc: FeedTitleSwipeController) {
+        self.vc = vc
+        super.init(target: nil, action: nil)
+        addTarget(self, action: #selector(execute))
+        delegate = self
+    }
+
+    @objc private func execute() {
+        guard let pageVC = vc?.pageVC, let navBar = vc?.primalNavigationBar else { return }
+
+        if let scroll: UIScrollView = pageVC.view.findAllSubviews().first, scroll.contentOffset.x == scroll.frame.width {
+            return
+        }
+
+        let x = translation(in: view).x
+        let left = x > 0
+
+        guard let transitionFeed = left ? vc?.feedToLeftOfCurrentFeed() : vc?.feedToRightOfCurrentFeed() else { return }
+
+        if let oldTransition, oldTransition.left == left && oldTransition.1 == transitionFeed.name {
+            // continue existing transition
+        } else {
+            self.oldTransition = (left, transitionFeed.name)
+            navBar.startTransition(left: left, newTitle: transitionFeed.name, newSubtitle: transitionFeed.description)
+        }
+
+        switch state {
+        case .possible, .began, .changed:
+            navBar.updateTransition(percent: abs(x) / pageVC.view.frame.width)
+        case .ended, .cancelled, .failed:
+            let velocity = velocity(in: view).x
+            let halfWidth = pageVC.view.frame.width / 2
+
+            if (velocity > 300 && x > 0) || (velocity < -300 && x < 0) || (velocity < 200 && x < -halfWidth) || (velocity > -200 && x > halfWidth) {
+                navBar.completeTransitionAnimated(newTitle: transitionFeed.name, newSubtitle: transitionFeed.description)
+            } else {
+                navBar.cancelTransition()
+            }
+            oldTransition = nil
+        @unknown default:
+            break
+        }
+    }
+}
+
+extension FeedTitleSwipeGesture: UIGestureRecognizerDelegate {
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool { true }
+
+    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        if let pan = gestureRecognizer as? UIPanGestureRecognizer, abs(pan.translation(in: view).y) >= 0.01 {
+            return false
+        }
+        return true
     }
 }

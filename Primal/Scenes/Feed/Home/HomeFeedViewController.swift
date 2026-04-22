@@ -27,7 +27,7 @@ extension UIButton.Configuration {
     }
 }
 
-final class HomeFeedViewController: UIViewController, Themeable, PrimalNavigationBarController {
+final class HomeFeedViewController: UIViewController, Themeable, FeedTitleSwipeController {
     let primalNavigationBar = PrimalNavigationBar()
 
     let postButtonParent = UIView()
@@ -76,6 +76,8 @@ final class HomeFeedViewController: UIViewController, Themeable, PrimalNavigatio
 
         pageVC.dataSource = self
         pageVC.delegate = self
+
+        view.addGestureRecognizer(FeedTitleSwipeGesture(vc: self))
 
         addNavigationBar()
         primalNavigationBar.showChevron = true
@@ -132,8 +134,7 @@ final class HomeFeedViewController: UIViewController, Themeable, PrimalNavigatio
     private var cachedFeedToRight: PrimalFeed?
     func setFeed(_ feed: PrimalFeed) {
         currentFeed = feed
-        primalNavigationBar.title = feed.name
-        primalNavigationBar.subtitle = feed.description
+        primalNavigationBar.completeTransition(newTitle: feed.name, newSubtitle: feed.description)
         pageVC.setViewControllers([HomeFeedChildController(feed: .init(newFeed: feed))], direction: .forward, animated: false)
     }
     
@@ -187,19 +188,19 @@ extension HomeFeedViewController: UIPageViewControllerDataSource {
 extension HomeFeedViewController: UIPageViewControllerDelegate {
     func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {
         guard completed else {
+            primalNavigationBar.cancelTransition()
             return
         }
-        
+
         let allFeeds = PrimalFeed.getActiveFeeds(.note)
-        
+
         guard
             let articleFeed = pageViewController.viewControllers?.first as? HomeFeedChildController,
             let feed = allFeeds.first(where: { $0.hasEqualSpec(articleFeed.feed.newFeed) })
         else { return }
-        
+
         currentFeed = feed
-        primalNavigationBar.title = feed.name
-        primalNavigationBar.subtitle = feed.description
+        primalNavigationBar.completeTransition(newTitle: feed.name, newSubtitle: feed.description)
     }
 }
 
