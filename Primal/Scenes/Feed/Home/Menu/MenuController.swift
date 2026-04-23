@@ -22,7 +22,7 @@ final class MenuController: UIViewController, Themeable {
     private let mainStack = UIStackView()
 
     private let premiumIndicator = NumberedNotificationIndicator()
-    private let notificationIndicator = NumberedNotificationIndicator()
+    private let messagesIndicator = NumberedNotificationIndicator()
 
     private let profileImageButton = UIButton()
     private let closeButton = UIButton(configuration: .accent18("Close"))
@@ -142,8 +142,8 @@ private extension MenuController {
         mainStack.alignment = .leading
         mainStack.setCustomSpacing(MenuSizes.nnfToMenuButtonsSpacing, after: nnfStack)
 
-        contentView.addSubview(notificationIndicator)
-        notificationIndicator.pin(to: messages, edges: .top, padding: 4).pinToSuperview(edges: .leading, padding: 150)
+        contentView.addSubview(messagesIndicator)
+        messagesIndicator.pin(to: messages, edges: .top, padding: 4).pinToSuperview(edges: .leading, padding: 150)
 
         contentView.addSubview(premiumIndicator)
         premiumIndicator.pin(to: premium, edges: .top, padding: 4).pinToSuperview(edges: .leading, padding: 137)
@@ -397,3 +397,60 @@ final class MenuItemButton: MyButton, Themeable {
         imageView.tintColor = isPressed ? .foreground : .foreground3
     }
 }
+
+final class NumberedNotificationIndicator: UIView, Themeable {
+    var number: Int {
+        didSet {
+            update()
+        }
+    }
+    
+    var color: () -> UIColor = { .accent } {
+        didSet {
+            updateTheme()
+        }
+    }
+    
+    private let label = UILabel()
+    
+    init(number: Int = 0) {
+        self.number = number
+        super.init(frame: .zero)
+        
+        addSubview(label)
+        label.centerToSuperview().pinToSuperview(edges: .leading, padding: 3.5)
+        label.font = .appFont(withSize: 12, weight: .medium)
+        label.textColor = .white
+        label.textAlignment = .center
+
+        constrainToSize(height: 16)
+        widthAnchor.constraint(greaterThanOrEqualToConstant: 16).isActive = true
+        layer.cornerRadius = 8
+        
+        updateTheme()
+        update()
+    }
+    
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    
+    private func update() {
+        if number <= 0 {
+            isHidden = true
+            return
+        }
+        
+        isHidden = false
+        
+        if number > 99 {
+            label.text = "99+"
+            return
+        }
+        
+        label.text = "\(number)"
+    }
+    
+    func updateTheme() {
+        backgroundColor = color()
+    }
+}
+

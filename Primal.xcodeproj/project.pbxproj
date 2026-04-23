@@ -745,6 +745,7 @@
 		D07C0FFEE5F6071800000001 /* NotificationsTabIconComposer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D07C0FFEE5F6071800000002 /* NotificationsTabIconComposer.swift */; };
 		D1A1B1C1D1E1F1A1B1C1D1E2 /* MainThreadElementTextCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A1B1C1D1E1F1A1B1C1D1E1 /* MainThreadElementTextCell.swift */; };
 		D1A2B3C4E5F6071800000001 /* MainTabBarRootViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A2B3C4E5F6071800000002 /* MainTabBarRootViewController.swift */; };
+		B9A5E3C10A2B4D600000001A /* MainTabBarViewOrchestrator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A5E3C10A2B4D600000001B /* MainTabBarViewOrchestrator.swift */; };
 		D2A2B2C2D2E2F2A2B2C2D2E2 /* MainThreadElementReactionsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A2B2C2D2E2F2A2B2C2D2E1 /* MainThreadElementReactionsCell.swift */; };
 		D2B3C4E5F6A7089012345679 /* CacheBreakdownView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2B3C4E5F6A7089012345678 /* CacheBreakdownView.swift */; };
 		D3A3B3C3D3E3F3A3B3C3D3E2 /* MainThreadElementSmallZapGalleryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3A3B3C3D3E3F3A3B3C3D3E1 /* MainThreadElementSmallZapGalleryCell.swift */; };
@@ -1580,6 +1581,7 @@
 		D07C0FFEE5F6071800000002 /* NotificationsTabIconComposer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationsTabIconComposer.swift; sourceTree = "<group>"; };
 		D1A1B1C1D1E1F1A1B1C1D1E1 /* MainThreadElementTextCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainThreadElementTextCell.swift; sourceTree = "<group>"; };
 		D1A2B3C4E5F6071800000002 /* MainTabBarRootViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabBarRootViewController.swift; sourceTree = "<group>"; };
+		B9A5E3C10A2B4D600000001B /* MainTabBarViewOrchestrator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabBarViewOrchestrator.swift; sourceTree = "<group>"; };
 		D2A2B2C2D2E2F2A2B2C2D2E1 /* MainThreadElementReactionsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainThreadElementReactionsCell.swift; sourceTree = "<group>"; };
 		D2B3C4E5F6A7089012345678 /* CacheBreakdownView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheBreakdownView.swift; sourceTree = "<group>"; };
 		D3A3B3C3D3E3F3A3B3C3D3E1 /* MainThreadElementSmallZapGalleryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainThreadElementSmallZapGalleryCell.swift; sourceTree = "<group>"; };
@@ -2634,6 +2636,7 @@
 				B904E9A22F042BDD006D195C /* MigrateWalletPopupController.swift */,
 				A1B2C3D4E5F6A7B8C9D0E1F2 /* WalletDetectedPopupController.swift */,
 				9E6924A32A02925F00CAC54C /* MainTabBarController.swift */,
+				B9A5E3C10A2B4D600000001B /* MainTabBarViewOrchestrator.swift */,
 				D07C0FFEE5F6071800000002 /* NotificationsTabIconComposer.swift */,
 				C0LLAP5ED1AB8A7B00000002 /* CollapsedTabBarButton.swift */,
 				D1A2B3C4E5F6071800000002 /* MainTabBarRootViewController.swift */,
@@ -4464,6 +4467,7 @@
 				B98B787B2EC21F72006134F9 /* CloudRemoveLoginView.swift in Sources */,
 				B94F2BC22AD57AD20041181B /* TransactionHeader.swift in Sources */,
 				9E6924A42A02925F00CAC54C /* MainTabBarController.swift in Sources */,
+				B9A5E3C10A2B4D600000001A /* MainTabBarViewOrchestrator.swift in Sources */,
 				D07C0FFEE5F6071800000001 /* NotificationsTabIconComposer.swift in Sources */,
 				C0LLAP5ED1AB8A7B00000001 /* CollapsedTabBarButton.swift in Sources */,
 				D1A2B3C4E5F6071800000001 /* MainTabBarRootViewController.swift in Sources */,
