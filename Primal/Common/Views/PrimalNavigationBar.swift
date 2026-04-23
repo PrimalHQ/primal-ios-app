@@ -51,17 +51,30 @@ extension PrimalNavigationBarController {
     }
 
     func setNavigationBarHidden(_ hidden: Bool, animated: Bool) {
+        if hidden == primalNavigationBar.isHidden { return }
+        
         addNavBarCoverIfNeeded()
+        
+        guard animated else {
+            primalNavigationBar.isHidden = hidden
+            return
+        }
 
-        let apply = { [self] in
+        if !hidden {
+            primalNavigationBar.isHidden = false
+            primalNavigationBar.transform = .init(translationX: 0, y: -PrimalNavigationBar.height)
+        }
+        
+        UIView.animate(withDuration: 0.3, animations: { [self] in
             primalNavigationBar.transform = hidden ? .init(translationX: 0, y: -PrimalNavigationBar.height) : .identity
+        }) { _ in
+            self.primalNavigationBar.isHidden = hidden
         }
-
-        if animated {
-            UIView.animate(withDuration: 0.3, animations: apply)
-        } else {
-            apply()
-        }
+    }
+    
+    func setNavigationBarExcited(excited: CGFloat) {
+        guard !primalNavigationBar.isHidden, primalNavigationBar.transform.ty != -PrimalNavigationBar.height else { return }
+        primalNavigationBar.transform = .init(translationX: 0, y: min(0, -excited))
     }
 }
 

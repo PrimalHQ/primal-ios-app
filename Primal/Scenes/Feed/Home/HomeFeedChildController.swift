@@ -133,6 +133,7 @@ class HomeFeedChildController: PostFeedViewController {
 //            updateBarsHidden(false)
             parentHomeVC?.postButton.setIsExcited(false)
             newPostsView.setIsExcited(false)
+            parentHomeVC?.setNavigationBarExcited(excited: 0)
             return
         }
 
@@ -141,6 +142,7 @@ class HomeFeedChildController: PostFeedViewController {
         if !barsHidden {
             parentHomeVC?.postButton.setIsExcited(delta > 0)
             newPostsView.setIsExcited(delta > 0)
+            parentHomeVC?.setNavigationBarExcited(excited: accumulatedDelta)
         }
         if delta != 0 {
             mainTabBarController?.setIsExcited(barsHidden ? delta < 0 : delta > 0)
@@ -151,6 +153,7 @@ class HomeFeedChildController: PostFeedViewController {
         parentHomeVC?.postButton.setIsExcited(false)
         newPostsView.setIsExcited(false)
         mainTabBarController?.setIsExcited(false)
+        parentHomeVC?.setNavigationBarExcited(excited: 0)
     }
     
     weak var parentHomeVC: HomeFeedViewController?
