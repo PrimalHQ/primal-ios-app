@@ -110,13 +110,13 @@ class HomeFeedChildController: PostFeedViewController {
         
         super.scrollViewDidScroll(scrollView)
         
-        if /*feed.newPosts.0 == 0 &&*/ table.contentOffset.y < 0 {
-            newPostsViewParent.alpha = 1 - (min(100, -2 * table.contentOffset.y) / 100)
+        if /*feed.newPosts.0 == 0 &&*/ newPosition < 0 {
+            newPostsViewParent.alpha = 1 - (min(100, -2 * newPosition) / 100)
         } else {
             newPostsViewParent.alpha = 1
         }
         
-        if scrollView.contentOffset.y > scrollView.contentSize.height - 2000 {
+        if newPosition > scrollView.contentSize.height - 2000 {
             didReachEnd = true
         } else {
             didReachEnd = false
@@ -124,17 +124,19 @@ class HomeFeedChildController: PostFeedViewController {
         
         isScrolling = true
         
-        if scrollView.contentOffset.y < 100 {
+        if newPosition < 100 {
             feed.didShowPost(0)
         }
 
         if newPosition <= 0 {
             accumulatedDelta = 0
-            updateBarsHidden(false)
+//            updateBarsHidden(false)
             parentHomeVC?.postButton.setIsExcited(false)
             newPostsView.setIsExcited(false)
             return
         }
+
+        guard scrollView.isDragging || scrollView.isDecelerating else { return }
 
         if !barsHidden {
             parentHomeVC?.postButton.setIsExcited(delta > 0)

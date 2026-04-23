@@ -169,14 +169,18 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
             return
         }
 
+        // Only react to user-driven scrolls — content insertions / programmatic scrolls fire
+        // scrollViewDidScroll with deltas that would otherwise toggle the chrome incorrectly.
+        guard scrollView.isDragging || scrollView.isDecelerating else { return }
+
         accumulatedDelta += delta
 
         let threshold: CGFloat = 40
-        if accumulatedDelta > threshold {
-            updateBarsHidden(true)
-            accumulatedDelta = 0
-        } else if accumulatedDelta < -threshold {
+        if newPosition <= 0 || accumulatedDelta < -threshold {
             updateBarsHidden(false)
+            accumulatedDelta = 0
+        } else if accumulatedDelta > threshold {
+            updateBarsHidden(true)
             accumulatedDelta = 0
         }
     }
