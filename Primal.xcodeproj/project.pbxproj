@@ -543,6 +543,7 @@
 		B9A36BDE2B8F985400D4465D /* UIButtonConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A36BDD2B8F985400D4465D /* UIButtonConfiguration.swift */; };
 		B9A36BE12B8F9A9C00D4465D /* PopupAccountSwitchingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A36BE02B8F9A9C00D4465D /* PopupAccountSwitchingController.swift */; };
 		B9A506992C10EC4800B24D7A /* SimpleZapGallery.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A506982C10EC4800B24D7A /* SimpleZapGallery.swift */; };
+		B9A5E3C10A2B4D600000001A /* MainTabBarViewOrchestrator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A5E3C10A2B4D600000001B /* MainTabBarViewOrchestrator.swift */; };
 		B9B1AB9A2B2C730400837312 /* regions.json in Resources */ = {isa = PBXBuildFile; fileRef = B9B1AB982B2C730400837312 /* regions.json */; };
 		B9B1AB9E2B33341B00837312 /* TransactionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9B1AB9D2B33341B00837312 /* TransactionViewController.swift */; };
 		B9B1ABA12B33364300837312 /* TransactionAmountCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9B1ABA02B33364300837312 /* TransactionAmountCell.swift */; };
@@ -745,7 +746,6 @@
 		D07C0FFEE5F6071800000001 /* NotificationsTabIconComposer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D07C0FFEE5F6071800000002 /* NotificationsTabIconComposer.swift */; };
 		D1A1B1C1D1E1F1A1B1C1D1E2 /* MainThreadElementTextCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A1B1C1D1E1F1A1B1C1D1E1 /* MainThreadElementTextCell.swift */; };
 		D1A2B3C4E5F6071800000001 /* MainTabBarRootViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A2B3C4E5F6071800000002 /* MainTabBarRootViewController.swift */; };
-		B9A5E3C10A2B4D600000001A /* MainTabBarViewOrchestrator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A5E3C10A2B4D600000001B /* MainTabBarViewOrchestrator.swift */; };
 		D2A2B2C2D2E2F2A2B2C2D2E2 /* MainThreadElementReactionsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A2B2C2D2E2F2A2B2C2D2E1 /* MainThreadElementReactionsCell.swift */; };
 		D2B3C4E5F6A7089012345679 /* CacheBreakdownView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2B3C4E5F6A7089012345678 /* CacheBreakdownView.swift */; };
 		D3A3B3C3D3E3F3A3B3C3D3E2 /* MainThreadElementSmallZapGalleryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3A3B3C3D3E3F3A3B3C3D3E1 /* MainThreadElementSmallZapGalleryCell.swift */; };
@@ -1382,6 +1382,7 @@
 		B9A36BDD2B8F985400D4465D /* UIButtonConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIButtonConfiguration.swift; sourceTree = "<group>"; };
 		B9A36BE02B8F9A9C00D4465D /* PopupAccountSwitchingController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupAccountSwitchingController.swift; sourceTree = "<group>"; };
 		B9A506982C10EC4800B24D7A /* SimpleZapGallery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleZapGallery.swift; sourceTree = "<group>"; };
+		B9A5E3C10A2B4D600000001B /* MainTabBarViewOrchestrator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabBarViewOrchestrator.swift; sourceTree = "<group>"; };
 		B9B1AB982B2C730400837312 /* regions.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = regions.json; sourceTree = "<group>"; };
 		B9B1AB9D2B33341B00837312 /* TransactionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionViewController.swift; sourceTree = "<group>"; };
 		B9B1ABA02B33364300837312 /* TransactionAmountCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionAmountCell.swift; sourceTree = "<group>"; };
@@ -1581,7 +1582,6 @@
 		D07C0FFEE5F6071800000002 /* NotificationsTabIconComposer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationsTabIconComposer.swift; sourceTree = "<group>"; };
 		D1A1B1C1D1E1F1A1B1C1D1E1 /* MainThreadElementTextCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainThreadElementTextCell.swift; sourceTree = "<group>"; };
 		D1A2B3C4E5F6071800000002 /* MainTabBarRootViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabBarRootViewController.swift; sourceTree = "<group>"; };
-		B9A5E3C10A2B4D600000001B /* MainTabBarViewOrchestrator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabBarViewOrchestrator.swift; sourceTree = "<group>"; };
 		D2A2B2C2D2E2F2A2B2C2D2E1 /* MainThreadElementReactionsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainThreadElementReactionsCell.swift; sourceTree = "<group>"; };
 		D2B3C4E5F6A7089012345678 /* CacheBreakdownView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheBreakdownView.swift; sourceTree = "<group>"; };
 		D3A3B3C3D3E3F3A3B3C3D3E1 /* MainThreadElementSmallZapGalleryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainThreadElementSmallZapGalleryCell.swift; sourceTree = "<group>"; };
@@ -4984,7 +4984,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.5.8;
+				MARKETING_VERSION = 3.5.9;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -5033,7 +5033,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.5.8;
+				MARKETING_VERSION = 3.5.9;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

@@ -8,6 +8,18 @@
 import FLAnimatedImage
 import UIKit
 
+extension PrimalNavigationBar {
+    static func transformForExcited(_ excited: CGFloat) -> CGAffineTransform {
+        .init(translationX: 0, y: max(maxTranslation, min(0, -excited)))
+    }
+    
+    static var transformForMaxExcited: CGAffineTransform {
+        .init(translationX: 0, y: maxTranslation)
+    }
+    
+    static var maxTranslation: CGFloat { -PrimalNavigationBar.height }
+}
+
 final class NewPostsButton: MyButton, Themeable {
     private let noteAvatars: [UserImageView] = (0..<3).map { _ in UserImageView(height: 28, showLegendGlow: false) }
     private let noteLabel = UILabel()
@@ -22,8 +34,6 @@ final class NewPostsButton: MyButton, Themeable {
     lazy var liveStack = UIStackView([liveAvatarStack, liveLabel])
 
     let separator = SpacerView(width: 1, height: 24, color: .white.withAlphaComponent(0.5))
-
-    private var isExcited = false
 
     override var isPressed: Bool {
         didSet {
@@ -129,7 +139,6 @@ final class NewPostsButton: MyButton, Themeable {
     }
 
     func setHidden(_ hidden: Bool, animated: Bool) {
-        isExcited = false
         guard isHidden != hidden else { return }
 
         guard animated else {
@@ -141,8 +150,8 @@ final class NewPostsButton: MyButton, Themeable {
 
         if hidden {
             UIView.animate(withDuration: 0.25) {
-                self.transform = .init(scaleX: 0.2, y: 0.2)
                 self.alpha = 0
+                self.transform = PrimalNavigationBar.transformForMaxExcited
             } completion: { _ in
                 self.isHidden = true
             }
@@ -150,18 +159,23 @@ final class NewPostsButton: MyButton, Themeable {
             alpha = 0
             transform = .init(translationX: 0, y: -30)
             isHidden = false
-            UIView.animate(withDuration: 12 / 30, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 0) {
+            UIView.animate(withDuration: 0.25) {
                 self.alpha = 1
                 self.transform = .identity
             }
         }
     }
 
-    func setIsExcited(_ excited: Bool) {
-        guard isExcited != excited, !isHidden else { return }
-        isExcited = excited
-        UIView.animate(withDuration: 0.1) {
-            self.transform = excited ? .init(scaleX: 0.9, y: 0.9) : .identity
+    func setIsExcited(_ excited: CGFloat, animated: Bool) {
+        guard !isHidden, alpha > 0 else { return }
+        
+        guard animated else {
+            transform = PrimalNavigationBar.transformForExcited(excited)
+            return
+        }
+        
+        UIView.animate(withDuration: 0.25) {
+            self.transform = PrimalNavigationBar.transformForExcited(excited)
         }
     }
 

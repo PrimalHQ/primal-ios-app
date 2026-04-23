@@ -113,6 +113,7 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
     var adjustedTopBarHeight: CGFloat { topBarHeight }
     var barsMaxTransform: CGFloat { topBarHeight }
     var prevPosition: CGFloat = 0
+    var prevDelta: CGFloat = 0
     var accumulatedDelta: CGFloat = 0
     var barsHidden: Bool = false
 
@@ -153,7 +154,10 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         let newPosition = scrollView.contentOffset.y
         let delta = newPosition - prevPosition
-        defer { prevPosition = newPosition }
+        defer {
+            prevPosition = newPosition
+            prevDelta = delta
+        }
         
         if FullScreenVideoPlayerController.instance == nil && VideoPlaybackManager.instance.autoPlay {
             if abs(delta) > 50 {
@@ -164,8 +168,7 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
         }
 
         // Ignore large system-driven jumps (layout changes, inset adjustments).
-        if abs(delta) > 150 || (delta.sign != accumulatedDelta.sign && accumulatedDelta != 0) {
-            accumulatedDelta = 0
+        if abs(delta) > 100 || (delta.sign != prevDelta.sign && prevDelta != 0) {
             return
         }
 
@@ -173,10 +176,14 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
         // scrollViewDidScroll with deltas that would otherwise toggle the chrome incorrectly.
         guard scrollView.isDragging || scrollView.isDecelerating else { return }
 
-        accumulatedDelta += delta
+        if newPosition < PrimalNavigationBar.maxTranslation && delta > 0 {
+            // NO OP because we don't want to hide the header if we over-scrolled on top
+        } else {
+            accumulatedDelta += delta
+        }
 
-        let threshold: CGFloat = 40
-        if newPosition <= 0 || accumulatedDelta < -threshold {
+        let threshold: CGFloat = 80
+        if accumulatedDelta < -threshold {
             updateBarsHidden(false)
             accumulatedDelta = 0
         } else if accumulatedDelta > threshold {
@@ -198,26 +205,17 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
     func setBarsHidden(_ hidden: Bool, animated: Bool) {
         mainTabBarController?.setTabBarHidden(hidden, animated: animated)
 
-        if let navBarVC: any PrimalNavigationBarController = findParent() {
-            navBarVC.setNavigationBarHidden(hidden, animated: animated)
-        } else {
-            let navTransform: CGAffineTransform = hidden ? .init(translationX: 0, y: -barsMaxTransform) : .identity
-            let apply = { [self] in
-                navigationController?.navigationBar.transform = navTransform
-            }
-            if animated {
-                UIView.animate(withDuration: 0.3) { apply() }
-            } else {
-                apply()
-            }
+        guard navigationController?.navigationBar.isHidden == false else { return }
+        
+        let apply = { [self] in
+            navigationController?.navigationBar.transform = hidden ? .init(translationX: 0, y: -barsMaxTransform) : .identity
+            self.navigationBorder.transform = hidden ? .init(translationX: 0, y: -barsMaxTransform) : .identity
         }
-
-        let borderTransform: CGAffineTransform = hidden ? .init(translationX: 0, y: -barsMaxTransform) : .identity
-        let applyBorder = { self.navigationBorder.transform = borderTransform }
+        
         if animated {
-            UIView.animate(withDuration: 0.3, animations: applyBorder)
+            UIView.animate(withDuration: 0.3) { apply() }
         } else {
-            applyBorder()
+            apply()
         }
     }
 

@@ -108,6 +108,8 @@ class HomeFeedChildController: PostFeedViewController {
         let newPosition = scrollView.contentOffset.y
         let delta = newPosition - prevPosition
         
+        parentHomeVC = parentHomeVC ?? findParent()
+        
         super.scrollViewDidScroll(scrollView)
         
         if /*feed.newPosts.0 == 0 &&*/ newPosition < 0 {
@@ -128,21 +130,21 @@ class HomeFeedChildController: PostFeedViewController {
             feed.didShowPost(0)
         }
 
-        if newPosition <= 0 {
-            accumulatedDelta = 0
-//            updateBarsHidden(false)
-            parentHomeVC?.postButton.setIsExcited(false)
-            newPostsView.setIsExcited(false)
-            parentHomeVC?.setNavigationBarExcited(excited: 0)
-            return
-        }
+//        if newPosition <= 0 {
+//            accumulatedDelta = 0
+//            mainTabBarController?.setIsExcited(false)
+//            parentHomeVC?.postButton.setIsExcited(false)
+//            newPostsView.setIsExcited(0, animated: true)
+//            parentHomeVC?.setNavigationBarExcited(excited: 0, animated: true)
+//            return
+//        }
 
         guard scrollView.isDragging || scrollView.isDecelerating else { return }
 
         if !barsHidden {
             parentHomeVC?.postButton.setIsExcited(delta > 0)
-            newPostsView.setIsExcited(delta > 0)
-            parentHomeVC?.setNavigationBarExcited(excited: accumulatedDelta)
+            newPostsView.setIsExcited(accumulatedDelta, animated: accumulatedDelta == 0)
+            parentHomeVC?.setNavigationBarExcited(excited: accumulatedDelta, animated: accumulatedDelta == 0)
         }
         if delta != 0 {
             mainTabBarController?.setIsExcited(barsHidden ? delta < 0 : delta > 0)
@@ -151,9 +153,9 @@ class HomeFeedChildController: PostFeedViewController {
 
     func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
         parentHomeVC?.postButton.setIsExcited(false)
-        newPostsView.setIsExcited(false)
         mainTabBarController?.setIsExcited(false)
-        parentHomeVC?.setNavigationBarExcited(excited: 0)
+        parentHomeVC?.setNavigationBarExcited(excited: 0, animated: true)
+        newPostsView.setIsExcited(0, animated: true)
     }
     
     weak var parentHomeVC: HomeFeedViewController?
@@ -163,8 +165,6 @@ class HomeFeedChildController: PostFeedViewController {
         super.setBarsHidden(hidden, animated: animated)
 
         let percent: CGFloat = hidden ? 1 : 0
-
-        parentHomeVC = parentHomeVC ?? findParent()
 
         let apply = { [self] in
             tabController?.indicatorStack.alpha = 1 - percent
@@ -177,6 +177,7 @@ class HomeFeedChildController: PostFeedViewController {
             apply()
         }
 
+        parentHomeVC?.setNavigationBarHidden(hidden, animated: animated)
         parentHomeVC?.postButton.setHidden(hidden, animated: animated)
         updatePillVisibility(animated: animated)
     }
