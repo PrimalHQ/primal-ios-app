@@ -11,18 +11,20 @@ import UIKit
 final class NewPostsButton: MyButton, Themeable {
     private let noteAvatars: [UserImageView] = (0..<3).map { _ in UserImageView(height: 28, showLegendGlow: false) }
     private let noteLabel = UILabel()
-    
+
     private let liveAvatars: [UserImageView] = (0..<3).map { _ in UserImageView(height: 28, showLegendGlow: false) }
     private let liveLabel = UILabel()
-    
+
     lazy var noteAvatarStack = UIStackView()
     lazy var noteStack = UIStackView([noteAvatarStack, noteLabel])
-    
+
     lazy var liveAvatarStack = UIStackView()
     lazy var liveStack = UIStackView([liveAvatarStack, liveLabel])
-    
+
     let separator = SpacerView(width: 1, height: 24, color: .white.withAlphaComponent(0.5))
-    
+
+    private var isExcited = false
+
     override var isPressed: Bool {
         didSet {
             noteStack.alpha = isPressed ? 0.5 : 1
@@ -125,7 +127,44 @@ final class NewPostsButton: MyButton, Themeable {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
+    func setHidden(_ hidden: Bool, animated: Bool) {
+        isExcited = false
+        guard isHidden != hidden else { return }
+
+        guard animated else {
+            isHidden = hidden
+            alpha = hidden ? 0 : 1
+            transform = .identity
+            return
+        }
+
+        if hidden {
+            UIView.animate(withDuration: 0.25) {
+                self.transform = .init(scaleX: 0.2, y: 0.2)
+                self.alpha = 0
+            } completion: { _ in
+                self.isHidden = true
+            }
+        } else {
+            alpha = 0
+            transform = .init(translationX: 0, y: -30)
+            isHidden = false
+            UIView.animate(withDuration: 12 / 30, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 0) {
+                self.alpha = 1
+                self.transform = .identity
+            }
+        }
+    }
+
+    func setIsExcited(_ excited: Bool) {
+        guard isExcited != excited, !isHidden else { return }
+        isExcited = excited
+        UIView.animate(withDuration: 0.1) {
+            self.transform = excited ? .init(scaleX: 0.9, y: 0.9) : .identity
+        }
+    }
+
     func updateTheme() {
         backgroundColor = .accent
     }
