@@ -8,6 +8,23 @@
 import UIKit
 import Lottie
 
+enum TabBarState {
+    case visible
+    case hidden
+    case collapsed(text: String, icon: UIImage?)
+}
+
+extension TabBarState: Equatable {
+    static func == (lhs: TabBarState, rhs: TabBarState) -> Bool {
+        switch (lhs, rhs) {
+        case (.visible, .visible): return true
+        case (.hidden, .hidden): return true
+        case let (.collapsed(t1, _), .collapsed(t2, _)): return t1 == t2
+        default: return false
+        }
+    }
+}
+
 final class MainTabBarViewOrchestrator: NSObject, Themeable {
     weak var controller: MainTabBarController?
 
@@ -38,6 +55,11 @@ final class MainTabBarViewOrchestrator: NSObject, Themeable {
     private var collapsedTabBarButton: UIButton?
 
     private var notificationsFrozen = false
+
+    private(set) var currentState: TabBarState = .visible
+    private(set) var targetState: TabBarState = .visible
+    private(set) var isAnimating: Bool = false
+    private var targetExcited: Bool = false
 
     var isExcited: Bool = false
 
@@ -119,22 +141,8 @@ final class MainTabBarViewOrchestrator: NSObject, Themeable {
     }
 
     func setIsExcited(_ excited: Bool) {
-        guard excited != isExcited else { return }
-        isExcited = excited
-
-        let currentlyHidden = tabBarContainerView.transform.ty != 0
-
-        if currentlyHidden {
-            UIView.animate(withDuration: 0.25, delay: 0, options: [.curveEaseInOut]) {
-                self.collapsedTabBarButton?.transform = excited ? CGAffineTransform(scaleX: 1.1, y: 1.1) : .identity
-            }
-            return
-        }
-
-        let target = targetTransformForTabBarState(hidden: currentlyHidden, excited: excited)
-        let apply = { self.tabBarContainerView.transform = target }
-
-        UIView.animate(withDuration: 0.25, delay: 0, options: [.curveEaseInOut], animations: apply)
+        targetExcited = excited
+        advanceToTarget(animated: true)
     }
 
     func setTabBarHidden(_ hidden: Bool, animated: Bool) {
@@ -142,135 +150,29 @@ final class MainTabBarViewOrchestrator: NSObject, Themeable {
         let currentNav = controller.navForTab(controller.currentTab)
         let collapsed = currentNav.viewControllers.count == 1
 
-        if #available(iOS 26.0, *), collapsed {
-            if hidden {
+        if hidden {
+            if #available(iOS 26.0, *), collapsed {
                 let rootVC = currentNav.viewControllers.first as? MainTabBarRootViewController
                 let title = rootVC?.collapsedTabBarTitle ?? controller.currentTab.tabTitle
-                setTabBarCollapsed(text: title, icon: controller.currentTab.tabImage, animated: animated)
+                targetState = .collapsed(text: title, icon: controller.currentTab.tabImage)
             } else {
-                setTabBarExpanded(animated: animated)
+                targetState = .hidden
             }
-            return
+        } else {
+            targetState = .visible
         }
-
-        removeCollapsedTabBar(animated: animated)
-
-        let targetView = tabBarContainerView
-        let newTransform = targetTransformForTabBarState(hidden: hidden, excited: isExcited)
-
-        if !animated {
-            targetView.transform = newTransform
-            return
-        }
-
-        UIView.animate(withDuration: 0.3) {
-            targetView.transform = newTransform
-        }
+        advanceToTarget(animated: animated)
     }
 
     @available(iOS 26.0, *)
     func setTabBarCollapsed(text: String, icon: UIImage?, animated: Bool = true) {
-        guard let controller else { return }
-        let button: CollapsedTabBarButton
-        if let existing = collapsedTabBarButton as? CollapsedTabBarButton {
-            button = existing
-        } else {
-            button = CollapsedTabBarButton()
-            button.addAction(.init(handler: { [weak self] _ in
-                guard let self, let controller = self.controller else { return }
-                let nav = controller.navForTab(controller.currentTab)
-                if let noteVC: NoteViewController = nav.topViewController?.findInChildren() ?? nav.topViewController as? NoteViewController {
-                    noteVC.table.setContentOffset(noteVC.table.contentOffset, animated: false)
-                    DispatchQueue.main.async {
-                        noteVC.updateBarsHidden(false)
-                    }
-                } else {
-                    setTabBarExpanded(animated: true)
-                }
-            }), for: .touchUpInside)
-            controller.view.insertSubview(button, belowSubview: nativeTabBar ?? vStack)
-            button.centerToSuperview(axis: .horizontal).pinToSuperview(edges: .bottom, padding: 21)
-            collapsedTabBarButton = button
-        }
-
-        button.configure(text: text, icon: icon)
-        button.alpha = 0
-        button.transform = .init(scaleX: 4.5, y: 3)
-        button.imageView?.transform = .init(scaleX: (1.0 / 4.5) * 0.5, y: (1.0 / 3) * 0.5)
-        button.titleLabel?.transform = .init(scaleX: (1.0 / 4.5) * 0.5, y: (1.0 / 3) * 0.5)
-
-        let showCollapsed = {
-            button.alpha = 1
-            button.transform = .identity
-            button.imageView?.transform = .identity
-            button.titleLabel?.transform = .identity
-        }
-
-        let hideTabBar1 = { [self] in
-            tabBarContainerView.transform = .init(scaleX: 0.2, y: 0.2)
-                .concatenating(.init(translationX: 0, y: 10))
-        }
-        let hideTabBar2 = { [self] in
-            tabBarContainerView.alpha = 0
-        }
-
-        if animated {
-            UIView.animate(withDuration: 0.3) {
-                hideTabBar1()
-            }
-
-            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(200)) {
-                UIView.animate(withDuration: 0.1) {
-                    hideTabBar2()
-                }
-            }
-
-            UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.85, initialSpringVelocity: 0) {
-                showCollapsed()
-            }
-        } else {
-            hideTabBar1()
-            hideTabBar2()
-            showCollapsed()
-        }
-    }
-
-    func removeCollapsedTabBar(animated: Bool = true) {
-        guard let collapsedTabBarButton else { return }
-        self.collapsedTabBarButton = nil
-
-        guard animated else {
-            collapsedTabBarButton.removeFromSuperview()
-            return
-        }
-
-        UIView.animate(withDuration: 0.05) {
-            collapsedTabBarButton.imageView?.alpha = 0
-            collapsedTabBarButton.titleLabel?.alpha = 0
-        }
-
-        UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.85, initialSpringVelocity: 0) {
-            collapsedTabBarButton.transform = .init(scaleX: 3, y: 1.7).translatedBy(x: 0, y: -7)
-        } completion: { _ in
-            collapsedTabBarButton.removeFromSuperview()
-        }
+        targetState = .collapsed(text: text, icon: icon)
+        advanceToTarget(animated: animated)
     }
 
     func setTabBarExpanded(animated: Bool = true) {
-        removeCollapsedTabBar(animated: animated)
-
-        let showTabBar = { [self] in
-            tabBarContainerView.alpha = 1
-            tabBarContainerView.transform = .identity
-        }
-
-        if animated {
-            UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.85, initialSpringVelocity: 0) {
-                showTabBar()
-            }
-        } else {
-            showTabBar()
-        }
+        targetState = .visible
+        advanceToTarget(animated: animated)
     }
 
     func freezeNotificationCount() {
@@ -340,6 +242,250 @@ final class MainTabBarViewOrchestrator: NSObject, Themeable {
 }
 
 private extension MainTabBarViewOrchestrator {
+    func advanceToTarget(animated: Bool) {
+        guard !isAnimating else { return }
+
+        if currentState != targetState {
+            runTransition(from: currentState, to: targetState, animated: animated)
+            return
+        }
+
+        if isExcited != targetExcited {
+            runExcitedAnimation(targetExcited, animated: animated)
+        }
+    }
+
+    func runTransition(from: TabBarState, to: TabBarState, animated: Bool) {
+        let complete = { [weak self] in
+            guard let self else { return }
+            self.currentState = to
+            self.isAnimating = false
+            self.advanceToTarget(animated: true)
+        }
+
+        if animated { isAnimating = true }
+
+        switch (from, to) {
+        case (.visible, .hidden), (.hidden, .visible):
+            performSimpleHideShow(hidden: to == .hidden, animated: animated, completion: complete)
+
+        case let (_, .collapsed(text, icon)):
+            guard #available(iOS 26.0, *) else {
+                complete()
+                return
+            }
+            if case .collapsed = from {
+                if let button = collapsedTabBarButton as? CollapsedTabBarButton {
+                    button.configure(text: text, icon: icon)
+                }
+                complete()
+                return
+            }
+            performCollapse(text: text, icon: icon, animated: animated, completion: complete)
+
+        case (.collapsed, .visible):
+            performExpand(animated: animated, completion: complete)
+
+        case (.collapsed, .hidden):
+            performCollapsedToHidden(animated: animated, completion: complete)
+
+        default:
+            complete()
+        }
+    }
+
+    func runExcitedAnimation(_ excited: Bool, animated: Bool) {
+        let complete = { [weak self] in
+            guard let self else { return }
+            self.isExcited = excited
+            self.isAnimating = false
+            self.advanceToTarget(animated: true)
+        }
+
+        if case .hidden = currentState {
+            complete()
+            return
+        }
+
+        if animated { isAnimating = true }
+
+        if case .collapsed = currentState {
+            let newButtonTransform: CGAffineTransform = excited ? .init(scaleX: 1.1, y: 1.1) : .identity
+            if animated {
+                UIView.animate(withDuration: 0.25, delay: 0, options: [.curveEaseInOut]) {
+                    self.collapsedTabBarButton?.transform = newButtonTransform
+                } completion: { _ in
+                    complete()
+                }
+            } else {
+                collapsedTabBarButton?.transform = newButtonTransform
+                complete()
+            }
+            return
+        }
+
+        let newTransform = targetTransformForTabBarState(hidden: false, excited: excited)
+        if animated {
+            UIView.animate(withDuration: 0.25, delay: 0, options: [.curveEaseInOut]) {
+                self.tabBarContainerView.transform = newTransform
+            } completion: { _ in
+                complete()
+            }
+        } else {
+            tabBarContainerView.transform = newTransform
+            complete()
+        }
+    }
+
+    func performSimpleHideShow(hidden: Bool, animated: Bool, completion: @escaping () -> Void) {
+        let newTransform = targetTransformForTabBarState(hidden: hidden, excited: isExcited)
+        if animated {
+            UIView.animate(withDuration: 0.3) {
+                self.tabBarContainerView.transform = newTransform
+            } completion: { _ in
+                completion()
+            }
+        } else {
+            tabBarContainerView.transform = newTransform
+            completion()
+        }
+    }
+
+    @available(iOS 26.0, *)
+    func performCollapse(text: String, icon: UIImage?, animated: Bool, completion: @escaping () -> Void) {
+        guard let controller else { completion(); return }
+
+        let button: CollapsedTabBarButton
+        if let existing = collapsedTabBarButton as? CollapsedTabBarButton {
+            button = existing
+        } else {
+            button = CollapsedTabBarButton()
+            button.addAction(.init(handler: { [weak self] _ in
+                guard let self, let controller = self.controller else { return }
+                let nav = controller.navForTab(controller.currentTab)
+                if let noteVC: NoteViewController = nav.topViewController?.findInChildren() ?? nav.topViewController as? NoteViewController {
+                    noteVC.table.setContentOffset(noteVC.table.contentOffset, animated: false)
+                    DispatchQueue.main.async {
+                        noteVC.updateBarsHidden(false)
+                    }
+                } else {
+                    setTabBarExpanded(animated: true)
+                }
+            }), for: .touchUpInside)
+            controller.view.insertSubview(button, belowSubview: nativeTabBar ?? vStack)
+            button.centerToSuperview(axis: .horizontal).pinToSuperview(edges: .bottom, padding: 21)
+            collapsedTabBarButton = button
+        }
+
+        button.configure(text: text, icon: icon)
+        button.alpha = 0
+        button.transform = .init(scaleX: 4.5, y: 3)
+        button.imageView?.transform = .init(scaleX: (1.0 / 4.5) * 0.5, y: (1.0 / 3) * 0.5)
+        button.titleLabel?.transform = .init(scaleX: (1.0 / 4.5) * 0.5, y: (1.0 / 3) * 0.5)
+
+        let showCollapsed = {
+            button.alpha = 1
+            button.transform = .identity
+            button.imageView?.transform = .identity
+            button.titleLabel?.transform = .identity
+        }
+
+        let hideTabBar1 = { [self] in
+            tabBarContainerView.transform = .init(scaleX: 0.2, y: 0.2)
+                .concatenating(.init(translationX: 0, y: 10))
+        }
+        let hideTabBar2 = { [self] in
+            tabBarContainerView.alpha = 0
+        }
+
+        if animated {
+            UIView.animate(withDuration: 0.3) {
+                hideTabBar1()
+            }
+
+            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(200)) {
+                UIView.animate(withDuration: 0.1) {
+                    hideTabBar2()
+                }
+            }
+
+            UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.85, initialSpringVelocity: 0) {
+                showCollapsed()
+            } completion: { _ in
+                completion()
+            }
+        } else {
+            hideTabBar1()
+            hideTabBar2()
+            showCollapsed()
+            completion()
+        }
+    }
+
+    func performExpand(animated: Bool, completion: @escaping () -> Void) {
+        let showTabBar = { [self] in
+            tabBarContainerView.alpha = 1
+            tabBarContainerView.transform = .identity
+        }
+
+        if animated {
+            animateCollapsedButtonOut(completion: nil)
+
+            UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.85, initialSpringVelocity: 0) {
+                showTabBar()
+            } completion: { _ in
+                completion()
+            }
+        } else {
+            removeCollapsedButtonImmediate()
+            showTabBar()
+            completion()
+        }
+    }
+
+    func performCollapsedToHidden(animated: Bool, completion: @escaping () -> Void) {
+        let newTransform = targetTransformForTabBarState(hidden: true, excited: isExcited)
+        let applyHidden = { [self] in
+            tabBarContainerView.alpha = 1
+            tabBarContainerView.transform = newTransform
+        }
+
+        if animated {
+            applyHidden()
+            animateCollapsedButtonOut(completion: completion)
+        } else {
+            removeCollapsedButtonImmediate()
+            applyHidden()
+            completion()
+        }
+    }
+
+    func animateCollapsedButtonOut(completion: (() -> Void)?) {
+        guard let button = collapsedTabBarButton else {
+            completion?()
+            return
+        }
+        collapsedTabBarButton = nil
+
+        UIView.animate(withDuration: 0.05) {
+            button.imageView?.alpha = 0
+            button.titleLabel?.alpha = 0
+        }
+
+        UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.85, initialSpringVelocity: 0) {
+            button.transform = .init(scaleX: 3, y: 1.7).translatedBy(x: 0, y: -7)
+        } completion: { _ in
+            button.removeFromSuperview()
+            completion?()
+        }
+    }
+
+    func removeCollapsedButtonImmediate() {
+        guard let button = collapsedTabBarButton else { return }
+        collapsedTabBarButton = nil
+        button.removeFromSuperview()
+    }
+
     static let tabBarHeight: CGFloat = {
         switch ChromeSize.current {
         case .small:    return 54
