@@ -65,7 +65,7 @@ class NewPostButton: UIButton, Themeable {
         isExcited = excited
         
         UIView.animate(withDuration: 0.1) {
-            self.transform = excited ? .init(scaleX: 0.8, y: 0.8) : .identity
+            self.transform = excited ? .init(scaleX: 0.9, y: 0.9) : .identity
         }
     }
 }

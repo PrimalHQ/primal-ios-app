@@ -137,47 +137,39 @@ final class NewPostsButton: MyButton, Themeable {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
+    
+    var shouldBeHidden: Bool?
+    var animating = false
     func setHidden(_ hidden: Bool, animated: Bool) {
-        guard isHidden != hidden else { return }
-
-        guard animated else {
-            isHidden = hidden
-            alpha = hidden ? 0 : 1
-            transform = .identity
-            return
-        }
-
-        if hidden {
-            UIView.animate(withDuration: 0.25) {
-                self.alpha = 0
-                self.transform = PrimalNavigationBar.transformForMaxExcited
-            } completion: { _ in
-                self.isHidden = true
-            }
-        } else {
-            alpha = 0
-            transform = .init(translationX: 0, y: -30)
-            isHidden = false
-            UIView.animate(withDuration: 0.25) {
-                self.alpha = 1
-                self.transform = .identity
-            }
-        }
-    }
-
-    func setIsExcited(_ excited: CGFloat, animated: Bool) {
-        guard !isHidden, alpha > 0 else { return }
+//        guard isHidden != hidden else { return }
+        guard shouldBeHidden != hidden else { return }
         
+        shouldBeHidden = hidden
+
         guard animated else {
-            transform = PrimalNavigationBar.transformForExcited(excited)
+//            isHidden = hidden
+            alpha = hidden ? 0 : 1
+//            transform = .identity
             return
         }
         
         UIView.animate(withDuration: 0.25) {
-            self.transform = PrimalNavigationBar.transformForExcited(excited)
+            self.alpha = hidden ? 0 : 1
         }
     }
+
+//    func setIsExcited(_ excited: CGFloat, animated: Bool) {
+//        guard !isHidden, alpha > 0 else { return }
+//        
+//        guard animated else {
+//            transform = PrimalNavigationBar.transformForExcited(excited)
+//            return
+//        }
+//        
+//        UIView.animate(withDuration: 0.25) {
+//            self.transform = PrimalNavigationBar.transformForExcited(excited)
+//        }
+//    }
 
     func updateTheme() {
         backgroundColor = .accent

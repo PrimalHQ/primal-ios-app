@@ -181,6 +181,10 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
         } else {
             accumulatedDelta += delta
         }
+        
+        if !barsHidden && accumulatedDelta < 0 {
+            accumulatedDelta = 0
+        }
 
         let threshold: CGFloat = 80
         if accumulatedDelta < -threshold {
@@ -191,10 +195,6 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
             accumulatedDelta = 0
         }
     }
-
-    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) { }
-
-    func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) { }
 
     func scrollViewShouldScrollToTop(_ scrollView: UIScrollView) -> Bool {
         updateBarsHidden(false)

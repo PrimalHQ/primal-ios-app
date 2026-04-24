@@ -107,6 +107,7 @@ class HomeFeedChildController: PostFeedViewController {
     override func scrollViewDidScroll(_ scrollView: UIScrollView) {
         let newPosition = scrollView.contentOffset.y
         let delta = newPosition - prevPosition
+        let prevDelta = prevDelta
         
         parentHomeVC = parentHomeVC ?? findParent()
         
@@ -129,22 +130,15 @@ class HomeFeedChildController: PostFeedViewController {
         if newPosition < 100 {
             feed.didShowPost(0)
         }
-
-//        if newPosition <= 0 {
-//            accumulatedDelta = 0
-//            mainTabBarController?.setIsExcited(false)
-//            parentHomeVC?.postButton.setIsExcited(false)
-//            newPostsView.setIsExcited(0, animated: true)
-//            parentHomeVC?.setNavigationBarExcited(excited: 0, animated: true)
-//            return
-//        }
-
-        guard scrollView.isDragging || scrollView.isDecelerating else { return }
+        
+        if abs(delta) > 100 || (delta.sign != prevDelta.sign && prevDelta != 0) {
+            return
+        }
 
         if !barsHidden {
             parentHomeVC?.postButton.setIsExcited(delta > 0)
-            newPostsView.setIsExcited(accumulatedDelta, animated: accumulatedDelta == 0)
             parentHomeVC?.setNavigationBarExcited(excited: accumulatedDelta, animated: accumulatedDelta == 0)
+            newPostsView.setHidden(barsHidden || delta > 0 || accumulatedDelta > 0, animated: true)
         }
         if delta != 0 {
             mainTabBarController?.setIsExcited(barsHidden ? delta < 0 : delta > 0)
@@ -155,7 +149,15 @@ class HomeFeedChildController: PostFeedViewController {
         parentHomeVC?.postButton.setIsExcited(false)
         mainTabBarController?.setIsExcited(false)
         parentHomeVC?.setNavigationBarExcited(excited: 0, animated: true)
-        newPostsView.setIsExcited(0, animated: true)
+        newPostsView.setHidden(barsHidden, animated: true)
+        
+        if !decelerate {
+            accumulatedDelta = 0
+        }
+    }
+    
+    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        accumulatedDelta = 0
     }
     
     weak var parentHomeVC: HomeFeedViewController?

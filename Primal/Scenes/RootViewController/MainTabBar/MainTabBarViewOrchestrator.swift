@@ -135,7 +135,7 @@ final class MainTabBarViewOrchestrator: NSObject, Themeable {
             t = t.concatenating(CGAffineTransform(translationX: 0, y: translation))
         }
         if excited, #available(iOS 26.0, *) {
-            t = CGAffineTransform(scaleX: 0.95, y: 0.95)
+            t = CGAffineTransform(scaleX: 0.98, y: 0.98)
         }
         return t
     }
@@ -147,10 +147,10 @@ final class MainTabBarViewOrchestrator: NSObject, Themeable {
 
     func setTabBarHidden(_ hidden: Bool, animated: Bool) {
         guard let controller else { return }
-        let currentNav = controller.navForTab(controller.currentTab)
-        let collapsed = currentNav.viewControllers.count == 1
 
         if hidden {
+            let currentNav = controller.navForTab(controller.currentTab)
+            let collapsed = currentNav.viewControllers.count == 1
             if #available(iOS 26.0, *), collapsed {
                 let rootVC = currentNav.viewControllers.first as? MainTabBarRootViewController
                 let title = rootVC?.collapsedTabBarTitle ?? controller.currentTab.tabTitle
