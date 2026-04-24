@@ -184,19 +184,7 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
     }
 
     override func setBarsHidden(_ hidden: Bool, animated: Bool) {
-        let navTransform: CGAffineTransform = hidden ? .init(translationX: 0, y: -barsMaxTransform) : .identity
-        let borderTransform: CGAffineTransform = hidden ? .init(translationX: 0, y: -barsMaxTransform) : .identity
         
-        let apply = { [self] in
-            navigationController?.navigationBar.transform = navTransform
-            self.navigationBorder.transform = borderTransform
-        }
-        
-        if animated {
-            UIView.animate(withDuration: 0.3) { apply() }
-        } else {
-            apply()
-        }
     }
 
     var wasDragged = false
