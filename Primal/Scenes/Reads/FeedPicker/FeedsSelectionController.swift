@@ -149,18 +149,15 @@ extension PrimalFeed {
     }
 }
 
-final class FeedsSelectionController: UIViewController {
+final class FeedsSelectionController: SlideDownShellViewController {
     var cancellables: Set<AnyCancellable> = []
 
     let table = UITableView()
-    let primalNavigationBar = PrimalNavigationBar()
-    let contentView = UIView()
-    let navBarBackground = UIView()
 
     var callback: (PrimalFeed) -> Void
-    
+
     lazy var feeds = PrimalFeed.getActiveFeeds(type)
-    
+
     let addFeedButton = UIButton(configuration: .accent18("Add Custom Feed"))
     let editButton = UIButton(configuration: .accent18("Edit Feeds"))
     let doneButton = UIButton(configuration: .accent18("Done"))
@@ -179,18 +176,15 @@ final class FeedsSelectionController: UIViewController {
         container.frame = CGRect(x: 0, y: 0, width: 0, height: 110)
         return container
     }()
-    
+
     var currentFeed: PrimalFeed
     let type: PrimalFeedType
     init(currentFeed: PrimalFeed, type: PrimalFeedType, _ callback: @escaping (PrimalFeed) -> Void) {
         self.callback = callback
         self.currentFeed = currentFeed
         self.type = type
-        super.init(nibName: nil, bundle: nil)
-        modalPresentationStyle = .overFullScreen
-        overrideUserInterfaceStyle = Theme.current.userInterfaceStyle
-        setup()
-        
+        super.init()
+
         if let lastFetch = PrimalFeed.lastTimeFeedsFetched[type], abs(lastFetch.timeIntervalSinceNow) < 30 {
             // Do nothing
         } else {
@@ -238,24 +232,23 @@ final class FeedsSelectionController: UIViewController {
         
     }
     
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        setup()
+    }
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
+
         updateTable(animate: false)
-        
+
         DispatchQueue.main.async { [self] in
             if let index = feeds.firstIndex(where: { $0.spec == currentFeed.spec }) {
                 table.scrollToRow(at: IndexPath(row: index, section: 0), at: .middle, animated: false)
             }
         }
-        
+
         table.reloadData()
-    }
-    
-    func present(from vc: UIViewController) {
-        vc.present(self, animated: false) { [self] in
-            animateIn()
-        }
     }
 
     required init?(coder: NSCoder) {
@@ -349,20 +342,6 @@ private extension FeedsSelectionController {
 
         contentView.addSubview(contentStack)
         contentStack.pinToSuperview()
-        contentView.backgroundColor = .background2
-
-        view.addSubview(contentView)
-        contentView.pinToSuperview(edges: [.horizontal, .bottom])
-
-        navBarBackground.backgroundColor = .background
-        view.addSubview(navBarBackground)
-        navBarBackground.pinToSuperview(edges: [.horizontal, .top])
-
-        view.addSubview(primalNavigationBar)
-        primalNavigationBar.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .top, safeArea: true)
-
-        contentView.topAnchor.constraint(equalTo: primalNavigationBar.bottomAnchor).isActive = true
-        navBarBackground.bottomAnchor.constraint(equalTo: primalNavigationBar.bottomAnchor).isActive = true
 
         primalNavigationBar.title = currentFeed.name
         primalNavigationBar.subtitle = currentFeed.description
@@ -381,30 +360,6 @@ private extension FeedsSelectionController {
         closeButton.addAction(.init(handler: { [weak self] _ in self?.dismissAnimated() }), for: .touchUpInside)
 
         endEditing()
-
-        contentView.transform = CGAffineTransform(translationX: 0, y: -UIScreen.main.bounds.height)
-    }
-
-    func animateIn() {
-        UIView.animate(withDuration: 0.35) { [self] in
-            contentView.transform = .identity
-            primalNavigationBar.chevronView.transform = CGAffineTransform(rotationAngle: .pi)
-        }
-    }
-
-    func animateOut(completion: (() -> Void)? = nil) {
-        UIView.animate(withDuration: 0.25, delay: 0, options: .curveEaseIn) { [self] in
-            contentView.transform = CGAffineTransform(translationX: 0, y: -contentView.bounds.height)
-            primalNavigationBar.chevronView.transform = .identity
-        } completion: { _ in
-            completion?()
-        }
-    }
-
-    func dismissAnimated() {
-        animateOut { [weak self] in
-            self?.dismiss(animated: false)
-        }
     }
 }
 
