@@ -110,11 +110,8 @@ final class GenericSelectionController<Item: SelectionItem>: SlideDownShellViewC
         table.reloadData()
         onSelect(item)
 
-        UIView.transition(with: primalNavigationBar.titleLabel, duration: 0.25, options: .transitionCrossDissolve) { [self] in
-            primalNavigationBar.title = item.selectionTitle
-        }
         UIView.transition(with: primalNavigationBar.subtitleLabel, duration: 0.25, options: .transitionCrossDissolve) { [self] in
-            primalNavigationBar.subtitle = item.selectionSubtitle ?? ""
+            primalNavigationBar.subtitle = item.selectionTitle
         }
         dismissAnimated()
     }

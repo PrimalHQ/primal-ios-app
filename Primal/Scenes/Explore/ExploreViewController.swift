@@ -14,7 +14,9 @@ final class ExploreViewController: PrimalPageController, PrimalNavigationBarCont
 
     let postButtonParent = UIView()
     let postButton = NewPostButton()
-    
+
+    private var cancellables: Set<AnyCancellable> = []
+
     init() {
         super.init(tabs: [
             ("PEOPLE", { ExplorePeopleViewController() }),
@@ -66,12 +68,31 @@ private extension ExploreViewController {
         navBarBackground.bottomAnchor.constraint(equalTo: primalNavigationBar.bottomAnchor).isActive = true
 
         primalNavigationBar.title = "Explore"
-        primalNavigationBar.subtitle = "All of Nostr"
-        primalNavigationBar.showChevron = false
+        primalNavigationBar.subtitle = ExploreCategory(rawValue: currentTab)?.selectionTitle ?? "All of Nostr"
+        primalNavigationBar.showChevron = true
         primalNavigationBar.onAvatarTapped = { [weak self] in
             guard let self else { return }
             MenuController().present(from: self)
         }
+        primalNavigationBar.onTitleTapped = { [weak self] in
+            guard let self else { return }
+            GenericSelectionController(
+                title: primalNavigationBar.title,
+                subtitle: primalNavigationBar.subtitle,
+                items: ExploreCategory.allCases,
+                selectedItem: ExploreCategory(rawValue: currentTab)
+            ) { [weak self] cat in
+                guard let self else { return }
+                set(tab: cat.rawValue, old: currentTab)
+            }.present(from: self)
+        }
+
+        $currentTab
+            .sink { [weak self] tab in
+                guard let self else { return }
+                self.primalNavigationBar.subtitle = ExploreCategory(rawValue: tab)?.selectionTitle ?? "All of Nostr"
+            }
+            .store(in: &cancellables)
 
         postButton.addAction(.init(handler: { [weak self] _ in
             self?.present(AdvancedEmbedPostViewController(), animated: true)

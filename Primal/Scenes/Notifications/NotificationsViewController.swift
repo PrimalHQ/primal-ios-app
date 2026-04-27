@@ -10,8 +10,6 @@ import UIKit
 import GenericJSON
 
 final class NotificationsViewController: PrimalPageController, PrimalNavigationBarController {
-    static let tabSubtitles = ["All notifications", "Zaps", "Replies", "Mentions"]
-
     let primalNavigationBar = PrimalNavigationBar()
     let navBarBackground = UIView()
 
@@ -72,16 +70,29 @@ private extension NotificationsViewController {
         navBarBackground.bottomAnchor.constraint(equalTo: primalNavigationBar.bottomAnchor).isActive = true
 
         primalNavigationBar.title = "Alert"
-        primalNavigationBar.showChevron = false
+        primalNavigationBar.showChevron = true
         primalNavigationBar.onAvatarTapped = { [weak self] in
             guard let self else { return }
             MenuController().present(from: self)
+        }
+        primalNavigationBar.onTitleTapped = { [weak self] in
+            guard let self else { return }
+            let current = NotificationFeedViewController.Tab(rawValue: currentTab) ?? .all
+            GenericSelectionController(
+                title: primalNavigationBar.title,
+                subtitle: primalNavigationBar.subtitle,
+                items: NotificationFeedViewController.Tab.allCases,
+                selectedItem: current
+            ) { [weak self] tab in
+                guard let self else { return }
+                set(tab: tab.rawValue, old: currentTab)
+            }.present(from: self)
         }
 
         $currentTab
             .sink { [weak self] tab in
                 guard let self else { return }
-                self.primalNavigationBar.subtitle = Self.tabSubtitles[tab]
+                self.primalNavigationBar.subtitle = NotificationFeedViewController.Tab(rawValue: tab)?.selectionTitle ?? ""
             }
             .store(in: &cancellables)
 

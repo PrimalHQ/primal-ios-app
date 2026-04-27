@@ -16,19 +16,28 @@ struct GroupedNotification: Hashable {
 }
 
 final class NotificationFeedViewController: NoteViewController {
-    enum Tab: Int {
+    enum Tab: Int, CaseIterable, SelectionItem {
         case all = 0
         case zaps = 1
         case replies = 2
         case mentions = 3
-        
+
         var apiName: String {
             switch self {
-                
+
             case .all:      return "all"
             case .zaps:     return "zaps"
             case .replies:  return "replies"
             case .mentions: return "mentions"
+            }
+        }
+
+        var selectionTitle: String {
+            switch self {
+            case .all:      return "All notifications"
+            case .zaps:     return "Zaps"
+            case .replies:  return "Replies"
+            case .mentions: return "Mentions"
             }
         }
     }

@@ -158,6 +158,7 @@
 		9E8DE4D829F7E1EB0028D3C3 /* LoadingSpinnerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8DE4D729F7E1EB0028D3C3 /* LoadingSpinnerView.swift */; };
 		9E8DE4DC29F7ECA20028D3C3 /* LargeProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8DE4DB29F7ECA20028D3C3 /* LargeProfileView.swift */; };
 		9E9C42172A14020D00F9D7ED /* ExploreViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9C42162A14020D00F9D7ED /* ExploreViewController.swift */; };
+		B2A3C4D5E6F7A8B9C0D1F101 /* ExploreCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2A3C4D5E6F7A8B9C0D1F102 /* ExploreCategory.swift */; };
 		9E9C42192A1403D400F9D7ED /* ChatListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9C42182A1403D400F9D7ED /* ChatListViewController.swift */; };
 		9E9C421B2A14044B00F9D7ED /* NotificationsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9C421A2A14044B00F9D7ED /* NotificationsViewController.swift */; };
 		9E9C421F2A14E46A00F9D7ED /* UIDevice+Extra.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9C421E2A14E46A00F9D7ED /* UIDevice+Extra.swift */; };
@@ -1004,6 +1005,7 @@
 		9E8DE4D729F7E1EB0028D3C3 /* LoadingSpinnerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingSpinnerView.swift; sourceTree = "<group>"; };
 		9E8DE4DB29F7ECA20028D3C3 /* LargeProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LargeProfileView.swift; sourceTree = "<group>"; };
 		9E9C42162A14020D00F9D7ED /* ExploreViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreViewController.swift; sourceTree = "<group>"; };
+		B2A3C4D5E6F7A8B9C0D1F102 /* ExploreCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreCategory.swift; sourceTree = "<group>"; };
 		9E9C42182A1403D400F9D7ED /* ChatListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatListViewController.swift; sourceTree = "<group>"; };
 		9E9C421A2A14044B00F9D7ED /* NotificationsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationsViewController.swift; sourceTree = "<group>"; };
 		9E9C421E2A14E46A00F9D7ED /* UIDevice+Extra.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIDevice+Extra.swift"; sourceTree = "<group>"; };
@@ -2368,6 +2370,7 @@
 				B9B9E56C2CB462270065DD7C /* Media */,
 				B9C6D2302CA31B3200B2EEBE /* Topics */,
 				9E9C42162A14020D00F9D7ED /* ExploreViewController.swift */,
+				B2A3C4D5E6F7A8B9C0D1F102 /* ExploreCategory.swift */,
 			);
 			path = Explore;
 			sourceTree = "<group>";
@@ -4172,6 +4175,7 @@
 				B9009B502B07B14B002B0613 /* SignInInputField.swift in Sources */,
 				B9A36BE12B8F9A9C00D4465D /* PopupAccountSwitchingController.swift in Sources */,
 				9E9C42172A14020D00F9D7ED /* ExploreViewController.swift in Sources */,
+				B2A3C4D5E6F7A8B9C0D1F101 /* ExploreCategory.swift in Sources */,
 				B928F8772F30C0E900DBD9D0 /* BackupWalletConfirmController.swift in Sources */,
 				B9CE4DA52B6815650060A1B8 /* CGRect+Extra.swift in Sources */,
 				B9D331F32EE84A970023D541 /* RemoteSignerConnectionTrustCell.swift in Sources */,
