@@ -10,10 +10,13 @@ import UIKit
 import Kingfisher
 import FLAnimatedImage
 
-final class MenuController: UIViewController, Themeable {
+final class MenuController: UIViewController, Themeable, SearchBarButtonController {
     let primalNavigationBar = PrimalNavigationBar()
     let contentView = UIView()
     let navBarBackground = UIView()
+    let searchBarButton = SearchBarButton()
+
+    private var showsSearchBar = false
 
     private let nameLabel = UILabel()
     private let checkbox1 = VerifiedView()
@@ -56,6 +59,7 @@ final class MenuController: UIViewController, Themeable {
             primalNavigationBar.subtitle = navBarVC.primalNavigationBar.subtitle
             primalNavigationBar.showChevron = navBarVC.primalNavigationBar.showChevron
         }
+        showsSearchBar = vc.searchBarButtonController != nil
         originalTitle = primalNavigationBar.title
         originalSubtitle = primalNavigationBar.subtitle
         originalShowChevron = primalNavigationBar.showChevron
@@ -159,8 +163,27 @@ private extension MenuController {
         view.addSubview(primalNavigationBar)
         primalNavigationBar.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .top, safeArea: true)
 
-        contentView.topAnchor.constraint(equalTo: primalNavigationBar.bottomAnchor).isActive = true
-        navBarBackground.bottomAnchor.constraint(equalTo: primalNavigationBar.bottomAnchor).isActive = true
+        let headerBottom: NSLayoutYAxisAnchor
+        if showsSearchBar {
+            view.addSubview(searchBarButton)
+            searchBarButton.topAnchor.constraint(equalTo: primalNavigationBar.bottomAnchor, constant: 8).isActive = true
+            searchBarButton.pinToSuperview(edges: .horizontal, padding: 16)
+
+            let searchSeparator = SpacerView(height: 1, color: .background3)
+            view.addSubview(searchSeparator)
+            searchSeparator.topAnchor.constraint(equalTo: searchBarButton.bottomAnchor, constant: 12).isActive = true
+            searchSeparator.pinToSuperview(edges: .horizontal)
+
+            headerBottom = searchSeparator.bottomAnchor
+            setupSearchBarActions()
+            
+            primalNavigationBar.showBorder = false
+        } else {
+            headerBottom = primalNavigationBar.bottomAnchor
+        }
+
+        contentView.topAnchor.constraint(equalTo: headerBottom).isActive = true
+        navBarBackground.bottomAnchor.constraint(equalTo: headerBottom).isActive = true
 
         primalNavigationBar.onAvatarTapped = { [weak self] in
             self?.dismissAnimated()

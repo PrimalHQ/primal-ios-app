@@ -23,6 +23,8 @@ extension UIViewController {
     }
     
     var primalNavBarController: PrimalNavigationBarController? { self as? PrimalNavigationBarController ?? findParent() }
+
+    var searchBarButtonController: SearchBarButtonController? { self as? SearchBarButtonController ?? findParent() }
     
     func smartPresent(_ vc: UIViewController) {
         if let presentedViewController {

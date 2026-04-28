@@ -84,3 +84,18 @@ final class SearchBarButton: UIButton, Themeable {
         configuration = config
     }
 }
+
+protocol SearchBarButtonController: UIViewController {
+    var searchBarButton: SearchBarButton { get }
+}
+
+extension SearchBarButtonController {
+    func setupSearchBarActions() {
+        searchBarButton.onTap = { [weak self] in
+            self?.navigationController?.fadeTo(SearchViewController(scope: .global, type: .notes))
+        }
+        searchBarButton.onConfigTap = { [weak self] in
+            self?.present(AdvancedSearchController(manager: AdvancedSearchManager()), animated: true)
+        }
+    }
+}

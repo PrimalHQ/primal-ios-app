@@ -25,8 +25,6 @@ final class GenericSelectionController<Item: SelectionItem>: SlideDownShellViewC
     private let onSelect: (Item) -> Void
 
     init(
-        title: String,
-        subtitle: String = "",
         items: [Item],
         selectedItem: Item?,
         onSelect: @escaping (Item) -> Void
@@ -35,8 +33,6 @@ final class GenericSelectionController<Item: SelectionItem>: SlideDownShellViewC
         self.selectedItem = selectedItem
         self.onSelect = onSelect
         super.init()
-        primalNavigationBar.title = title
-        primalNavigationBar.subtitle = subtitle
     }
 
     required init?(coder: NSCoder) {
@@ -66,7 +62,9 @@ final class GenericSelectionController<Item: SelectionItem>: SlideDownShellViewC
         table.dataSource = self
         table.delegate = self
         table.separatorStyle = .none
-        table.backgroundColor = .background2
+        table.backgroundColor = .background4
+        table.contentInsetAdjustmentBehavior = .never
+        table.contentInset = .init(top: 12, left: 0, bottom: 12, right: 0)
 
         let botMenu = UIStackView([UIView(), closeButton])
         botMenu.isLayoutMarginsRelativeArrangement = true
@@ -124,7 +122,7 @@ final class GenericSelectionCell: UITableViewCell {
     private let backgroundColorView = UIView()
     private let titleLabel = UILabel()
     private let subtitleLabel = UILabel()
-    private let checkmarkIcon = UIImageView(image: UIImage(named: "checkmarkSearch"))
+    private let checkmarkIcon = UIImageView(image: .checkmarkSearch)
 
     private var mySelected = false
 
@@ -138,33 +136,35 @@ final class GenericSelectionCell: UITableViewCell {
 
         selectionStyle = .none
 
-        let vStack = UIStackView(axis: .vertical, spacing: 4, [titleLabel, subtitleLabel])
+        let vStack = UIStackView(axis: .vertical, spacing: 2, [titleLabel, subtitleLabel])
         vStack.alignment = .leading
 
         checkmarkIcon.contentMode = .scaleAspectFit
         checkmarkIcon.setContentHuggingPriority(.required, for: .horizontal)
         checkmarkIcon.setContentCompressionResistancePriority(.required, for: .horizontal)
+        checkmarkIcon.tintColor = .foreground
 
         let hStack = UIStackView(spacing: 12, [vStack, UIView(), checkmarkIcon])
         hStack.alignment = .center
 
         contentView.addSubview(backgroundColorView)
-        backgroundColorView.pinToSuperview(edges: .horizontal, padding: 20).pinToSuperview(edges: .vertical, padding: 6)
+        backgroundColorView.pinToSuperview(edges: .horizontal, padding: 12).pinToSuperview(edges: .vertical, padding: 0)
 
         contentView.addSubview(hStack)
-        hStack.pinToSuperview(edges: .horizontal, padding: 32).pinToSuperview(edges: .vertical, padding: 16)
+        hStack.pinToSuperview(edges: .leading, padding: 24).pinToSuperview(edges: .trailing, padding: 32).centerToSuperview(axis: .vertical)
 
         backgroundColorView.backgroundColor = .background3
-        backgroundColorView.layer.cornerRadius = 8
+        backgroundColorView.layer.cornerRadius = 10
 
-        titleLabel.font = .appFont(withSize: 22, weight: .bold)
+        titleLabel.font = .appFont(withSize: 18, weight: .semibold)
         titleLabel.textColor = .foreground
 
-        subtitleLabel.font = .appFont(withSize: 14, weight: .regular)
-        subtitleLabel.textColor = .foreground4
+        subtitleLabel.font = .appFont(withSize: 13, weight: .regular)
+        subtitleLabel.textColor = .foreground3
 
-        backgroundColor = .background2
-        contentView.backgroundColor = .background2
+        backgroundColor = .background4
+        contentView.backgroundColor = .background4
+        backgroundColorView.constrainToSize(height: 64)
     }
 
     required init?(coder: NSCoder) {

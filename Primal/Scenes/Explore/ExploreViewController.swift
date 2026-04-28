@@ -7,11 +7,11 @@
 
 import UIKit
 
-final class ExploreViewController: UIViewController, Themeable, TitleSwipeController {
+final class ExploreViewController: UIViewController, Themeable, TitleSwipeController, SearchBarButtonController {
     let primalNavigationBar = PrimalNavigationBar()
     let pageVC = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal)
 
-    let searchBar = SearchBarButton()
+    let searchBarButton = SearchBarButton()
     let separator = SpacerView(height: 1)
 
     let postButtonParent = UIView()
@@ -56,7 +56,7 @@ final class ExploreViewController: UIViewController, Themeable, TitleSwipeContro
         view.backgroundColor = .background
 
         primalNavigationBar.updateTheme()
-        searchBar.updateTheme()
+        searchBarButton.updateTheme()
         separator.backgroundColor = .background3
 
         pageVC.children.forEach {
@@ -136,8 +136,6 @@ private extension ExploreViewController {
         primalNavigationBar.onTitleTapped = { [weak self] in
             guard let self else { return }
             GenericSelectionController(
-                title: primalNavigationBar.title,
-                subtitle: primalNavigationBar.subtitle,
                 items: ExploreCategory.allCases,
                 selectedItem: currentCategory
             ) { [weak self] cat in
@@ -145,22 +143,17 @@ private extension ExploreViewController {
             }.present(from: self)
         }
 
-        view.addSubview(searchBar)
-        searchBar.topAnchor.constraint(equalTo: primalNavigationBar.bottomAnchor, constant: 8).isActive = true
-        searchBar.pinToSuperview(edges: .horizontal, padding: 16)
+        view.addSubview(searchBarButton)
+        searchBarButton.topAnchor.constraint(equalTo: primalNavigationBar.bottomAnchor, constant: 8).isActive = true
+        searchBarButton.pinToSuperview(edges: .horizontal, padding: 16)
 
         view.addSubview(separator)
-        separator.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: 12).isActive = true
+        separator.topAnchor.constraint(equalTo: searchBarButton.bottomAnchor, constant: 12).isActive = true
         separator.pinToSuperview(edges: .horizontal)
 
         pageVC.view.topAnchor.constraint(equalTo: separator.bottomAnchor).isActive = true
 
-        searchBar.onTap = { [weak self] in
-            self?.navigationController?.fadeTo(SearchViewController(scope: .global, type: .notes))
-        }
-        searchBar.onConfigTap = { [weak self] in
-            self?.present(AdvancedSearchController(manager: AdvancedSearchManager()), animated: true)
-        }
+        setupSearchBarActions()
 
         postButton.addAction(.init(handler: { [weak self] _ in
             self?.present(AdvancedEmbedPostViewController(), animated: true)

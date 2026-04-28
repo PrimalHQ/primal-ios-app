@@ -7,10 +7,13 @@
 
 import UIKit
 
-class SlideDownShellViewController: UIViewController {
+class SlideDownShellViewController: UIViewController, SearchBarButtonController {
     let primalNavigationBar = PrimalNavigationBar()
     let contentView = UIView()
     let navBarBackground = UIView()
+    let searchBarButton = SearchBarButton()
+
+    private var showsSearchBar = false
 
     init() {
         super.init(nibName: nil, bundle: nil)
@@ -27,7 +30,10 @@ class SlideDownShellViewController: UIViewController {
         setupShell()
     }
 
-    func present(from vc: UIViewController) {
+    func present(from vc: PrimalNavigationBarController) {
+        showsSearchBar = vc.searchBarButtonController != nil
+        primalNavigationBar.title = vc.primalNavigationBar.title
+        primalNavigationBar.subtitle = vc.primalNavigationBar.subtitle
         vc.present(self, animated: false) { [self] in
             animateIn()
         }
@@ -58,7 +64,7 @@ class SlideDownShellViewController: UIViewController {
 
 private extension SlideDownShellViewController {
     func setupShell() {
-        contentView.backgroundColor = .background2
+        contentView.backgroundColor = .background4
         view.addSubview(contentView)
         contentView.pinToSuperview(edges: [.horizontal, .bottom])
 
@@ -69,8 +75,27 @@ private extension SlideDownShellViewController {
         view.addSubview(primalNavigationBar)
         primalNavigationBar.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .top, safeArea: true)
 
-        contentView.topAnchor.constraint(equalTo: primalNavigationBar.bottomAnchor).isActive = true
-        navBarBackground.bottomAnchor.constraint(equalTo: primalNavigationBar.bottomAnchor).isActive = true
+        let headerBottom: NSLayoutYAxisAnchor
+        if showsSearchBar {
+            view.addSubview(searchBarButton)
+            searchBarButton.topAnchor.constraint(equalTo: primalNavigationBar.bottomAnchor, constant: 8).isActive = true
+            searchBarButton.pinToSuperview(edges: .horizontal, padding: 16)
+            
+            primalNavigationBar.showBorder = false
+
+            let separator = SpacerView(height: 1, color: .background3)
+            view.addSubview(separator)
+            separator.topAnchor.constraint(equalTo: searchBarButton.bottomAnchor, constant: 12).isActive = true
+            separator.pinToSuperview(edges: .horizontal)
+
+            headerBottom = separator.bottomAnchor
+            setupSearchBarActions()
+        } else {
+            headerBottom = primalNavigationBar.bottomAnchor
+        }
+
+        contentView.topAnchor.constraint(equalTo: headerBottom).isActive = true
+        navBarBackground.bottomAnchor.constraint(equalTo: headerBottom).isActive = true
 
         contentView.transform = CGAffineTransform(translationX: 0, y: -UIScreen.main.bounds.height)
     }

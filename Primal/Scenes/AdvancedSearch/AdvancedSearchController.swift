@@ -22,11 +22,18 @@ class AdvancedSearchController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        
+        view.backgroundColor = .background4
+
+        if let pc = presentationController as? UISheetPresentationController {
+            if #available(iOS 17.0, *) {
+                pc.traitOverrides.userInterfaceStyle = Theme.current.userInterfaceStyle
+            }
+        }
+        
         let pullBar = UIView().constrainToSize(width: 60, height: 5)
         pullBar.backgroundColor = .foreground
         pullBar.layer.cornerRadius = 2.5
-        
-        view.backgroundColor = .background4
         
         nav.willMove(toParent: self)
         addChild(nav)

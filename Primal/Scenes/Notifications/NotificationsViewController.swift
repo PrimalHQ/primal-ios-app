@@ -121,8 +121,6 @@ private extension NotificationsViewController {
         primalNavigationBar.onTitleTapped = { [weak self] in
             guard let self else { return }
             GenericSelectionController(
-                title: primalNavigationBar.title,
-                subtitle: primalNavigationBar.subtitle,
                 items: NotificationFeedViewController.Tab.allCases,
                 selectedItem: currentTab
             ) { [weak self] tab in
