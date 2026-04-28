@@ -10,7 +10,7 @@ import UIKit
 import SafariServices
 import GenericJSON
 
-final class ReadsViewController: UIViewController, Themeable, FeedTitleSwipeController {
+final class ReadsViewController: UIViewController, Themeable, TitleSwipeController {
     let primalNavigationBar = PrimalNavigationBar()
 
     var cancellables: Set<AnyCancellable> = []
@@ -29,7 +29,7 @@ final class ReadsViewController: UIViewController, Themeable, FeedTitleSwipeCont
         pageVC.dataSource = self
         pageVC.delegate = self
 
-        view.addGestureRecognizer(FeedTitleSwipeGesture(vc: self))
+        view.addGestureRecognizer(TitleSwipeGesture(vc: self))
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -67,31 +67,35 @@ final class ReadsViewController: UIViewController, Themeable, FeedTitleSwipeCont
         pageVC.setViewControllers([ArticleFeedViewController(feed: feed)], direction: .forward, animated: false)
     }
     
-    func feedToLeftOfCurrentFeed() -> PrimalFeed? {
-        if let cachedFeedToLeft { return cachedFeedToLeft }
-        guard let currentFeed else { return nil }
-        cachedFeedToLeft = feedToLeftOfFeed(currentFeed)
-        return cachedFeedToLeft
+    func titleSubtitleToLeftOfCurrent() -> (title: String, subtitle: String)? {
+        if cachedFeedToLeft == nil {
+            guard let currentFeed else { return nil }
+            cachedFeedToLeft = feedToLeftOfFeed(currentFeed)
+        }
+        guard let feed = cachedFeedToLeft else { return nil }
+        return (feed.name, feed.description)
     }
     func feedToLeftOfFeed(_ feed: PrimalFeed) -> PrimalFeed? {
         let allFeeds = PrimalFeed.getActiveFeeds(.article)
-        
+
         guard let index = allFeeds.firstIndex(where: { $0.spec == feed.spec }) else { return nil }
-        
+
         return allFeeds[safe: (allFeeds.count + index - 1) % allFeeds.count]
     }
-    
-    func feedToRightOfCurrentFeed() -> PrimalFeed? {
-        if let cachedFeedToRight { return cachedFeedToRight }
-        guard let currentFeed else { return nil }
-        cachedFeedToRight = feedToRightOfFeed(currentFeed)
-        return cachedFeedToRight
+
+    func titleSubtitleToRightOfCurrent() -> (title: String, subtitle: String)? {
+        if cachedFeedToRight == nil {
+            guard let currentFeed else { return nil }
+            cachedFeedToRight = feedToRightOfFeed(currentFeed)
+        }
+        guard let feed = cachedFeedToRight else { return nil }
+        return (feed.name, feed.description)
     }
     func feedToRightOfFeed(_ feed: PrimalFeed) -> PrimalFeed? {
         let allFeeds = PrimalFeed.getActiveFeeds(.article)
-        
+
         guard let index = allFeeds.firstIndex(where: { $0.spec == feed.spec }) else { return nil }
-        
+
         return allFeeds[safe: (index + 1) % allFeeds.count]
     }
 }

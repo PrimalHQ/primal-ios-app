@@ -9,18 +9,28 @@ import Foundation
 
 enum ExploreCategory: Int, CaseIterable, SelectionItem {
     case people = 0
-    case feeds = 1
-    case zaps = 2
-    case media = 3
-    case topics = 4
+    case feeds  = 1
+    case topics = 2
+    case zaps   = 3
+    case media  = 4
 
     var selectionTitle: String {
         switch self {
-        case .people: return "People"
-        case .feeds:  return "Feeds"
+        case .people: return "Explore"
+        case .feeds:  return "Feed Gallery"
+        case .topics: return "Follow Packs"
         case .zaps:   return "Zaps"
         case .media:  return "Media"
-        case .topics: return "Topics"
+        }
+    }
+
+    var selectionSubtitle: String? {
+        switch self {
+        case .people: return "Find people, feeds, media"
+        case .feeds:  return "Browse feed gallery"
+        case .topics: return "Curated lists of users to follow"
+        case .zaps:   return "Top zaps on Nostr today"
+        case .media:  return "Top images and videos on Nostr today"
         }
     }
 }

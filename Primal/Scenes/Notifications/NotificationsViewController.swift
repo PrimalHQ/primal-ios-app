@@ -5,29 +5,23 @@
 //  Created by Pavle D Stevanović on 16.5.23..
 //
 
-import Combine
 import UIKit
-import GenericJSON
 
-final class NotificationsViewController: PrimalPageController, PrimalNavigationBarController {
+final class NotificationsViewController: UIViewController, Themeable, TitleSwipeController {
     let primalNavigationBar = PrimalNavigationBar()
-    let navBarBackground = UIView()
-
-    private var cancellables: Set<AnyCancellable> = []
+    let pageVC = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal)
 
     let postButtonParent = UIView()
     let postButton = NewPostButton()
 
-    init() {
-        super.init(tabs: [
-            ("ALL", { NotificationFeedViewController(tab: .all) }),
-            ("ZAPS", { NotificationFeedViewController(tab: .zaps) }),
-            ("REPLIES", { NotificationFeedViewController(tab: .replies) }),
-            ("MENTIONS", { NotificationFeedViewController(tab: .mentions) })
-        ])
-    }
+    private var currentTab: NotificationFeedViewController.Tab = .all
 
-    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    private lazy var tabVCs: [NotificationFeedViewController.Tab: NotificationFeedViewController] = [
+        .all:      .init(tab: .all),
+        .zaps:     .init(tab: .zaps),
+        .replies:  .init(tab: .replies),
+        .mentions: .init(tab: .mentions),
+    ]
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -44,32 +38,79 @@ final class NotificationsViewController: PrimalPageController, PrimalNavigationB
         mainTabBarController?.freezeNotificationCount()
     }
 
-    override func updateTheme() {
-        super.updateTheme()
+    func updateTheme() {
+        view.backgroundColor = .background
 
         primalNavigationBar.updateTheme()
-        navBarBackground.backgroundColor = .background
+
+        pageVC.children.forEach {
+            ($0 as? Themeable)?.updateTheme()
+            let views: [Themeable] = $0.view.findAllSubviews()
+            for view in views { view.updateTheme() }
+        }
+    }
+
+    func titleSubtitleToLeftOfCurrent() -> (title: String, subtitle: String)? {
+        guard let prev = NotificationFeedViewController.Tab(rawValue: currentTab.rawValue - 1) else { return nil }
+        return (prev.selectionTitle, prev.selectionSubtitle ?? "")
+    }
+
+    func titleSubtitleToRightOfCurrent() -> (title: String, subtitle: String)? {
+        guard let next = NotificationFeedViewController.Tab(rawValue: currentTab.rawValue + 1) else { return nil }
+        return (next.selectionTitle, next.selectionSubtitle ?? "")
+    }
+}
+
+extension NotificationsViewController: UIPageViewControllerDataSource {
+    func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
+        guard
+            let current = (viewController as? NotificationFeedViewController)?.notificationTab,
+            let prev = NotificationFeedViewController.Tab(rawValue: current.rawValue - 1)
+        else { return nil }
+        return tabVCs[prev]
+    }
+
+    func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
+        guard
+            let current = (viewController as? NotificationFeedViewController)?.notificationTab,
+            let next = NotificationFeedViewController.Tab(rawValue: current.rawValue + 1)
+        else { return nil }
+        return tabVCs[next]
+    }
+}
+
+extension NotificationsViewController: UIPageViewControllerDelegate {
+    func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {
+        guard completed else {
+            primalNavigationBar.cancelTransition()
+            return
+        }
+
+        guard let newTab = (pageViewController.viewControllers?.first as? NotificationFeedViewController)?.notificationTab else { return }
+        currentTab = newTab
+        primalNavigationBar.completeTransition(newTitle: newTab.selectionTitle, newSubtitle: newTab.selectionSubtitle ?? "")
     }
 }
 
 private extension NotificationsViewController {
     func setup() {
-        // Replace tabSelectionView's top constraint from safe area to nav bar bottom
-        for constraint in view.constraints where constraint.firstItem === tabSelectionView && constraint.firstAttribute == .top {
-            constraint.isActive = false
-        }
+        updateTheme()
 
-        navBarBackground.backgroundColor = .background
-        view.addSubview(navBarBackground)
-        navBarBackground.pinToSuperview(edges: [.horizontal, .top])
+        pageVC.willMove(toParent: self)
+        view.addSubview(pageVC.view)
+        pageVC.view.pinToSuperview()
+        addChild(pageVC)
+        pageVC.didMove(toParent: self)
 
-        view.addSubview(primalNavigationBar)
-        primalNavigationBar.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .top, safeArea: true)
+        pageVC.dataSource = self
+        pageVC.delegate = self
+        pageVC.setViewControllers([tabVCs[currentTab]!], direction: .forward, animated: false)
 
-        tabSelectionView.topAnchor.constraint(equalTo: primalNavigationBar.bottomAnchor, constant: -10).isActive = true
-        navBarBackground.bottomAnchor.constraint(equalTo: primalNavigationBar.bottomAnchor).isActive = true
+        view.addGestureRecognizer(TitleSwipeGesture(vc: self))
 
-        primalNavigationBar.title = "Alert"
+        addNavigationBar()
+        primalNavigationBar.title = currentTab.selectionTitle
+        primalNavigationBar.subtitle = currentTab.selectionSubtitle ?? ""
         primalNavigationBar.showChevron = true
         primalNavigationBar.onAvatarTapped = { [weak self] in
             guard let self else { return }
@@ -77,24 +118,15 @@ private extension NotificationsViewController {
         }
         primalNavigationBar.onTitleTapped = { [weak self] in
             guard let self else { return }
-            let current = NotificationFeedViewController.Tab(rawValue: currentTab) ?? .all
             GenericSelectionController(
                 title: primalNavigationBar.title,
                 subtitle: primalNavigationBar.subtitle,
                 items: NotificationFeedViewController.Tab.allCases,
-                selectedItem: current
+                selectedItem: currentTab
             ) { [weak self] tab in
-                guard let self else { return }
-                set(tab: tab.rawValue, old: currentTab)
+                self?.setTab(tab)
             }.present(from: self)
         }
-
-        $currentTab
-            .sink { [weak self] tab in
-                guard let self else { return }
-                self.primalNavigationBar.subtitle = NotificationFeedViewController.Tab(rawValue: tab)?.selectionTitle ?? ""
-            }
-            .store(in: &cancellables)
 
         postButton.addAction(.init(handler: { [weak self] _ in
             self?.present(AdvancedEmbedPostViewController(), animated: true)
@@ -103,5 +135,12 @@ private extension NotificationsViewController {
         postButtonParent.addSubview(postButton)
         postButton.constrainToSize(56).pinToSuperview(padding: 8)
         postButtonParent.pinToSuperview(edges: .trailing, padding: 13).pinToSuperview(edges: .bottom, padding: 48, safeArea: true)
+    }
+
+    func setTab(_ tab: NotificationFeedViewController.Tab) {
+        guard tab != currentTab, let vc = tabVCs[tab] else { return }
+        pageVC.setViewControllers([vc], direction: .forward, animated: false)
+        currentTab = tab
+        primalNavigationBar.completeTransition(newTitle: tab.selectionTitle, newSubtitle: tab.selectionSubtitle ?? "")
     }
 }

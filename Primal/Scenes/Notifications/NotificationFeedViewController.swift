@@ -34,10 +34,19 @@ final class NotificationFeedViewController: NoteViewController {
 
         var selectionTitle: String {
             switch self {
-            case .all:      return "All notifications"
+            case .all:      return "All Notifications"
             case .zaps:     return "Zaps"
             case .replies:  return "Replies"
             case .mentions: return "Mentions"
+            }
+        }
+
+        var selectionSubtitle: String? {
+            switch self {
+            case .all:      return "Based on your notification settings"
+            case .zaps:     return "Show incoming zaps"
+            case .replies:  return "Show replies in your threads"
+            case .mentions: return "Show mentions of you or your content"
             }
         }
     }

@@ -121,6 +121,7 @@ final class GenericSelectionCell: UITableViewCell {
     private let backgroundColorView = UIView()
     private let titleLabel = UILabel()
     private let subtitleLabel = UILabel()
+    private let checkmarkIcon = UIImageView(image: UIImage(named: "checkmarkSearch"))
 
     private var mySelected = false
 
@@ -134,25 +135,29 @@ final class GenericSelectionCell: UITableViewCell {
 
         selectionStyle = .none
 
-        let vStack = UIStackView(axis: .vertical, [titleLabel, subtitleLabel])
+        let vStack = UIStackView(axis: .vertical, spacing: 4, [titleLabel, subtitleLabel])
         vStack.alignment = .leading
+
+        checkmarkIcon.contentMode = .scaleAspectFit
+        checkmarkIcon.setContentHuggingPriority(.required, for: .horizontal)
+        checkmarkIcon.setContentCompressionResistancePriority(.required, for: .horizontal)
+
+        let hStack = UIStackView(spacing: 12, [vStack, UIView(), checkmarkIcon])
+        hStack.alignment = .center
 
         contentView.addSubview(backgroundColorView)
         backgroundColorView.pinToSuperview(edges: .horizontal, padding: 20).pinToSuperview(edges: .vertical, padding: 6)
 
-        contentView.addSubview(vStack)
-        vStack.pinToSuperview(edges: .vertical, padding: 16).centerToSuperview()
-        let leading = vStack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 32)
-        leading.priority = .required
-        leading.isActive = true
+        contentView.addSubview(hStack)
+        hStack.pinToSuperview(edges: .horizontal, padding: 32).pinToSuperview(edges: .vertical, padding: 16)
 
         backgroundColorView.backgroundColor = .background3
         backgroundColorView.layer.cornerRadius = 8
 
-        titleLabel.font = .appFont(withSize: 20, weight: .regular)
+        titleLabel.font = .appFont(withSize: 22, weight: .bold)
         titleLabel.textColor = .foreground
 
-        subtitleLabel.font = .appFont(withSize: 15, weight: .regular)
+        subtitleLabel.font = .appFont(withSize: 14, weight: .regular)
         subtitleLabel.textColor = .foreground4
 
         backgroundColor = .background2
@@ -170,5 +175,6 @@ final class GenericSelectionCell: UITableViewCell {
 
         mySelected = selected
         backgroundColorView.isHidden = !selected
+        checkmarkIcon.isHidden = !selected
     }
 }

@@ -318,19 +318,19 @@ extension PrimalNavigationBar {
     }
 }
 
-protocol FeedTitleSwipeController: PrimalNavigationBarController {
+protocol TitleSwipeController: PrimalNavigationBarController {
     var pageVC: UIPageViewController { get }
 
-    func feedToLeftOfCurrentFeed() -> PrimalFeed?
-    func feedToRightOfCurrentFeed() -> PrimalFeed?
+    func titleSubtitleToLeftOfCurrent()  -> (title: String, subtitle: String)?
+    func titleSubtitleToRightOfCurrent() -> (title: String, subtitle: String)?
 }
 
-final class FeedTitleSwipeGesture: UIPanGestureRecognizer {
-    weak var vc: FeedTitleSwipeController?
+final class TitleSwipeGesture: UIPanGestureRecognizer {
+    weak var vc: TitleSwipeController?
 
     private var oldTransition: (left: Bool, String)?
 
-    init(vc: FeedTitleSwipeController) {
+    init(vc: TitleSwipeController) {
         self.vc = vc
         super.init(target: nil, action: nil)
         addTarget(self, action: #selector(execute))
@@ -347,13 +347,13 @@ final class FeedTitleSwipeGesture: UIPanGestureRecognizer {
         let x = translation(in: view).x
         let left = x > 0
 
-        guard let transitionFeed = left ? vc?.feedToLeftOfCurrentFeed() : vc?.feedToRightOfCurrentFeed() else { return }
+        guard let pair = left ? vc?.titleSubtitleToLeftOfCurrent() : vc?.titleSubtitleToRightOfCurrent() else { return }
 
-        if let oldTransition, oldTransition.left == left && oldTransition.1 == transitionFeed.name {
+        if let oldTransition, oldTransition.left == left && oldTransition.1 == pair.title {
             // continue existing transition
         } else {
-            self.oldTransition = (left, transitionFeed.name)
-            navBar.startTransition(left: left, newTitle: transitionFeed.name, newSubtitle: transitionFeed.description)
+            self.oldTransition = (left, pair.title)
+            navBar.startTransition(left: left, newTitle: pair.title, newSubtitle: pair.subtitle)
         }
 
         switch state {
@@ -364,7 +364,7 @@ final class FeedTitleSwipeGesture: UIPanGestureRecognizer {
             let halfWidth = pageVC.view.frame.width / 2
 
             if (velocity > 300 && x > 0) || (velocity < -300 && x < 0) || (velocity < 200 && x < -halfWidth) || (velocity > -200 && x > halfWidth) {
-                navBar.completeTransitionAnimated(newTitle: transitionFeed.name, newSubtitle: transitionFeed.description)
+                navBar.completeTransitionAnimated(newTitle: pair.title, newSubtitle: pair.subtitle)
             } else {
                 navBar.cancelTransition()
             }
@@ -375,7 +375,7 @@ final class FeedTitleSwipeGesture: UIPanGestureRecognizer {
     }
 }
 
-extension FeedTitleSwipeGesture: UIGestureRecognizerDelegate {
+extension TitleSwipeGesture: UIGestureRecognizerDelegate {
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool { true }
 
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
