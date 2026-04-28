@@ -100,7 +100,7 @@ private extension NotificationsViewController {
 
         pageVC.willMove(toParent: self)
         view.addSubview(pageVC.view)
-        pageVC.view.pinToSuperview()
+        pageVC.view.pinToSuperview(edges: [.horizontal, .bottom]).pinToSuperview(edges: .top, safeArea: true)
         addChild(pageVC)
         pageVC.didMove(toParent: self)
 
