@@ -190,7 +190,6 @@
 		9ED02D7529FBE92D008040BC /* FollowSuggestionsRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ED02D7429FBE92D008040BC /* FollowSuggestionsRequest.swift */; };
 		9ED415F72A40FE0100892235 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ED415F62A40FE0100892235 /* SearchViewController.swift */; };
 		9ED415FA2A41DF3E00892235 /* HashtagCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ED415F92A41DF3E00892235 /* HashtagCollectionViewCell.swift */; };
-		9ED415FC2A41E02200892235 /* SearchHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ED415FB2A41E02200892235 /* SearchHeaderView.swift */; };
 		9ED415FF2A42442600892235 /* CollectionViewCenterHorizonatallyLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ED415FE2A42442600892235 /* CollectionViewCenterHorizonatallyLayout.swift */; };
 		9ED416042A424AAD00892235 /* SearchTermTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ED416032A424AAD00892235 /* SearchTermTableCell.swift */; };
 		9ED4160B2A45BE3100892235 /* UndoToastMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ED4160A2A45BE3100892235 /* UndoToastMessageView.swift */; };
@@ -215,6 +214,7 @@
 		9EF4BFC82A8BF1FA003396AA /* ThemeButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EF4BFC72A8BF1FA003396AA /* ThemeButton.swift */; };
 		9EF4BFCA2A8BFD16003396AA /* FontSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EF4BFC92A8BFD16003396AA /* FontSlider.swift */; };
 		9EF4BFCC2A8E57EF003396AA /* VerifiedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EF4BFCB2A8E57EF003396AA /* VerifiedView.swift */; };
+		7E5A9C0B1D2E3F4051628493 /* SearchBarButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E5A9C0B1D2E3F4051628494 /* SearchBarButton.swift */; };
 		9EF4BFCE2A93CE1B003396AA /* loadingSpinnerBlue.json in Resources */ = {isa = PBXBuildFile; fileRef = 9EF4BFCD2A93CE1B003396AA /* loadingSpinnerBlue.json */; };
 		9EF4BFD02A955FB5003396AA /* NewPostButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EF4BFCF2A955FB5003396AA /* NewPostButton.swift */; };
 		A1B2C3D401F6A7B8C9D0E100 /* GalleryFeedElementUserCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D401F6A7B8C9D0E101 /* GalleryFeedElementUserCell.swift */; };
@@ -1037,7 +1037,6 @@
 		9ED02D7429FBE92D008040BC /* FollowSuggestionsRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowSuggestionsRequest.swift; sourceTree = "<group>"; };
 		9ED415F62A40FE0100892235 /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
 		9ED415F92A41DF3E00892235 /* HashtagCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HashtagCollectionViewCell.swift; sourceTree = "<group>"; };
-		9ED415FB2A41E02200892235 /* SearchHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchHeaderView.swift; sourceTree = "<group>"; };
 		9ED415FE2A42442600892235 /* CollectionViewCenterHorizonatallyLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewCenterHorizonatallyLayout.swift; sourceTree = "<group>"; };
 		9ED416032A424AAD00892235 /* SearchTermTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchTermTableCell.swift; sourceTree = "<group>"; };
 		9ED4160A2A45BE3100892235 /* UndoToastMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UndoToastMessageView.swift; sourceTree = "<group>"; };
@@ -1061,6 +1060,7 @@
 		9EF4BFC72A8BF1FA003396AA /* ThemeButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeButton.swift; sourceTree = "<group>"; };
 		9EF4BFC92A8BFD16003396AA /* FontSlider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontSlider.swift; sourceTree = "<group>"; };
 		9EF4BFCB2A8E57EF003396AA /* VerifiedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifiedView.swift; sourceTree = "<group>"; };
+		7E5A9C0B1D2E3F4051628494 /* SearchBarButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchBarButton.swift; sourceTree = "<group>"; };
 		9EF4BFCD2A93CE1B003396AA /* loadingSpinnerBlue.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = loadingSpinnerBlue.json; sourceTree = "<group>"; };
 		9EF4BFCF2A955FB5003396AA /* NewPostButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewPostButton.swift; sourceTree = "<group>"; };
 		A1B2C3D401F6A7B8C9D0E101 /* GalleryFeedElementUserCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryFeedElementUserCell.swift; sourceTree = "<group>"; };
@@ -2455,6 +2455,7 @@
 				9E8834C12A33BE24005DB548 /* ToastMessageView.swift */,
 				9ED4160A2A45BE3100892235 /* UndoToastMessageView.swift */,
 				9EF4BFCB2A8E57EF003396AA /* VerifiedView.swift */,
+				7E5A9C0B1D2E3F4051628494 /* SearchBarButton.swift */,
 				B94F2BE32AE2EFDD0041181B /* PlaceholderTextView.swift */,
 				B94F2C052AF5184D0041181B /* RoundedInputField.swift */,
 				B94F2C072AF5501A0041181B /* TabSelectionView.swift */,
@@ -2497,7 +2498,6 @@
 			isa = PBXGroup;
 			children = (
 				9ED415F92A41DF3E00892235 /* HashtagCollectionViewCell.swift */,
-				9ED415FB2A41E02200892235 /* SearchHeaderView.swift */,
 				9ED416032A424AAD00892235 /* SearchTermTableCell.swift */,
 			);
 			path = Views;
@@ -4251,6 +4251,7 @@
 				B95677862F02FAAE00B8166C /* SettingsRemoteSessionController.swift in Sources */,
 				B918A35F2EA0F72C0003683D /* ImageGalleryVideoController.swift in Sources */,
 				9E55CC6D2A03CF33002D3DC4 /* SpacerView.swift in Sources */,
+				7E5A9C0B1D2E3F4051628493 /* SearchBarButton.swift in Sources */,
 				9EF4BFC62A8BEEA3003396AA /* SettingsAppearanceViewController.swift in Sources */,
 				93CACB0729F525B6003BBCE5 /* sha256.c in Sources */,
 				B95A41992F59B88300387448 /* PollManager.swift in Sources */,
@@ -4407,7 +4408,6 @@
 				B9DAA45D2D51550300B00B82 /* LegendListController.swift in Sources */,
 				B917982C2EE0690D00EF29EF /* RemoteSignerManager.swift in Sources */,
 				B917982D2EE0690D00EF29EF /* SigningManager.swift in Sources */,
-				9ED415FC2A41E02200892235 /* SearchHeaderView.swift in Sources */,
 				9E83DF812A6ED99500F2C379 /* PostingImageView.swift in Sources */,
 				B93BFFDD2F508BA3001C8BDC /* PollSatsRowView.swift in Sources */,
 				B91EF0E62CED109F00299ECF /* SearchPremiumCell.swift in Sources */,

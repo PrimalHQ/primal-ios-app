@@ -11,6 +11,9 @@ final class ExploreViewController: UIViewController, Themeable, TitleSwipeContro
     let primalNavigationBar = PrimalNavigationBar()
     let pageVC = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal)
 
+    let searchBar = SearchBarButton()
+    let separator = SpacerView(height: 1)
+
     let postButtonParent = UIView()
     let postButton = NewPostButton()
 
@@ -53,6 +56,8 @@ final class ExploreViewController: UIViewController, Themeable, TitleSwipeContro
         view.backgroundColor = .background
 
         primalNavigationBar.updateTheme()
+        searchBar.updateTheme()
+        separator.backgroundColor = .background3
 
         pageVC.children.forEach {
             ($0 as? Themeable)?.updateTheme()
@@ -109,7 +114,7 @@ private extension ExploreViewController {
 
         pageVC.willMove(toParent: self)
         view.addSubview(pageVC.view)
-        pageVC.view.pinToSuperview(edges: [.horizontal, .bottom]).pinToSuperview(edges: .top, safeArea: true)
+        pageVC.view.pinToSuperview(edges: [.horizontal, .bottom])
         addChild(pageVC)
         pageVC.didMove(toParent: self)
 
@@ -137,6 +142,23 @@ private extension ExploreViewController {
             ) { [weak self] cat in
                 self?.setCategory(cat)
             }.present(from: self)
+        }
+
+        view.addSubview(searchBar)
+        searchBar.topAnchor.constraint(equalTo: primalNavigationBar.bottomAnchor, constant: 8).isActive = true
+        searchBar.pinToSuperview(edges: .horizontal, padding: 16)
+
+        view.addSubview(separator)
+        separator.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: 12).isActive = true
+        separator.pinToSuperview(edges: .horizontal)
+
+        pageVC.view.topAnchor.constraint(equalTo: separator.bottomAnchor).isActive = true
+
+        searchBar.onTap = { [weak self] in
+            self?.navigationController?.fadeTo(SearchViewController(scope: .global, type: .notes))
+        }
+        searchBar.onConfigTap = { [weak self] in
+            self?.present(AdvancedSearchController(manager: AdvancedSearchManager()), animated: true)
         }
 
         postButton.addAction(.init(handler: { [weak self] _ in
