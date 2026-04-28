@@ -16,12 +16,14 @@ final class NotificationsViewController: UIViewController, Themeable, TitleSwipe
 
     private var currentTab: NotificationFeedViewController.Tab = .all
 
-    private lazy var tabVCs: [NotificationFeedViewController.Tab: NotificationFeedViewController] = [
-        .all:      .init(tab: .all),
-        .zaps:     .init(tab: .zaps),
-        .replies:  .init(tab: .replies),
-        .mentions: .init(tab: .mentions),
-    ]
+    private var cachedTabVCs: [NotificationFeedViewController.Tab: NotificationFeedViewController] = [:]
+
+    private func tabVC(_ tab: NotificationFeedViewController.Tab) -> NotificationFeedViewController {
+        if let cached = cachedTabVCs[tab] { return cached }
+        let new = NotificationFeedViewController(tab: tab)
+        cachedTabVCs[tab] = new
+        return new
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -67,7 +69,7 @@ extension NotificationsViewController: UIPageViewControllerDataSource {
             let current = (viewController as? NotificationFeedViewController)?.notificationTab,
             let prev = NotificationFeedViewController.Tab(rawValue: current.rawValue - 1)
         else { return nil }
-        return tabVCs[prev]
+        return tabVC(prev)
     }
 
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
@@ -75,7 +77,7 @@ extension NotificationsViewController: UIPageViewControllerDataSource {
             let current = (viewController as? NotificationFeedViewController)?.notificationTab,
             let next = NotificationFeedViewController.Tab(rawValue: current.rawValue + 1)
         else { return nil }
-        return tabVCs[next]
+        return tabVC(next)
     }
 }
 
@@ -104,7 +106,7 @@ private extension NotificationsViewController {
 
         pageVC.dataSource = self
         pageVC.delegate = self
-        pageVC.setViewControllers([tabVCs[currentTab]!], direction: .forward, animated: false)
+        pageVC.setViewControllers([tabVC(currentTab)], direction: .forward, animated: false)
 
         view.addGestureRecognizer(TitleSwipeGesture(vc: self))
 
@@ -138,8 +140,8 @@ private extension NotificationsViewController {
     }
 
     func setTab(_ tab: NotificationFeedViewController.Tab) {
-        guard tab != currentTab, let vc = tabVCs[tab] else { return }
-        pageVC.setViewControllers([vc], direction: .forward, animated: false)
+        guard tab != currentTab else { return }
+        pageVC.setViewControllers([tabVC(tab)], direction: .forward, animated: false)
         currentTab = tab
         primalNavigationBar.completeTransition(newTitle: tab.selectionTitle, newSubtitle: tab.selectionSubtitle ?? "")
     }

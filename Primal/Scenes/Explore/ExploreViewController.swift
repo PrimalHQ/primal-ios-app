@@ -16,16 +16,24 @@ final class ExploreViewController: UIViewController, Themeable, TitleSwipeContro
 
     private var currentCategory: ExploreCategory = .people
 
-    private lazy var tabVCs: [ExploreCategory: UIViewController] = [
-        .people: ExplorePeopleViewController(),
-        .feeds:  ExploreFeedsViewController(),
-        .topics: ExploreTopicsViewController(),
-        .zaps:   ExploreZapsViewController(),
-        .media:  ExploreMediaController(),
-    ]
+    private var cachedTabVCs: [ExploreCategory: UIViewController] = [:]
+
+    private func categoryVC(_ category: ExploreCategory) -> UIViewController {
+        if let cached = cachedTabVCs[category] { return cached }
+        let new: UIViewController
+        switch category {
+        case .people: new = ExplorePeopleViewController()
+        case .feeds:  new = ExploreFeedsViewController()
+        case .topics: new = ExploreTopicsViewController()
+        case .zaps:   new = ExploreZapsViewController()
+        case .media:  new = ExploreMediaController()
+        }
+        cachedTabVCs[category] = new
+        return new
+    }
 
     private func category(of vc: UIViewController) -> ExploreCategory? {
-        tabVCs.first(where: { $0.value === vc })?.key
+        cachedTabVCs.first(where: { $0.value === vc })?.key
     }
 
     override func viewDidLoad() {
@@ -70,7 +78,7 @@ extension ExploreViewController: UIPageViewControllerDataSource {
             let current = category(of: viewController),
             let prev = ExploreCategory(rawValue: current.rawValue - 1)
         else { return nil }
-        return tabVCs[prev]
+        return categoryVC(prev)
     }
 
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
@@ -78,7 +86,7 @@ extension ExploreViewController: UIPageViewControllerDataSource {
             let current = category(of: viewController),
             let next = ExploreCategory(rawValue: current.rawValue + 1)
         else { return nil }
-        return tabVCs[next]
+        return categoryVC(next)
     }
 }
 
@@ -107,7 +115,7 @@ private extension ExploreViewController {
 
         pageVC.dataSource = self
         pageVC.delegate = self
-        pageVC.setViewControllers([tabVCs[currentCategory]!], direction: .forward, animated: false)
+        pageVC.setViewControllers([categoryVC(currentCategory)], direction: .forward, animated: false)
 
         view.addGestureRecognizer(TitleSwipeGesture(vc: self))
 
@@ -141,8 +149,8 @@ private extension ExploreViewController {
     }
 
     func setCategory(_ category: ExploreCategory) {
-        guard category != currentCategory, let vc = tabVCs[category] else { return }
-        pageVC.setViewControllers([vc], direction: .forward, animated: false)
+        guard category != currentCategory else { return }
+        pageVC.setViewControllers([categoryVC(category)], direction: .forward, animated: false)
         currentCategory = category
         primalNavigationBar.completeTransition(newTitle: category.selectionTitle, newSubtitle: category.selectionSubtitle ?? "")
     }
