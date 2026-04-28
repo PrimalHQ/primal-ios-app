@@ -25,9 +25,9 @@ final class ExploreViewController: UIViewController, Themeable, TitleSwipeContro
         if let cached = cachedTabVCs[category] { return cached }
         let new: UIViewController
         switch category {
-        case .people: new = ExplorePeopleViewController()
+        case .people: new = UIViewController()
         case .feeds:  new = ExploreFeedsViewController()
-        case .topics: new = ExploreTopicsViewController()
+        case .followPacks: new = ExplorePeopleViewController()
         case .zaps:   new = ExploreZapsViewController()
         case .media:  new = ExploreMediaController()
         }
@@ -128,6 +128,7 @@ private extension ExploreViewController {
         primalNavigationBar.title = currentCategory.selectionTitle
         primalNavigationBar.subtitle = currentCategory.selectionSubtitle ?? ""
         primalNavigationBar.showChevron = true
+        primalNavigationBar.showBorder = false
         primalNavigationBar.onAvatarTapped = { [weak self] in
             guard let self else { return }
             MenuController().present(from: self)

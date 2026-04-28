@@ -165,6 +165,10 @@ final class PrimalNavigationBar: UIView, Themeable {
     var showChevron: Bool = true {
         didSet { chevronView.isHidden = !showChevron }
     }
+    
+    var showBorder: Bool = true {
+        didSet { border.isHidden = !showBorder }
+    }
 
     var onTitleTapped: (() -> Void)?
     var onAvatarTapped: (() -> Void)?

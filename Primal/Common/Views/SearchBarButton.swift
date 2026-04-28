@@ -60,13 +60,13 @@ final class SearchBarButton: UIButton, Themeable {
             config = .glass()
         } else {
             config = .gray()
+            config.baseForegroundColor = .foreground.withAlphaComponent(0.7)
         }
 
         config.cornerStyle = .capsule
         config.image = UIImage.searchIconSmall.withRenderingMode(.alwaysTemplate)
         config.imagePlacement = .leading
         config.imagePadding = 12
-        config.baseForegroundColor = .foreground.withAlphaComponent(0.7)
 
         configuration = config
         contentHorizontalAlignment = .leading
