@@ -73,6 +73,8 @@ final class NotificationFeedViewController: NoteViewController {
     @Published var isLoading = false
     @Published var didReachEnd = false
     
+    override var topBarHeight: CGFloat { super.topBarHeight }
+    
     var until = Date()
     
     let idJsonID: JSON = .string(IdentityManager.instance.userHexPubkey)
@@ -131,7 +133,7 @@ final class NotificationFeedViewController: NoteViewController {
         
         view.addSubview(skeletonLoaderView)
         skeletonLoaderView.pinToSuperview(edges: .horizontal)
-        skeletonLoaderView.topAnchor.constraint(equalTo: table.topAnchor, constant: 15).isActive = true
+        skeletonLoaderView.topAnchor.constraint(equalTo: table.topAnchor, constant: 15 + 60).isActive = true
         
         refreshControl.addAction(.init(handler: { [weak self] _ in
             self?.refresh()
