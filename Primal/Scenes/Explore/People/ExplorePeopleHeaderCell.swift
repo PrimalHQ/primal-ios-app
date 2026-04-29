@@ -46,7 +46,7 @@ final class ExplorePeopleHeaderCell: UITableViewCell, Themeable {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func updateForUserList(_ userList: UserList) {
+    func updateForUserList(_ userList: FollowPack) {
         let user = userList.user
         
         userNameLabel.text = user.data.firstIdentifier

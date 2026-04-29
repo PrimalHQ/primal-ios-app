@@ -1,5 +1,5 @@
 //
-//  ExplorePeopleViewController.swift
+//  ExploreFollowPacksViewController.swift
 //  Primal
 //
 //  Created by Pavle Stevanović on 7.10.24..
@@ -8,11 +8,11 @@
 import Combine
 import UIKit
 
-class ExplorePeopleViewController: UIViewController, Themeable {
+class ExploreFollowPacksViewController: UIViewController, Themeable {
     private var cancellables: Set<AnyCancellable> = []
-    private let feedManager = ExploreUsersFeedManager()
+    private let feedManager = ExploreFollowPackFeedManager()
     
-    private var userLists: [UserList] = [] {
+    private var userLists: [FollowPack] = [] {
         didSet {
             table.reloadData()
             loadingView.isHidden = !userLists.isEmpty
@@ -62,7 +62,7 @@ class ExplorePeopleViewController: UIViewController, Themeable {
     }
 }
 
-private extension ExplorePeopleViewController {
+private extension ExploreFollowPacksViewController {
     func setup() {
         view.addSubview(table)
         table.pinToSuperview()
@@ -83,7 +83,7 @@ private extension ExplorePeopleViewController {
     }
 }
 
-extension ExplorePeopleViewController: UITableViewDataSource {
+extension ExploreFollowPacksViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { userLists.count }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -100,7 +100,7 @@ extension ExplorePeopleViewController: UITableViewDataSource {
     }
 }
 
-extension ExplorePeopleViewController: UITableViewDelegate {
+extension ExploreFollowPacksViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         guard let userList = userLists[safe: indexPath.row] else { return }
         show(UserListViewController(list: userList), sender: nil)

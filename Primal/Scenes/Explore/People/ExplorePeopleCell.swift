@@ -36,7 +36,7 @@ final class ExplorePeopleCell: UITableViewCell, Themeable {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func updateForUserList(_ userList: UserList) {
+    func updateForUserList(_ userList: FollowPack) {
         avatarStack.setUsers(userList.list)
         
         let user = userList.user

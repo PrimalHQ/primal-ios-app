@@ -11,14 +11,14 @@ import UIKit
 import NostrSDK
 
 class UserListViewController: UIViewController, Themeable {
-    var list: UserList
+    var list: FollowPack
     
     let table = UITableView()
     let titleLabel = UILabel()
     
     var cancellables: Set<AnyCancellable> = []
     
-    init(list: UserList) {
+    init(list: FollowPack) {
         self.list = list
         super.init(nibName: nil, bundle: nil)
         
@@ -206,7 +206,7 @@ private extension UserListViewController {
                })
                .sorted(by: { $0.followers ?? 0 > $1.followers ?? 0 })
            
-           self.list = UserList(
+           self.list = FollowPack(
                id: id,
                dTag: dTag,
                name: title,

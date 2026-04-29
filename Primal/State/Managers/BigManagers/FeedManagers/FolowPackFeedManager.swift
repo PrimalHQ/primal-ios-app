@@ -1,5 +1,5 @@
 //
-//  UserFeedManager.swift
+//  FollowPackFeedManager.swift
 //  Primal
 //
 //  Created by Pavle Stevanović on 7.10.24..
@@ -9,13 +9,13 @@ import Foundation
 import Combine
 import GenericJSON
 
-class ExploreUsersFeedManager: UserFeedManager {
+class ExploreFollowPackFeedManager: FollowPackFeedManager {
     init() {
         super.init(request: FeedManagerRequest(name: "follow_lists", body: [:]))
     }
 }
 
-class UserList {
+class FollowPack {
     var id: String
     var dTag: String
     var name: String
@@ -42,10 +42,10 @@ class UserList {
     }
 }
 
-class UserFeedManager: BaseFeedManager {
+class FollowPackFeedManager: BaseFeedManager {
     // Accessed from the main thread
-    @Published var userLists: [UserList] = []
-    @Published private var oldUserLists: [UserList] = []
+    @Published var userLists: [FollowPack] = []
+    @Published private var oldUserLists: [FollowPack] = []
     
     private var cancellables: Set<AnyCancellable> = []
     
@@ -62,7 +62,7 @@ class UserFeedManager: BaseFeedManager {
                 
                 let users = result.getSortedUsers()
                 
-                let lists: [UserList] = userListObjects.compactMap { (event) -> UserList? in
+                let lists: [FollowPack] = userListObjects.compactMap { (event) -> FollowPack? in
                     guard
                         let userPubkey = event["pubkey"]?.stringValue,
                         let id = event["id"]?.stringValue,
@@ -82,7 +82,7 @@ class UserFeedManager: BaseFeedManager {
                         })
                         .sorted(by: { $0.followers ?? 0 > $1.followers ?? 0 })
                     
-                    return UserList(
+                    return FollowPack(
                         id: id,
                         dTag: dTag,
                         name: title,
@@ -108,7 +108,7 @@ class UserFeedManager: BaseFeedManager {
     }
 }
 
-extension UserFeedManager: BaseFeedManagerDelegate {
+extension FollowPackFeedManager: BaseFeedManagerDelegate {
     func userMuted(pubkey: String) {
         userLists = userLists.filter { $0.user.data.pubkey != pubkey }
         oldUserLists = oldUserLists.filter { $0.user.data.pubkey != pubkey }

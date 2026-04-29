@@ -27,7 +27,7 @@ final class ExploreViewController: UIViewController, Themeable, TitleSwipeContro
         switch category {
         case .people: new = UIViewController()
         case .feeds:  new = ExploreFeedsViewController()
-        case .followPacks: new = ExplorePeopleViewController()
+        case .followPacks: new = ExploreFollowPacksViewController()
         case .zaps:   new = ExploreZapsViewController()
         case .media:  new = ExploreMediaController()
         }

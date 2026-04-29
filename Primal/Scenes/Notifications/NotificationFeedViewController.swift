@@ -128,7 +128,13 @@ final class NotificationFeedViewController: NoteViewController {
         
         view.addSubview(skeletonLoaderView)
         skeletonLoaderView.pinToSuperview(edges: .horizontal)
-        skeletonLoaderView.topAnchor.constraint(equalTo: table.topAnchor, constant: 15 + adjustedTopBarHeight).isActive = true
+        let skeletonTop = skeletonLoaderView.topAnchor.constraint(equalTo: table.topAnchor, constant: 15 + adjustedTopBarHeight)
+        skeletonTop.isActive = true
+
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            skeletonTop.constant = 15 + adjustedTopBarHeight
+        }
         
         refreshControl.addAction(.init(handler: { [weak self] _ in
             self?.refresh()
