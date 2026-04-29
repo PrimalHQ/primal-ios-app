@@ -82,7 +82,7 @@ extension UIViewController {
         button.pinToSuperview()
         button.addAction(.init(handler: { [weak self] _ in
             guard let self else { return }
-            SearchViewController.present(from: self, scope: scope, type: type)
+            SearchViewController.present(from: self, scope: scope, type: type, advanced: false)
         }), for: .touchUpInside)
         return UIBarButtonItem(customView: view).hidingGlassBackground()
     }

@@ -93,10 +93,11 @@ extension SearchBarButtonController {
     func setupSearchBarActions() {
         searchBarButton.onTap = { [weak self] in
             guard let self else { return }
-            SearchViewController.present(from: self)
+            SearchViewController.present(from: self, advanced: false)
         }
         searchBarButton.onConfigTap = { [weak self] in
-            self?.present(AdvancedSearchController(manager: AdvancedSearchManager()), animated: true)
+            guard let self else { return }
+            SearchViewController.present(from: self, advanced: true)
         }
     }
 }

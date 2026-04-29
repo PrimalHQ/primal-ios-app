@@ -9,7 +9,29 @@ import Combine
 import UIKit
 import SafariServices
 
-final class SearchViewController: UIViewController, Themeable, WalletSearchController {
+final class SearchViewController: UINavigationController {
+    let child: SearchViewChildController
+    
+    required init?(coder aDecoder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    init(scope: SearchScope = .global, type: SearchType = .notes, advanced: Bool) {
+        child = SearchViewChildController(scope: scope, type: type)
+        super.init(rootViewController: advanced ? AdvancedSearchController(manager: child.advancedSearchManager) : child)
+        setNavigationBarHidden(true, animated: false)
+    }
+    
+    static func present(from presenter: UIViewController, scope: SearchScope = .global, type: SearchType = .notes, advanced: Bool) {
+        let search = SearchViewController(scope: scope, type: type, advanced: advanced)
+        search.child.parentNavigationController = presenter.navigationController
+        search.modalPresentationStyle = .pageSheet
+        if let sheet = search.sheetPresentationController {
+            sheet.detents = [.large()]
+            sheet.prefersGrabberVisible = false
+        }
+        presenter.present(search, animated: true)
+    }
+}
+
+final class SearchViewChildController: UIViewController, Themeable, WalletSearchController {
     let pullBar = UIView().constrainToSize(width: 60, height: 5)
     let titleLabel = UILabel()
     let searchView = SearchInputHeaderView()
@@ -35,23 +57,12 @@ final class SearchViewController: UIViewController, Themeable, WalletSearchContr
 
     let scope: SearchScope
     let searchType: SearchType
+    
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     init(scope: SearchScope = .global, type: SearchType = .notes) {
         self.scope = scope
         searchType = type
         super.init(nibName: nil, bundle: nil)
-    }
-
-    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
-
-    static func present(from presenter: UIViewController, scope: SearchScope = .global, type: SearchType = .notes) {
-        let search = SearchViewController(scope: scope, type: type)
-        search.parentNavigationController = presenter.navigationController
-        search.modalPresentationStyle = .pageSheet
-        if let sheet = search.sheetPresentationController {
-            sheet.detents = [.large()]
-            sheet.prefersGrabberVisible = false
-        }
-        presenter.present(search, animated: true)
     }
 
     override func viewDidLoad() {
@@ -78,7 +89,7 @@ final class SearchViewController: UIViewController, Themeable, WalletSearchContr
     }
 }
 
-private extension SearchViewController {
+private extension SearchViewChildController {
     var advancedSearchManager: AdvancedSearchManager {
         let advancedSearch = AdvancedSearchManager()
         advancedSearch.searchScope = scope
@@ -145,7 +156,7 @@ private extension SearchViewController {
 
         configButton.addAction(.init(handler: { [weak self] _ in
             guard let self else { return }
-            present(AdvancedSearchController(manager: advancedSearchManager), animated: true)
+            show(AdvancedSearchController(manager: advancedSearchManager), sender: nil)
         }), for: .touchUpInside)
     }
 
@@ -221,14 +232,14 @@ private extension SearchViewController {
     }
 }
 
-extension SearchViewController: UITextFieldDelegate {
+extension SearchViewChildController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         doSearch()
         return true
     }
 }
 
-extension SearchViewController: UITableViewDelegate, UITableViewDataSource {
+extension SearchViewChildController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         users.count + 1
     }

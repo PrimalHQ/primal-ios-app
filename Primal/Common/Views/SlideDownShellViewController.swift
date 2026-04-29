@@ -89,7 +89,25 @@ private extension SlideDownShellViewController {
             separator.pinToSuperview(edges: .horizontal)
 
             headerBottom = separator.bottomAnchor
-            setupSearchBarActions()
+            
+            searchBarButton.onTap = { [weak self] in
+                guard let self, let nav: UINavigationController = presentingViewController?.findInChildren() else { return }
+                
+                animateOut { [weak self] in
+                    self?.dismiss(animated: false) {
+                        SearchViewController.present(from: nav, advanced: false)
+                    }
+                }
+            }
+            searchBarButton.onConfigTap = { [weak self] in
+                guard let self, let nav: UINavigationController = presentingViewController?.findInChildren() else { return }
+                
+                animateOut { [weak self] in
+                    self?.dismiss(animated: false) {
+                        SearchViewController.present(from: nav, advanced: true)
+                    }
+                }
+            }
         } else {
             headerBottom = primalNavigationBar.bottomAnchor
         }

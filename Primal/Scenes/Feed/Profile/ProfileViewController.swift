@@ -335,7 +335,7 @@ extension ProfileViewController: ProfileNavigationViewDelegate {
     }
     
     func tappedSearch() {
-        present(AdvancedSearchController(manager: advancedSearchManager), animated: true)
+        SearchViewController.present(from: self, advanced: true)
     }
     
     func tappedMuteUser() {
