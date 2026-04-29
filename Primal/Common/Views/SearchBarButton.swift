@@ -92,7 +92,8 @@ protocol SearchBarButtonController: UIViewController {
 extension SearchBarButtonController {
     func setupSearchBarActions() {
         searchBarButton.onTap = { [weak self] in
-            self?.navigationController?.fadeTo(SearchViewController(scope: .global, type: .notes))
+            guard let self else { return }
+            SearchViewController.present(from: self)
         }
         searchBarButton.onConfigTap = { [weak self] in
             self?.present(AdvancedSearchController(manager: AdvancedSearchManager()), animated: true)

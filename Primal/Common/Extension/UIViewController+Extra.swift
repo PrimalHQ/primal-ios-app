@@ -81,7 +81,8 @@ extension UIViewController {
         view.addSubview(button)
         button.pinToSuperview()
         button.addAction(.init(handler: { [weak self] _ in
-            self?.navigationController?.fadeTo(SearchViewController(scope: scope, type: type))
+            guard let self else { return }
+            SearchViewController.present(from: self, scope: scope, type: type)
         }), for: .touchUpInside)
         return UIBarButtonItem(customView: view).hidingGlassBackground()
     }

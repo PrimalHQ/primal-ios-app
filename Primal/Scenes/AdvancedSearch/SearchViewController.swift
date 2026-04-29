@@ -10,28 +10,29 @@ import UIKit
 import SafariServices
 
 final class SearchViewController: UIViewController, Themeable, WalletSearchController {
-    
-    let navigationExtender = SpacerView(height: 7)
-    let navigationBorder = SpacerView(height: 1)
+    let pullBar = UIView().constrainToSize(width: 60, height: 5)
+    let titleLabel = UILabel()
     let searchView = SearchInputHeaderView()
     let userTable = UITableView()
-    
+
     let configButton = UIButton(configuration: .simpleImage(.searchConfig))
-    
+
     @Published var userSearchText: String = ""
-    
+
     var textSearch: String?
-    
+
     var cancellables: Set<AnyCancellable> = []
-    
+
     var users: [ParsedUser] = [] {
         didSet {
             userTable.reloadData()
         }
     }
-    
-    var navigationControllerForSearchResults: UINavigationController? { navigationController }
-    
+
+    weak var parentNavigationController: UINavigationController?
+
+    var navigationControllerForSearchResults: UINavigationController? { parentNavigationController }
+
     let scope: SearchScope
     let searchType: SearchType
     init(scope: SearchScope = .global, type: SearchType = .notes) {
@@ -39,39 +40,40 @@ final class SearchViewController: UIViewController, Themeable, WalletSearchContr
         searchType = type
         super.init(nibName: nil, bundle: nil)
     }
-    
+
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
-    
+
+    static func present(from presenter: UIViewController, scope: SearchScope = .global, type: SearchType = .notes) {
+        let search = SearchViewController(scope: scope, type: type)
+        search.parentNavigationController = presenter.navigationController
+        search.modalPresentationStyle = .pageSheet
+        if let sheet = search.sheetPresentationController {
+            sheet.detents = [.large()]
+            sheet.prefersGrabberVisible = false
+        }
+        presenter.present(search, animated: true)
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         setup()
     }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
-        navigationController?.setNavigationBarHidden(false, animated: animated)
-        navigationController?.navigationBar.transform = .identity
-        
-        searchView.inputField.becomeFirstResponder()
-    }
-    
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
-        navigationController?.setNavigationBarHidden(false, animated: animated)
+
+        searchView.inputField.becomeFirstResponder()
     }
-    
+
     func updateTheme() {
         userTable.reloadData()
         searchView.updateTheme()
-        
-        navigationItem.leftBarButtonItem = customBackButton
+
+        userTable.backgroundColor = .background
         view.backgroundColor = .background
-        navigationExtender.backgroundColor = .background
-        navigationBorder.backgroundColor = .background3
-        
+        pullBar.backgroundColor = .foreground
+        titleLabel.textColor = .foreground2
         configButton.tintColor = .foreground
     }
 }
@@ -87,33 +89,66 @@ private extension SearchViewController {
         }
         return advancedSearch
     }
-    
+
     func setup() {
-        navigationItem.titleView = searchView
-        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: configButton).hidingGlassBackground()
+        pullBar.layer.cornerRadius = 2.5
+
+        titleLabel.text = "Quick Search"
+        titleLabel.font = .appFont(withSize: 20, weight: .bold)
+        titleLabel.textAlignment = .center
+
+        configButton.constrainToSize(40)
+        configButton.setContentHuggingPriority(.required, for: .horizontal)
+        configButton.setContentCompressionResistancePriority(.required, for: .horizontal)
+
+        let pullBarWrapper = UIView()
+        pullBarWrapper.addSubview(pullBar)
+        pullBar.centerToSuperview(axis: .horizontal).pinToSuperview(edges: .vertical)
+
+        let searchRow = UIStackView(axis: .horizontal, spacing: 8, [searchView, configButton])
+        searchRow.alignment = .center
+
+        let searchRowWrapper = UIView()
+        searchRowWrapper.addSubview(searchRow)
+        searchRow.pinToSuperview(edges: .vertical).pinToSuperview(edges: .horizontal, padding: 16)
+        
+        let keyboardSpacer = KeyboardSizingView()
+
+        let stack = UIStackView(axis: .vertical, [
+            SpacerView(height: 12, priority: .required),
+            pullBarWrapper,
+            SpacerView(height: 8, priority: .required),
+            titleLabel,
+            SpacerView(height: 16, priority: .required),
+            searchRowWrapper,
+            SpacerView(height: 12, priority: .required),
+            userTable, keyboardSpacer
+        ])
+        stack.alignment = .fill
+        view.addSubview(stack)
+        stack
+            .pinToSuperview(edges: .top, safeArea: true)
+            .pinToSuperview(edges: [.horizontal, .bottom])
+        
+        keyboardSpacer.updateHeightCancellable().store(in: &cancellables)
         updateTheme()
         setBindings()
-        
-        let stack = UIStackView(arrangedSubviews: [navigationExtender, navigationBorder, userTable])
-        view.addSubview(stack)
-        stack.axis = .vertical
-        stack.pinToSuperview(edges: .top, safeArea: true).pinToSuperview(edges: .horizontal).pinToSuperview(edges: .bottom, padding: 56, safeArea: true)
-        
+
         userTable.register(UserInfoTableCell.self, forCellReuseIdentifier: "userCell")
         userTable.register(SearchTermTableCell.self, forCellReuseIdentifier: "search")
         userTable.separatorStyle = .none
         userTable.delegate = self
         userTable.dataSource = self
-        
+
         searchView.inputField.delegate = self
         searchView.inputField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
-        
+
         configButton.addAction(.init(handler: { [weak self] _ in
             guard let self else { return }
             present(AdvancedSearchController(manager: advancedSearchManager), animated: true)
         }), for: .touchUpInside)
     }
-    
+
     func setBindings() {
         $userSearchText
             .handleEvents(receiveOutput: { [weak self] _ in
@@ -128,48 +163,59 @@ private extension SearchViewController {
             })
             .store(in: &cancellables)
     }
-    
+
+    func dismissAndPush(_ vc: UIViewController) {
+        let target = parentNavigationController
+        searchView.inputField.resignFirstResponder()
+        dismiss(animated: true) {
+            target?.pushViewController(vc, animated: true)
+        }
+    }
+
     func doSearch() {
         if userSearchText.isEmpty { return }
-        
+
         let userSearchText = userSearchText.trimmingCharacters(in: .whitespacesAndNewlines)
         let lowerCased = userSearchText.lowercased()
-        
+
         if lowerCased.hasPrefix("npub1") && userSearchText.count == 63 {
             notify(.primalProfileLink, userSearchText)
-            navigationController?.viewControllers.removeAll(where: { $0 == self })
+            dismiss(animated: true)
             return
         }
-        
+
         if lowerCased.hasPrefix("note1") && userSearchText.count == 63, let text = userSearchText.noteIdToHex() {
             notify(.primalNoteLink, text)
-            navigationController?.viewControllers.removeAll(where: { $0 == self })
+            dismiss(animated: true)
             return
         }
-        
+
         if (lowerCased.hasPrefix("lnurl") || lowerCased.hasPrefix("lnbc")) && lowerCased.count > 20 {
             search(userSearchText)
             return
         }
-        
+
         if let url = URL(string: userSearchText), url.scheme?.lowercased() == "https" {
-            present(SFSafariViewController(url: url), animated: true)
-            navigationController?.viewControllers.removeAll(where: { $0 == self })
+            let target = parentNavigationController?.topViewController
+            searchView.inputField.resignFirstResponder()
+            dismiss(animated: true) {
+                target?.present(SFSafariViewController(url: url), animated: true)
+            }
             return
         }
-        
+
         switch searchType {
         case .reads:
             let articleFeed = SearchArticleFeedController(feed: advancedSearchManager.feed)
-            show(articleFeed, sender: nil)
+            dismissAndPush(articleFeed)
         default:
             RecentSearchManager.instance.addSearch(userSearchText)
 
             let feed = SearchNoteFeedController(feed: FeedManager(newFeed: advancedSearchManager.feed))
-            show(feed, sender: nil)
+            dismissAndPush(feed)
         }
     }
-    
+
     @objc func textFieldDidChange() {
         userSearchText = searchView.inputField.text ?? ""
     }
@@ -186,7 +232,7 @@ extension SearchViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         users.count + 1
     }
-    
+
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if indexPath.row == 0 {
             let cell = tableView.dequeueReusableCell(withIdentifier: "search", for: indexPath)
@@ -207,55 +253,54 @@ extension SearchViewController: UITableViewDelegate, UITableViewDataSource {
             }
             return cell
         }
-        
+
         let cell = tableView.dequeueReusableCell(withIdentifier: "userCell", for: indexPath)
         (cell as? UserInfoTableCell)?.update(user: users[indexPath.row - 1])
         return cell
     }
-    
+
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if indexPath.row == 0 {
             doSearch()
             return
         }
-        
+
         let profile = ProfileViewController(profile: users[indexPath.row - 1])
-        searchView.inputField.resignFirstResponder()
-        show(profile, sender: nil)
+        dismissAndPush(profile)
     }
 }
 
 final class SearchInputHeaderView: UIView, Themeable {
     let inputField = UITextField()
     let icon = UIImageView(image: UIImage(named: "searchIconSmall"))
-    
+
     init() {
         super.init(frame: .zero)
-        
+
         constrainToSize(height: 32)
         let width = widthAnchor.constraint(equalToConstant: 255)
-        width.priority = .defaultHigh
+        width.priority = .defaultLow
         width.isActive = true
-        
+
         layer.cornerRadius = 16
-        
+
         let stack = UIStackView(arrangedSubviews: [icon, inputField])
         stack.alignment = .center
         stack.spacing = 8
-        
+
         addSubview(stack)
         stack.centerToSuperview().pinToSuperview(edges: .horizontal, padding: 12)
-        
+
         icon.setContentHuggingPriority(.required, for: .horizontal)
-        
+
         inputField.font = .appFont(withSize: 16, weight: .medium)
         inputField.autocorrectionType = .no
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     func updateTheme() {
         backgroundColor = .background3
         inputField.textColor = .foreground
