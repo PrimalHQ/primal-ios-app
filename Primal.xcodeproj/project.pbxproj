@@ -247,6 +247,7 @@
 		B9009B5E2B0FDFE3002B0613 /* ProfileScanQRController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9009B5D2B0FDFE3002B0613 /* ProfileScanQRController.swift */; };
 		B9009B612B1109AD002B0613 /* PrimalEndpointsRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9009B602B1109AD002B0613 /* PrimalEndpointsRequest.swift */; };
 		B9009B632B110AB6002B0613 /* PrimalEndpointsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9009B622B110AB6002B0613 /* PrimalEndpointsManager.swift */; };
+		B9A1C7F32E1A2B3C4D5E6F70 /* RecentSearchManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A1C7F22E1A2B3C4D5E6F70 /* RecentSearchManager.swift */; };
 		B9009B652B17A8E7002B0613 /* OnboardingInputParent.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9009B642B17A8E7002B0613 /* OnboardingInputParent.swift */; };
 		B9009B672B1E2382002B0613 /* HomeFeedLocalLoadingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9009B662B1E2382002B0613 /* HomeFeedLocalLoadingManager.swift */; };
 		B9009B692B1F4577002B0613 /* CachingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9009B682B1F4577002B0613 /* CachingManager.swift */; };
@@ -1096,6 +1097,7 @@
 		B9009B5D2B0FDFE3002B0613 /* ProfileScanQRController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileScanQRController.swift; sourceTree = "<group>"; };
 		B9009B602B1109AD002B0613 /* PrimalEndpointsRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimalEndpointsRequest.swift; sourceTree = "<group>"; };
 		B9009B622B110AB6002B0613 /* PrimalEndpointsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimalEndpointsManager.swift; sourceTree = "<group>"; };
+		B9A1C7F22E1A2B3C4D5E6F70 /* RecentSearchManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentSearchManager.swift; sourceTree = "<group>"; };
 		B9009B642B17A8E7002B0613 /* OnboardingInputParent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingInputParent.swift; sourceTree = "<group>"; };
 		B9009B662B1E2382002B0613 /* HomeFeedLocalLoadingManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeFeedLocalLoadingManager.swift; sourceTree = "<group>"; };
 		B9009B682B1F4577002B0613 /* CachingManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CachingManager.swift; sourceTree = "<group>"; };
@@ -2627,6 +2629,7 @@
 			isa = PBXGroup;
 			children = (
 				B9009B622B110AB6002B0613 /* PrimalEndpointsManager.swift */,
+				B9A1C7F22E1A2B3C4D5E6F70 /* RecentSearchManager.swift */,
 				B9009B662B1E2382002B0613 /* HomeFeedLocalLoadingManager.swift */,
 				9309D22B2A5EA7A300FD2127 /* ICloudKeychainManager.swift */,
 				B9009B682B1F4577002B0613 /* CachingManager.swift */,
@@ -4283,6 +4286,7 @@
 				B91E57072CC7ECEF00C14809 /* BookmarkedNoteFeedController.swift in Sources */,
 				9E8834C02A328966005DB548 /* BrightSmallButton.swift in Sources */,
 				B9009B632B110AB6002B0613 /* PrimalEndpointsManager.swift in Sources */,
+				B9A1C7F32E1A2B3C4D5E6F70 /* RecentSearchManager.swift in Sources */,
 				B9CE4DD62B7F675F0060A1B8 /* CircularProgressBar.swift in Sources */,
 				B9E36BD82EE330AD00213CA0 /* RemoteSignerActiveSessionsController.swift in Sources */,
 				B904E9A32F042BFD006D195C /* MigrateWalletPopupController.swift in Sources */,

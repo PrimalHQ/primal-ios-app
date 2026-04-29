@@ -163,6 +163,8 @@ private extension SearchViewController {
             let articleFeed = SearchArticleFeedController(feed: advancedSearchManager.feed)
             show(articleFeed, sender: nil)
         default:
+            RecentSearchManager.instance.addSearch(userSearchText)
+
             let feed = SearchNoteFeedController(feed: FeedManager(newFeed: advancedSearchManager.feed))
             show(feed, sender: nil)
         }
