@@ -618,6 +618,9 @@
 		B9C6D24A2CB43DE500B2EEBE /* ExploreFollowPacksViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C6D2492CB43DE500B2EEBE /* ExploreFollowPacksViewController.swift */; };
 		B9CC1AEE2DF767020020BFC2 /* FollowPackViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9CC1AED2DF767020020BFC2 /* FollowPackViewController.swift */; };
 		B9CC1AF02DF768AF0020BFC2 /* ExploreFollowPacksHeaderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9CC1AEF2DF768AF0020BFC2 /* ExploreFollowPacksHeaderCell.swift */; };
+		E1A0C1B0D2C3D4E5F6071802 /* ExplorePeopleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1A0C1B0D2C3D4E5F6071801 /* ExplorePeopleViewController.swift */; };
+		E1A0C1B0D2C3D4E5F6071804 /* RecentUserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1A0C1B0D2C3D4E5F6071803 /* RecentUserView.swift */; };
+		E1A0C1B0D2C3D4E5F6071806 /* RecentSearchRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1A0C1B0D2C3D4E5F6071805 /* RecentSearchRowView.swift */; };
 		B9CE4DA12B63C8D80060A1B8 /* WalletSendSpinnerAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9CE4DA02B63C8D80060A1B8 /* WalletSendSpinnerAnimator.swift */; };
 		B9CE4DA52B6815650060A1B8 /* CGRect+Extra.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9CE4DA42B6815650060A1B8 /* CGRect+Extra.swift */; };
 		B9CE4DA72B6829A00060A1B8 /* WalletSpinnerToResultAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9CE4DA62B6829A00060A1B8 /* WalletSpinnerToResultAnimator.swift */; };
@@ -1459,6 +1462,9 @@
 		B9C6D2492CB43DE500B2EEBE /* ExploreFollowPacksViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreFollowPacksViewController.swift; sourceTree = "<group>"; };
 		B9CC1AED2DF767020020BFC2 /* FollowPackViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowPackViewController.swift; sourceTree = "<group>"; };
 		B9CC1AEF2DF768AF0020BFC2 /* ExploreFollowPacksHeaderCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreFollowPacksHeaderCell.swift; sourceTree = "<group>"; };
+		E1A0C1B0D2C3D4E5F6071801 /* ExplorePeopleViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExplorePeopleViewController.swift; sourceTree = "<group>"; };
+		E1A0C1B0D2C3D4E5F6071803 /* RecentUserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentUserView.swift; sourceTree = "<group>"; };
+		E1A0C1B0D2C3D4E5F6071805 /* RecentSearchRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentSearchRowView.swift; sourceTree = "<group>"; };
 		B9CE4DA02B63C8D80060A1B8 /* WalletSendSpinnerAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletSendSpinnerAnimator.swift; sourceTree = "<group>"; };
 		B9CE4DA42B6815650060A1B8 /* CGRect+Extra.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGRect+Extra.swift"; sourceTree = "<group>"; };
 		B9CE4DA62B6829A00060A1B8 /* WalletSpinnerToResultAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletSpinnerToResultAnimator.swift; sourceTree = "<group>"; };
@@ -2371,10 +2377,21 @@
 				B9B9E5752CB57F450065DD7C /* Zaps */,
 				B9B9E56C2CB462270065DD7C /* Media */,
 				B9C6D2302CA31B3200B2EEBE /* Topics */,
+				E1A0C1B0D2C3D4E5F6071800 /* People */,
 				9E9C42162A14020D00F9D7ED /* ExploreViewController.swift */,
 				B2A3C4D5E6F7A8B9C0D1F102 /* ExploreCategory.swift */,
 			);
 			path = Explore;
+			sourceTree = "<group>";
+		};
+		E1A0C1B0D2C3D4E5F6071800 /* People */ = {
+			isa = PBXGroup;
+			children = (
+				E1A0C1B0D2C3D4E5F6071801 /* ExplorePeopleViewController.swift */,
+				E1A0C1B0D2C3D4E5F6071803 /* RecentUserView.swift */,
+				E1A0C1B0D2C3D4E5F6071805 /* RecentSearchRowView.swift */,
+			);
+			path = People;
 			sourceTree = "<group>";
 		};
 		9E9D46F62A0A728200D4837B /* PostCell */ = {
@@ -4342,6 +4359,9 @@
 				93CACB0029F525B6003BBCE5 /* hex.c in Sources */,
 				B94A0E292AAB38D800DEBFE1 /* ChatSearchController.swift in Sources */,
 				B9CC1AF02DF768AF0020BFC2 /* ExploreFollowPacksHeaderCell.swift in Sources */,
+				E1A0C1B0D2C3D4E5F6071802 /* ExplorePeopleViewController.swift in Sources */,
+				E1A0C1B0D2C3D4E5F6071804 /* RecentUserView.swift in Sources */,
+				E1A0C1B0D2C3D4E5F6071806 /* RecentSearchRowView.swift in Sources */,
 				B9E67E8B2D0766F1006BB397 /* FeedElementReactionsCell.swift in Sources */,
 				9E9C421B2A14044B00F9D7ED /* NotificationsViewController.swift in Sources */,
 				B9DAA4582D4A61D400B00B82 /* NWCScheme.swift in Sources */,

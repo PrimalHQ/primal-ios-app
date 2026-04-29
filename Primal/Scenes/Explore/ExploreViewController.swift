@@ -25,7 +25,7 @@ final class ExploreViewController: UIViewController, Themeable, TitleSwipeContro
         if let cached = cachedTabVCs[category] { return cached }
         let new: UIViewController
         switch category {
-        case .people: new = UIViewController()
+        case .people: new = ExplorePeopleViewController()
         case .feeds:  new = ExploreFeedsViewController()
         case .followPacks: new = ExploreFollowPacksViewController()
         case .zaps:   new = ExploreZapsViewController()
