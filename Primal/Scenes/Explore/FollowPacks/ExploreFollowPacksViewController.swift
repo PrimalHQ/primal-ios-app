@@ -67,7 +67,7 @@ private extension ExploreFollowPacksViewController {
         view.addSubview(table)
         table.pinToSuperview()
         table.contentInsetAdjustmentBehavior = .never
-        table.register(ExplorePeopleCell.self, forCellReuseIdentifier: "cell")
+        table.register(ExploreFollowPacksCell.self, forCellReuseIdentifier: "cell")
         table.dataSource = self
         table.delegate = self
         table.separatorStyle = .none
@@ -88,7 +88,7 @@ extension ExploreFollowPacksViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-        if let cell = cell as? ExplorePeopleCell {
+        if let cell = cell as? ExploreFollowPacksCell {
             cell.updateForUserList(userLists[indexPath.row])
         }
         
@@ -103,6 +103,6 @@ extension ExploreFollowPacksViewController: UITableViewDataSource {
 extension ExploreFollowPacksViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         guard let userList = userLists[safe: indexPath.row] else { return }
-        show(UserListViewController(list: userList), sender: nil)
+        show(FollowPackViewController(list: userList), sender: nil)
     }
 }

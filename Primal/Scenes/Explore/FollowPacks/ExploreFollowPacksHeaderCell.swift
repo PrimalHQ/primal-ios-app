@@ -9,13 +9,13 @@ import UIKit
 import FLAnimatedImage
 import Kingfisher
 
-protocol ExplorePeopleHeaderCellDelegate: AnyObject {
-    func showFeedPressedInCell(_ cell: ExplorePeopleHeaderCell)
-    func followAllPressedInCell(_ cell: ExplorePeopleHeaderCell)
-    func creatorPressedInCell(_ cell: ExplorePeopleHeaderCell)
+protocol ExploreFollowPacksHeaderCellDelegate: AnyObject {
+    func showFeedPressedInCell(_ cell: ExploreFollowPacksHeaderCell)
+    func followAllPressedInCell(_ cell: ExploreFollowPacksHeaderCell)
+    func creatorPressedInCell(_ cell: ExploreFollowPacksHeaderCell)
 }
 
-final class ExplorePeopleHeaderCell: UITableViewCell, Themeable {
+final class ExploreFollowPacksHeaderCell: UITableViewCell, Themeable {
     let avatar = UserImageView(height: 36)
     
     let titleLabel = UILabel()
@@ -35,7 +35,7 @@ final class ExplorePeopleHeaderCell: UITableViewCell, Themeable {
     
     let checkbox = VerifiedView().constrainToSize(18)
     
-    weak var delegate: ExplorePeopleHeaderCellDelegate?
+    weak var delegate: ExploreFollowPacksHeaderCellDelegate?
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -88,7 +88,7 @@ final class ExplorePeopleHeaderCell: UITableViewCell, Themeable {
     }
 }
 
-private extension ExplorePeopleHeaderCell {
+private extension ExploreFollowPacksHeaderCell {
     func setup() {
         selectionStyle = .none
         

@@ -247,7 +247,6 @@
 		B9009B5E2B0FDFE3002B0613 /* ProfileScanQRController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9009B5D2B0FDFE3002B0613 /* ProfileScanQRController.swift */; };
 		B9009B612B1109AD002B0613 /* PrimalEndpointsRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9009B602B1109AD002B0613 /* PrimalEndpointsRequest.swift */; };
 		B9009B632B110AB6002B0613 /* PrimalEndpointsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9009B622B110AB6002B0613 /* PrimalEndpointsManager.swift */; };
-		B9A1C7F32E1A2B3C4D5E6F70 /* RecentSearchManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A1C7F22E1A2B3C4D5E6F70 /* RecentSearchManager.swift */; };
 		B9009B652B17A8E7002B0613 /* OnboardingInputParent.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9009B642B17A8E7002B0613 /* OnboardingInputParent.swift */; };
 		B9009B672B1E2382002B0613 /* HomeFeedLocalLoadingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9009B662B1E2382002B0613 /* HomeFeedLocalLoadingManager.swift */; };
 		B9009B692B1F4577002B0613 /* CachingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9009B682B1F4577002B0613 /* CachingManager.swift */; };
@@ -534,6 +533,7 @@
 		B99E03AD2C0DFBC6006CCECB /* PostCommentsTitleCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99E03AC2C0DFBC6006CCECB /* PostCommentsTitleCell.swift */; };
 		B99E7BD32B238A7F00756F40 /* ImageGalleryController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99E7BD22B238A7F00756F40 /* ImageGalleryController.swift */; };
 		B99E7BD52B238C7200756F40 /* ImageFullScreenViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99E7BD42B238C7200756F40 /* ImageFullScreenViewController.swift */; };
+		B9A1C7F32E1A2B3C4D5E6F70 /* RecentSearchManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A1C7F22E1A2B3C4D5E6F70 /* RecentSearchManager.swift */; };
 		B9A1F2E34D0176AF006BB397 /* GalleryFeedDatasource.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A1F2E34D0176AE006BB397 /* GalleryFeedDatasource.swift */; };
 		B9A200982B55A12B003B6C6B /* UserListToSendAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A200972B55A12B003B6C6B /* UserListToSendAnimator.swift */; };
 		B9A2009A2B5AB1FE003B6C6B /* FadeTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A200992B5AB1FE003B6C6B /* FadeTransition.swift */; };
@@ -561,7 +561,7 @@
 		B9B290572B4DB2950069C87F /* SettingsWalletViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9B290562B4DB2950069C87F /* SettingsWalletViewController.swift */; };
 		B9B9E5672CB442180065DD7C /* BaseFeedManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9B9E5662CB442180065DD7C /* BaseFeedManager.swift */; };
 		B9B9E5692CB449A20065DD7C /* FolowPackFeedManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9B9E5682CB449A20065DD7C /* FolowPackFeedManager.swift */; };
-		B9B9E56B2CB44E710065DD7C /* ExplorePeopleCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9B9E56A2CB44E710065DD7C /* ExplorePeopleCell.swift */; };
+		B9B9E56B2CB44E710065DD7C /* ExploreFollowPacksCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9B9E56A2CB44E710065DD7C /* ExploreFollowPacksCell.swift */; };
 		B9B9E56E2CB462370065DD7C /* ExploreMediaController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9B9E56D2CB462370065DD7C /* ExploreMediaController.swift */; };
 		B9B9E5702CB5621B0065DD7C /* NoteFeedManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9B9E56F2CB5621B0065DD7C /* NoteFeedManager.swift */; };
 		B9B9E5722CB571810065DD7C /* MenuImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9B9E5712CB571810065DD7C /* MenuImageView.swift */; };
@@ -616,8 +616,8 @@
 		B9C6D2452CB00F6300B2EEBE /* PrimalPageController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C6D2442CB00F6300B2EEBE /* PrimalPageController.swift */; };
 		B9C6D2472CB0140B00B2EEBE /* NotificationFeedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C6D2462CB0140B00B2EEBE /* NotificationFeedViewController.swift */; };
 		B9C6D24A2CB43DE500B2EEBE /* ExploreFollowPacksViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C6D2492CB43DE500B2EEBE /* ExploreFollowPacksViewController.swift */; };
-		B9CC1AEE2DF767020020BFC2 /* UserListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9CC1AED2DF767020020BFC2 /* UserListViewController.swift */; };
-		B9CC1AF02DF768AF0020BFC2 /* ExplorePeopleHeaderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9CC1AEF2DF768AF0020BFC2 /* ExplorePeopleHeaderCell.swift */; };
+		B9CC1AEE2DF767020020BFC2 /* FollowPackViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9CC1AED2DF767020020BFC2 /* FollowPackViewController.swift */; };
+		B9CC1AF02DF768AF0020BFC2 /* ExploreFollowPacksHeaderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9CC1AEF2DF768AF0020BFC2 /* ExploreFollowPacksHeaderCell.swift */; };
 		B9CE4DA12B63C8D80060A1B8 /* WalletSendSpinnerAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9CE4DA02B63C8D80060A1B8 /* WalletSendSpinnerAnimator.swift */; };
 		B9CE4DA52B6815650060A1B8 /* CGRect+Extra.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9CE4DA42B6815650060A1B8 /* CGRect+Extra.swift */; };
 		B9CE4DA72B6829A00060A1B8 /* WalletSpinnerToResultAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9CE4DA62B6829A00060A1B8 /* WalletSpinnerToResultAnimator.swift */; };
@@ -1097,7 +1097,6 @@
 		B9009B5D2B0FDFE3002B0613 /* ProfileScanQRController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileScanQRController.swift; sourceTree = "<group>"; };
 		B9009B602B1109AD002B0613 /* PrimalEndpointsRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimalEndpointsRequest.swift; sourceTree = "<group>"; };
 		B9009B622B110AB6002B0613 /* PrimalEndpointsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimalEndpointsManager.swift; sourceTree = "<group>"; };
-		B9A1C7F22E1A2B3C4D5E6F70 /* RecentSearchManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentSearchManager.swift; sourceTree = "<group>"; };
 		B9009B642B17A8E7002B0613 /* OnboardingInputParent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingInputParent.swift; sourceTree = "<group>"; };
 		B9009B662B1E2382002B0613 /* HomeFeedLocalLoadingManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeFeedLocalLoadingManager.swift; sourceTree = "<group>"; };
 		B9009B682B1F4577002B0613 /* CachingManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CachingManager.swift; sourceTree = "<group>"; };
@@ -1377,6 +1376,7 @@
 		B99E03AC2C0DFBC6006CCECB /* PostCommentsTitleCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostCommentsTitleCell.swift; sourceTree = "<group>"; };
 		B99E7BD22B238A7F00756F40 /* ImageGalleryController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageGalleryController.swift; sourceTree = "<group>"; };
 		B99E7BD42B238C7200756F40 /* ImageFullScreenViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageFullScreenViewController.swift; sourceTree = "<group>"; };
+		B9A1C7F22E1A2B3C4D5E6F70 /* RecentSearchManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentSearchManager.swift; sourceTree = "<group>"; };
 		B9A1F2E34D0176AE006BB397 /* GalleryFeedDatasource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryFeedDatasource.swift; sourceTree = "<group>"; };
 		B9A200972B55A12B003B6C6B /* UserListToSendAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserListToSendAnimator.swift; sourceTree = "<group>"; };
 		B9A200992B5AB1FE003B6C6B /* FadeTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FadeTransition.swift; sourceTree = "<group>"; };
@@ -1404,7 +1404,7 @@
 		B9B290562B4DB2950069C87F /* SettingsWalletViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsWalletViewController.swift; sourceTree = "<group>"; };
 		B9B9E5662CB442180065DD7C /* BaseFeedManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseFeedManager.swift; sourceTree = "<group>"; };
 		B9B9E5682CB449A20065DD7C /* FolowPackFeedManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolowPackFeedManager.swift; sourceTree = "<group>"; };
-		B9B9E56A2CB44E710065DD7C /* ExplorePeopleCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExplorePeopleCell.swift; sourceTree = "<group>"; };
+		B9B9E56A2CB44E710065DD7C /* ExploreFollowPacksCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreFollowPacksCell.swift; sourceTree = "<group>"; };
 		B9B9E56D2CB462370065DD7C /* ExploreMediaController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreMediaController.swift; sourceTree = "<group>"; };
 		B9B9E56F2CB5621B0065DD7C /* NoteFeedManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteFeedManager.swift; sourceTree = "<group>"; };
 		B9B9E5712CB571810065DD7C /* MenuImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuImageView.swift; sourceTree = "<group>"; };
@@ -1457,8 +1457,8 @@
 		B9C6D2442CB00F6300B2EEBE /* PrimalPageController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimalPageController.swift; sourceTree = "<group>"; };
 		B9C6D2462CB0140B00B2EEBE /* NotificationFeedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationFeedViewController.swift; sourceTree = "<group>"; };
 		B9C6D2492CB43DE500B2EEBE /* ExploreFollowPacksViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreFollowPacksViewController.swift; sourceTree = "<group>"; };
-		B9CC1AED2DF767020020BFC2 /* UserListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserListViewController.swift; sourceTree = "<group>"; };
-		B9CC1AEF2DF768AF0020BFC2 /* ExplorePeopleHeaderCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExplorePeopleHeaderCell.swift; sourceTree = "<group>"; };
+		B9CC1AED2DF767020020BFC2 /* FollowPackViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowPackViewController.swift; sourceTree = "<group>"; };
+		B9CC1AEF2DF768AF0020BFC2 /* ExploreFollowPacksHeaderCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreFollowPacksHeaderCell.swift; sourceTree = "<group>"; };
 		B9CE4DA02B63C8D80060A1B8 /* WalletSendSpinnerAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletSendSpinnerAnimator.swift; sourceTree = "<group>"; };
 		B9CE4DA42B6815650060A1B8 /* CGRect+Extra.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGRect+Extra.swift"; sourceTree = "<group>"; };
 		B9CE4DA62B6829A00060A1B8 /* WalletSpinnerToResultAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletSpinnerToResultAnimator.swift; sourceTree = "<group>"; };
@@ -2367,7 +2367,7 @@
 			children = (
 				9ED415F82A41DF3100892235 /* Views */,
 				B9C6D2352CA46E9300B2EEBE /* Feeds */,
-				B9C6D2482CB43DCF00B2EEBE /* People */,
+				B9C6D2482CB43DCF00B2EEBE /* FollowPacks */,
 				B9B9E5752CB57F450065DD7C /* Zaps */,
 				B9B9E56C2CB462270065DD7C /* Media */,
 				B9C6D2302CA31B3200B2EEBE /* Topics */,
@@ -3446,15 +3446,15 @@
 			path = PrimalPageController;
 			sourceTree = "<group>";
 		};
-		B9C6D2482CB43DCF00B2EEBE /* People */ = {
+		B9C6D2482CB43DCF00B2EEBE /* FollowPacks */ = {
 			isa = PBXGroup;
 			children = (
 				B9C6D2492CB43DE500B2EEBE /* ExploreFollowPacksViewController.swift */,
-				B9B9E56A2CB44E710065DD7C /* ExplorePeopleCell.swift */,
-				B9CC1AEF2DF768AF0020BFC2 /* ExplorePeopleHeaderCell.swift */,
-				B9CC1AED2DF767020020BFC2 /* UserListViewController.swift */,
+				B9B9E56A2CB44E710065DD7C /* ExploreFollowPacksCell.swift */,
+				B9CC1AEF2DF768AF0020BFC2 /* ExploreFollowPacksHeaderCell.swift */,
+				B9CC1AED2DF767020020BFC2 /* FollowPackViewController.swift */,
 			);
-			path = People;
+			path = FollowPacks;
 			sourceTree = "<group>";
 		};
 		B9CE4D9F2B63C8AE0060A1B8 /* Wallet */ = {
@@ -4341,7 +4341,7 @@
 				93F27DAC2A27FC47004ADA55 /* FeedManager.swift in Sources */,
 				93CACB0029F525B6003BBCE5 /* hex.c in Sources */,
 				B94A0E292AAB38D800DEBFE1 /* ChatSearchController.swift in Sources */,
-				B9CC1AF02DF768AF0020BFC2 /* ExplorePeopleHeaderCell.swift in Sources */,
+				B9CC1AF02DF768AF0020BFC2 /* ExploreFollowPacksHeaderCell.swift in Sources */,
 				B9E67E8B2D0766F1006BB397 /* FeedElementReactionsCell.swift in Sources */,
 				9E9C421B2A14044B00F9D7ED /* NotificationsViewController.swift in Sources */,
 				B9DAA4582D4A61D400B00B82 /* NWCScheme.swift in Sources */,
@@ -4463,7 +4463,7 @@
 				B95677882F03095000B8166C /* RemoteSignerEventCell.swift in Sources */,
 				B9CE4DAE2B695F320060A1B8 /* WalletOnchainTierPickController.swift in Sources */,
 				B9B290572B4DB2950069C87F /* SettingsWalletViewController.swift in Sources */,
-				B9B9E56B2CB44E710065DD7C /* ExplorePeopleCell.swift in Sources */,
+				B9B9E56B2CB44E710065DD7C /* ExploreFollowPacksCell.swift in Sources */,
 				B928F86C2F30BFA300DBD9D0 /* BackupWalletCell.swift in Sources */,
 				E365D8456ACE78BF9DE4C077 /* OldWalletDetectedView.swift in Sources */,
 				B91EF0B02CE3BE4B00299ECF /* PremiumBecomeLegendController.swift in Sources */,
@@ -4755,7 +4755,7 @@
 				B94F2BB92AD411690041181B /* WalletHomeViewController.swift in Sources */,
 				C1A3B7E82F3A1D0100ABCDEF /* WalletPickerController.swift in Sources */,
 				B9009B612B1109AD002B0613 /* PrimalEndpointsRequest.swift in Sources */,
-				B9CC1AEE2DF767020020BFC2 /* UserListViewController.swift in Sources */,
+				B9CC1AEE2DF767020020BFC2 /* FollowPackViewController.swift in Sources */,
 				C1AF0260998E17001EF1988C /* MuteManager.swift in Sources */,
 				B9D331FD2EE860E10023D541 /* RemoteSignerConnectionInfoCell.swift in Sources */,
 				B9DF8EB02F4C61F600A3FA21 /* KlipyManager.swift in Sources */,

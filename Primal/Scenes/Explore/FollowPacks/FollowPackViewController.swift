@@ -1,5 +1,5 @@
 //
-//  UserListViewController.swift
+//  FollowPackViewController.swift
 //  Primal
 //
 //  Created by Pavle Stevanović on 9.6.25..
@@ -10,7 +10,7 @@ import GenericJSON
 import UIKit
 import NostrSDK
 
-class UserListViewController: UIViewController, Themeable {
+class FollowPackViewController: UIViewController, Themeable {
     var list: FollowPack
     
     let table = UITableView()
@@ -30,7 +30,7 @@ class UserListViewController: UIViewController, Themeable {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        table.register(ExplorePeopleHeaderCell.self, forCellReuseIdentifier: "header")
+        table.register(ExploreFollowPacksHeaderCell.self, forCellReuseIdentifier: "header")
         table.register(ProfileFollowCell.self, forCellReuseIdentifier: "user")
         table.dataSource = self
         table.delegate = self
@@ -77,7 +77,7 @@ class UserListViewController: UIViewController, Themeable {
     }
 }
 
-extension UserListViewController: UITableViewDelegate {
+extension FollowPackViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         guard indexPath.section > 0, let user = list.list[safe: indexPath.row] else { return }
         show(ProfileViewController(profile: user), sender: nil)
@@ -104,7 +104,7 @@ extension UserListViewController: UITableViewDelegate {
     }
 }
 
-extension UserListViewController: UITableViewDataSource {
+extension FollowPackViewController: UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int { 2 }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -114,7 +114,7 @@ extension UserListViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if indexPath.section == 0 {
             let cell = table.dequeueReusableCell(withIdentifier: "header", for: indexPath)
-            if let cell = cell as? ExplorePeopleHeaderCell {
+            if let cell = cell as? ExploreFollowPacksHeaderCell {
                 cell.updateForUserList(list)
                 cell.delegate = self
             }
@@ -131,7 +131,7 @@ extension UserListViewController: UITableViewDataSource {
     }
 }
 
-extension UserListViewController: ProfileFollowCellDelegate {
+extension FollowPackViewController: ProfileFollowCellDelegate {
     func followButtonPressedInCell(_ cell: UITableViewCell) {
         guard
             let indexPath = table.indexPath(for: cell),
@@ -146,12 +146,12 @@ extension UserListViewController: ProfileFollowCellDelegate {
     }
 }
 
-extension UserListViewController: ExplorePeopleHeaderCellDelegate, MetadataCoding {
-    func creatorPressedInCell(_ cell: ExplorePeopleHeaderCell) {
+extension FollowPackViewController: ExploreFollowPacksHeaderCellDelegate, MetadataCoding {
+    func creatorPressedInCell(_ cell: ExploreFollowPacksHeaderCell) {
         show(ProfileViewController(profile: list.user), sender: nil)
     }
     
-    func showFeedPressedInCell(_ cell: ExplorePeopleHeaderCell) {
+    func showFeedPressedInCell(_ cell: ExploreFollowPacksHeaderCell) {
         var metadata = Metadata()
         metadata.kind = 39089
         metadata.pubkey = list.user.data.pubkey
@@ -166,7 +166,7 @@ extension UserListViewController: ExplorePeopleHeaderCellDelegate, MetadataCodin
         ))), sender: nil)
     }
     
-    func followAllPressedInCell(_ cell: ExplorePeopleHeaderCell) {
+    func followAllPressedInCell(_ cell: ExploreFollowPacksHeaderCell) {
         for user in list.list {
             FollowManager.instance.sendFollowEvent(user.data.pubkey)
         }
@@ -174,7 +174,7 @@ extension UserListViewController: ExplorePeopleHeaderCellDelegate, MetadataCodin
     }
 }
 
-private extension UserListViewController {
+private extension FollowPackViewController {
    func refresh() {
        SocketRequest(name: "follow_list", payload: [
            "pubkey": .string(list.user.data.pubkey),

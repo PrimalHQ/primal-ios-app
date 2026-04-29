@@ -1,5 +1,5 @@
 //
-//  ExplorePeopleCell.swift
+//  ExploreFollowPacksCell.swift
 //  Primal
 //
 //  Created by Pavle Stevanović on 7.10.24..
@@ -9,7 +9,7 @@ import UIKit
 import FLAnimatedImage
 import Kingfisher
 
-final class ExplorePeopleCell: UITableViewCell, Themeable {
+final class ExploreFollowPacksCell: UITableViewCell, Themeable {
     let avatar = UserImageView(height: 24)
     
     let avatarStack = SimpleAvatarView(size: 32, spacing: -3, maxAvatarCount: 5)
@@ -75,7 +75,7 @@ final class ExplorePeopleCell: UITableViewCell, Themeable {
     }
 }
 
-private extension ExplorePeopleCell {
+private extension ExploreFollowPacksCell {
     func setup() {
         selectionStyle = .none
         
