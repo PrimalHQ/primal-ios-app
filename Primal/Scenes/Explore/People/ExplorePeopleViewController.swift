@@ -42,6 +42,11 @@ final class ExplorePeopleViewController: UIViewController, Themeable {
         setup()
         bind()
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        refreshUsers()
+    }
 
     func updateTheme() {
         view.backgroundColor = .background
@@ -151,17 +156,20 @@ private extension ExplorePeopleViewController {
     }
 
     func bind() {
-        SmartContactsManager.instance.userSearchPublisher("")
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] users in
-                self?.users = Array(users.prefix(Self.maxUsers))
-            }
-            .store(in: &cancellables)
-
         RecentSearchManager.instance.$recentSearches
             .receive(on: DispatchQueue.main)
             .sink { [weak self] searches in
                 self?.searches = Array(searches.prefix(Self.maxSearches))
+            }
+            .store(in: &cancellables)
+    }
+    
+    func refreshUsers() {
+        SmartContactsManager.instance.userSearchPublisher("")
+            .first()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] users in
+                self?.users = Array(users.prefix(Self.maxUsers))
             }
             .store(in: &cancellables)
     }
