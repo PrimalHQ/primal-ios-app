@@ -618,9 +618,6 @@
 		B9C6D24A2CB43DE500B2EEBE /* ExploreFollowPacksViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C6D2492CB43DE500B2EEBE /* ExploreFollowPacksViewController.swift */; };
 		B9CC1AEE2DF767020020BFC2 /* FollowPackViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9CC1AED2DF767020020BFC2 /* FollowPackViewController.swift */; };
 		B9CC1AF02DF768AF0020BFC2 /* ExploreFollowPacksHeaderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9CC1AEF2DF768AF0020BFC2 /* ExploreFollowPacksHeaderCell.swift */; };
-		E1A0C1B0D2C3D4E5F6071802 /* ExplorePeopleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1A0C1B0D2C3D4E5F6071801 /* ExplorePeopleViewController.swift */; };
-		E1A0C1B0D2C3D4E5F6071804 /* RecentUserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1A0C1B0D2C3D4E5F6071803 /* RecentUserView.swift */; };
-		E1A0C1B0D2C3D4E5F6071806 /* RecentSearchRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1A0C1B0D2C3D4E5F6071805 /* RecentSearchRowView.swift */; };
 		B9CE4DA12B63C8D80060A1B8 /* WalletSendSpinnerAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9CE4DA02B63C8D80060A1B8 /* WalletSendSpinnerAnimator.swift */; };
 		B9CE4DA52B6815650060A1B8 /* CGRect+Extra.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9CE4DA42B6815650060A1B8 /* CGRect+Extra.swift */; };
 		B9CE4DA72B6829A00060A1B8 /* WalletSpinnerToResultAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9CE4DA62B6829A00060A1B8 /* WalletSpinnerToResultAnimator.swift */; };
@@ -758,6 +755,9 @@
 		D3A3B3C3D3E3F3A3B3C3D3E2 /* MainThreadElementSmallZapGalleryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3A3B3C3D3E3F3A3B3C3D3E1 /* MainThreadElementSmallZapGalleryCell.swift */; };
 		D4A4B4C4D4E4F4A4B4C4D4E2 /* MainThreadElementImageGalleryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4A4B4C4D4E4F4A4B4C4D4E1 /* MainThreadElementImageGalleryCell.swift */; };
 		D5A4266E6F84FB8044839C0E /* PollVoteDetailsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDBBAA6B683A9D0CB02B7060 /* PollVoteDetailsCell.swift */; };
+		E1A0C1B0D2C3D4E5F6071802 /* ExplorePeopleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1A0C1B0D2C3D4E5F6071801 /* ExplorePeopleViewController.swift */; };
+		E1A0C1B0D2C3D4E5F6071804 /* RecentUserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1A0C1B0D2C3D4E5F6071803 /* RecentUserView.swift */; };
+		E1A0C1B0D2C3D4E5F6071806 /* RecentSearchRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1A0C1B0D2C3D4E5F6071805 /* RecentSearchRowView.swift */; };
 		E365D8456ACE78BF9DE4C077 /* OldWalletDetectedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5764AD3FE766D500CBC6420 /* OldWalletDetectedView.swift */; };
 		ED696C5B32C51E1E05C1EADD /* LiveVideoPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58BCEEB23F4CCE0243097494 /* LiveVideoPlayer.swift */; };
 		F8E7A8239A9F7E466C01EBF5 /* FeedVideoPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF3D490ED6A30BA8537BEBDF /* FeedVideoPlayer.swift */; };
@@ -1462,9 +1462,6 @@
 		B9C6D2492CB43DE500B2EEBE /* ExploreFollowPacksViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreFollowPacksViewController.swift; sourceTree = "<group>"; };
 		B9CC1AED2DF767020020BFC2 /* FollowPackViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowPackViewController.swift; sourceTree = "<group>"; };
 		B9CC1AEF2DF768AF0020BFC2 /* ExploreFollowPacksHeaderCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreFollowPacksHeaderCell.swift; sourceTree = "<group>"; };
-		E1A0C1B0D2C3D4E5F6071801 /* ExplorePeopleViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExplorePeopleViewController.swift; sourceTree = "<group>"; };
-		E1A0C1B0D2C3D4E5F6071803 /* RecentUserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentUserView.swift; sourceTree = "<group>"; };
-		E1A0C1B0D2C3D4E5F6071805 /* RecentSearchRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentSearchRowView.swift; sourceTree = "<group>"; };
 		B9CE4DA02B63C8D80060A1B8 /* WalletSendSpinnerAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletSendSpinnerAnimator.swift; sourceTree = "<group>"; };
 		B9CE4DA42B6815650060A1B8 /* CGRect+Extra.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGRect+Extra.swift"; sourceTree = "<group>"; };
 		B9CE4DA62B6829A00060A1B8 /* WalletSpinnerToResultAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletSpinnerToResultAnimator.swift; sourceTree = "<group>"; };
@@ -1600,6 +1597,9 @@
 		D2B3C4E5F6A7089012345678 /* CacheBreakdownView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheBreakdownView.swift; sourceTree = "<group>"; };
 		D3A3B3C3D3E3F3A3B3C3D3E1 /* MainThreadElementSmallZapGalleryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainThreadElementSmallZapGalleryCell.swift; sourceTree = "<group>"; };
 		D4A4B4C4D4E4F4A4B4C4D4E1 /* MainThreadElementImageGalleryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainThreadElementImageGalleryCell.swift; sourceTree = "<group>"; };
+		E1A0C1B0D2C3D4E5F6071801 /* ExplorePeopleViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExplorePeopleViewController.swift; sourceTree = "<group>"; };
+		E1A0C1B0D2C3D4E5F6071803 /* RecentUserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentUserView.swift; sourceTree = "<group>"; };
+		E1A0C1B0D2C3D4E5F6071805 /* RecentSearchRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentSearchRowView.swift; sourceTree = "<group>"; };
 		EC1B50E71AC4CB3BACD02E0A /* PollVoteOptionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollVoteOptionCell.swift; sourceTree = "<group>"; };
 		F2BF0F83E0F616FCB6C4AB48 /* PollResultsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollResultsViewController.swift; sourceTree = "<group>"; };
 		FDBBAA6B683A9D0CB02B7060 /* PollVoteDetailsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollVoteDetailsCell.swift; sourceTree = "<group>"; };
@@ -2382,16 +2382,6 @@
 				B2A3C4D5E6F7A8B9C0D1F102 /* ExploreCategory.swift */,
 			);
 			path = Explore;
-			sourceTree = "<group>";
-		};
-		E1A0C1B0D2C3D4E5F6071800 /* People */ = {
-			isa = PBXGroup;
-			children = (
-				E1A0C1B0D2C3D4E5F6071801 /* ExplorePeopleViewController.swift */,
-				E1A0C1B0D2C3D4E5F6071803 /* RecentUserView.swift */,
-				E1A0C1B0D2C3D4E5F6071805 /* RecentSearchRowView.swift */,
-			);
-			path = People;
 			sourceTree = "<group>";
 		};
 		9E9D46F62A0A728200D4837B /* PostCell */ = {
@@ -3794,6 +3784,16 @@
 			path = Scheme;
 			sourceTree = "<group>";
 		};
+		E1A0C1B0D2C3D4E5F6071800 /* People */ = {
+			isa = PBXGroup;
+			children = (
+				E1A0C1B0D2C3D4E5F6071801 /* ExplorePeopleViewController.swift */,
+				E1A0C1B0D2C3D4E5F6071803 /* RecentUserView.swift */,
+				E1A0C1B0D2C3D4E5F6071805 /* RecentSearchRowView.swift */,
+			);
+			path = People;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -5020,7 +5020,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.5.11;
+				MARKETING_VERSION = 3.5.12;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -5069,7 +5069,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.5.11;
+				MARKETING_VERSION = 3.5.12;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

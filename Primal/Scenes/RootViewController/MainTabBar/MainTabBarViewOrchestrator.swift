@@ -121,6 +121,33 @@ final class MainTabBarViewOrchestrator: NSObject, Themeable {
             nativeTabBar.tintColor = .foreground
             nativeTabBar.unselectedItemTintColor = .foreground.withAlphaComponent(0.75)
             updateNativeNotificationsTabItemImage()
+            
+            let fontSize = Self.tabBarFontSize
+            let normalAttrs: [NSAttributedString.Key: Any] = [
+                .font: UIFont.appFont(withSize: fontSize, weight: .regular),
+                .foregroundColor: UIColor.foreground.withAlphaComponent(0.75)
+            ]
+            let selectedAttrs: [NSAttributedString.Key: Any] = [
+                .font: UIFont.appFont(withSize: fontSize, weight: .regular),
+                .foregroundColor: UIColor.foreground
+            ]
+
+            let offset: CGFloat = {
+                switch ChromeSize.current {
+                case .small:    return 3
+                case .regular:  return 2
+                case .medium:   return 2
+                case .large:    return 1
+                }
+            }()
+
+            let titleOffset = UIOffset(horizontal: 0, vertical: offset)
+            let appearance = UITabBarAppearance()
+            appearance.stackedLayoutAppearance.normal.titleTextAttributes = normalAttrs
+            appearance.stackedLayoutAppearance.normal.titlePositionAdjustment = titleOffset
+            appearance.stackedLayoutAppearance.selected.titleTextAttributes = selectedAttrs
+            appearance.stackedLayoutAppearance.selected.titlePositionAdjustment = titleOffset
+            nativeTabBar.standardAppearance = appearance
         }
 
         updateButtons()
@@ -378,10 +405,14 @@ private extension MainTabBarViewOrchestrator {
         }
 
         button.configure(text: text, icon: icon)
+        button.layoutIfNeeded()
+        let buttonWidth = button.frame.width
+        let endWidth = RootViewController.instance.view.frame.width - 30
+        let scaleW = endWidth / buttonWidth
         button.alpha = 0
-        button.transform = .init(scaleX: 4.5, y: 3)
-        button.imageView?.transform = .init(scaleX: (1.0 / 4.5) * 0.5, y: (1.0 / 3) * 0.5)
-        button.titleLabel?.transform = .init(scaleX: (1.0 / 4.5) * 0.5, y: (1.0 / 3) * 0.5)
+        button.transform = .init(scaleX: scaleW, y: 3)
+        button.imageView?.transform = .init(scaleX: (1.0 / scaleW) * 0.5, y: (1.0 / 3) * 0.5)
+        button.titleLabel?.transform = .init(scaleX: (1.0 / scaleW) * 0.5, y: (1.0 / 3) * 0.5)
 
         let showCollapsed = {
             button.alpha = 1
@@ -471,9 +502,12 @@ private extension MainTabBarViewOrchestrator {
             button.imageView?.alpha = 0
             button.titleLabel?.alpha = 0
         }
-
+        
+        let buttonWidth = button.frame.width
+        let endWidth = RootViewController.instance.view.frame.width - 50
+        let scaleW = endWidth / buttonWidth
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.85, initialSpringVelocity: 0) {
-            button.transform = .init(scaleX: 3, y: 1.7).translatedBy(x: 0, y: -7)
+            button.transform = .init(scaleX: scaleW, y: 1.7).translatedBy(x: 0, y: -7)
         } completion: { _ in
             button.removeFromSuperview()
             completion?()
@@ -539,44 +573,10 @@ private extension MainTabBarViewOrchestrator {
             return item
         }
         tabBar.selectedItem = tabBar.items?[safe: controller.currentPageIndex]
-        tabBar.tintColor = .foreground
-        tabBar.unselectedItemTintColor = .foreground.withAlphaComponent(0.75)
-
-        let fontSize = Self.tabBarFontSize
-        let normalAttrs: [NSAttributedString.Key: Any] = [
-            .font: UIFont.appFont(withSize: fontSize, weight: .regular),
-            .foregroundColor: UIColor.foreground.withAlphaComponent(0.75)
-        ]
-        let selectedAttrs: [NSAttributedString.Key: Any] = [
-            .font: UIFont.appFont(withSize: fontSize, weight: .regular),
-            .foregroundColor: UIColor.foreground
-        ]
-
-        let offset: CGFloat = {
-            switch ChromeSize.current {
-            case .small:    return 3
-            case .regular:  return 2
-            case .medium:   return 2
-            case .large:    return 1
-            }
-        }()
-
-        let titleOffset = UIOffset(horizontal: 0, vertical: offset)
-        let appearance = UITabBarAppearance()
-        appearance.stackedLayoutAppearance.normal.titleTextAttributes = normalAttrs
-        appearance.stackedLayoutAppearance.normal.titlePositionAdjustment = titleOffset
-        appearance.stackedLayoutAppearance.selected.titleTextAttributes = selectedAttrs
-        appearance.stackedLayoutAppearance.selected.titlePositionAdjustment = titleOffset
-        tabBar.standardAppearance = appearance
 
         controller.view.addSubview(tabBar)
-        tabBar.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            tabBar.leadingAnchor.constraint(equalTo: controller.view.leadingAnchor),
-            tabBar.trailingAnchor.constraint(equalTo: controller.view.trailingAnchor),
-            tabBar.bottomAnchor.constraint(equalTo: controller.view.bottomAnchor),
-            tabBar.topAnchor.constraint(equalTo: controller.view.safeAreaLayoutGuide.bottomAnchor, constant: 13 - Self.tabBarHeight),
-        ])
+        tabBar.pinToSuperview(edges: [.horizontal, .bottom])
+        tabBar.topAnchor.constraint(equalTo: controller.view.safeAreaLayoutGuide.bottomAnchor, constant: 13 - Self.tabBarHeight).isActive = true
 
         nativeTabBar = tabBar
     }

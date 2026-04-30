@@ -8,7 +8,7 @@
 import UIKit
 
 final class RecentUserView: UIView, Themeable {
-    let avatar = UserImageView(height: 56)
+    let avatar = UserImageView(height: 44)
     let nameLabel = UILabel()
 
     var onTap: (() -> Void)?
@@ -26,14 +26,14 @@ final class RecentUserView: UIView, Themeable {
     }
 
     func updateTheme() {
-        nameLabel.textColor = .foreground
+        nameLabel.textColor = .foreground.withAlphaComponent(0.7)
         avatar.updateTheme()
     }
 }
 
 private extension RecentUserView {
     func setup() {
-        nameLabel.font = .appFont(withSize: 14, weight: .medium)
+        nameLabel.font = .appFont(withSize: 13, weight: .regular)
         nameLabel.textAlignment = .center
         nameLabel.lineBreakMode = .byTruncatingTail
         nameLabel.numberOfLines = 1

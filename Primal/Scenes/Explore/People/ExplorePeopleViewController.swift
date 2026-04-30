@@ -56,10 +56,10 @@ final class ExplorePeopleViewController: UIViewController, Themeable {
 private extension ExplorePeopleViewController {
     func setup() {
         recentUsersHeader.text = "Recent Users"
-        recentUsersHeader.font = .appFont(withSize: 20, weight: .bold)
+        recentUsersHeader.font = .appFont(withSize: 16, weight: .semibold)
 
         recentSearchesHeader.text = "Recent Searches"
-        recentSearchesHeader.font = .appFont(withSize: 20, weight: .bold)
+        recentSearchesHeader.font = .appFont(withSize: 16, weight: .semibold)
 
         let usersHeaderRow = wrapWithHorizontalPadding(recentUsersHeader, padding: 16)
         let searchesHeaderRow = wrapWithHorizontalPadding(recentSearchesHeader, padding: 16)

@@ -9,30 +9,47 @@ import Combine
 import UIKit
 import SafariServices
 
-final class SearchViewController: UINavigationController {
+final class SearchViewController: MainNavigationController {
+    static func present(from presenter: UIViewController, scope: SearchScope = .global, type: SearchType = .notes, advanced: Bool) {
+        let search = SearchViewController(scope: scope, type: type, advanced: advanced)
+        search.child.parentNavigationController = presenter.navigationController
+        if let sheet = search.sheetPresentationController {
+            sheet.prefersGrabberVisible = true
+            if #available(iOS 17.0, *) {
+                sheet.traitOverrides.userInterfaceStyle = Theme.current.userInterfaceStyle
+            }
+        }
+        
+        presenter.present(search, animated: true)
+    }
+
     let child: SearchViewChildController
     
     required init?(coder aDecoder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     init(scope: SearchScope = .global, type: SearchType = .notes, advanced: Bool) {
         child = SearchViewChildController(scope: scope, type: type)
-        super.init(rootViewController: advanced ? AdvancedSearchController(manager: child.advancedSearchManager) : child)
-        setNavigationBarHidden(true, animated: false)
+        super.init(rootViewController: advanced ? AdvancedSearchHomeController(manager: child.advancedSearchManager) : child)
+        if !advanced {
+            setNavigationBarHidden(true, animated: false)
+        }
     }
     
-    static func present(from presenter: UIViewController, scope: SearchScope = .global, type: SearchType = .notes, advanced: Bool) {
-        let search = SearchViewController(scope: scope, type: type, advanced: advanced)
-        search.child.parentNavigationController = presenter.navigationController
-        search.modalPresentationStyle = .pageSheet
-        if let sheet = search.sheetPresentationController {
-            sheet.detents = [.large()]
-            sheet.prefersGrabberVisible = false
-        }
-        presenter.present(search, animated: true)
+    override func updateAppearance() {
+        let appearance = UINavigationBarAppearance()
+        appearance.backgroundColor = .background4
+        appearance.shadowColor = .clear
+        appearance.titleTextAttributes = [
+            .font: UIFont.appFont(withSize: 20, weight: .bold),
+            .foregroundColor: UIColor.foreground2
+        ]
+        navigationBar.scrollEdgeAppearance = appearance
+        navigationBar.standardAppearance = appearance
+        navigationBar.compactScrollEdgeAppearance = appearance
+        navigationBar.compactAppearance = appearance
     }
 }
 
 final class SearchViewChildController: UIViewController, Themeable, WalletSearchController {
-    let pullBar = UIView().constrainToSize(width: 60, height: 5)
     let titleLabel = UILabel()
     let searchView = SearchInputHeaderView()
     let userTable = UITableView()
@@ -80,10 +97,10 @@ final class SearchViewChildController: UIViewController, Themeable, WalletSearch
     func updateTheme() {
         userTable.reloadData()
         searchView.updateTheme()
+        
+        userTable.backgroundColor = .background4
+        view.backgroundColor = .background4
 
-        userTable.backgroundColor = .background
-        view.backgroundColor = .background
-        pullBar.backgroundColor = .foreground
         titleLabel.textColor = .foreground2
         configButton.tintColor = .foreground
     }
@@ -102,8 +119,6 @@ private extension SearchViewChildController {
     }
 
     func setup() {
-        pullBar.layer.cornerRadius = 2.5
-
         titleLabel.text = "Quick Search"
         titleLabel.font = .appFont(withSize: 20, weight: .bold)
         titleLabel.textAlignment = .center
@@ -111,10 +126,6 @@ private extension SearchViewChildController {
         configButton.constrainToSize(40)
         configButton.setContentHuggingPriority(.required, for: .horizontal)
         configButton.setContentCompressionResistancePriority(.required, for: .horizontal)
-
-        let pullBarWrapper = UIView()
-        pullBarWrapper.addSubview(pullBar)
-        pullBar.centerToSuperview(axis: .horizontal).pinToSuperview(edges: .vertical)
 
         let searchRow = UIStackView(axis: .horizontal, spacing: 8, [searchView, configButton])
         searchRow.alignment = .center
@@ -126,9 +137,7 @@ private extension SearchViewChildController {
         let keyboardSpacer = KeyboardSizingView()
 
         let stack = UIStackView(axis: .vertical, [
-            SpacerView(height: 12, priority: .required),
-            pullBarWrapper,
-            SpacerView(height: 8, priority: .required),
+            SpacerView(height: 20, priority: .required),
             titleLabel,
             SpacerView(height: 16, priority: .required),
             searchRowWrapper,
@@ -156,7 +165,9 @@ private extension SearchViewChildController {
 
         configButton.addAction(.init(handler: { [weak self] _ in
             guard let self else { return }
-            show(AdvancedSearchController(manager: advancedSearchManager), sender: nil)
+            let manager = advancedSearchManager
+            manager.isFromAdvancedSearchScreen = true
+            navigationController?.setViewControllers([AdvancedSearchHomeController(manager: manager)], animated: true)
         }), for: .touchUpInside)
     }
 

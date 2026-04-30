@@ -241,9 +241,6 @@ private extension MainTabBarController {
             userDefaults.synchronize()
         }
         
-        updateTheme()
-        updateChildren = true
-        
         view.addSubview(vcParentView)
         vcParentView.pinToSuperview()
         
@@ -262,6 +259,9 @@ private extension MainTabBarController {
         indicatorStack
             .pinToSuperview(edges: .horizontal, padding: 12)
             .pinToSuperview(edges: .top, padding: 60, safeArea: true)
+        
+        updateTheme()
+        updateChildren = true
         
         NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)
             .dropFirst()

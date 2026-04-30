@@ -168,11 +168,6 @@ private extension PopupZapPollVoteViewController {
             view.backgroundColor = .background4
         }
 
-        let pullBar = UIView()
-        pullBar.constrainToSize(width: 60, height: 5)
-        pullBar.backgroundColor = .foreground.withAlphaComponent(0.8)
-        pullBar.layer.cornerRadius = 2.5
-
         // Title
         zapLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
         title2Label.setContentCompressionResistancePriority(.required, for: .horizontal)
@@ -303,15 +298,15 @@ private extension PopupZapPollVoteViewController {
         ).height
         
         let sheetHeight = contentHeight + 180
-        if let pc = presentationController as? UISheetPresentationController {
+        if let pc = sheetPresentationController {
             pc.detents = [.custom(resolver: { _ in sheetHeight })]
+            pc.prefersGrabberVisible = true
             if #available(iOS 17.0, *) {
                 pc.traitOverrides.userInterfaceStyle = Theme.current.userInterfaceStyle
             }
         }
 
         let mainStack = UIStackView(axis: .vertical, [
-            pullBar,
             contentStack,
             voteButton
         ])

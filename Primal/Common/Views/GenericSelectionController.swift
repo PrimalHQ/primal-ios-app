@@ -83,6 +83,15 @@ final class GenericSelectionController<Item: SelectionItem>: SlideDownShellViewC
         primalNavigationBar.onTitleTapped = { [weak self] in
             self?.dismissAnimated()
         }
+        
+        primalNavigationBar.onAvatarTapped = { [weak self] in
+            guard let primalNavBarController: PrimalNavigationBarController = self?.presentingViewController?.findInChildren() else { return }
+            self?.animateOut {
+                self?.dismiss(animated: false) {
+                    MenuController().present(from: primalNavBarController)
+                }
+            }
+        }
 
         closeButton.addAction(.init(handler: { [weak self] _ in
             self?.dismissAnimated()
