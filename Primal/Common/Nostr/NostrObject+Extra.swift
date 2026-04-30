@@ -331,7 +331,8 @@ extension NostrObject {
     static func pollVote(pollEventId: String, pollAuthorPubkey: String, optionId: String) -> NostrObject? {
         createNostrObject(content: "", kind: NostrKind.pollVote.rawValue, tags: [
             ["e", pollEventId],
-            ["response", optionId]
+            ["response", optionId],
+            ["client", "Primal iOS"]
         ])
     }
 
@@ -346,7 +347,8 @@ extension NostrObject {
             ["p", pollAuthorPubkey],
             ["poll_option", optionId],
             ["amount", "\(sats)000"],
-            ["relays"] + relays
+            ["relays"] + relays,
+            ["client", "Primal iOS"]
         ])
     }
 
