@@ -45,7 +45,7 @@ final class NotificationsViewController: UIViewController, Themeable, TitleSwipe
 
         primalNavigationBar.updateTheme()
 
-        pageVC.children.forEach {
+        cachedTabVCs.values.forEach {
             ($0 as? Themeable)?.updateTheme()
             let views: [Themeable] = $0.view.findAllSubviews()
             for view in views { view.updateTheme() }

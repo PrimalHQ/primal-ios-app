@@ -59,7 +59,7 @@ final class ExploreViewController: UIViewController, Themeable, TitleSwipeContro
         searchBarButton.updateTheme()
         separator.backgroundColor = .background3
 
-        pageVC.children.forEach {
+        cachedTabVCs.values.forEach {
             ($0 as? Themeable)?.updateTheme()
             let views: [Themeable] = $0.view.findAllSubviews()
             for view in views { view.updateTheme() }
