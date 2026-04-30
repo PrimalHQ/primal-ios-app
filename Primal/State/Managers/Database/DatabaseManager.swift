@@ -196,7 +196,16 @@ private extension DatabaseManager {
                 t.add(column: "customTags", .text)
             }
         }
-        
+
+        migrator.registerMigration("addPremiumProfileTable") { db in
+            try db.create(table: PremiumProfile.databaseTableName) { t in
+                t.primaryKey("pubkey", .text, onConflict: .replace)
+                t.column("legendCustomization", .text)
+                t.column("premiumInfo", .text)
+                t.column("premiumName", .text)
+            }
+        }
+
         return migrator
     }
 

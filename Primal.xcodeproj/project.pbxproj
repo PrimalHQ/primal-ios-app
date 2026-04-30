@@ -279,6 +279,8 @@
 		B906AB102C9B472C0089813F /* MediaResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = B906AB0F2C9B472C0089813F /* MediaResource.swift */; };
 		B906AB122C9B47800089813F /* Thumbnail.swift in Sources */ = {isa = PBXBuildFile; fileRef = B906AB112C9B47800089813F /* Thumbnail.swift */; };
 		B906AB162C9B52C10089813F /* DatabaseManager+Profile.swift in Sources */ = {isa = PBXBuildFile; fileRef = B906AB152C9B52C10089813F /* DatabaseManager+Profile.swift */; };
+		B9F1A1A12D50000100000001 /* PremiumProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9F1A1A22D50000100000002 /* PremiumProfile.swift */; };
+		B9F1A1A32D50000100000003 /* DatabaseManager+PremiumProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9F1A1A42D50000100000004 /* DatabaseManager+PremiumProfile.swift */; };
 		B907D3A02DBA5144002B86DA /* PopupReportContentController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B907D39F2DBA5144002B86DA /* PopupReportContentController.swift */; };
 		B907D3C12DBBF18B002B86DA /* LightningDevKit in Frameworks */ = {isa = PBXBuildFile; productRef = B907D3C02DBBF18B002B86DA /* LightningDevKit */; };
 		B90820272EE838A600E4422A /* RemoteSignerConnectionAutostartCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90820262EE8389600E4422A /* RemoteSignerConnectionAutostartCell.swift */; };
@@ -1129,6 +1131,8 @@
 		B906AB0F2C9B472C0089813F /* MediaResource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaResource.swift; sourceTree = "<group>"; };
 		B906AB112C9B47800089813F /* Thumbnail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Thumbnail.swift; sourceTree = "<group>"; };
 		B906AB152C9B52C10089813F /* DatabaseManager+Profile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DatabaseManager+Profile.swift"; sourceTree = "<group>"; };
+		B9F1A1A22D50000100000002 /* PremiumProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumProfile.swift; sourceTree = "<group>"; };
+		B9F1A1A42D50000100000004 /* DatabaseManager+PremiumProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DatabaseManager+PremiumProfile.swift"; sourceTree = "<group>"; };
 		B907D39F2DBA5144002B86DA /* PopupReportContentController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupReportContentController.swift; sourceTree = "<group>"; };
 		B90820262EE8389600E4422A /* RemoteSignerConnectionAutostartCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSignerConnectionAutostartCell.swift; sourceTree = "<group>"; };
 		B90DB0682E5C71A200A67D4A /* videoLoadingScreenLight.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = videoLoadingScreenLight.json; sourceTree = "<group>"; };
@@ -2689,6 +2693,7 @@
 				B906AB0A2C9A10DE0089813F /* ProfileCounts.swift */,
 				B906AB0C2C9B2D830089813F /* ProfileLastVisit.swift */,
 				B9DD12F82CB85CD600C435FD /* ProfileNip05Check.swift */,
+				B9F1A1A22D50000100000002 /* PremiumProfile.swift */,
 			);
 			path = Profile;
 			sourceTree = "<group>";
@@ -2711,6 +2716,7 @@
 				B9DD12FA2CB85F3400C435FD /* DatabaseManager+Nip05Check.swift */,
 				B91E57132CCBC31500C14809 /* DatabaseManager+NoteDraft.swift */,
 				B93F6B632D75EE3700DF00CD /* DatabaseManager+MediaMetadata.swift */,
+				B9F1A1A42D50000100000004 /* DatabaseManager+PremiumProfile.swift */,
 			);
 			path = Database;
 			sourceTree = "<group>";
@@ -4151,6 +4157,8 @@
 				B928F86A2F30BF9A00DBD9D0 /* UpgradeWalletCell.swift in Sources */,
 				9EE07AB32A1CF3C500FB6C86 /* AppTheme.swift in Sources */,
 				B9C6D22F2CA1B33700B2EEBE /* DatabaseManager+ProfileCounts.swift in Sources */,
+				B9F1A1A12D50000100000001 /* PremiumProfile.swift in Sources */,
+				B9F1A1A32D50000100000003 /* DatabaseManager+PremiumProfile.swift in Sources */,
 				B94F2BB32AD056D10041181B /* WalletRequestResult.swift in Sources */,
 				B906AB102C9B472C0089813F /* MediaResource.swift in Sources */,
 				B9FAC64C2D3945BB00B57EF6 /* FeedElementYoutubePreviewCell.swift in Sources */,
@@ -5020,7 +5028,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.5.12;
+				MARKETING_VERSION = 3.5.13;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -5069,7 +5077,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.5.12;
+				MARKETING_VERSION = 3.5.13;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

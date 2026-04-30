@@ -84,6 +84,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         PrimalEndpointsManager.instance.checkIfNecessary()
         
         _ = SmartContactsManager.instance
+        _ = PremiumCustomizationManager.instance
         ArticleWebViewCache.setup()
         
         WalletRepositoryFactory.shared.doInit(enableDbEncryption: true, enableConsoleLogs: true, breezApiKey: SecretsManager.instance.breezApiKey)
