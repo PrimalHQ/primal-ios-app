@@ -31,6 +31,8 @@ final class WalletQRCodeViewController: UIViewController, QRCaptureController, W
     let markers = UIImageView(image: .qrScanEdgeMarkers)
     let edgeMarkers: [UIRectEdge] = [.top, .bottom, .left, .right]
     
+    var deeplinkHandled = false
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -69,7 +71,10 @@ final class WalletQRCodeViewController: UIViewController, QRCaptureController, W
             guard let self else { return }
             ImagePickerManager(self, mode: .gallery) { [weak self] result in
                 guard let imageRes = result as? ImageMediaPickerResult, let code = imageRes.image.detectQRCode() else { return }
-                self?.sendParent?.search(code)
+                
+                if self?.parseURLWithDeeplinkHandlers(code) == false {
+                    self?.sendParent?.search(code)
+                }
             }
         }), for: .touchUpInside)
     }
@@ -113,9 +118,25 @@ extension WalletQRCodeViewController: AVCaptureMetadataOutputObjectsDelegate {
         if let barCodeObject = videoPreviewLayer.transformedMetadataObject(for: metadataObj) {
             qrCodeFrameView.frame = barCodeObject.bounds
         }
-
-        if let text = metadataObj.stringValue {
-            sendParent?.search(text)
+        
+        guard let text = metadataObj.stringValue, !deeplinkHandled else { return }
+        
+        // Try to parse as URL using deeplink handlers first
+        if parseURLWithDeeplinkHandlers(text) {
+            deeplinkHandled = true
+            return
         }
+
+        sendParent?.search(text)
+    }
+    
+    func parseURLWithDeeplinkHandlers(_ text: String) -> Bool {
+        guard let url = URL(string: text), DeeplinkCoordinator.shared.canHandleURL(url) else { return false }
+        
+        // Dismiss the scanner and let the handler process the URL
+        navigationController?.popViewController(animated: true)
+        DeeplinkCoordinator.shared.handleURL(url)
+        
+        return true
     }
 }
