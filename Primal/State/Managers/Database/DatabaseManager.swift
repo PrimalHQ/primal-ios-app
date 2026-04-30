@@ -55,7 +55,7 @@ class DatabaseManager {
             
             // Open or create the database
             let databaseURL = directoryURL.appendingPathComponent("db.sqlite")
-            NSLog("Database stored at \(databaseURL.path)")
+            print("Database stored at \(databaseURL.path)")
             let dbPool = try DatabasePool(
                 path: databaseURL.path,
                 // Use default AppDatabase configuration

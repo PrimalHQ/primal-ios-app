@@ -87,8 +87,8 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         _ = PremiumCustomizationManager.instance
         ArticleWebViewCache.setup()
         
-        WalletRepositoryFactory.shared.doInit(enableDbEncryption: true, enableConsoleLogs: true, breezApiKey: SecretsManager.instance.breezApiKey)
-        AccountRepositoryFactory.shared.doInit(enableDbEncryption: true, enableConsoleLogs: true)
+        WalletRepositoryFactory.shared.doInit(enableDbEncryption: true, enableConsoleLogs: false, breezApiKey: SecretsManager.instance.breezApiKey)
+        AccountRepositoryFactory.shared.doInit(enableDbEncryption: true, enableConsoleLogs: false)
 
         if WalletLogRecorder.instance.isRecording {
             WalletLogRecorder.instance.startRecording()
