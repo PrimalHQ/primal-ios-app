@@ -113,10 +113,12 @@ class HomeFeedChildController: PostFeedViewController {
         
         super.scrollViewDidScroll(scrollView)
         
-        if /*feed.newPosts.0 == 0 &&*/ newPosition < 0 {
-            newPostsViewParent.alpha = 1 - (min(100, -2 * newPosition) / 100)
-        } else {
-            newPostsViewParent.alpha = 1
+        if newPostsViewParent.alpha != 0 {
+            if newPosition < 0 {
+                newPostsViewParent.alpha = 1 - (min(99.9, -2 * newPosition) / 100)
+            } else {
+                newPostsViewParent.alpha = 1
+            }
         }
         
         if newPosition > scrollView.contentSize.height - 2000 {
@@ -203,7 +205,7 @@ private extension HomeFeedChildController {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] newPosts, live in
                 self?.updateNewPosts(notes: newPosts.0, noteUsers: newPosts.1, live: live.count, liveUsers: live)
-                if newPosts.0 == 0 && !live.isEmpty && self?.table.contentOffset.y ?? 0 < 0 {
+                if newPosts.0 == 0 && live.isEmpty {
                     self?.newPostsViewParent.alpha = 0
                 }
             }
