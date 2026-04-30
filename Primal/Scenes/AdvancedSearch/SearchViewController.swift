@@ -29,9 +29,6 @@ final class SearchViewController: MainNavigationController {
     init(scope: SearchScope = .global, type: SearchType = .notes, advanced: Bool) {
         child = SearchViewChildController(scope: scope, type: type)
         super.init(rootViewController: advanced ? AdvancedSearchHomeController(manager: child.advancedSearchManager) : child)
-        if !advanced {
-            setNavigationBarHidden(true, animated: false)
-        }
     }
     
     override func updateAppearance() {
@@ -50,7 +47,6 @@ final class SearchViewController: MainNavigationController {
 }
 
 final class SearchViewChildController: UIViewController, Themeable, WalletSearchController {
-    let titleLabel = UILabel()
     let searchView = SearchInputHeaderView()
     let userTable = UITableView()
 
@@ -101,7 +97,6 @@ final class SearchViewChildController: UIViewController, Themeable, WalletSearch
         userTable.backgroundColor = .background4
         view.backgroundColor = .background4
 
-        titleLabel.textColor = .foreground2
         configButton.tintColor = .foreground
     }
 }
@@ -119,10 +114,8 @@ private extension SearchViewChildController {
     }
 
     func setup() {
-        titleLabel.text = "Quick Search"
-        titleLabel.font = .appFont(withSize: 20, weight: .bold)
-        titleLabel.textAlignment = .center
-
+        title = "Quick Search"
+        
         configButton.constrainToSize(40)
         configButton.setContentHuggingPriority(.required, for: .horizontal)
         configButton.setContentCompressionResistancePriority(.required, for: .horizontal)
@@ -137,9 +130,6 @@ private extension SearchViewChildController {
         let keyboardSpacer = KeyboardSizingView()
 
         let stack = UIStackView(axis: .vertical, [
-            SpacerView(height: 20, priority: .required),
-            titleLabel,
-            SpacerView(height: 16, priority: .required),
             searchRowWrapper,
             SpacerView(height: 12, priority: .required),
             userTable, keyboardSpacer

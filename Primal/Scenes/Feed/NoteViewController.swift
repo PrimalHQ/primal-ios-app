@@ -535,7 +535,7 @@ private extension NoteViewController {
             if hasPrimalNavBar {
                 self.topBarHeight = PrimalNavigationBar.height - 4 // table starts at safe area, only need PrimalNavigationBar height
             } else {
-                self.topBarHeight = RootViewController.instance.view.safeAreaInsets.top + 50 - 12 // 50 is nav bar height without safe area
+                self.topBarHeight = RootViewController.instance.view.safeAreaInsets.top + 50 // 50 is nav bar height without safe area
             }
             self.table.contentInset = .init(top: self.adjustedTopBarHeight, left: 0, bottom: 150, right: 0)
             self.table.contentOffset = .init(x: 0, y: -self.adjustedTopBarHeight)
