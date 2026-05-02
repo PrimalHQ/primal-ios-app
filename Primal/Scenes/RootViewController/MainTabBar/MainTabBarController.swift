@@ -151,11 +151,15 @@ final class MainTabBarController: UIViewController, Themeable {
         runOnce = false
         let userId = IdentityManager.instance.userHexPubkey
         
+        let migratePublisher = WalletManager.instance.$activeWallet
+            .filter({ $0?.wallet is Wallet.Primal && $0?.userId == userId })
+            .map { _ in WalletDetectedPopupController(isDiscontinued: true) as UIViewController }
+
         let detectedPublisher = WalletManager.instance.$walletSetupState
             .filter({ $0 != .normal && IdentityManager.instance.userHexPubkey == userId })
             .map { WalletDetectedPopupController(isDiscontinued: $0 == .walletDiscontinued) as UIViewController }
 
-        detectedPublisher
+        migratePublisher.merge(with: detectedPublisher)
             .first()
             .receive(on: DispatchQueue.main)
             .sink { [weak self] popup in
