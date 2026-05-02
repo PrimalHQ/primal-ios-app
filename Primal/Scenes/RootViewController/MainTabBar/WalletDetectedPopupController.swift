@@ -14,7 +14,7 @@ class WalletDetectedPopupController: UIViewController {
     private var cancellables: Set<AnyCancellable> = []
     
     static let regularHeight: CGFloat = 450
-    static let discontinuedHeight: CGFloat = 350
+    static let discontinuedHeight: CGFloat = 400
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     init(isDiscontinued: Bool) {
