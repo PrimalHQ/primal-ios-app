@@ -35,7 +35,6 @@
 		9363DE712A30DD9E0060F4BD /* DeeplinkHandlerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9363DE702A30DD9E0060F4BD /* DeeplinkHandlerProtocol.swift */; };
 		9363DE732A30DDB90060F4BD /* DeeplinkHandlerCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9363DE722A30DDB90060F4BD /* DeeplinkHandlerCoordinator.swift */; };
 		936DD9F92A3B6A2900A65F79 /* PrimalNotifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 936DD9F82A3B6A2900A65F79 /* PrimalNotifications.swift */; };
-		B9C0DE10000000000000F00D /* Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C0DE20000000000000F00D /* Log.swift */; };
 		93906B942A55B5D000962A94 /* NostrObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93906B932A55B5D000962A94 /* NostrObject.swift */; };
 		939329462A66E82E00B96AAA /* LoginManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 939329452A66E82E00B96AAA /* LoginManager.swift */; };
 		939330FA29A3E370003954C2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 939330F929A3E370003954C2 /* Assets.xcassets */; };
@@ -573,6 +572,7 @@
 		B9BAE1DA2F7C11F200963DBF /* NoteUserHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6A7B8C9D0E1F4 /* NoteUserHeaderView.swift */; };
 		B9BCF3C02CDD7F340032BD0D /* PremiumOnboardingHomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9BCF3BF2CDD7F340032BD0D /* PremiumOnboardingHomeViewController.swift */; };
 		B9BCF3C32CDD80020032BD0D /* PremiumHomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9BCF3C22CDD80020032BD0D /* PremiumHomeViewController.swift */; };
+		B9C0DE10000000000000F00D /* Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C0DE20000000000000F00D /* Log.swift */; };
 		B9C5A07D2F36258E007CB5D3 /* UgradeWalletFaqController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C5A07C2F362586007CB5D3 /* UgradeWalletFaqController.swift */; };
 		B9C5A07F2F362B12007CB5D3 /* UpgradeWalletStartController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C5A07E2F362B0B007CB5D3 /* UpgradeWalletStartController.swift */; };
 		B9C5A0A72F3A3748007CB5D3 /* PrimalShared in Frameworks */ = {isa = PBXBuildFile; productRef = B9C5A0A62F3A3748007CB5D3 /* PrimalShared */; };
@@ -854,7 +854,6 @@
 		9363DE702A30DD9E0060F4BD /* DeeplinkHandlerProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeeplinkHandlerProtocol.swift; sourceTree = "<group>"; };
 		9363DE722A30DDB90060F4BD /* DeeplinkHandlerCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeeplinkHandlerCoordinator.swift; sourceTree = "<group>"; };
 		936DD9F82A3B6A2900A65F79 /* PrimalNotifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimalNotifications.swift; sourceTree = "<group>"; };
-		B9C0DE20000000000000F00D /* Log.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Log.swift; sourceTree = "<group>"; };
 		93906B932A55B5D000962A94 /* NostrObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NostrObject.swift; sourceTree = "<group>"; };
 		939329452A66E82E00B96AAA /* LoginManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginManager.swift; sourceTree = "<group>"; };
 		939330F229A3E36F003954C2 /* Primal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Primal.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1421,6 +1420,7 @@
 		B9B9E57A2CB6E2C00065DD7C /* SimpleInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleInfoView.swift; sourceTree = "<group>"; };
 		B9BCF3BF2CDD7F340032BD0D /* PremiumOnboardingHomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumOnboardingHomeViewController.swift; sourceTree = "<group>"; };
 		B9BCF3C22CDD80020032BD0D /* PremiumHomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumHomeViewController.swift; sourceTree = "<group>"; };
+		B9C0DE20000000000000F00D /* Log.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Log.swift; sourceTree = "<group>"; };
 		B9C5A07C2F362586007CB5D3 /* UgradeWalletFaqController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UgradeWalletFaqController.swift; sourceTree = "<group>"; };
 		B9C5A07E2F362B0B007CB5D3 /* UpgradeWalletStartController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpgradeWalletStartController.swift; sourceTree = "<group>"; };
 		B9C5A0A92F3A68F8007CB5D3 /* RestoreWalletController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestoreWalletController.swift; sourceTree = "<group>"; };
@@ -5032,7 +5032,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.5.13;
+				MARKETING_VERSION = 3.5.14;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -5081,7 +5081,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.5.13;
+				MARKETING_VERSION = 3.5.14;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
