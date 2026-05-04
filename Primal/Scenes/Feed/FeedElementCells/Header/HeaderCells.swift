@@ -12,8 +12,8 @@ import UIKit
 class HeaderTextCell: FeedElementTextCell {
     static let headerID = "HeaderTextCell"
     let headerView = NoteUserHeaderView()
-    private let bodyView = UIView()
-    override var contentContainer: UIView { bodyView }
+    
+    override var contentContainer: UIView { headerView.contentContainer }
     override var delegate: FeedElementCellDelegate? {
         didSet { headerView.delegate = delegate }
     }
@@ -21,10 +21,8 @@ class HeaderTextCell: FeedElementTextCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
-        let stack = UIStackView(axis: .vertical, [headerView, bodyView])
-        stack.spacing = -5
-        contentView.addSubview(stack)
-        stack.pinToSuperview()
+        contentView.addSubview(headerView)
+        headerView.pinToSuperview()
         headerView.ownerCell = self
     }
 
@@ -46,8 +44,8 @@ class HeaderTextCell: FeedElementTextCell {
 class HeaderImageGalleryCell: FeedElementImageGalleryCell {
     static let headerID = "HeaderImageGalleryCell"
     let headerView = NoteUserHeaderView()
-    private let bodyView = UIView()
-    override var contentContainer: UIView { bodyView }
+    
+    override var contentContainer: UIView { headerView.contentContainer }
     override var delegate: FeedElementCellDelegate? {
         didSet { headerView.delegate = delegate }
     }
@@ -55,9 +53,8 @@ class HeaderImageGalleryCell: FeedElementImageGalleryCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
-        let stack = UIStackView(axis: .vertical, [headerView, bodyView])
-        contentView.addSubview(stack)
-        stack.pinToSuperview()
+        contentView.addSubview(headerView)
+        headerView.pinToSuperview()
         headerView.ownerCell = self
     }
 
@@ -79,8 +76,8 @@ class HeaderImageGalleryCell: FeedElementImageGalleryCell {
 class HeaderReactionsCell: FeedElementReactionsCell {
     static let headerID = "HeaderReactionsCell"
     let headerView = NoteUserHeaderView()
-    private let bodyView = UIView()
-    override var contentContainer: UIView { bodyView }
+    
+    override var contentContainer: UIView { headerView.contentContainer }
     override var delegate: FeedElementCellDelegate? {
         didSet { headerView.delegate = delegate }
     }
@@ -88,9 +85,8 @@ class HeaderReactionsCell: FeedElementReactionsCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
-        let stack = UIStackView(axis: .vertical, [headerView, bodyView])
-        contentView.addSubview(stack)
-        stack.pinToSuperview()
+        contentView.addSubview(headerView)
+        headerView.pinToSuperview()
         headerView.ownerCell = self
     }
 
@@ -112,8 +108,8 @@ class HeaderReactionsCell: FeedElementReactionsCell {
 class HeaderZapGalleryCell: FeedElementSmallZapGalleryCell {
     static let headerID = "HeaderZapGalleryCell"
     let headerView = NoteUserHeaderView()
-    private let bodyView = UIView()
-    override var contentContainer: UIView { bodyView }
+    
+    override var contentContainer: UIView { headerView.contentContainer }
     override var delegate: FeedElementCellDelegate? {
         didSet { headerView.delegate = delegate }
     }
@@ -121,9 +117,8 @@ class HeaderZapGalleryCell: FeedElementSmallZapGalleryCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
-        let stack = UIStackView(axis: .vertical, [headerView, bodyView])
-        contentView.addSubview(stack)
-        stack.pinToSuperview()
+        contentView.addSubview(headerView)
+        headerView.pinToSuperview()
         headerView.ownerCell = self
     }
 
@@ -145,8 +140,8 @@ class HeaderZapGalleryCell: FeedElementSmallZapGalleryCell {
 class HeaderWebPreviewCell<T: LinkPreview>: FeedElementWebPreviewCell<T> {
     static var headerID: String { "HeaderWebPreviewCell" }
     let headerView = NoteUserHeaderView()
-    private let bodyView = UIView()
-    override var contentContainer: UIView { bodyView }
+    
+    override var contentContainer: UIView { headerView.contentContainer }
     override var delegate: FeedElementCellDelegate? {
         didSet { headerView.delegate = delegate }
     }
@@ -154,9 +149,8 @@ class HeaderWebPreviewCell<T: LinkPreview>: FeedElementWebPreviewCell<T> {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
-        let stack = UIStackView(axis: .vertical, [headerView, bodyView])
-        contentView.addSubview(stack)
-        stack.pinToSuperview()
+        contentView.addSubview(headerView)
+        headerView.pinToSuperview()
         headerView.ownerCell = self
     }
 
@@ -178,8 +172,8 @@ class HeaderWebPreviewCell<T: LinkPreview>: FeedElementWebPreviewCell<T> {
 class HeaderYoutubePreviewCell: FeedElementYoutubePreviewCell {
     static let headerID = "HeaderYoutubePreviewCell"
     let headerView = NoteUserHeaderView()
-    private let bodyView = UIView()
-    override var contentContainer: UIView { bodyView }
+    
+    override var contentContainer: UIView { headerView.contentContainer }
     override var delegate: FeedElementCellDelegate? {
         didSet { headerView.delegate = delegate }
     }
@@ -187,9 +181,8 @@ class HeaderYoutubePreviewCell: FeedElementYoutubePreviewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
-        let stack = UIStackView(axis: .vertical, [headerView, bodyView])
-        contentView.addSubview(stack)
-        stack.pinToSuperview()
+        contentView.addSubview(headerView)
+        headerView.pinToSuperview()
         headerView.ownerCell = self
     }
 
@@ -211,8 +204,8 @@ class HeaderYoutubePreviewCell: FeedElementYoutubePreviewCell {
 class HeaderWebkitPreviewCell: FeedElementWebkitLinkPreviewCell {
     static let headerID = "HeaderWebkitPreviewCell"
     let headerView = NoteUserHeaderView()
-    private let bodyView = UIView()
-    override var contentContainer: UIView { bodyView }
+    
+    override var contentContainer: UIView { headerView.contentContainer }
     override var delegate: FeedElementCellDelegate? {
         didSet { headerView.delegate = delegate }
     }
@@ -220,9 +213,8 @@ class HeaderWebkitPreviewCell: FeedElementWebkitLinkPreviewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
-        let stack = UIStackView(axis: .vertical, [headerView, bodyView])
-        contentView.addSubview(stack)
-        stack.pinToSuperview()
+        contentView.addSubview(headerView)
+        headerView.pinToSuperview()
         headerView.ownerCell = self
     }
 
@@ -244,8 +236,8 @@ class HeaderWebkitPreviewCell: FeedElementWebkitLinkPreviewCell {
 class HeaderSystemWebPreviewCell: FeedElementSystemWebPreviewCell {
     static let headerID = "HeaderSystemWebPreviewCell"
     let headerView = NoteUserHeaderView()
-    private let bodyView = UIView()
-    override var contentContainer: UIView { bodyView }
+    
+    override var contentContainer: UIView { headerView.contentContainer }
     override var delegate: FeedElementCellDelegate? {
         didSet { headerView.delegate = delegate }
     }
@@ -253,9 +245,8 @@ class HeaderSystemWebPreviewCell: FeedElementSystemWebPreviewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
-        let stack = UIStackView(axis: .vertical, [headerView, bodyView])
-        contentView.addSubview(stack)
-        stack.pinToSuperview()
+        contentView.addSubview(headerView)
+        headerView.pinToSuperview()
         headerView.ownerCell = self
     }
 
@@ -277,8 +268,8 @@ class HeaderSystemWebPreviewCell: FeedElementSystemWebPreviewCell {
 class HeaderMusicPreviewCell: FeedElementMusicPreviewCell {
     static let headerID = "HeaderMusicPreviewCell"
     let headerView = NoteUserHeaderView()
-    private let bodyView = UIView()
-    override var contentContainer: UIView { bodyView }
+    
+    override var contentContainer: UIView { headerView.contentContainer }
     override var delegate: FeedElementCellDelegate? {
         didSet { headerView.delegate = delegate }
     }
@@ -286,9 +277,8 @@ class HeaderMusicPreviewCell: FeedElementMusicPreviewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
-        let stack = UIStackView(axis: .vertical, [headerView, bodyView])
-        contentView.addSubview(stack)
-        stack.pinToSuperview()
+        contentView.addSubview(headerView)
+        headerView.pinToSuperview()
         headerView.ownerCell = self
     }
 
@@ -310,8 +300,8 @@ class HeaderMusicPreviewCell: FeedElementMusicPreviewCell {
 class HeaderTidalPreviewCell: FeedElementTidalPreviewCell {
     static let headerID = "HeaderTidalPreviewCell"
     let headerView = NoteUserHeaderView()
-    private let bodyView = UIView()
-    override var contentContainer: UIView { bodyView }
+    
+    override var contentContainer: UIView { headerView.contentContainer }
     override var delegate: FeedElementCellDelegate? {
         didSet { headerView.delegate = delegate }
     }
@@ -319,9 +309,8 @@ class HeaderTidalPreviewCell: FeedElementTidalPreviewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
-        let stack = UIStackView(axis: .vertical, [headerView, bodyView])
-        contentView.addSubview(stack)
-        stack.pinToSuperview()
+        contentView.addSubview(headerView)
+        headerView.pinToSuperview()
         headerView.ownerCell = self
     }
 
@@ -343,8 +332,8 @@ class HeaderTidalPreviewCell: FeedElementTidalPreviewCell {
 class HeaderPostPreviewCell: FeedElementPostPreviewCell {
     static let headerID = "HeaderPostPreviewCell"
     let headerView = NoteUserHeaderView()
-    private let bodyView = UIView()
-    override var contentContainer: UIView { bodyView }
+    
+    override var contentContainer: UIView { headerView.contentContainer }
     override var delegate: FeedElementCellDelegate? {
         didSet { headerView.delegate = delegate }
     }
@@ -352,9 +341,8 @@ class HeaderPostPreviewCell: FeedElementPostPreviewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
-        let stack = UIStackView(axis: .vertical, [headerView, bodyView])
-        contentView.addSubview(stack)
-        stack.pinToSuperview()
+        contentView.addSubview(headerView)
+        headerView.pinToSuperview()
         headerView.ownerCell = self
     }
 
@@ -376,8 +364,8 @@ class HeaderPostPreviewCell: FeedElementPostPreviewCell {
 class HeaderZapPreviewCell: FeedElementZapPreviewCell {
     static let headerID = "HeaderZapPreviewCell"
     let headerView = NoteUserHeaderView()
-    private let bodyView = UIView()
-    override var contentContainer: UIView { bodyView }
+    
+    override var contentContainer: UIView { headerView.contentContainer }
     override var delegate: FeedElementCellDelegate? {
         didSet { headerView.delegate = delegate }
     }
@@ -385,9 +373,8 @@ class HeaderZapPreviewCell: FeedElementZapPreviewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
-        let stack = UIStackView(axis: .vertical, [headerView, bodyView])
-        contentView.addSubview(stack)
-        stack.pinToSuperview()
+        contentView.addSubview(headerView)
+        headerView.pinToSuperview()
         headerView.ownerCell = self
     }
 
@@ -409,8 +396,8 @@ class HeaderZapPreviewCell: FeedElementZapPreviewCell {
 class HeaderArticleCell: FeedElementArticleCell {
     static let headerID = "HeaderArticleCell"
     let headerView = NoteUserHeaderView()
-    private let bodyView = UIView()
-    override var contentContainer: UIView { bodyView }
+    
+    override var contentContainer: UIView { headerView.contentContainer }
     override var delegate: FeedElementCellDelegate? {
         didSet { headerView.delegate = delegate }
     }
@@ -418,9 +405,8 @@ class HeaderArticleCell: FeedElementArticleCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
-        let stack = UIStackView(axis: .vertical, [headerView, bodyView])
-        contentView.addSubview(stack)
-        stack.pinToSuperview()
+        contentView.addSubview(headerView)
+        headerView.pinToSuperview()
         headerView.ownerCell = self
     }
 
@@ -442,8 +428,8 @@ class HeaderArticleCell: FeedElementArticleCell {
 class HeaderInfoCell: FeedElementInfoCell {
     static let headerID = "HeaderInfoCell"
     let headerView = NoteUserHeaderView()
-    private let bodyView = UIView()
-    override var contentContainer: UIView { bodyView }
+    
+    override var contentContainer: UIView { headerView.contentContainer }
     override var delegate: FeedElementCellDelegate? {
         didSet { headerView.delegate = delegate }
     }
@@ -451,9 +437,8 @@ class HeaderInfoCell: FeedElementInfoCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
-        let stack = UIStackView(axis: .vertical, [headerView, bodyView])
-        contentView.addSubview(stack)
-        stack.pinToSuperview()
+        contentView.addSubview(headerView)
+        headerView.pinToSuperview()
         headerView.ownerCell = self
     }
 
@@ -475,8 +460,8 @@ class HeaderInfoCell: FeedElementInfoCell {
 class HeaderLivePreviewCell: FeedElementLivePreviewCell {
     static let headerID = "HeaderLivePreviewCell"
     let headerView = NoteUserHeaderView()
-    private let bodyView = UIView()
-    override var contentContainer: UIView { bodyView }
+    
+    override var contentContainer: UIView { headerView.contentContainer }
     override var delegate: FeedElementCellDelegate? {
         didSet { headerView.delegate = delegate }
     }
@@ -484,9 +469,8 @@ class HeaderLivePreviewCell: FeedElementLivePreviewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
-        let stack = UIStackView(axis: .vertical, [headerView, bodyView])
-        contentView.addSubview(stack)
-        stack.pinToSuperview()
+        contentView.addSubview(headerView)
+        headerView.pinToSuperview()
         headerView.ownerCell = self
     }
 
@@ -508,8 +492,8 @@ class HeaderLivePreviewCell: FeedElementLivePreviewCell {
 class HeaderInvoiceCell: FeedElementInvoiceCell {
     static let headerID = "HeaderInvoiceCell"
     let headerView = NoteUserHeaderView()
-    private let bodyView = UIView()
-    override var contentContainer: UIView { bodyView }
+    
+    override var contentContainer: UIView { headerView.contentContainer }
     override var delegate: FeedElementCellDelegate? {
         didSet { headerView.delegate = delegate }
     }
@@ -517,9 +501,8 @@ class HeaderInvoiceCell: FeedElementInvoiceCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
-        let stack = UIStackView(axis: .vertical, [headerView, bodyView])
-        contentView.addSubview(stack)
-        stack.pinToSuperview()
+        contentView.addSubview(headerView)
+        headerView.pinToSuperview()
         headerView.ownerCell = self
     }
 
@@ -541,8 +524,8 @@ class HeaderInvoiceCell: FeedElementInvoiceCell {
 class HeaderPollCell: FeedElementPollCell {
     static let headerID = "HeaderPollCell"
     let headerView = NoteUserHeaderView()
-    private let bodyView = UIView()
-    override var contentContainer: UIView { bodyView }
+    
+    override var contentContainer: UIView { headerView.contentContainer }
     override var delegate: FeedElementCellDelegate? {
         didSet { headerView.delegate = delegate }
     }
@@ -550,9 +533,8 @@ class HeaderPollCell: FeedElementPollCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
-        let stack = UIStackView(axis: .vertical, [headerView, bodyView])
-        contentView.addSubview(stack)
-        stack.pinToSuperview()
+        contentView.addSubview(headerView)
+        headerView.pinToSuperview()
         headerView.ownerCell = self
     }
 

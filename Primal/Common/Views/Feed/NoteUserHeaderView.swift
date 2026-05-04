@@ -25,7 +25,9 @@ class NoteUserHeaderView: UIView {
     let replyingToView = ReplyingToView()
     lazy var nameStack = UIStackView([nameLabel, checkbox, nipLabel, separatorLabel, timeLabel])
     lazy var nameReplyStack = UIStackView(axis: .vertical, [nameStack, replyingToView])
-    lazy var mainStack = UIStackView(axis: .vertical, [repostIndicator, nameReplyStack])
+    let contentContainer = UIView()
+    let contentContainerParent = UIView()
+    lazy var mainStack = UIStackView(axis: .vertical, [repostIndicator, nameReplyStack, contentContainerParent])
     let threeDotsSpacer = SpacerView(width: 20, priority: .required)
 
     let repostedByOverlayButton = UIButton()
@@ -39,6 +41,11 @@ class NoteUserHeaderView: UIView {
         addSubview(mainStack)
         addSubview(threeDotsButton)
         addSubview(repostedByOverlayButton)
+        
+        contentContainerParent.addSubview(contentContainer)
+        contentContainer
+            .pinToSuperview(edges: [.vertical, .trailing])
+            .pinToSuperview(edges: .leading, padding: -NoteUserHeaderView.contentLeadingPadding)
         
         profileImageView
             .pinToSuperview(edges: .leading, padding: 12)

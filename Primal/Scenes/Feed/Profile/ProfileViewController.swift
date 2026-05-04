@@ -186,6 +186,7 @@ final class ProfileViewController: PostFeedViewController, ArticleCellController
         }
     }
     
+    override var startIgnoreAreaSize: CGFloat { navigationBar.maxSize - navigationBar.minSize }
     override func scrollViewDidScroll(_ scrollView: UIScrollView) {
         super.scrollViewDidScroll(scrollView)
         
@@ -194,17 +195,11 @@ final class ProfileViewController: PostFeedViewController, ArticleCellController
     }
     
     override func setBarsHidden(_ hidden: Bool, animated: Bool) {
-        super.setBarsHidden(hidden, animated: animated)
-
-        let percent: CGFloat = hidden ? 1 : 0
-        let scale = 0.1 + ((1 - percent) * 0.9)
+        mainTabBarController?.setTabBarHidden(hidden, animated: animated)
+        postButton.setHidden(hidden, animated: animated)
 
         let apply = { [self] in
             navigationBar.transform = hidden ? .init(translationX: 0, y: -barsMaxTransform) : .identity
-
-            postButton.alpha = 1 - percent
-            postButton.transform = .init(scaleX: scale, y: scale).rotated(by: percent * .pi / 2)
-            postButtonParent.transform = hidden ? .init(translationX: 0, y: barsMaxTransform) : .identity
         }
 
         if animated {
@@ -251,6 +246,8 @@ private extension ProfileViewController {
     func setup() {
         title = ""
         navigationItem.hidesBackButton = true
+        
+        navigationBorder.removeFromSuperview()
         
         refreshControl = ProfileRefreshControl()
         table.refreshControl = refreshControl
