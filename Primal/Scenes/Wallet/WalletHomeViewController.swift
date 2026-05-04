@@ -26,7 +26,7 @@ extension LargeWalletButton: WalletHomeTransitionButton {
 final class WalletHomeViewController: UIViewController, Themeable, PrimalNavigationBarController {
     let primalNavigationBar = PrimalNavigationBar()
     let navBarBackground = UIView()
-    lazy var navTitleView = DropdownNavigationView(title: "Wallet")
+    
     enum Cell {
         case loading
         case upgradeWallet
@@ -313,25 +313,8 @@ extension WalletHomeViewController: UIGestureRecognizerDelegate {
 
 // MARK: - Private
 private extension WalletHomeViewController {
-    func updateNavigationTitleView() {
-        if DevModeSettings.walletSwitcherEnabled {
-            navigationItem.titleView = navTitleView
-        } else {
-            navigationItem.titleView = nil
-        }
-    }
-
     func setup() {
         title = "Wallet"
-
-        navTitleView.button.addAction(.init(handler: { [weak self] _ in
-            guard let self else { return }
-            let picker = WalletPickerController { [weak self] wallet in
-                self?.switchToWallet(wallet)
-            }
-            present(picker, animated: true)
-        }), for: .touchUpInside)
-        updateNavigationTitleView()
 
         let navBarSpacer = SpacerView(height: PrimalNavigationBar.height)
         let stack = UIStackView(axis: .vertical, [navBarSpacer, walletActionBar, table])
@@ -349,10 +332,19 @@ private extension WalletHomeViewController {
 
         primalNavigationBar.title = "Wallet"
         primalNavigationBar.subtitle = "All transactions"
-        primalNavigationBar.showChevron = false
+        primalNavigationBar.showChevron = DevModeSettings.walletSwitcherEnabled
         primalNavigationBar.onAvatarTapped = { [weak self] in
             guard let self else { return }
             MenuController().present(from: self)
+        }
+        if DevModeSettings.walletSwitcherEnabled {
+            primalNavigationBar.onTitleTapped = { [weak self] in
+                guard let self else { return }
+                let picker = WalletPickerController { [weak self] wallet in
+                    self?.switchToWallet(wallet)
+                }
+                present(picker, animated: true)
+            }
         }
         
         let pan = UIPanGestureRecognizer(target: self, action: #selector(headerPanned))
@@ -404,7 +396,7 @@ private extension WalletHomeViewController {
                 title = name
                 self.primalNavigationBar.title = name
                 if DevModeSettings.walletSwitcherEnabled {
-                    navTitleView.title = userWallet.wallet.displayName
+                    primalNavigationBar.title = userWallet.wallet.displayName
                 }
             }
             .store(in: &cancellables)
