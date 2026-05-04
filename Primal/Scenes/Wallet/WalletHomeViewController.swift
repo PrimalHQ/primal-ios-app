@@ -24,9 +24,8 @@ extension LargeWalletButton: WalletHomeTransitionButton {
 }
 
 final class WalletHomeViewController: UIViewController, Themeable, PrimalNavigationBarController {
-    let primalNavigationBar = PrimalNavigationBar()
-    let navBarBackground = UIView()
-    
+    var primalNavigationBar: PrimalNavigationBar { walletActionBar.primalNavigationBar }
+
     enum Cell {
         case loading
         case upgradeWallet
@@ -125,7 +124,6 @@ final class WalletHomeViewController: UIViewController, Themeable, PrimalNavigat
         table.reloadData()
 
         primalNavigationBar.updateTheme()
-        navBarBackground.backgroundColor = .background
 
         updateBuySatsButton()
     }
@@ -316,19 +314,10 @@ private extension WalletHomeViewController {
     func setup() {
         title = "Wallet"
 
-        let navBarSpacer = SpacerView(height: PrimalNavigationBar.height)
-        let stack = UIStackView(axis: .vertical, [navBarSpacer, walletActionBar, table])
+        let stack = UIStackView(axis: .vertical, [walletActionBar, table])
         view.addSubview(stack)
         // It's necessary to keep the table longer than the view itself, so when the navbar expands and table shortens, we don't see any empty parts of the table
         stack.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .top, safeArea: true).pinToSuperview(edges: .bottom, padding: -100)
-
-        view.addSubview(primalNavigationBar)
-        primalNavigationBar.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .top, safeArea: true)
-
-        navBarBackground.backgroundColor = .background
-        view.addSubview(navBarBackground)
-        navBarBackground.pinToSuperview(edges: [.horizontal, .top])
-        navBarBackground.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
 
         primalNavigationBar.title = "Wallet"
         primalNavigationBar.subtitle = "All transactions"
@@ -455,18 +444,6 @@ private extension WalletHomeViewController {
             self.tableData = tableData
         }
         .store(in: &cancellables)
-        
-        walletActionBar.shouldExpandFinalPublisher
-            .sink { [weak self] shouldExpand in
-                guard let self else { return }
-                UIView.animate(withDuration: 0.3) {
-                    navBarSpacer.isHidden = !shouldExpand
-                    self.primalNavigationBar.transform = shouldExpand
-                        ? .identity
-                        : CGAffineTransform(translationX: 0, y: -64)
-                }
-            }
-            .store(in: &cancellables)
         
         if LoginManager.instance.method() == .nsec {
             walletActionBar.receivePressedEvent.sink { [weak self] button in
