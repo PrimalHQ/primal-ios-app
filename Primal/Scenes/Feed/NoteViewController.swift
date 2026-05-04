@@ -204,11 +204,12 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
     /// Override point for subclasses. Applies the hidden/shown state to bars.
     func setBarsHidden(_ hidden: Bool, animated: Bool) {
         mainTabBarController?.setTabBarHidden(hidden, animated: animated)
-
-        guard navigationController?.navigationBar.isHidden == false else { return }
+        
+        guard primalNavBarController == nil else { return }
+        
+        navigationController?.setNavigationBarHidden(hidden, animated: animated)
         
         let apply = { [self] in
-            navigationController?.navigationBar.transform = hidden ? .init(translationX: 0, y: -barsMaxTransform) : .identity
             self.navigationBorder.transform = hidden ? .init(translationX: 0, y: -barsMaxTransform) : .identity
         }
         

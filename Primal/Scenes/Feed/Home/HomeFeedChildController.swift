@@ -19,7 +19,8 @@ class HomeFeedChildController: PostFeedViewController {
     @Published var didReachEnd = false
 
     private var hasNewContent = false
-
+    
+    weak var parentHomeVC: HomeFeedViewController?
     weak var tabController: MainTabBarController?
 
     override init(feed: FeedManager) {
@@ -148,21 +149,24 @@ class HomeFeedChildController: PostFeedViewController {
     }
 
     func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        guard !decelerate else { return }
         parentHomeVC?.postButton.setIsExcited(false)
         mainTabBarController?.setIsExcited(false)
         parentHomeVC?.setNavigationBarExcited(excited: 0, animated: true)
         newPostsView.setHidden(barsHidden, animated: true)
         
-        if !decelerate {
-            accumulatedDelta = 0
-        }
-    }
-    
-    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         accumulatedDelta = 0
     }
     
-    weak var parentHomeVC: HomeFeedViewController?
+    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        parentHomeVC?.postButton.setIsExcited(false)
+        mainTabBarController?.setIsExcited(false)
+        parentHomeVC?.setNavigationBarExcited(excited: 0, animated: true)
+        newPostsView.setHidden(barsHidden, animated: true)
+        
+        accumulatedDelta = 0
+    }
+    
     override func setBarsHidden(_ hidden: Bool, animated: Bool) {
         guard view.window != nil else { return }
 

@@ -270,7 +270,76 @@ final class NotificationFeedViewController: NoteViewController {
             .store(in: &cancellables)
     }
     
-    override func setBarsHidden(_ hidden: Bool, animated: Bool) { }
+    weak var parentHomeVC: NotificationsViewController?
+    weak var tabController: MainTabBarController?
+    override func setBarsHidden(_ hidden: Bool, animated: Bool) {
+        super.setBarsHidden(hidden, animated: animated)
+        
+        parentHomeVC = parentHomeVC ?? findParent()
+        tabController = tabController ?? findParent()
+        
+        let percent: CGFloat = hidden ? 1 : 0
+
+        let apply = { [self] in
+            mainTabBarController?.indicatorStack.alpha = 1 - percent
+            mainTabBarController?.indicatorStack.transform = hidden ? .init(translationX: 0, y: -barsMaxTransform) : .identity
+        }
+
+        if animated {
+            UIView.animate(withDuration: 0.3, animations: apply)
+        } else {
+            apply()
+        }
+
+        parentHomeVC?.setNavigationBarHidden(hidden, animated: animated)
+        parentHomeVC?.postButton.setHidden(hidden, animated: animated)
+    }
+    
+    override func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let newPosition = scrollView.contentOffset.y
+        let delta = newPosition - prevPosition
+        let prevDelta = prevDelta
+        
+        parentHomeVC = parentHomeVC ?? findParent()
+        tabController = tabController ?? findParent()
+        
+        super.scrollViewDidScroll(scrollView)
+        
+        if newPosition > scrollView.contentSize.height - 2000 {
+            didReachEnd = true
+        } else {
+            didReachEnd = false
+        }
+        
+        if abs(delta) > 100 || (delta.sign != prevDelta.sign && prevDelta != 0) {
+            return
+        }
+
+        if !barsHidden {
+            parentHomeVC?.postButton.setIsExcited(delta > 0)
+            parentHomeVC?.setNavigationBarExcited(excited: accumulatedDelta, animated: accumulatedDelta == 0)
+        }
+        if delta != 0 {
+            mainTabBarController?.setIsExcited(barsHidden ? delta < 0 : delta > 0)
+        }
+    }
+    
+    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        guard !decelerate else { return }
+        parentHomeVC?.postButton.setIsExcited(false)
+        mainTabBarController?.setIsExcited(false)
+        parentHomeVC?.setNavigationBarExcited(excited: 0, animated: true)
+        
+        accumulatedDelta = 0
+    }
+    
+    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        parentHomeVC?.postButton.setIsExcited(false)
+        mainTabBarController?.setIsExcited(false)
+        parentHomeVC?.setNavigationBarExcited(excited: 0, animated: true)
+        
+        accumulatedDelta = 0
+    }
     
     override func performEvent(_ event: PostCellEvent, withPost post: ParsedContent, inCell cell: UITableViewCell?) {
         switch event {

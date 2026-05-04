@@ -79,13 +79,15 @@ private extension ArticleListController {
         view.addSubview(table)
         table
             .pinToSuperview(edges: .horizontal)
-            .pinToSuperview(edges: .top, padding: PrimalNavigationBar.height + 6, safeArea: true)
-            .pinToSuperview(edges: .bottom, padding: 48, safeArea: true)
+            .pinToSuperview(edges: .top, padding: PrimalNavigationBar.height, safeArea: true)
+            .pinToSuperview(edges: .bottom)
         table.dataSource = self
         table.delegate = self
         table.separatorStyle = .none
         table.register(ArticleCell.self, forCellReuseIdentifier: "cell")
         table.register(PostLoadingCell.self, forCellReuseIdentifier: "loading")
+        table.contentInset = .init(top: 6, left: 0, bottom: 100, right: 0)
+        table.contentInsetAdjustmentBehavior = .never
         
         NotificationCenter.default.publisher(for: .userMuted)
             .compactMap { $0.object as? String }
