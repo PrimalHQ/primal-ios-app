@@ -295,10 +295,15 @@ final class WalletManager {
         walletSessionProvider.setActiveUserId(userId: pubkey)
 
         Task {
-            guard (try? await walletAccountRepo.getActiveWallet(userId: pubkey)) == nil else { return }
-            _ = try? await EnsurePrimalWalletExistsUseCase(primalWalletAccountRepository: primalWalletRepo, walletAccountRepository: walletAccountRepo)
-                .invoke(userId: pubkey, setAsActive: true)
-            await detectWalletSetupState(pubkey: pubkey)
+            guard let activeWallet = try? await walletAccountRepo.getActiveWallet(userId: pubkey) else {
+                _ = try? await EnsurePrimalWalletExistsUseCase(primalWalletAccountRepository: primalWalletRepo, walletAccountRepository: walletAccountRepo)
+                    .invoke(userId: pubkey, setAsActive: true)
+                await detectWalletSetupState(pubkey: pubkey)
+                return
+            }
+            if activeWallet.wallet is Wallet.Primal {
+                walletSetupState = .walletDiscontinued
+            }
         }
 
         DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
@@ -308,8 +313,10 @@ final class WalletManager {
     }
     
     func newWalletSpark(_ pubkey: String) {
-        walletSetupState = .normal
-        Task { await createSparkWallet(pubkey) }
+        Task { @MainActor in
+            await createSparkWallet(pubkey)
+            reset(pubkey)
+        }
     }
 
     func createSparkWallet(_ pubkey: String) async -> String? {
@@ -318,7 +325,9 @@ final class WalletManager {
         let res = try? await ensureSpark.invoke(userId: pubkey, register: true)
 
         guard let walletId = res?.getOrNull() as? String else { return nil }
-
+        
+        try? await walletAccountRepo.setActiveWallet(userId: pubkey, walletId: walletId)
+        
         await saveSeedToKeychain(walletId: walletId, pubkey: pubkey)
 
         return try? await sparkWalletAccountRepository.getLightningAddress(userId: pubkey, walletId: walletId)

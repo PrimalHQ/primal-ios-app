@@ -388,8 +388,9 @@ private extension WalletHomeViewController {
             self?.show(RestoreWalletController(), sender: nil)
         }), for: .touchUpInside)
 
-        walletDetectedView.createButton.addAction(.init(handler: { _ in
+        walletDetectedView.createButton.addAction(.init(handler: { [weak self] _ in
             WalletManager.instance.newWalletSpark(IdentityManager.instance.userHexPubkey)
+            self?.walletDetectedView.createButton.isEnabled = false
         }), for: .touchUpInside)
 
         updateTheme()
