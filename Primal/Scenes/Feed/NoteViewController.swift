@@ -196,6 +196,23 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
             accumulatedDelta = 0
         }
     }
+    
+    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        guard !decelerate else { return }
+        accumulatedDelta = 0
+        
+        if scrollView.contentOffset.distance(to: .zero) < scrollView.adjustedContentInset.top {
+            updateBarsHidden(false)
+        }
+    }
+    
+    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        accumulatedDelta = 0
+        
+        if scrollView.contentOffset.distance(to: .zero) < scrollView.adjustedContentInset.top {
+            updateBarsHidden(false)
+        }
+    }
 
     func scrollViewShouldScrollToTop(_ scrollView: UIScrollView) -> Bool {
         updateBarsHidden(false)

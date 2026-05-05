@@ -71,7 +71,14 @@ class AdvancedSearchManager: ObservableObject {
     @Published var filters: SearchFilters = .init()
     
     @Published var isFromAdvancedSearchScreen = false
-    
+
+    /// When non-nil, the manager is editing this saved feed in place.
+    /// On save, the existing feed at this spec is replaced rather than appended.
+    var editingFeed: PrimalFeed?
+
+    /// True while `parse_advanced_search_query` is in flight.
+    @Published var isLoadingEdit = false
+
     var feed: PrimalFeed {
         let query = generateQueryString().replacingOccurrences(of: "\"", with: "\\\"")
         

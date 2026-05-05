@@ -9,26 +9,47 @@ import Combine
 import UIKit
 import SafariServices
 
+protocol AdvancedSearchControllerProtocol: UIViewController {
+    var advancedSearchManager: AdvancedSearchManager { get }
+}
+
 final class SearchViewController: MainNavigationController {
     static func present(from presenter: UIViewController, scope: SearchScope = .global, type: SearchType = .notes, advanced: Bool) {
         let search = SearchViewController(scope: scope, type: type, advanced: advanced)
-        search.child.parentNavigationController = presenter.navigationController
+        
         if let sheet = search.sheetPresentationController {
             sheet.prefersGrabberVisible = true
             if #available(iOS 17.0, *) {
                 sheet.traitOverrides.userInterfaceStyle = Theme.current.userInterfaceStyle
             }
         }
-        
+
         presenter.present(search, animated: true)
     }
 
-    let child: SearchViewChildController
-    
+    /// Re-opens the advanced search builder pre-populated from a saved
+    /// advanced-search feed. Calls `parse_advanced_search_query` to
+    /// decompose the query string back into UI fields.
+    static func presentForEditing(from presenter: UIViewController, feed: PrimalFeed) {
+        let search = SearchViewController(scope: .global, type: .notes, advanced: true)
+        search.child.advancedSearchManager.editingFeed = feed
+        if let sheet = search.sheetPresentationController {
+            sheet.prefersGrabberVisible = true
+            if #available(iOS 17.0, *) {
+                sheet.traitOverrides.userInterfaceStyle = Theme.current.userInterfaceStyle
+            }
+        }
+
+        presenter.present(search, animated: true)
+    }
+
+    let child: AdvancedSearchControllerProtocol
+
     required init?(coder aDecoder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     init(scope: SearchScope = .global, type: SearchType = .notes, advanced: Bool) {
-        child = SearchViewChildController(scope: scope, type: type)
-        super.init(rootViewController: advanced ? AdvancedSearchHomeController(manager: child.advancedSearchManager) : child)
+        let searchChild = SearchViewChildController(scope: scope, type: type)
+        child = advanced ? AdvancedSearchHomeController(manager: searchChild.advancedSearchManager) : searchChild
+        super.init(rootViewController: child)
     }
     
     override func updateAppearance() {
@@ -46,7 +67,7 @@ final class SearchViewController: MainNavigationController {
     }
 }
 
-final class SearchViewChildController: UIViewController, Themeable, WalletSearchController {
+final class SearchViewChildController: UIViewController, Themeable, WalletSearchController, AdvancedSearchControllerProtocol {
     let searchView = SearchInputHeaderView()
     let userTable = UITableView()
 
@@ -88,6 +109,8 @@ final class SearchViewChildController: UIViewController, Themeable, WalletSearch
         super.viewDidAppear(animated)
 
         searchView.inputField.becomeFirstResponder()
+        
+        parentNavigationController = presentingViewController?.navigationController
     }
 
     func updateTheme() {
@@ -99,9 +122,7 @@ final class SearchViewChildController: UIViewController, Themeable, WalletSearch
 
         configButton.tintColor = .foreground
     }
-}
-
-private extension SearchViewChildController {
+    
     var advancedSearchManager: AdvancedSearchManager {
         let advancedSearch = AdvancedSearchManager()
         advancedSearch.searchScope = scope
@@ -112,7 +133,9 @@ private extension SearchViewChildController {
         }
         return advancedSearch
     }
+}
 
+private extension SearchViewChildController {
     func setup() {
         title = "Quick Search"
         

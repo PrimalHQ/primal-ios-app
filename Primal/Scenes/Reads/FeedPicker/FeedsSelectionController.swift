@@ -387,6 +387,21 @@ extension FeedsSelectionController: UITableViewDragDelegate {
 }
 
 extension FeedsSelectionController: FeedSelectionCellDelegate {
+    func editTappedInCell(_ cell: FeedSelectionCell) {
+        guard
+            let indexPath = table.indexPath(for: cell),
+            let feed = feeds[safe: indexPath.row],
+            feed.isFromAdvancedSearchScreen,
+            let presenter = presentingViewController
+        else { return }
+
+        animateOut { [weak self] in
+            self?.dismiss(animated: false) {
+                SearchViewController.presentForEditing(from: presenter, feed: feed)
+            }
+        }
+    }
+
     func switchToggledInCell(_ cell: FeedSelectionCell) {
         guard let indexPath = table.indexPath(for: cell) else { return }
         
@@ -448,6 +463,7 @@ extension FeedsSelectionController: UITableViewDelegate {
 
 protocol FeedSelectionCellDelegate: AnyObject {
     func switchToggledInCell(_ cell: FeedSelectionCell)
+    func editTappedInCell(_ cell: FeedSelectionCell)
 }
 
 class FeedSelectionCell: UITableViewCell {
@@ -455,33 +471,39 @@ class FeedSelectionCell: UITableViewCell {
     let titleLabel = UILabel()
     let subtitleLabel = UILabel()
     let enableSwitch = UISwitch()
+    let editButton = UIButton()
     let dragIcon = UIImageView(image: UIImage(named: "dragGrabIcon"))
-    
+
     weak var delegate: FeedSelectionCellDelegate?
-    
+
     var myEditing = false
     var mySelected = false
-    
+
     override func setHighlighted(_ highlighted: Bool, animated: Bool) {
         super.setHighlighted(highlighted, animated: animated)
         backgroundColorView.isHidden = myEditing || (!highlighted && !mySelected)
     }
-    
+
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        
+
         selectionStyle = .none
-        
+
         let switchParent = UIView().constrainToSize(42)
         switchParent.addSubview(enableSwitch)
         enableSwitch.centerToSuperview()
         enableSwitch.transform = .init(scaleX: 42 / 51, y: 42 / 51)
-        
+
+        editButton.setImage(UIImage(named: "pencilUnderline")?.withRenderingMode(.alwaysTemplate), for: .normal)
+        editButton.tintColor = .foreground6
+        editButton.constrainToSize(width: 32, height: 32)
+        editButton.contentEdgeInsets = .init(top: 4, left: 4, bottom: 4, right: 4)
+
         let vStack = UIStackView(axis: .vertical, [titleLabel, subtitleLabel])
         vStack.alignment = .leading
-        
-        let mainStack = UIStackView([vStack, switchParent, dragIcon])
-        mainStack.spacing = 20
+
+        let mainStack = UIStackView([vStack, editButton, switchParent, dragIcon])
+        mainStack.spacing = 12
         mainStack.alignment = .center
         
         contentView.addSubview(backgroundColorView)
@@ -515,6 +537,11 @@ class FeedSelectionCell: UITableViewCell {
                 self.delegate?.switchToggledInCell(self)
             }
         }), for: .valueChanged)
+
+        editButton.addAction(.init(handler: { [weak self] _ in
+            guard let self else { return }
+            self.delegate?.editTappedInCell(self)
+        }), for: .touchUpInside)
     }
     
     required init?(coder: NSCoder) {
@@ -523,17 +550,18 @@ class FeedSelectionCell: UITableViewCell {
     
     func setup(_ feed: PrimalFeed, selected: Bool, editing: Bool, delegate: FeedSelectionCellDelegate) {
         self.delegate = delegate
-        
+
         titleLabel.text = feed.name
         subtitleLabel.text = feed.description
-        
+
         enableSwitch.superview?.isHidden = !editing
         dragIcon.isHidden = !editing
-        
+        editButton.isHidden = !(editing && feed.isFromAdvancedSearchScreen)
+
         myEditing = editing
         mySelected = selected
         backgroundColorView.isHidden = selected && !editing
-        
+
         if editing && feed.isFromBackend {
             enableSwitch.isOn = feed.enabled
         } else {

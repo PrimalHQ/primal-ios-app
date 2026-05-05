@@ -324,21 +324,21 @@ final class NotificationFeedViewController: NoteViewController {
         }
     }
     
-    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+    override func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        super.scrollViewDidEndDragging(scrollView, willDecelerate: decelerate)
+        
         guard !decelerate else { return }
         parentHomeVC?.postButton.setIsExcited(false)
         mainTabBarController?.setIsExcited(false)
         parentHomeVC?.setNavigationBarExcited(excited: 0, animated: true)
-        
-        accumulatedDelta = 0
     }
     
-    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+    override func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        super.scrollViewDidEndDecelerating(scrollView)
+        
         parentHomeVC?.postButton.setIsExcited(false)
         mainTabBarController?.setIsExcited(false)
         parentHomeVC?.setNavigationBarExcited(excited: 0, animated: true)
-        
-        accumulatedDelta = 0
     }
     
     override func performEvent(_ event: PostCellEvent, withPost post: ParsedContent, inCell cell: UITableViewCell?) {

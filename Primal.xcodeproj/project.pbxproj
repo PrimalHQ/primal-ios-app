@@ -319,6 +319,8 @@
 		B91E56E12CB97D8800C14809 /* AdvancedSearchController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91E56E02CB97D8800C14809 /* AdvancedSearchController.swift */; };
 		B91E56E32CB97DE600C14809 /* AdvancedSearchHomeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91E56E22CB97DE600C14809 /* AdvancedSearchHomeController.swift */; };
 		B91E56E52CB97E5E00C14809 /* AdvancedSearchManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91E56E42CB97E5E00C14809 /* AdvancedSearchManager.swift */; };
+		B9F1A0010000000000000001 /* AdvancedSearchQueryResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9F1A0020000000000000002 /* AdvancedSearchQueryResponse.swift */; };
+		B9F1A0030000000000000003 /* AdvancedSearchManager+Populate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9F1A0040000000000000004 /* AdvancedSearchManager+Populate.swift */; };
 		B91E56E82CB9843A00C14809 /* AdvancedSearchMenuItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91E56E72CB9843A00C14809 /* AdvancedSearchMenuItemView.swift */; };
 		B91E56EA2CB98E2B00C14809 /* AdvancedSearchEnumPickerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91E56E92CB98E2B00C14809 /* AdvancedSearchEnumPickerController.swift */; };
 		B91E56ED2CB9965200C14809 /* AdvancedSearchTimePickerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91E56EC2CB9965200C14809 /* AdvancedSearchTimePickerController.swift */; };
@@ -1166,6 +1168,8 @@
 		B91E56E02CB97D8800C14809 /* AdvancedSearchController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedSearchController.swift; sourceTree = "<group>"; };
 		B91E56E22CB97DE600C14809 /* AdvancedSearchHomeController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedSearchHomeController.swift; sourceTree = "<group>"; };
 		B91E56E42CB97E5E00C14809 /* AdvancedSearchManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedSearchManager.swift; sourceTree = "<group>"; };
+		B9F1A0020000000000000002 /* AdvancedSearchQueryResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedSearchQueryResponse.swift; sourceTree = "<group>"; };
+		B9F1A0040000000000000004 /* AdvancedSearchManager+Populate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AdvancedSearchManager+Populate.swift"; sourceTree = "<group>"; };
 		B91E56E72CB9843A00C14809 /* AdvancedSearchMenuItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedSearchMenuItemView.swift; sourceTree = "<group>"; };
 		B91E56E92CB98E2B00C14809 /* AdvancedSearchEnumPickerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedSearchEnumPickerController.swift; sourceTree = "<group>"; };
 		B91E56EC2CB9965200C14809 /* AdvancedSearchTimePickerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedSearchTimePickerController.swift; sourceTree = "<group>"; };
@@ -2780,6 +2784,8 @@
 				B91E56E02CB97D8800C14809 /* AdvancedSearchController.swift */,
 				B91E56E22CB97DE600C14809 /* AdvancedSearchHomeController.swift */,
 				B91E56E42CB97E5E00C14809 /* AdvancedSearchManager.swift */,
+				B9F1A0040000000000000004 /* AdvancedSearchManager+Populate.swift */,
+				B9F1A0020000000000000002 /* AdvancedSearchQueryResponse.swift */,
 			);
 			path = AdvancedSearch;
 			sourceTree = "<group>";
@@ -4299,6 +4305,8 @@
 				B9318F692B62C1B50044B6AA /* WalletSendAmountSendAnimator.swift in Sources */,
 				B914CD6D2AA2487100CD0BD1 /* SettingsMutedUsersController.swift in Sources */,
 				B91E56E52CB97E5E00C14809 /* AdvancedSearchManager.swift in Sources */,
+				B9F1A0010000000000000001 /* AdvancedSearchQueryResponse.swift in Sources */,
+				B9F1A0030000000000000003 /* AdvancedSearchManager+Populate.swift in Sources */,
 				B907D3A02DBA5144002B86DA /* PopupReportContentController.swift in Sources */,
 				B91EF0E02CEBA70200299ECF /* LegendThemeSelectionTable.swift in Sources */,
 				B918A3612EA0FA560003683D /* LiveChatDatasource.swift in Sources */,
