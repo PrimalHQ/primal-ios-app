@@ -350,6 +350,15 @@ private extension FeedsSelectionController {
             self?.dismissAnimated()
         }
 
+        primalNavigationBar.onAvatarTapped = { [weak self] in
+            guard let primalNavBarController: PrimalNavigationBarController = self?.presentingViewController?.findInChildren() else { return }
+            self?.animateOut {
+                self?.dismiss(animated: false) {
+                    MenuController().present(from: primalNavBarController)
+                }
+            }
+        }
+
         addFeedButton.addAction(.init(handler: { [weak self] _ in
             guard let self else { return }
             show(FeedMarketplaceController(type: type), sender: nil)
