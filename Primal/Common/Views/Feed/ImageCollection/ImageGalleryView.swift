@@ -97,6 +97,13 @@ final class ImageGalleryView: UIView {
         progress.isHidden = true
     }
     
+    func updateTheme() {
+        collection.layer.borderColor = UIColor.background3.cgColor
+        collection.backgroundColor = .background2
+        progress.primaryColor = .foreground
+        progress.secondaryColor = .foreground.withAlphaComponent(0.4)
+    }
+
     func cellIdForURL(_ url: String) -> String { url.isVideoURL ? (url.isYoutubeVideoURL ? "youtube" : "video") : "image" }
     
     func currentImageCell() -> AnimatingImageProvider? {

@@ -60,7 +60,7 @@ class NoteUserHeaderView: UIView {
         botC.priority = .defaultLow
         botC.isActive = true
 
-        mainStack.spacing = -2
+        mainStack.spacing = -1
         nameReplyStack.spacing = 4
 
         threeDotsButton

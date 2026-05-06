@@ -61,6 +61,7 @@ class FeedElementImageGalleryCell: FeedElementBaseCell, RegularFeedElementCell {
         DispatchQueue.main.async {
             self.mainImages.resources = content.mediaResources
             self.mainImages.thumbnails = content.videoThumbnails
+            self.mainImages.updateTheme()
         }
         
         guard content.mediaResources.count == 1 else {
