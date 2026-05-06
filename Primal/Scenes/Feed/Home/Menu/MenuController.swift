@@ -117,11 +117,17 @@ private extension MenuController {
         let settings = MenuItemButton(title: "SETTINGS", image: .menuSidebarSettings)
         let signOut = MenuItemButton(title: "SIGN OUT", image: .menuSidebarSignout)
 
-        let buttonsStack = UIStackView(arrangedSubviews: [profile, premium, messages, bookmarks, remoteLogin, redeemCode, settings, signOut])
+        let row1 = UIStackView(axis: .horizontal, spacing: 8, [profile, premium, messages])
+        let row2 = UIStackView(axis: .horizontal, spacing: 8, [bookmarks, remoteLogin, redeemCode])
+        let row3 = UIStackView(axis: .horizontal, spacing: 8, [settings, signOut, UIView()])
+        [row1, row2, row3].forEach { $0.distribution = .fillEqually }
+        let buttonsStack = UIStackView(axis: .vertical, spacing: 8, [row1, row2, row3])
         let nnfStack = UIStackView(axis: .vertical, spacing: MenuSizes.nnfStackSpacing, [titleStack, domainLabel, followLabel])
         nnfStack.alignment = .leading
-        
-        [nnfStack,buttonsStack, UIView()].forEach { mainStack.addArrangedSubview($0) }
+
+        [nnfStack, UIView()].forEach { mainStack.addArrangedSubview($0) }
+        contentView.addSubview(buttonsStack)
+        buttonsStack.pinToSuperview(edges: .horizontal, padding: 16)
 
         let botMenu = UIStackView([UIView(), closeButton])
         botMenu.isLayoutMarginsRelativeArrangement = true
@@ -133,24 +139,27 @@ private extension MenuController {
         contentView.addSubview(botMenu)
 
         mainStack
-            .pinToSuperview(edges: .leading, padding: 18)
-            .pinToSuperview(edges: .trailing, padding: 80)
+            .pinToSuperview(edges: .leading, padding: 16)
+            .pinToSuperview(edges: .trailing, padding: 16)
             .pinToSuperview(edges: .top, padding: 20)
         mainStack.bottomAnchor.constraint(equalTo: separator.topAnchor).isActive = true
+        
+        buttonsStack.topAnchor.constraint(greaterThanOrEqualTo: nnfStack.bottomAnchor, constant: MenuSizes.nnfToMenuButtonsSpacing).isActive = true
 
         separator.pinToSuperview(edges: .horizontal)
         botMenu.pinToSuperview(edges: .horizontal)
         botMenu.topAnchor.constraint(equalTo: separator.bottomAnchor).isActive = true
         botMenu.pinToSuperview(edges: .bottom, safeArea: true)
         mainStack.axis = .vertical
-        mainStack.alignment = .leading
-        mainStack.setCustomSpacing(MenuSizes.nnfToMenuButtonsSpacing, after: nnfStack)
+        mainStack.alignment = .fill
+
+        buttonsStack.bottomAnchor.constraint(lessThanOrEqualTo: separator.topAnchor, constant: -16).isActive = true
 
         contentView.addSubview(messagesIndicator)
-        messagesIndicator.pin(to: messages, edges: .top, padding: 4).pinToSuperview(edges: .leading, padding: 150)
+        messagesIndicator.pin(to: messages, edges: .top, padding: 8).pin(to: messages, edges: .trailing, padding: 8)
 
         contentView.addSubview(premiumIndicator)
-        premiumIndicator.pin(to: premium, edges: .top, padding: 4).pinToSuperview(edges: .leading, padding: 137)
+        premiumIndicator.pin(to: premium, edges: .top, padding: 8).pin(to: premium, edges: .trailing, padding: 8)
 
         contentView.backgroundColor = .background
         view.addSubview(contentView)
@@ -211,10 +220,6 @@ private extension MenuController {
 
         contentView.transform = CGAffineTransform(translationX: 0, y: -UIScreen.main.bounds.height)
 
-        buttonsStack.axis = .vertical
-        buttonsStack.alignment = .leading
-        buttonsStack.spacing = MenuSizes.menuButtonsStackSpacing
-
         titleStack.alignment = .center
         titleStack.spacing = 4
         titleStack.setCustomSpacing(12, after: checkbox1)
@@ -268,6 +273,8 @@ private extension MenuController {
         manageAccountsButton.addAction(.init(handler: { [weak self] _ in
             self?.present(PopupAccountSwitchingController(), animated: true)
         }), for: .touchUpInside)
+
+        buttonsStack.topAnchor.constraint(greaterThanOrEqualTo: profileImageRow.bottomAnchor, constant: 16).isActive = true
 
         nameLabel.font = .appFont(withSize: MenuSizes.profileNameFontSize, weight: .bold)
 
@@ -407,21 +414,28 @@ final class MenuItemButton: MyButton, Themeable {
     }
 
     let titleLabel = UILabel()
-    let imageView = UIImageView().constrainToSize(MenuSizes.menuButtonIconSize)
+    let imageView = UIImageView().constrainToSize(MenuSizes.menuTileIconSize)
 
     init(title: String, image: UIImage?) {
         self.title = title.capitalized
         self.image = image
         super.init(frame: .zero)
 
-        let stack = UIStackView([imageView, titleLabel])
+        let stack = UIStackView(axis: .vertical, spacing: MenuSizes.menuTileIconLabelSpacing, [imageView, titleLabel])
         stack.alignment = .center
-        stack.spacing = 12
 
         addSubview(stack)
-        stack.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .vertical, padding: 8)
+        stack.centerToSuperview()
 
         imageView.image = image?.withRenderingMode(.alwaysTemplate)
+        titleLabel.textAlignment = .center
+
+        backgroundColor = .background3
+        layer.cornerRadius = 12
+        layer.masksToBounds = true
+
+        constrainToAspect(1)
+
         updateTheme()
     }
 
@@ -431,11 +445,17 @@ final class MenuItemButton: MyButton, Themeable {
 
     func updateTheme() {
         titleLabel.attributedText = .init(string: title, attributes: [
-            .font: UIFont.appFont(withSize: MenuSizes.menuButtonFontSize, weight: .regular),
+            .font: UIFont.appFont(withSize: MenuSizes.menuTileFontSize, weight: .regular),
             .kern: 0.2,
-            .foregroundColor: isPressed ? UIColor.foreground : UIColor.foreground3
+            .foregroundColor: isPressed ? UIColor.foreground : UIColor.foreground3,
+            .paragraphStyle: {
+                let p = NSMutableParagraphStyle()
+                p.alignment = .center
+                return p
+            }()
         ])
         imageView.tintColor = isPressed ? .foreground : .foreground3
+        backgroundColor = .background3
     }
 }
 

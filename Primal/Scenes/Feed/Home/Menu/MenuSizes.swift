@@ -106,4 +106,31 @@ enum MenuSizes {
         case .large: return 30
         }
     }()
+
+    static let menuTileFontSize: CGFloat = {
+        switch ChromeSize.current {
+        case .small: return 14
+        case .regular: return 15
+        case .medium: return 16
+        case .large: return 16
+        }
+    }()
+
+    static let menuTileIconLabelSpacing: CGFloat = {
+        switch ChromeSize.current {
+        case .small: return 12
+        case .regular: return 13
+        case .medium: return 13
+        case .large: return 14
+        }
+    }()
+
+    static let menuTileIconSize: CGFloat = {
+        switch ChromeSize.current {
+        case .small: return 26
+        case .regular: return 28
+        case .medium: return 30
+        case .large: return 32
+        }
+    }()
 }
