@@ -24,6 +24,7 @@ class AdvancedSearchHomeController: UIViewController, AdvancedSearchControllerPr
     let advancedSearchManager: AdvancedSearchManager
     init(manager: AdvancedSearchManager = .init()) {
         advancedSearchManager = manager
+        manager.isFromAdvancedSearchScreen = true
         super.init(nibName: nil, bundle: nil)
     }
     

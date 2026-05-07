@@ -176,9 +176,7 @@ private extension SearchViewChildController {
 
         configButton.addAction(.init(handler: { [weak self] _ in
             guard let self else { return }
-            let manager = advancedSearchManager
-            manager.isFromAdvancedSearchScreen = true
-            navigationController?.setViewControllers([AdvancedSearchHomeController(manager: manager)], animated: true)
+            navigationController?.setViewControllers([AdvancedSearchHomeController(manager: advancedSearchManager)], animated: true)
         }), for: .touchUpInside)
     }
 
@@ -228,8 +226,7 @@ private extension SearchViewChildController {
         }
 
         if let url = URL(string: userSearchText), url.scheme?.lowercased() == "https" {
-            let nav: UINavigationController? = presentingViewController?.findInChildren()
-            let target = nav?.topViewController
+            let target = presentingViewController
             searchView.inputField.resignFirstResponder()
             dismiss(animated: true) {
                 target?.present(SFSafariViewController(url: url), animated: true)
