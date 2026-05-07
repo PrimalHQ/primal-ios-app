@@ -85,9 +85,9 @@ final class SearchViewChildController: UIViewController, Themeable, WalletSearch
         }
     }
 
-    weak var parentNavigationController: UINavigationController?
-
-    var navigationControllerForSearchResults: UINavigationController? { parentNavigationController }
+    var navigationControllerForSearchResults: UINavigationController? {
+        presentingViewController?.findInChildren()
+    }
 
     let scope: SearchScope
     let searchType: SearchType
@@ -109,8 +109,6 @@ final class SearchViewChildController: UIViewController, Themeable, WalletSearch
         super.viewDidAppear(animated)
 
         searchView.inputField.becomeFirstResponder()
-        
-        parentNavigationController = presentingViewController?.navigationController
     }
 
     func updateTheme() {
@@ -200,11 +198,10 @@ private extension SearchViewChildController {
     }
 
     func dismissAndPush(_ vc: UIViewController) {
-        let target = parentNavigationController
+        guard let nav: UINavigationController = presentingViewController?.findInChildren() else { return }
         searchView.inputField.resignFirstResponder()
-        dismiss(animated: true) {
-            target?.pushViewController(vc, animated: true)
-        }
+        nav.pushViewController(vc, animated: false)
+        dismiss(animated: true)
     }
 
     func doSearch() {
@@ -231,7 +228,8 @@ private extension SearchViewChildController {
         }
 
         if let url = URL(string: userSearchText), url.scheme?.lowercased() == "https" {
-            let target = parentNavigationController?.topViewController
+            let nav: UINavigationController? = presentingViewController?.findInChildren()
+            let target = nav?.topViewController
             searchView.inputField.resignFirstResponder()
             dismiss(animated: true) {
                 target?.present(SFSafariViewController(url: url), animated: true)
