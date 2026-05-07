@@ -125,9 +125,8 @@ private extension MenuController {
         let nnfStack = UIStackView(axis: .vertical, spacing: MenuSizes.nnfStackSpacing, [titleStack, domainLabel, followLabel])
         nnfStack.alignment = .leading
 
-        [nnfStack, UIView()].forEach { mainStack.addArrangedSubview($0) }
-        contentView.addSubview(buttonsStack)
-        buttonsStack.pinToSuperview(edges: .horizontal, padding: 16)
+        [nnfStack, buttonsStack, UIView()].forEach { mainStack.addArrangedSubview($0) }
+        mainStack.setCustomSpacing(MenuSizes.nnfToMenuButtonsSpacing, after: nnfStack)
 
         let botMenu = UIStackView([UIView(), closeButton])
         botMenu.isLayoutMarginsRelativeArrangement = true
