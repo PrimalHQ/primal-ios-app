@@ -116,6 +116,11 @@ final class MainTabBarController: UIViewController, Themeable {
 
         guard runOnce else { return }
         runOnce = false
+
+        if #available(iOS 26.0, *) {
+            viewOrchestrator.refreshNativeTabBarItems()
+        }
+
         let userId = IdentityManager.instance.userHexPubkey
         
         let migratePublisher = WalletManager.instance.$activeWallet

@@ -121,7 +121,7 @@ final class MainTabBarViewOrchestrator: NSObject, Themeable {
             nativeTabBar.tintColor = .foreground
             nativeTabBar.unselectedItemTintColor = .foreground.withAlphaComponent(0.75)
             updateNativeNotificationsTabItemImage()
-            
+
             let fontSize = Self.tabBarFontSize
             let normalAttrs: [NSAttributedString.Key: Any] = [
                 .font: UIFont.appFont(withSize: fontSize, weight: .regular),
@@ -265,6 +265,13 @@ final class MainTabBarViewOrchestrator: NSObject, Themeable {
                 : (selected ? tab.selectedTabImage : tab.tabImage)
             button.setImage(image, for: .normal)
         }
+    }
+    
+    @available(iOS 26.0, *)
+    func refreshNativeTabBarItems() {
+        guard let controller, let nativeTabBar else { return }
+        nativeTabBar.items = makeNativeTabBarItems()
+        nativeTabBar.selectedItem = nativeTabBar.items?[safe: controller.currentPageIndex]
     }
 }
 
@@ -554,7 +561,20 @@ private extension MainTabBarViewOrchestrator {
         guard let controller else { return }
         let tabBar = UITabBar()
         tabBar.delegate = self
-        tabBar.items = tabs.enumerated().map { index, tab in
+        tabBar.items = makeNativeTabBarItems()
+        tabBar.selectedItem = tabBar.items?[safe: controller.currentPageIndex]
+
+        controller.view.addSubview(tabBar)
+        tabBar.pinToSuperview(edges: [.horizontal, .bottom])
+        tabBar.topAnchor.constraint(equalTo: controller.view.safeAreaLayoutGuide.bottomAnchor, constant: 13 - Self.tabBarHeight).isActive = true
+
+        nativeTabBar = tabBar
+    }
+
+    @available(iOS 26.0, *)
+    private func makeNativeTabBarItems() -> [UITabBarItem] {
+        guard let controller else { return [] }
+        return tabs.enumerated().map { index, tab in
             let isNotifications = tab == .notifications
             let showingDot = isNotifications && controller.newNotifications > 0
             let image: UIImage?
@@ -572,13 +592,6 @@ private extension MainTabBarViewOrchestrator {
             item.selectedImage = selectedImage
             return item
         }
-        tabBar.selectedItem = tabBar.items?[safe: controller.currentPageIndex]
-
-        controller.view.addSubview(tabBar)
-        tabBar.pinToSuperview(edges: [.horizontal, .bottom])
-        tabBar.topAnchor.constraint(equalTo: controller.view.safeAreaLayoutGuide.bottomAnchor, constant: 13 - Self.tabBarHeight).isActive = true
-
-        nativeTabBar = tabBar
     }
 
     @available(iOS 26.0, *)
