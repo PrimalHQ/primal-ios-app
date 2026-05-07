@@ -204,7 +204,7 @@ final class AccountEditingView: UIView {
             })
             
             alert.addAction(.init(title: "Cancel", style: .cancel))
-            (RootViewController.instance.presentedViewController ?? RootViewController.instance).present(alert, animated: true)
+            RootViewController.instance.smartPresent(alert)
         }))
         
         let nameStack = UIStackView(axis: .vertical, [nameLabel, subLabel])

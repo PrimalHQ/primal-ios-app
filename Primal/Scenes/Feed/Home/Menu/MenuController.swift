@@ -124,8 +124,12 @@ private extension MenuController {
         let buttonsStack = UIStackView(axis: .vertical, spacing: 8, [row1, row2, row3])
         let nnfStack = UIStackView(axis: .vertical, spacing: MenuSizes.nnfStackSpacing, [titleStack, domainLabel, followLabel])
         nnfStack.alignment = .leading
+        
+        let buttonStackParent = UIView()
+        buttonStackParent.addSubview(buttonsStack)
+        buttonsStack.pinToSuperview(edges: .horizontal).centerToSuperview(axis: .vertical)
 
-        [nnfStack, buttonsStack, UIView()].forEach { mainStack.addArrangedSubview($0) }
+        [nnfStack, buttonStackParent, UIView()].forEach { mainStack.addArrangedSubview($0) }
         mainStack.setCustomSpacing(MenuSizes.nnfToMenuButtonsSpacing, after: nnfStack)
 
         let botMenu = UIStackView([UIView(), closeButton])
@@ -142,8 +146,6 @@ private extension MenuController {
             .pinToSuperview(edges: .trailing, padding: 16)
             .pinToSuperview(edges: .top, padding: 20)
         mainStack.bottomAnchor.constraint(equalTo: separator.topAnchor).isActive = true
-        
-        buttonsStack.topAnchor.constraint(greaterThanOrEqualTo: nnfStack.bottomAnchor, constant: MenuSizes.nnfToMenuButtonsSpacing).isActive = true
 
         separator.pinToSuperview(edges: .horizontal)
         botMenu.pinToSuperview(edges: .horizontal)
@@ -152,6 +154,7 @@ private extension MenuController {
         mainStack.axis = .vertical
         mainStack.alignment = .fill
 
+        buttonsStack.topAnchor.constraint(greaterThanOrEqualTo: nnfStack.bottomAnchor, constant: MenuSizes.nnfToMenuButtonsSpacing).isActive = true
         buttonsStack.bottomAnchor.constraint(lessThanOrEqualTo: separator.topAnchor, constant: -16).isActive = true
 
         contentView.addSubview(messagesIndicator)
