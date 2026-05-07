@@ -24,11 +24,13 @@ class NewPostButton: UIButton, Themeable {
         var config = UIButton.Configuration.filled()
         if #available(iOS 26.0, *) {
             config = UIButton.Configuration.glass()
+            config.baseForegroundColor = .foreground
+        } else {
+            config.baseBackgroundColor = .accent
+            config.baseForegroundColor = .white
         }
 
         config.image = UIImage(named: "addPostPlus")?.withRenderingMode(.alwaysTemplate)
-        config.baseForegroundColor = .foreground
-        config.baseBackgroundColor = .accent
         config.cornerStyle = .capsule
         configuration = config
     }
@@ -44,9 +46,18 @@ class NewPostButton: UIButton, Themeable {
         }
 
         if hidden {
-            UIView.transition(with: self, duration: 0.25, options: .transitionCrossDissolve) {
-                self.transform = .init(scaleX: 0.2, y: 0.2)
-                self.isHidden = true
+            if #available(iOS 26.0, *) {
+                UIView.transition(with: self, duration: 0.25, options: .transitionCrossDissolve) {
+                    self.transform = .init(scaleX: 0.2, y: 0.2)
+                    self.isHidden = true
+                }
+            } else {
+                UIView.animate(withDuration: 0.25) {
+                    self.alpha = 0
+                    self.transform = .init(scaleX: 0.2, y: 0.2)
+                } completion: { _ in
+                    self.isHidden = true
+                }
             }
         } else {
             alpha = 0
@@ -60,10 +71,11 @@ class NewPostButton: UIButton, Themeable {
     }
     
     func setIsExcited(_ excited: Bool) {
+        guard #available(iOS 26.0, *) else { return }
         guard isExcited != excited, !isHidden else { return }
-        
+
         isExcited = excited
-        
+
         UIView.animate(withDuration: 0.1) {
             self.transform = excited ? .init(scaleX: 0.9, y: 0.9) : .identity
         }
