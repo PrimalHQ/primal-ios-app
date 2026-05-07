@@ -25,9 +25,11 @@ final class ExplorePeopleViewController: UIViewController, Themeable {
     private let recentSearchesHeader = UILabel()
     private let searchesStack = UIStackView()
     private let searchesSection = UIStackView()
+    private let searchesEmptyLabel = UILabel()
     private var searchRows: [RecentSearchRowView] = []
 
     private var cancellables: Set<AnyCancellable> = []
+    private var userFetchCancellable: AnyCancellable?
 
     private var users: [ParsedUser] = [] {
         didSet { applyUsers() }
@@ -53,6 +55,7 @@ final class ExplorePeopleViewController: UIViewController, Themeable {
         scrollView.backgroundColor = .background
         recentUsersHeader.textColor = .foreground
         recentSearchesHeader.textColor = .foreground
+        searchesEmptyLabel.textColor = .foreground4
         userViews.forEach { $0.updateTheme() }
         searchRows.forEach { $0.updateTheme() }
     }
@@ -144,6 +147,19 @@ private extension ExplorePeopleViewController {
         searchesStack.spacing = 0
         searchesStack.alignment = .fill
 
+        searchesEmptyLabel.text = "Your recent searches will appear here."
+        searchesEmptyLabel.font = .appFont(withSize: 14, weight: .regular)
+        searchesEmptyLabel.textAlignment = .center
+        searchesEmptyLabel.numberOfLines = 0
+
+        let emptyWrapper = UIView()
+        emptyWrapper.addSubview(searchesEmptyLabel)
+        searchesEmptyLabel
+            .pinToSuperview(edges: .horizontal, padding: 16)
+            .pinToSuperview(edges: .top, padding: 16)
+            .pinToSuperview(edges: .bottom, padding: 12)
+        searchesStack.addArrangedSubview(emptyWrapper)
+
         searchRows = (0..<Self.maxSearches).map { _ in RecentSearchRowView() }
         for row in searchRows { searchesStack.addArrangedSubview(row) }
 
@@ -165,13 +181,11 @@ private extension ExplorePeopleViewController {
     }
     
     func refreshUsers() {
-        SmartContactsManager.instance.userSearchPublisher("")
-            .first()
+        userFetchCancellable = SmartContactsManager.instance.userSearchPublisher("")
             .receive(on: DispatchQueue.main)
             .sink { [weak self] users in
                 self?.users = Array(users.prefix(Self.maxUsers))
             }
-            .store(in: &cancellables)
     }
 
     func applyUsers() {
@@ -186,7 +200,7 @@ private extension ExplorePeopleViewController {
     }
 
     func applySearches() {
-        searchesSection.isHidden = searches.isEmpty
+        searchesEmptyLabel.superview?.isHidden = !searches.isEmpty
 
         for (index, row) in searchRows.enumerated() {
             if let term = searches[safe: index] {
