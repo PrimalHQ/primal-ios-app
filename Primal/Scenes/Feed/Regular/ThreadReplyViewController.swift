@@ -8,6 +8,23 @@
 import Combine
 import UIKit
 
+extension UIButton.Configuration {
+    static var threadReplyButton: UIButton.Configuration {
+        var config = UIButton.Configuration.filled()
+        if #available(iOS 26.0, *) {
+            config = UIButton.Configuration.glass()
+            config.baseForegroundColor = .foreground
+        } else {
+            config.baseForegroundColor = .white
+            config.baseBackgroundColor = .accent
+        }
+        
+        config.image = .sendMessage
+        config.cornerStyle = .capsule
+        return config
+    }
+}
+
 final class ThreadReplyViewController: UIViewController {
     var replyingToName: String? {
         didSet { updatePlaceholder() }
@@ -26,15 +43,19 @@ final class ThreadReplyViewController: UIViewController {
     private let textView = SelfSizingTextView()
     private let placeholderLabel = UILabel()
     private let plusButton = UIButton()
-    private let sendButton = UIButton(configuration: .liveSendButton(enabled: true))
+    private let sendButton = UIButton(configuration: .threadReplyButton)
 
     private let mentionTable = UITableView()
     private let mentionContainer = UIView()
 
     private let previewEmbedsView = PostingPreviewEmbedsView()
-
-    private lazy var pillRow = UIStackView(axis: .horizontal, spacing: 8, [pillStack, sendButton])
-    private let pillStack = UIStackView()
+    
+    private lazy var pillRow = UIStackView(axis: .horizontal, spacing: 8, [pillStackBackgroundBackground, sendButton])
+    private lazy var pillStack = UIStackView(spacing: 4, [textView, plusButton])
+    
+    private let pillStackBackground = UIVisualEffectView()
+    // We need this background behind glass to force it to stay the same base color as our background
+    private let pillStackBackgroundBackground = UIView()
 
     private var manager: PostingTextViewManager?
     private var cancellables: Set<AnyCancellable> = []
@@ -93,25 +114,17 @@ private extension ThreadReplyViewController {
     }
 
     func bindManager(_ manager: PostingTextViewManager) {
-        Publishers.CombineLatest3(manager.$isEmpty, manager.$media, manager.$isEditing)
-            .map { isEmpty, media, isEditing in
-                !isEmpty || !media.isEmpty || isEditing
-            }
+        manager.$isEditing
             .removeDuplicates()
             .dropFirst()
-            .receive(on: DispatchQueue.main)
+            .debounce(for: 0.1, scheduler: DispatchQueue.main)
             .sink { [weak self] shouldShow in
                 guard let self else { return }
-                UIView.animate(withDuration: 0.2) {
-                    self.sendButton.isHidden = !shouldShow
-                }
+                self.sendButton.isHidden = !shouldShow
+                self.pillRow.layoutMargins = shouldShow ? .init(top: 0, left: 12, bottom: 12, right: 12) : .init(top: 0, left: 20, bottom: 20, right: 12)
+                self.sendButton.alpha = shouldShow ? 1 : 0
             }
             .store(in: &cancellables)
-        
-        manager.$isEditing.sink { [weak self] editing in
-            self?.pillRow.layoutMargins = editing ? .init(top: 0, left: 12, bottom: 12, right: 12) : .init(top: 0, left: 20, bottom: 20, right: 12)
-        }
-        .store(in: &cancellables)
 
         manager.$postButtonEnabledState
             .receive(on: DispatchQueue.main)
@@ -131,7 +144,7 @@ private extension ThreadReplyViewController {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] users in
                 guard let self else { return }
-                let count = min(users.count, 4)
+                let count = min(users.count, 5)
                 manager.usersHeightConstraint.constant = CGFloat(count) * 60
                 let shouldHide = users.isEmpty
                 if mentionContainer.isHidden != shouldHide {
@@ -148,12 +161,13 @@ private extension ThreadReplyViewController {
     }
 
     func setupViews() {
-        configureTextView()
         configurePlaceholder()
         configurePlusButton()
         configureSendButton()
         configurePillStack()
+        configurePillStackBackground()
         configureMentionContainer()
+        configureTextView()
 
         pillRow.alignment = .bottom
         pillRow.isLayoutMarginsRelativeArrangement = true
@@ -162,7 +176,7 @@ private extension ThreadReplyViewController {
         let keyboardSpacer = KeyboardSizingView()
         let bottomStack = UIStackView(axis: .vertical, spacing: 8, [mentionContainer, previewEmbedsView, pillRow, keyboardSpacer])
         bottomStack.alignment = .fill
-
+        
         view.addSubview(bottomStack)
         bottomStack.pinToSuperview()
 
@@ -178,11 +192,11 @@ private extension ThreadReplyViewController {
     }
 
     func configureTextView() {
-        textView.font = .appFont(withSize: 16, weight: .regular)
-        textView.textColor = .foreground
+        textView.font = .appFont(withSize: 15, weight: .regular)
+        textView.textColor = .foreground.withAlphaComponent(0.9)
         textView.backgroundColor = .clear
         textView.tintColor = .accent
-        textView.textContainerInset = .init(top: 9, left: 0, bottom: 0, right: 0)
+        textView.textContainerInset = .init(top: 12, left: 0, bottom: 0, right: 0)
         textView.textContainer.lineFragmentPadding = 0
 
         let minH = textView.heightAnchor.constraint(greaterThanOrEqualToConstant: 40)
@@ -192,39 +206,51 @@ private extension ThreadReplyViewController {
     }
 
     func configurePlaceholder() {
-        placeholderLabel.font = .appFont(withSize: 16, weight: .regular)
+        placeholderLabel.font = .appFont(withSize: 15, weight: .regular)
         placeholderLabel.textColor = .foreground4
         placeholderLabel.isUserInteractionEnabled = false
         updatePlaceholder()
     }
 
     func configurePlusButton() {
-        plusButton.setImage(UIImage(named: "addPostPlus")?.withRenderingMode(.alwaysTemplate), for: .normal)
-        plusButton.tintColor = .foreground4
+        plusButton.setImage(.addPostPlus.withRenderingMode(.alwaysTemplate), for: .normal)
+        plusButton.tintColor = .foreground
         plusButton.constrainToSize(32)
     }
 
     func configureSendButton() {
         sendButton.isEnabled = false
         sendButton.isHidden = true
+        sendButton.alpha = 0
         sendButton.constrainToSize(40)
+    }
+    
+    func configurePillStackBackground() {
+        if #available(iOS 26.0, *) {
+            pillStackBackground.effect = UIGlassEffect(style: .regular)
+            pillStackBackground.tintColor = .background
+        } else {
+            pillStackBackground.effect = UIBlurEffect(style: .regular)
+        }
+        pillStackBackground.overrideUserInterfaceStyle = Theme.current.userInterfaceStyle
+        pillStackBackground.layer.cornerRadius = 20
+        pillStackBackground.contentView.addSubview(pillStack)
+        pillStack.pinToSuperview(edges: [.horizontal, .bottom]).pinToSuperview(edges: .top, padding: -4)
+        
+        pillStackBackgroundBackground.backgroundColor = .background.withAlphaComponent(0.3)
+        pillStackBackgroundBackground.layer.cornerRadius = 20
+        pillStackBackgroundBackground.addSubview(pillStackBackground)
+        pillStackBackground.pinToSuperview()
     }
 
     func configurePillStack() {
-        pillStack.axis = .horizontal
         pillStack.alignment = .bottom
-        pillStack.spacing = 4
         pillStack.isLayoutMarginsRelativeArrangement = true
         pillStack.layoutMargins = .init(top: 0, left: 16, bottom: 4, right: 4)
-        pillStack.backgroundColor = .background3
-        pillStack.layer.cornerRadius = 20
-
-        pillStack.addArrangedSubview(textView)
-        pillStack.addArrangedSubview(plusButton)
-
+        
         pillStack.addSubview(placeholderLabel)
         placeholderLabel
-            .pinToSuperview(edges: .bottom, padding: 10)
+            .centerToSuperview(axis: .vertical)
             .pin(to: textView, edges: .leading)
     }
 
@@ -236,7 +262,7 @@ private extension ThreadReplyViewController {
         if #available(iOS 26.0, *) {
             blurView = UIVisualEffectView(effect: UIGlassEffect(style: .regular))
         } else {
-            blurView = UIVisualEffectView(effect: UIBlurEffect(style: .systemUltraThinMaterial))
+            blurView = UIVisualEffectView(effect: UIBlurEffect(style: .regular))
         }
         mentionContainer.addSubview(blurView)
         blurView.pinToSuperview(edges: .vertical).pinToSuperview(edges: .horizontal, padding: 20)

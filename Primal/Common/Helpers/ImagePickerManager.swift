@@ -194,8 +194,8 @@ final class ImagePickerManager: NSObject {
     func openCamera(videoMode: Bool = false) {
         if UIImagePickerController.isSourceTypeAvailable(.camera) {
             imagePicker.sourceType = .camera
-            imagePicker.mediaTypes = videoMode ? ["public.movie"] : ["public.image"]
-            if videoMode { imagePicker.cameraCaptureMode = .video }
+//            imagePicker.mediaTypes = videoMode ? ["public.movie"] : ["public.image"]
+//            if videoMode { imagePicker.cameraCaptureMode = .video }
             strongSelf = self
             viewController?.present(imagePicker, animated: true, completion: nil)
         } else {
