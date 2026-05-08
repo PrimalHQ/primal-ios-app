@@ -804,7 +804,7 @@ private extension PostingTextViewManager {
         DatabaseManager.instance.findDraft(replyingTo: replyId)
             .receive(on: DispatchQueue.main)
             .sink { [weak self] draft in
-                guard let self, let draft else { return }
+                guard let self, let draft, oldDraft == nil else { return }
                 
                 if let text = textView.text, !text.isEmpty, !draft.isPosting, text != draft.text {
                     textView.text = draft.text + text

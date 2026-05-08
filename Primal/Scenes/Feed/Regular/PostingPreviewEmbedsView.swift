@@ -63,7 +63,8 @@ final class PostingPreviewEmbedsView: UIView {
     func bind(to manager: PostingTextViewManager) {
         cancellables = []
         Publishers.CombineLatest3(manager.$media, manager.$embeddedElements, manager.$pollOptions)
-            .receive(on: DispatchQueue.main)
+            .debounce(for: 0.1, scheduler: DispatchQueue.main)
+//            .receive(on: DispatchQueue.main)
             .sink { [weak self] media, embeds, poll in
                 self?.rebuild(media: media, embeds: embeds, poll: poll)
             }
