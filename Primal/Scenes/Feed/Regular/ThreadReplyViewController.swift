@@ -31,8 +31,7 @@ final class ThreadReplyViewController: UIViewController {
     private let mentionTable = UITableView()
     private let mentionContainer = UIView()
 
-    private let countLabel = UILabel()
-    private let countContainer = UIView()
+    private let previewEmbedsView = PostingPreviewEmbedsView()
 
     private lazy var pillRow = UIStackView(axis: .horizontal, spacing: 8, [pillStack, sendButton])
     private let pillStack = UIStackView()
@@ -99,6 +98,7 @@ private extension ThreadReplyViewController {
                 !isEmpty || !media.isEmpty || isEditing
             }
             .removeDuplicates()
+            .dropFirst()
             .receive(on: DispatchQueue.main)
             .sink { [weak self] shouldShow in
                 guard let self else { return }
@@ -144,32 +144,7 @@ private extension ThreadReplyViewController {
             }
             .store(in: &cancellables)
 
-        Publishers.CombineLatest3(
-            manager.$media.map(\.count).removeDuplicates(),
-            manager.$embeddedElements.map(\.count).removeDuplicates(),
-            manager.$pollOptions
-        )
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] mediaCount, embedCount, poll in
-                guard let self else { return }
-                var parts: [String] = []
-                if mediaCount > 0 {
-                    parts.append("\(mediaCount) attachment\(mediaCount == 1 ? "" : "s")")
-                }
-                let extraEmbeds = embedCount + (poll != nil ? 1 : 0)
-                if extraEmbeds > 0 {
-                    parts.append("\(extraEmbeds) embed\(extraEmbeds == 1 ? "" : "s")")
-                }
-                let shouldHide = parts.isEmpty
-                countLabel.text = parts.joined(separator: " · ")
-                if countContainer.isHidden != shouldHide {
-                    UIView.animate(withDuration: 0.2) {
-                        self.countContainer.isHidden = shouldHide
-                        self.view.layoutIfNeeded()
-                    }
-                }
-            }
-            .store(in: &cancellables)
+        previewEmbedsView.bind(to: manager)
     }
 
     func setupViews() {
@@ -178,15 +153,14 @@ private extension ThreadReplyViewController {
         configurePlusButton()
         configureSendButton()
         configurePillStack()
-        configureCountContainer()
         configureMentionContainer()
-        
+
         pillRow.alignment = .bottom
         pillRow.isLayoutMarginsRelativeArrangement = true
         pillRow.layoutMargins = .init(top: 0, left: 12, bottom: 12, right: 12)
 
         let keyboardSpacer = KeyboardSizingView()
-        let bottomStack = UIStackView(axis: .vertical, spacing: 8, [mentionContainer, countContainer, pillRow, keyboardSpacer])
+        let bottomStack = UIStackView(axis: .vertical, spacing: 8, [mentionContainer, previewEmbedsView, pillRow, keyboardSpacer])
         bottomStack.alignment = .fill
 
         view.addSubview(bottomStack)
@@ -232,6 +206,7 @@ private extension ThreadReplyViewController {
 
     func configureSendButton() {
         sendButton.isEnabled = false
+        sendButton.isHidden = true
         sendButton.constrainToSize(40)
     }
 
@@ -251,17 +226,6 @@ private extension ThreadReplyViewController {
         placeholderLabel
             .pinToSuperview(edges: .bottom, padding: 10)
             .pin(to: textView, edges: .leading)
-    }
-
-    func configureCountContainer() {
-        countLabel.font = .appFont(withSize: 12, weight: .regular)
-        countLabel.textColor = .foreground4
-        countContainer.addSubview(countLabel)
-        countLabel
-            .pinToSuperview(edges: .horizontal, padding: 16)
-            .pinToSuperview(edges: .vertical, padding: 2)
-        
-        countContainer.isHidden = true
     }
 
     func configureMentionContainer() {
