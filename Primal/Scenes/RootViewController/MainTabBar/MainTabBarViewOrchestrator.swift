@@ -25,6 +25,29 @@ extension TabBarState: Equatable {
     }
 }
 
+extension UIButton.Configuration {
+    static func mainTabBarButtonConfiguration(icon: UIImage?, title: String, selected: Bool) -> UIButton.Configuration {
+        var config = UIButton.Configuration.plain()
+        
+        if selected {
+            config = .filled()
+            config.cornerStyle = .capsule
+            config.baseBackgroundColor = .background3
+            config.baseForegroundColor = .foreground
+        } else {
+            config.baseBackgroundColor = .foreground.withAlphaComponent(0.875)
+        }
+        
+        config.imagePlacement = .top
+        config.imagePadding = 4
+        config.image = icon
+        config.attributedTitle = .init(title, attributes: .init([
+            .font: UIFont.appFont(withSize: 9, weight: .regular)
+        ]))
+        return config
+    }
+}
+
 final class MainTabBarViewOrchestrator: NSObject, Themeable {
     weak var controller: MainTabBarController?
 
@@ -33,21 +56,7 @@ final class MainTabBarViewOrchestrator: NSObject, Themeable {
     let buttonStackParent = UIView()
     private(set) lazy var vStack = UIStackView(arrangedSubviews: [navigationBorder, buttonStackParent, safeAreaSpacer])
     private let safeAreaSpacer = UIView()
-    private let circleBorderView = ThemeableView().constrainToSize(64).setTheme {
-        $0.backgroundColor = .background
-        $0.layer.borderColor = UIColor.background3.cgColor
-    }
     private let navigationBorder = UIView().constrainToSize(height: 1)
-    private lazy var circleWalletButton = ThemeableButton().constrainToSize(52).setTheme { [weak self] in
-        let isWalletSelected = (self?.controller?.currentPageIndex ?? 0) == 2
-
-        $0.backgroundColor = isWalletSelected ? .foreground : .background3
-        $0.tintColor = isWalletSelected ? .background : .foreground3
-
-        $0.setImage(isWalletSelected ? UIImage(named: "walletSpecialButtonPressed") : UIImage(named: "walletSpecialButton"), for: .normal)
-    }
-
-    private var animationView = LottieAnimationView(animation: AnimationType.walletLightning.animation)
 
     lazy var buttonStack = UIStackView(arrangedSubviews: buttons)
 
@@ -78,7 +87,6 @@ final class MainTabBarViewOrchestrator: NSObject, Themeable {
         set {
             if #available(iOS 26.0, *), nativeTabBar != nil { return }
             navigationBorder.alpha = newValue ? 1 : 0
-            circleBorderView.alpha = newValue ? 1 : 0
         }
     }
 
@@ -96,16 +104,9 @@ final class MainTabBarViewOrchestrator: NSObject, Themeable {
             setupCustomTabBar()
         }
 
-        controller.view.addSubview(animationView)
-        animationView.isHidden = true
-        animationView.isUserInteractionEnabled = false
-
-        if #available(iOS 26.0, *), let nativeTabBar {
-            animationView.constrainToSize(width: 375, height: 100).centerToView(nativeTabBar)
+        if #available(iOS 26.0, *) {
+            // NO OP
         } else {
-            addCircleWalletButton()
-            animationView.constrainToSize(width: 375, height: 100).centerToView(circleWalletButton)
-
             zip(buttons, tabs).forEach { button, tab in
                 button.addAction(.init(handler: { [weak self] _ in
                     self?.controller?.menuButtonPressedForTab(tab)
@@ -242,11 +243,6 @@ final class MainTabBarViewOrchestrator: NSObject, Themeable {
         }
     }
 
-    func playThunderAnimation() {
-        animationView.isHidden = false
-        animationView.play(fromProgress: 0, toProgress: 1)
-    }
-
     func updateButtons() {
         guard let controller else { return }
 
@@ -254,16 +250,18 @@ final class MainTabBarViewOrchestrator: NSObject, Themeable {
             nativeTabBar.selectedItem = nativeTabBar.items?[safe: controller.currentPageIndex]
             return
         }
-        circleWalletButton.updateTheme()
+        
         for (index, button) in buttons.enumerated() {
             button.tintColor = index == controller.currentPageIndex ? .foreground : .foreground3
 
             let tab = tabs[index]
             let selected = index == controller.currentPageIndex
+            
             let image: UIImage? = (tab == .notifications)
                 ? imageForNotificationsTab(selected: selected, showingDot: controller.newNotifications > 0)
                 : (selected ? tab.selectedTabImage : tab.tabImage)
-            button.setImage(image, for: .normal)
+            
+            button.configuration = .mainTabBarButtonConfiguration(icon: image, title: tab.tabTitle, selected: selected)
         }
     }
     
@@ -627,28 +625,12 @@ private extension MainTabBarViewOrchestrator {
             .pinToSuperview(edges: .bottom, padding: -8)
             .constrainToSize(height: 56)
         buttonStack.distribution = .fillEqually
+        
+        buttonStack.layoutMargins = .init(top: 8, left: 20, bottom: 0, right: 20)
+        buttonStack.isLayoutMarginsRelativeArrangement = true
+        buttonStack.insetsLayoutMarginsFromSafeArea = false
 
         vStack.axis = .vertical
-    }
-
-    func addCircleWalletButton() {
-        buttonStackParent.insertSubview(circleBorderView, at: 0)
-        circleBorderView.pinToSuperview(edges: .top, padding: -7).centerToSuperview(axis: .horizontal)
-        circleBorderView.layer.borderWidth = 1
-        circleBorderView.layer.cornerRadius = 32
-
-        let frontCover = ThemeableView().constrainToSize(62).setTheme { $0.backgroundColor = .background }
-        frontCover.layer.cornerRadius = 31
-        buttonStackParent.addSubview(frontCover)
-        frontCover.pinToSuperview(edges: .top, padding: -6).centerToSuperview(axis: .horizontal)
-
-        circleWalletButton.layer.cornerRadius = 26
-        buttonStackParent.addSubview(circleWalletButton)
-        circleWalletButton.pinToSuperview(edges: .top, padding: -1).centerToSuperview(axis: .horizontal)
-
-        circleWalletButton.addAction(.init(handler: { [weak self] _ in
-            self?.controller?.menuButtonPressedForTab(.wallet)
-        }), for: .touchUpInside)
     }
 
     func imageForNotificationsTab(selected: Bool, showingDot: Bool) -> UIImage? {

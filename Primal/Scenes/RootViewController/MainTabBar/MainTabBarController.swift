@@ -232,10 +232,6 @@ final class MainTabBarController: UIViewController, Themeable {
             nav.endAppearanceTransition()
         }
     }
-    
-    func playThunderAnimation() {
-        viewOrchestrator.playThunderAnimation()
-    }
 }
 
 private extension MainTabBarController {
