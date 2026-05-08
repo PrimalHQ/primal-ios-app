@@ -92,9 +92,14 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
     var bottomBarHeight: CGFloat = 150
     override var adjustedTopBarHeight: CGFloat { topBarHeight + 7 }
     override var barsMaxTransform: CGFloat { bottomBarHeight }
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        replyVC.saveDraftIfNeeded()
+    }
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
+
         navigationController?.setNavigationBarHidden(false, animated: animated)
         mainTabBarController?.setTabBarHidden(true, animated: animated)
 
@@ -181,6 +186,7 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
         guard let post = posts[safe: mainPositionInThread] else { return }
 
         replyVC.replyingToName = post.user.data.displayName
+        replyVC.replyingTo = post.post
     }
 
     override func setBarsHidden(_ hidden: Bool, animated: Bool) {
@@ -198,14 +204,7 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
 
     func openReplyComposer() {
         guard !posts.isEmpty else { return }
-
-        let replyController = AdvancedEmbedPostViewController(replyId: id, replyingTo: mainObject, onPost: { [weak self] in
-            guard let self else { return }
-            didPostNewComment = true
-            feed.requestThread(postId: id)
-        })
-
-        present(replyController, animated: true)
+        replyVC.focus()
     }
 }
 
@@ -263,6 +262,7 @@ private extension ThreadViewController {
             let user = posts[self.mainPositionInThread].user.data
 
             replyVC.replyingToName = user.displayName
+            replyVC.replyingTo = mainPost.post
 
             isLoading = false
             didLoadData = true
@@ -337,14 +337,18 @@ private extension ThreadViewController {
 
         table.contentInset = .init(top: 112, left: 0, bottom: 700, right: 0)
         table.contentOffset = .init(x: 0, y: -112)
+        table.keyboardDismissMode = .onDrag
 
         addChild(replyVC)
         view.addSubview(replyVC.view)
         replyVC.view.pinToSuperview(edges: [.horizontal, .bottom])
         replyVC.didMove(toParent: self)
 
-        replyVC.onTap = { [weak self] in
-            self?.openReplyComposer()
+        replyVC.replyId = id
+        replyVC.onPost = { [weak self] in
+            guard let self else { return }
+            didPostNewComment = true
+            feed.requestThread(postId: id)
         }
 
         refreshControl.addAction(.init(handler: { [unowned self] _ in

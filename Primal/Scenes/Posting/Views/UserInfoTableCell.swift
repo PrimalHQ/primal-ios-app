@@ -48,7 +48,8 @@ final class UserInfoTableCell: UITableViewCell, Themeable {
     }
     
     func updateTheme() {
-        contentView.backgroundColor = .background
+        contentView.backgroundColor = .clear
+        backgroundColor = .clear
         nameLabel.textColor = .foreground
         followersLabel.textColor = .foreground
         secondaryLabel.textColor = .foreground5

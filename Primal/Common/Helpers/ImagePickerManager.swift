@@ -157,29 +157,31 @@ final class ImagePickerManager: NSObject {
     var cancellables: Set<AnyCancellable> = []
     
     enum Mode {
-        case gallery, camera, dialog
+        case gallery, camera, cameraVideo, dialog
     }
-    
+
     @discardableResult
     init(_ vc: UIViewController, mode: Mode = .dialog, allowVideo: Bool = false, selectionLimit: Int = 1, _ callback: @escaping (ImagePickerResult) -> Void) {
         viewController = vc
         pickImageCallback = callback
         self.selectionLimit = selectionLimit
         super.init()
-        
+
         // Configure UIImagePickerController for camera mode.
         imagePicker.delegate = self
-        
+
         switch mode {
         case .camera:
-            openCamera()
+            openCamera(videoMode: false)
+        case .cameraVideo:
+            openCamera(videoMode: true)
         case .gallery:
             openGallery(allowVideo: allowVideo)
         case .dialog:
             let alert = UIAlertController(title: "Choose Image", message: nil, preferredStyle: .actionSheet)
             alert.popoverPresentationController?.sourceView = vc.view
             alert.addAction(UIAlertAction(title: "Camera", style: .default) { _ in
-                self.openCamera()
+                self.openCamera(videoMode: false)
             })
             alert.addAction(UIAlertAction(title: "Gallery", style: .default) { _ in
                 self.openGallery(allowVideo: allowVideo)
@@ -188,10 +190,12 @@ final class ImagePickerManager: NSObject {
             viewController?.present(alert, animated: true, completion: nil)
         }
     }
-    
-    func openCamera() {
+
+    func openCamera(videoMode: Bool = false) {
         if UIImagePickerController.isSourceTypeAvailable(.camera) {
             imagePicker.sourceType = .camera
+            imagePicker.mediaTypes = videoMode ? ["public.movie"] : ["public.image"]
+            if videoMode { imagePicker.cameraCaptureMode = .video }
             strongSelf = self
             viewController?.present(imagePicker, animated: true, completion: nil)
         } else {
@@ -244,14 +248,16 @@ extension ImagePickerManager: UIImagePickerControllerDelegate, UINavigationContr
                                didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
         picker.dismiss(animated: true, completion: nil)
         strongSelf = nil
-        
-        // Handle camera capture; for simplicity we assume image capture.
+
+        if let videoURL = info[.mediaURL] as? URL {
+            guard let thumbnail = getThumbnailImage(forUrl: videoURL) else { return }
+            pickImageCallback(VideoMediaPickerResult(thumbnail: thumbnail, url: videoURL))
+            return
+        }
+
         if let image = info[.originalImage] as? UIImage {
-            // When captured from camera, treat as JPEG.
             pickImageCallback(ImageMediaPickerResult(image: image.updateImageOrientationUp(), type: .jpeg))
         }
-        
-        // (Additional video capture from camera could be added similarly.)
     }
 }
 
