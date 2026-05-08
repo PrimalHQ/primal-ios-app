@@ -252,8 +252,6 @@ final class WalletManager {
     }
     
     func reset(_ pubkey: String) {
-        guard oldPubkey != pubkey else { return }
-
         self.oldPubkey = pubkey
         userZapped = [:]
         premiumState = nil
