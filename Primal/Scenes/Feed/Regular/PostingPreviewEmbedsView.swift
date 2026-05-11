@@ -54,6 +54,7 @@ final class PostingPreviewEmbedsView: UIView {
         let scrollView = UIScrollView()
         addSubview(scrollView)
         scrollView.pinToSuperview()
+        scrollView.showsHorizontalScrollIndicator = false
         
         scrollView.addSubview(chipStack)
         chipStack.pinToSuperview(padding: (Self.viewHeight - Self.chipSize) / 2)
