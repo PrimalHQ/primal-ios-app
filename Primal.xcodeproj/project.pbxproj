@@ -226,6 +226,7 @@
 		A1F2B3C4D5E6F7A8B9C0D1E2 /* MenuController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F2B3C4D5E6F7A8B9C0D1E3 /* MenuController.swift */; };
 		A1F2B3C4D5E6F7A8B9C0D1E4 /* MenuSizes.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F2B3C4D5E6F7A8B9C0D1E5 /* MenuSizes.swift */; };
 		AA9CF3DB44709B5BC13CA5A8 /* GenerateAmountsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD61E893F7939D2AC33A6A4C /* GenerateAmountsTests.swift */; };
+		D1E2F3A4B5C6D7E8F9A0B1C2 /* PostingPreviewEmbedsViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1E2F3A4B5C6D7E8F9A0B1C3 /* PostingPreviewEmbedsViewTests.swift */; };
 		B2A3C4D5E6F7A8B9C0D1E2F3 /* PrimalNavigationBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2A3C4D5E6F7A8B9C0D1E2F4 /* PrimalNavigationBar.swift */; };
 		B2A3C4D5E6F7A8B9C0D1F001 /* SlideDownShellViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2A3C4D5E6F7A8B9C0D1F002 /* SlideDownShellViewController.swift */; };
 		B2A3C4D5E6F7A8B9C0D1F003 /* GenericSelectionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2A3C4D5E6F7A8B9C0D1F004 /* GenericSelectionController.swift */; };
@@ -1594,6 +1595,7 @@
 		B9FAC6572D42B53A00B57EF6 /* SettingsWalletNWCController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsWalletNWCController.swift; sourceTree = "<group>"; };
 		B9FAC65A2D42C5FA00B57EF6 /* SettingsNewNWCController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsNewNWCController.swift; sourceTree = "<group>"; };
 		BD61E893F7939D2AC33A6A4C /* GenerateAmountsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenerateAmountsTests.swift; sourceTree = "<group>"; };
+		D1E2F3A4B5C6D7E8F9A0B1C3 /* PostingPreviewEmbedsViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostingPreviewEmbedsViewTests.swift; sourceTree = "<group>"; };
 		C0A1B2C42E0511260000001A /* ReplyAttachmentInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReplyAttachmentInputView.swift; sourceTree = "<group>"; };
 		C0A1B2D62E0511260000002A /* PollInputViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollInputViewController.swift; sourceTree = "<group>"; };
 		C0LLAP5ED1AB8A7B00000002 /* CollapsedTabBarButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollapsedTabBarButton.swift; sourceTree = "<group>"; };
@@ -1846,6 +1848,7 @@
 			children = (
 				933DBDAD2A112593008DCF1F /* Common */,
 				BD61E893F7939D2AC33A6A4C /* GenerateAmountsTests.swift */,
+				D1E2F3A4B5C6D7E8F9A0B1C3 /* PostingPreviewEmbedsViewTests.swift */,
 				9393310629A3E370003954C2 /* PrimalTests.swift */,
 			);
 			path = PrimalTests;
@@ -4827,6 +4830,7 @@
 				9E8834CE2A37BFB9005DB548 /* NSRangeTests.swift in Sources */,
 				B94B18A02D5E233600A932CE /* RegexTests.swift in Sources */,
 				AA9CF3DB44709B5BC13CA5A8 /* GenerateAmountsTests.swift in Sources */,
+				D1E2F3A4B5C6D7E8F9A0B1C2 /* PostingPreviewEmbedsViewTests.swift in Sources */,
 				9393310729A3E370003954C2 /* PrimalTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
