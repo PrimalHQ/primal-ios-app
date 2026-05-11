@@ -14,7 +14,7 @@ class WalletDetectedPopupController: UIViewController {
     private var cancellables: Set<AnyCancellable> = []
     
     static let regularHeight: CGFloat = 450
-    static let discontinuedHeight: CGFloat = 400
+    static let discontinuedHeight: CGFloat = 350
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     init(isDiscontinued: Bool) {
@@ -61,7 +61,7 @@ class WalletDetectedPopupController: UIViewController {
 
         let titleText = isDiscontinued ? "Wallet Discontinued" : "Wallet Detected"
         let descriptionText = isDiscontinued
-            ? "The custodial wallet service has been discontinued. To recover your funds, please contact us at support@gmail.net."
+            ? "The custodial wallet service has been discontinued. To recover your funds, please contact us at support@primal.net."
             : "We detected that you already have a non-custodial Primal wallet associated with this Nostr account. To use it on this device, please restore it via the recovery phrase. Alternatively, you can create a new wallet which will be associated with your account."
 
         let descLabel = UILabel()
@@ -78,6 +78,7 @@ class WalletDetectedPopupController: UIViewController {
             .paragraphStyle: paragraph
         ])
 
+        let closeButton = UIButton(configuration: .accent("Close", font: .appFont(withSize: 18, weight: .regular)))
         let restoreButton = UIButton(configuration: .accentPill(text: "Restore Existing Wallet", font: .appFont(withSize: 18, weight: .semibold))).constrainToSize(height: 52)
         let createButton = UIButton(configuration: .accent18("Create New Wallet")).constrainToSize(height: 52)
 
@@ -86,12 +87,15 @@ class WalletDetectedPopupController: UIViewController {
             userImage, SpacerView(height: 21),
             UILabel(titleText, color: .foreground, font: .appFont(withSize: 20, weight: .bold), multiline: true),
             SpacerView(height: 28),
-            descLabel,
-            SpacerView(height: 39),
-            restoreButton,
-            SpacerView(height: 12),
-            createButton
+            descLabel, SpacerView(height: 39)
         ])
+        
+        if isDiscontinued {
+            mainStack.addArrangedSubview(closeButton)
+        } else {
+            [restoreButton, SpacerView(height: 12), createButton].forEach { mainStack.addArrangedSubview($0) }
+        }
+        
         mainStack.alignment = .center
         restoreButton.pinToSuperview(edges: .horizontal)
         descLabel.pinToSuperview(edges: .horizontal, padding: 2)
@@ -111,6 +115,10 @@ class WalletDetectedPopupController: UIViewController {
 
         createButton.addAction(.init(handler: { [weak self] _ in
             WalletManager.instance.newWalletSpark(IdentityManager.instance.userHexPubkey)
+            self?.dismiss(animated: true)
+        }), for: .touchUpInside)
+        
+        closeButton.addAction(.init(handler: { [weak self] _ in
             self?.dismiss(animated: true)
         }), for: .touchUpInside)
     }

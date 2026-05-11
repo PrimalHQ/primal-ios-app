@@ -252,8 +252,6 @@ final class WalletManager {
     }
     
     func reset(_ pubkey: String) {
-        guard oldPubkey != pubkey else { return }
-
         self.oldPubkey = pubkey
         userZapped = [:]
         premiumState = nil
@@ -513,8 +511,17 @@ final class WalletManager {
         guard let walletID else { throw WalletError.noWallet }
 
         let res = try await walletRepo.pay(walletId: walletID, request: request)
-        
-        if let error = res.exceptionOrNull()?.description() { throw WalletError.serverError(error.split(separator: ":").last?.string ?? "") }
+
+        if let error = res.exceptionOrNull()?.description() {
+            // Breez SDK throws "Expected Lightning payment details" from a
+            // post-send helper when a Lightning send settles as a Spark
+            // transfer. The payment succeeded; only metadata extraction
+            // failed. Match Android behavior and don't surface it as failure.
+            if error.localizedCaseInsensitiveContains("Expected Lightning payment details") {
+                return
+            }
+            throw WalletError.serverError(error.split(separator: ":").last?.string ?? "")
+        }
         if res.getOrNull() == nil { throw WalletError.serverError("Unable to pay invoice") }
     }
     
