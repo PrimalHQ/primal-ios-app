@@ -213,14 +213,22 @@ private extension PostingPreviewEmbedsView {
     func makePollChip(_ poll: PollData) -> UIView {
         let chip = chipBase()
         chip.addAction(.init(handler: { [weak self] _ in self?.presentPollActionSheet(from: chip) }), for: .touchUpInside)
+        let isValid = poll.isValid
+        if !isValid {
+            chip.backgroundColor = .delete
+        }
         let icon = UIImageView(image: UIImage(named: "pollIcon")?.withRenderingMode(.alwaysTemplate))
-        icon.tintColor = .foreground
+        icon.tintColor = isValid ? .foreground : .white
         icon.contentMode = .scaleAspectFit
         icon.constrainToSize(28)
         let label = UILabel()
-        label.text = poll.options.isEmpty ? "Poll" : "\(poll.options.count) options"
+        if !isValid {
+            label.text = "Invalid poll"
+        } else {
+            label.text = poll.options.isEmpty ? "Poll" : "\(poll.options.count) options"
+        }
         label.font = .appFont(withSize: 12, weight: .semibold)
-        label.textColor = .foreground
+        label.textColor = isValid ? .foreground : .white
         let stack = UIStackView(axis: .vertical, spacing: 4, [icon, label])
         stack.alignment = .center
         stack.isUserInteractionEnabled = false
@@ -269,6 +277,32 @@ private extension PostingPreviewEmbedsView {
             }
         } else if case .uploaded(let urlString) = asset.state, let url = URL(string: urlString) {
             imageView.kf.setImage(with: url)
+        }
+
+        let loadingParent = UIView()
+        loadingParent.backgroundColor = .background2.withAlphaComponent(0.5)
+        loadingParent.isUserInteractionEnabled = false
+        chip.addSubview(loadingParent)
+        loadingParent.pinToSuperview()
+
+        let progress = CircularProgressView(frame: .init(origin: .zero, size: .init(width: 24, height: 24)))
+        loadingParent.addSubview(progress)
+        progress.constrainToSize(24).centerToSuperview()
+
+        switch asset.state {
+        case .uploading(let value):
+            loadingParent.isHidden = false
+            progress.isHidden = false
+            if value < 0.01 {
+                progress.progress = value
+            } else {
+                progress.setProgressWithAnimation(duration: 0.1, value: value)
+            }
+        case .failed:
+            loadingParent.isHidden = false
+            progress.isHidden = true
+        case .uploaded:
+            loadingParent.isHidden = true
         }
         return chip
     }

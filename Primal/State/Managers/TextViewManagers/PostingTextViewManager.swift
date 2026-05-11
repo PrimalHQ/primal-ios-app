@@ -120,6 +120,16 @@ struct PollData {
     }
 }
 
+extension PollData {
+    var isValid: Bool {
+        guard options.count >= 2 else { return false }
+        if case .zap(let min, let max) = type {
+            return min <= max && min >= 0 && max >= 0
+        }
+        return true
+    }
+}
+
 extension NoteDraft {
     var isPosting: Bool { preparedEvent != nil }
 }
