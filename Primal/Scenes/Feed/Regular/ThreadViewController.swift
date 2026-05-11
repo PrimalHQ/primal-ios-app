@@ -339,20 +339,20 @@ private extension ThreadViewController {
         table.contentOffset = .init(x: 0, y: -112)
         table.keyboardDismissMode = .onDrag
         
-        let replyAttachmentsButton = UIButton(primaryAction: .init(handler: { [weak self] _ in self?.replyVC.previewEmbedsView.isExpanded = true }))
-        replyAttachmentsButton.backgroundColor = .white.withAlphaComponent(0.01)
-        view.addSubview(replyAttachmentsButton)
-
         addChild(replyVC)
         view.addSubview(replyVC.view)
         replyVC.view.pinToSuperview(edges: [.horizontal, .bottom])
         replyVC.didMove(toParent: self)
-
+        
+        let replyAttachmentsButton = UIButton(primaryAction: .init(handler: { [weak self] _ in self?.replyVC.previewEmbedsView.isExpanded = true }))
+        replyAttachmentsButton.backgroundColor = .white.withAlphaComponent(0.01)
+        view.addSubview(replyAttachmentsButton)
         replyAttachmentsButton.centerToView(replyVC.previewEmbedsView, axis: .vertical).pinToSuperview(edges: .trailing).constrainToSize(100)
         
         DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
-            self.replyVC.previewEmbedsView.isShowingPublisher.sink { isShowing in
-                replyAttachmentsButton.isHidden = !isShowing
+            Publishers.CombineLatest(self.replyVC.previewEmbedsView.isShowingPublisher, self.replyVC.previewEmbedsView.$isExpanded)
+            .sink { isShowing, isExpanded in
+                replyAttachmentsButton.isHidden = !isShowing || isExpanded
             }
             .store(in: &self.cancellables)
         }

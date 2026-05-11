@@ -35,6 +35,8 @@ final class PostingPreviewEmbedsView: UIView {
     private var chipViews: [UIView] = []
     private var cancellables: Set<AnyCancellable> = []
     
+    private let chipStack = UIStackView(axis: .horizontal, spacing: -PostingPreviewEmbedsView.chipSize, [])
+    
     private var widthC: NSLayoutConstraint?
     
     @Published var isExpanded: Bool = false
@@ -46,21 +48,24 @@ final class PostingPreviewEmbedsView: UIView {
         clipsToBounds = false
         isHidden = true
         constrainToSize(height: Self.viewHeight)
-        setupCountBadge()
-        
         widthC = widthAnchor.constraint(equalToConstant: Self.viewHeight)
         widthC?.isActive = true
+        
+        let scrollView = UIScrollView()
+        addSubview(scrollView)
+        scrollView.pinToSuperview()
+        
+        scrollView.addSubview(chipStack)
+        chipStack.pinToSuperview(padding: (Self.viewHeight - Self.chipSize) / 2)
         
         addSubview(closeButton)
         closeButton.constrainToSize(Self.chipSize  / 2).pinToSuperview(edges: .trailing, padding: Self.chipSize  / 4).centerToSuperview(axis: .vertical)
         
+        setupCountBadge()
+        
         closeButton.addAction(.init(handler: { [weak self] _ in
             self?.isExpanded = false
         }), for: .touchUpInside)
-        
-        addGestureRecognizer(BindableTapGestureRecognizer(action: { [weak self] in
-            self?.isExpanded.toggle()
-        }))
     }
 
     required init?(coder: NSCoder) {
@@ -95,11 +100,11 @@ final class PostingPreviewEmbedsView: UIView {
                 self.countBadge.alpha = isExpanded ? 0 : 1
                 self.closeButton.alpha = isExpanded ? 1 : 0
                 self.widthC?.constant = isExpanded ? fullWidth : Self.viewHeight
+                self.chipStack.spacing = isExpanded ? 12 : -Self.chipSize
                 
                 if isExpanded {
-                    let startTranslation = Self.chipSize - fullWidth
-                    self.chipViews.enumerated().forEach { index, view in
-                        view.transform = .init(translationX: startTranslation + CGFloat(index) * (Self.chipSize + 8), y: 0)
+                    self.chipViews.forEach { view in
+                        view.transform = .identity
                     }
                 } else {
                     self.chipViews.enumerated().forEach { index, view in
@@ -134,7 +139,7 @@ private extension PostingPreviewEmbedsView {
     }
 
     func rebuild(media: [PostingAsset], embeds: [PostEmbedPreview], poll: PollData?) {
-        chipViews.forEach { $0.removeFromSuperview() }
+        chipStack.arrangedSubviews.forEach { $0.removeFromSuperview() }
         chipViews.removeAll()
 
         var items: [StackItem] = []
@@ -147,7 +152,8 @@ private extension PostingPreviewEmbedsView {
             addChip(for: item, positionFromBottom: total - 1 - depth)
         }
         countLabel.text = "\(total)"
-        bringSubviewToFront(countBadge)
+
+        chipStack.addArrangedSubview(SpacerView(width: Self.chipSize - 40))
 
         let shouldHide = items.isEmpty
         guard isHidden != shouldHide else { return }
@@ -158,15 +164,13 @@ private extension PostingPreviewEmbedsView {
     }
 
     func addChip(for item: StackItem, positionFromBottom: Int) {
-        let chip = makeChip(for: item)
-        addSubview(chip)
+        let chip = makeChip(for: item).constrainToSize(Self.chipSize)
+        chipStack.addArrangedSubview(chip)
         chipViews.append(chip)
-        chip
-            .constrainToSize(Self.chipSize)
-            .pinToSuperview(edges: .trailing)
-            .centerToSuperview(axis: .vertical)
         
-        chip.transform = CGAffineTransform(rotationAngle: rotation(forPositionFromBottom: positionFromBottom))
+        if !isExpanded {
+            chip.transform = CGAffineTransform(rotationAngle: rotation(forPositionFromBottom: positionFromBottom))
+        }
     }
 
     func rotation(forPositionFromBottom position: Int) -> CGFloat {
