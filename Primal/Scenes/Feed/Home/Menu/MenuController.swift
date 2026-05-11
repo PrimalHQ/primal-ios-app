@@ -236,7 +236,7 @@ private extension MenuController {
             .centerToView(primalNavigationBar.userImageView, axis: .horizontal)
             .pin(to: barcodeButton, edges: .top)
 
-        for npub in npubs.dropFirst().prefix(3) {
+        for npub in npubs.dropFirst().prefix(2) {
             let avatarImage = UserImageView(height: MenuSizes.accountImageSize)
 
             LoginManager.instance.$loadedProfiles.receive(on: DispatchQueue.main)
