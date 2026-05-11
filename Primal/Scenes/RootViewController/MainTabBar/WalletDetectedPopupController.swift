@@ -14,7 +14,7 @@ class WalletDetectedPopupController: UIViewController {
     private var cancellables: Set<AnyCancellable> = []
     
     static let regularHeight: CGFloat = 450
-    static let discontinuedHeight: CGFloat = 400
+    static let discontinuedHeight: CGFloat = 350
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     init(isDiscontinued: Bool) {
@@ -70,6 +70,7 @@ class WalletDetectedPopupController: UIViewController {
             .paragraphStyle: paragraph
         ])
 
+        let closeButton = UIButton(configuration: .accent("Close", font: .appFont(withSize: 18, weight: .regular)))
         let restoreButton = UIButton(configuration: .accentPill(text: "Restore Existing Wallet", font: .appFont(withSize: 18, weight: .semibold))).constrainToSize(height: 52)
         let createButton = UIButton(configuration: .accent18("Create New Wallet")).constrainToSize(height: 52)
 
@@ -78,12 +79,15 @@ class WalletDetectedPopupController: UIViewController {
             userImage, SpacerView(height: 21),
             UILabel(titleText, color: .foreground, font: .appFont(withSize: 20, weight: .bold), multiline: true),
             SpacerView(height: 28),
-            descLabel,
-            SpacerView(height: 39),
-            restoreButton,
-            SpacerView(height: 12),
-            createButton
+            descLabel, SpacerView(height: 39)
         ])
+        
+        if isDiscontinued {
+            mainStack.addArrangedSubview(closeButton)
+        } else {
+            [restoreButton, SpacerView(height: 12), createButton].forEach { mainStack.addArrangedSubview($0) }
+        }
+        
         mainStack.alignment = .center
         restoreButton.pinToSuperview(edges: .horizontal)
         descLabel.pinToSuperview(edges: .horizontal, padding: 2)
@@ -103,6 +107,10 @@ class WalletDetectedPopupController: UIViewController {
 
         createButton.addAction(.init(handler: { [weak self] _ in
             WalletManager.instance.newWalletSpark(IdentityManager.instance.userHexPubkey)
+            self?.dismiss(animated: true)
+        }), for: .touchUpInside)
+        
+        closeButton.addAction(.init(handler: { [weak self] _ in
             self?.dismiss(animated: true)
         }), for: .touchUpInside)
     }
