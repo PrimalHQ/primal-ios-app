@@ -35,6 +35,8 @@ final class PostingPreviewEmbedsView: UIView {
     private var chipViews: [UIView] = []
     private var cancellables: Set<AnyCancellable> = []
     
+    private var widthC: NSLayoutConstraint?
+    
     @Published var isExpanded: Bool = false
     
     var isShowingPublisher: AnyPublisher<Bool, Never> = Just(false).eraseToAnyPublisher()
@@ -45,6 +47,9 @@ final class PostingPreviewEmbedsView: UIView {
         isHidden = true
         constrainToSize(height: Self.viewHeight)
         setupCountBadge()
+        
+        widthC = widthAnchor.constraint(equalToConstant: Self.viewHeight)
+        widthC?.isActive = true
         
         addSubview(closeButton)
         closeButton.constrainToSize(Self.chipSize  / 2).pinToSuperview(edges: .trailing, padding: Self.chipSize  / 4).centerToSuperview(axis: .vertical)
@@ -83,12 +88,16 @@ final class PostingPreviewEmbedsView: UIView {
 
         $isExpanded.sink { [weak self] isExpanded in
             guard let self else { return }
+            
+            let fullWidth = RootViewController.instance.view.frame.width
+            
             UIView.animate(withDuration: 0.2) {
                 self.countBadge.alpha = isExpanded ? 0 : 1
                 self.closeButton.alpha = isExpanded ? 1 : 0
+                self.widthC?.constant = isExpanded ? fullWidth : Self.viewHeight
                 
                 if isExpanded {
-                    let startTranslation = Self.chipSize - self.frame.width
+                    let startTranslation = Self.chipSize - fullWidth
                     self.chipViews.enumerated().forEach { index, view in
                         view.transform = .init(translationX: startTranslation + CGFloat(index) * (Self.chipSize + 8), y: 0)
                     }

@@ -232,7 +232,7 @@ private extension ThreadReplyViewController {
         bottomStack.pinToSuperview(edges: [.horizontal, .bottom])
         
         view.addSubview(previewEmbedsView)
-        previewEmbedsView.pinToSuperview(edges: .horizontal).pin(to: pillRow, edges: .top, padding: -PostingPreviewEmbedsView.viewHeight)
+        previewEmbedsView.pinToSuperview(edges: .trailing).pin(to: pillRow, edges: .top, padding: -PostingPreviewEmbedsView.viewHeight)
         
         let topC = view.topAnchor.constraint(equalTo: bottomStack.topAnchor)
         topC.priority = .defaultHigh
