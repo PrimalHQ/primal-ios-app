@@ -745,6 +745,8 @@
 		B9FAC64E2D395D5F00B57EF6 /* FeedElementMusicPreviewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9FAC64D2D395D5F00B57EF6 /* FeedElementMusicPreviewCell.swift */; };
 		B9FAC6582D42B53A00B57EF6 /* SettingsWalletNWCController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9FAC6572D42B53A00B57EF6 /* SettingsWalletNWCController.swift */; };
 		B9FAC65B2D42C5FA00B57EF6 /* SettingsNewNWCController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9FAC65A2D42C5FA00B57EF6 /* SettingsNewNWCController.swift */; };
+		C0A1B2C32E0511260000001A /* ReplyAttachmentInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0A1B2C42E0511260000001A /* ReplyAttachmentInputView.swift */; };
+		C0A1B2D52E0511260000002A /* PollInputViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0A1B2D62E0511260000002A /* PollInputViewController.swift */; };
 		C0LLAP5ED1AB8A7B00000001 /* CollapsedTabBarButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0LLAP5ED1AB8A7B00000002 /* CollapsedTabBarButton.swift */; };
 		C1A2B3D4E5F6A7B8C9D0E1F3 /* ThreadLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1A2B3D4E5F6A7B8C9D0E1F2 /* ThreadLayout.swift */; };
 		C1A3B7E82F3A1D0100ABCDEF /* WalletPickerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1A3B7E72F3A1D0100ABCDEF /* WalletPickerController.swift */; };
@@ -1592,6 +1594,8 @@
 		B9FAC6572D42B53A00B57EF6 /* SettingsWalletNWCController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsWalletNWCController.swift; sourceTree = "<group>"; };
 		B9FAC65A2D42C5FA00B57EF6 /* SettingsNewNWCController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsNewNWCController.swift; sourceTree = "<group>"; };
 		BD61E893F7939D2AC33A6A4C /* GenerateAmountsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenerateAmountsTests.swift; sourceTree = "<group>"; };
+		C0A1B2C42E0511260000001A /* ReplyAttachmentInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReplyAttachmentInputView.swift; sourceTree = "<group>"; };
+		C0A1B2D62E0511260000002A /* PollInputViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollInputViewController.swift; sourceTree = "<group>"; };
 		C0LLAP5ED1AB8A7B00000002 /* CollapsedTabBarButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollapsedTabBarButton.swift; sourceTree = "<group>"; };
 		C1A2B3D4E5F6A7B8C9D0E1F2 /* ThreadLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadLayout.swift; sourceTree = "<group>"; };
 		C1A3B7E72F3A1D0100ABCDEF /* WalletPickerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletPickerController.swift; sourceTree = "<group>"; };
@@ -2528,6 +2532,8 @@
 			children = (
 				9E69249F2A02838D00CAC54C /* ThreadViewController.swift */,
 				B9F1A8D02E0420041A000001 /* ThreadReplyViewController.swift */,
+				C0A1B2C42E0511260000001A /* ReplyAttachmentInputView.swift */,
+				C0A1B2D62E0511260000002A /* PollInputViewController.swift */,
 				B9F1A8D22E0420041A000002 /* PostingPreviewEmbedsView.swift */,
 				B91E56F82CC1383300C14809 /* NoteFeedViewController.swift */,
 			);
@@ -4363,6 +4369,8 @@
 				932D84DB2A5755FE007DA0E8 /* NostrObject+Extra.swift in Sources */,
 				9E6924A02A02838D00CAC54C /* ThreadViewController.swift in Sources */,
 				B9F1A8D12E0420041A000001 /* ThreadReplyViewController.swift in Sources */,
+				C0A1B2C32E0511260000001A /* ReplyAttachmentInputView.swift in Sources */,
+				C0A1B2D52E0511260000002A /* PollInputViewController.swift in Sources */,
 				B9F1A8D32E0420041A000003 /* PostingPreviewEmbedsView.swift in Sources */,
 				B9C6D2372CA46EBA00B2EEBE /* FeedExploreCell.swift in Sources */,
 				B98DD8C22C52A9AD00E8369A /* HighlightCommentCell.swift in Sources */,
@@ -5040,7 +5048,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.5.20;
+				MARKETING_VERSION = 3.5.21;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -5089,7 +5097,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.5.20;
+				MARKETING_VERSION = 3.5.21;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

@@ -24,7 +24,7 @@ extension UIButton.Configuration {
 final class PostingPreviewEmbedsView: UIView {
 
     private static let chipSize: CGFloat = 80
-    private static let viewHeight: CGFloat = 104
+    static let viewHeight: CGFloat = 104
     private static let nativePreviewWidth: CGFloat = 375
     private static let chipCornerRadius: CGFloat = 10
     private static let countBadgeSize: CGFloat = 28
@@ -36,7 +36,9 @@ final class PostingPreviewEmbedsView: UIView {
     private var cancellables: Set<AnyCancellable> = []
     
     @Published var isExpanded: Bool = false
-
+    
+    var isShowingPublisher: AnyPublisher<Bool, Never> = Just(false).eraseToAnyPublisher()
+    
     init() {
         super.init(frame: .zero)
         clipsToBounds = false
@@ -62,14 +64,23 @@ final class PostingPreviewEmbedsView: UIView {
 
     func bind(to manager: PostingTextViewManager) {
         cancellables = []
-        Publishers.CombineLatest3(manager.$media, manager.$embeddedElements, manager.$pollOptions)
+        
+        let updatePublisher = Publishers.CombineLatest3(manager.$media, manager.$embeddedElements, manager.$pollOptions)
             .debounce(for: 0.1, scheduler: DispatchQueue.main)
-//            .receive(on: DispatchQueue.main)
+        
+        updatePublisher
             .sink { [weak self] media, embeds, poll in
                 self?.rebuild(media: media, embeds: embeds, poll: poll)
             }
             .store(in: &cancellables)
         
+        isShowingPublisher = updatePublisher
+                .map { media, elements, poll in
+                    !(media.isEmpty && elements.isEmpty && poll == nil)
+                }
+                .removeDuplicates()
+                .eraseToAnyPublisher()
+
         $isExpanded.sink { [weak self] isExpanded in
             guard let self else { return }
             UIView.animate(withDuration: 0.2) {

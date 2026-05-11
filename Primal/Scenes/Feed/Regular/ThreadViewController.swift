@@ -338,12 +338,25 @@ private extension ThreadViewController {
         table.contentInset = .init(top: 112, left: 0, bottom: 700, right: 0)
         table.contentOffset = .init(x: 0, y: -112)
         table.keyboardDismissMode = .onDrag
+        
+        let replyAttachmentsButton = UIButton(primaryAction: .init(handler: { [weak self] _ in self?.replyVC.previewEmbedsView.isExpanded = true }))
+        replyAttachmentsButton.backgroundColor = .white.withAlphaComponent(0.01)
+        view.addSubview(replyAttachmentsButton)
 
         addChild(replyVC)
         view.addSubview(replyVC.view)
         replyVC.view.pinToSuperview(edges: [.horizontal, .bottom])
         replyVC.didMove(toParent: self)
 
+        replyAttachmentsButton.centerToView(replyVC.previewEmbedsView, axis: .vertical).pinToSuperview(edges: .trailing).constrainToSize(100)
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
+            self.replyVC.previewEmbedsView.isShowingPublisher.sink { isShowing in
+                replyAttachmentsButton.isHidden = !isShowing
+            }
+            .store(in: &self.cancellables)
+        }
+        
         replyVC.replyId = id
         replyVC.onPost = { [weak self] in
             guard let self else { return }

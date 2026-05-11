@@ -47,8 +47,12 @@ final class ThreadReplyViewController: UIViewController {
 
     private let mentionTable = UITableView()
     private let mentionContainer = UIView()
+    private let mentionHorizontalSpacer = SpacerView(width: 70)
+    private let mentionVerticalSpacer = SpacerView(height: PostingPreviewEmbedsView.viewHeight - 8)
+    
+    private var embedsTopC: NSLayoutConstraint?
 
-    private let previewEmbedsView = PostingPreviewEmbedsView()
+    let previewEmbedsView = PostingPreviewEmbedsView()
     
     private lazy var pillRow = UIStackView(axis: .horizontal, spacing: 8, [pillStackBackgroundBackground, sendButton])
     private lazy var pillStack = UIStackView(spacing: 4, [textView, plusButton])
@@ -56,6 +60,30 @@ final class ThreadReplyViewController: UIViewController {
     private let pillStackBackground = UIVisualEffectView()
     // We need this background behind glass to force it to stay the same base color as our background
     private let pillStackBackgroundBackground = UIView()
+
+    private lazy var attachmentInputView: ReplyAttachmentInputView = {
+        let view = ReplyAttachmentInputView()
+        view.onMedia = { [weak self] in self?.openGallery() }
+        view.onCamera = { [weak self] in self?.openCamera() }
+        view.onGif = { [weak self] in self?.openGifPicker() }
+        view.onPoll = { [weak self] in self?.openPollInput() }
+        return view
+    }()
+    private var isAttachmentInputShowing = false {
+        didSet {
+            UIView.animate(withDuration: 0.1) { [self] in
+                textView.inputView = isAttachmentInputShowing ? attachmentInputView : nil
+                plusButton.transform = isAttachmentInputShowing ? .init(rotationAngle: .pi / 4) : .identity
+                
+                if textView.isFirstResponder {
+                    textView.reloadInputViews()
+                }
+            }
+            if isAttachmentInputShowing && !textView.isFirstResponder {
+                textView.becomeFirstResponder()
+            }
+        }
+    }
 
     private var manager: PostingTextViewManager?
     private var cancellables: Set<AnyCancellable> = []
@@ -123,6 +151,9 @@ private extension ThreadReplyViewController {
                 self.sendButton.isHidden = !shouldShow
                 self.pillRow.layoutMargins = shouldShow ? .init(top: 0, left: 12, bottom: 12, right: 12) : .init(top: 0, left: 20, bottom: 20, right: 12)
                 self.sendButton.alpha = shouldShow ? 1 : 0
+                if !shouldShow {
+                    self.isAttachmentInputShowing = false
+                }
             }
             .store(in: &cancellables)
 
@@ -158,6 +189,26 @@ private extension ThreadReplyViewController {
             .store(in: &cancellables)
 
         previewEmbedsView.bind(to: manager)
+        
+        Publishers.CombineLatest(previewEmbedsView.isShowingPublisher, previewEmbedsView.$isExpanded)
+            .sink { [weak self] isShowing, isExpanded in
+                guard isShowing else {
+                    UIView.animate(withDuration: 0.2) {
+                        self?.mentionHorizontalSpacer.isHidden = true
+                        self?.mentionVerticalSpacer.isHidden = true
+                        self?.embedsTopC?.isActive = false
+                    }
+                    return
+                }
+                
+                UIView.animate(withDuration: 0.2) {
+                    self?.embedsTopC?.isActive = isExpanded
+                    self?.mentionHorizontalSpacer.isHidden = isExpanded
+                    self?.mentionVerticalSpacer.isHidden = !isExpanded
+                }
+            }
+            .store(in: &cancellables)
+        
     }
 
     func setupViews() {
@@ -174,14 +225,23 @@ private extension ThreadReplyViewController {
         pillRow.layoutMargins = .init(top: 0, left: 12, bottom: 12, right: 12)
 
         let keyboardSpacer = KeyboardSizingView()
-        let bottomStack = UIStackView(axis: .vertical, spacing: 8, [mentionContainer, previewEmbedsView, pillRow, keyboardSpacer])
+        let bottomStack = UIStackView(axis: .vertical, spacing: 8, [mentionContainer, pillRow, keyboardSpacer])
         bottomStack.alignment = .fill
         
         view.addSubview(bottomStack)
-        bottomStack.pinToSuperview()
+        bottomStack.pinToSuperview(edges: [.horizontal, .bottom])
+        
+        view.addSubview(previewEmbedsView)
+        previewEmbedsView.pinToSuperview(edges: .horizontal).pin(to: pillRow, edges: .top, padding: -PostingPreviewEmbedsView.viewHeight)
+        
+        let topC = view.topAnchor.constraint(equalTo: bottomStack.topAnchor)
+        topC.priority = .defaultHigh
+        topC.isActive = true
+        
+        embedsTopC = view.topAnchor.constraint(lessThanOrEqualTo: previewEmbedsView.topAnchor)
 
         plusButton.addAction(.init(handler: { [weak self] _ in
-            self?.presentMediaActionSheet()
+            self?.isAttachmentInputShowing.toggle()
         }), for: .touchUpInside)
 
         sendButton.addAction(.init(handler: { [weak self] _ in
@@ -255,7 +315,6 @@ private extension ThreadReplyViewController {
     }
 
     func configureMentionContainer() {
-        mentionContainer.clipsToBounds = true
         mentionContainer.isHidden = true
         
         let blurView:UIVisualEffectView
@@ -265,13 +324,22 @@ private extension ThreadReplyViewController {
             blurView = UIVisualEffectView(effect: UIBlurEffect(style: .regular))
         }
         mentionContainer.addSubview(blurView)
-        blurView.pinToSuperview(edges: .vertical).pinToSuperview(edges: .horizontal, padding: 20)
-        blurView.layer.cornerRadius = 24
 
         mentionTable.backgroundColor = .clear
         mentionTable.bounces = false
-        mentionContainer.addSubview(mentionTable)
-        mentionTable.pinToSuperview(edges: .vertical).pinToSuperview(edges: .horizontal, padding: 12)
+        mentionTable.layer.cornerRadius = 24
+        mentionTable.clipsToBounds  = true
+        
+        let vStack = UIStackView(axis: .vertical, [
+            UIStackView(axis: .horizontal, [mentionTable, mentionHorizontalSpacer]),
+            mentionVerticalSpacer
+        ])
+        
+        mentionContainer.addSubview(vStack)
+        vStack.pinToSuperview(edges: .vertical, padding: 4).pinToSuperview(edges: .horizontal, padding: 12)
+        
+        blurView.pin(to: mentionTable, edges: .vertical, padding: -4).pin(to: mentionTable, edges: .horizontal, padding: 8)
+        blurView.layer.cornerRadius = 24
     }
 
     func sendPressed() {
@@ -291,35 +359,31 @@ private extension ThreadReplyViewController {
         }
     }
 
-    func presentMediaActionSheet() {
-        let alert = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
-        alert.addAction(.init(title: "Add Image", style: .default, handler: { [weak self] _ in
-            guard let self else { return }
-            ImagePickerManager(self, mode: .gallery, allowVideo: true, selectionLimit: 0) { [weak self] result in
-                self?.manager?.processSelectedAsset(result)
-            }
-        }))
-        alert.addAction(.init(title: "Add GIF", style: .default, handler: { [weak self] _ in
-            guard let self else { return }
-            present(KlipyGifController { [weak self] res in
-                guard let url = res.gifURL ?? res.mediumgifURL ?? res.tinygifURL else { return }
-                self?.manager?.processSelectedAsset(RemoteGifMediaPickerResult(url: url))
-            }, animated: true)
-        }))
-        alert.addAction(.init(title: "Take Photo", style: .default, handler: { [weak self] _ in
-            guard let self else { return }
-            ImagePickerManager(self, mode: .camera) { [weak self] result in
-                self?.manager?.processSelectedAsset(result)
-            }
-        }))
-        alert.addAction(.init(title: "Take Video", style: .default, handler: { [weak self] _ in
-            guard let self else { return }
-            ImagePickerManager(self, mode: .cameraVideo) { [weak self] result in
-                self?.manager?.processSelectedAsset(result)
-            }
-        }))
-        alert.addAction(.init(title: "Cancel", style: .cancel))
-        alert.popoverPresentationController?.sourceView = plusButton
-        present(alert, animated: true)
+    func openGallery() {
+        isAttachmentInputShowing = false
+        ImagePickerManager(self, mode: .gallery, allowVideo: true, selectionLimit: 0) { [weak self] result in
+            self?.manager?.processSelectedAsset(result)
+        }
+    }
+
+    func openCamera() {
+        isAttachmentInputShowing = false
+        ImagePickerManager(self, mode: .camera) { [weak self] result in
+            self?.manager?.processSelectedAsset(result)
+        }
+    }
+
+    func openGifPicker() {
+        isAttachmentInputShowing = false
+        present(KlipyGifController { [weak self] res in
+            guard let url = res.gifURL ?? res.mediumgifURL ?? res.tinygifURL else { return }
+            self?.manager?.processSelectedAsset(RemoteGifMediaPickerResult(url: url))
+        }, animated: true)
+    }
+
+    func openPollInput() {
+        guard let manager else { return }
+        isAttachmentInputShowing = false
+        present(PollInputViewController(manager: manager), animated: true)
     }
 }
