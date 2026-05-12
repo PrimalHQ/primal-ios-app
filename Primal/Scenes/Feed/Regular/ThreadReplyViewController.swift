@@ -233,8 +233,7 @@ private extension ThreadReplyViewController {
         pillRow.isLayoutMarginsRelativeArrangement = true
         pillRow.layoutMargins = .init(top: 0, left: 12, bottom: 12, right: 12)
 
-        let keyboardSpacer = KeyboardSizingView()
-        let bottomStack = UIStackView(axis: .vertical, spacing: 8, [mentionContainer, pillRow, keyboardSpacer])
+        let bottomStack = UIStackView(axis: .vertical, spacing: 8, [mentionContainer, pillRow])
         bottomStack.alignment = .fill
         
         view.addSubview(bottomStack)
@@ -256,8 +255,6 @@ private extension ThreadReplyViewController {
         sendButton.addAction(.init(handler: { [weak self] _ in
             self?.sendPressed()
         }), for: .touchUpInside)
-        
-        keyboardSpacer.updateHeightCancellable().store(in: &cancellables)
     }
 
     func configureTextView() {

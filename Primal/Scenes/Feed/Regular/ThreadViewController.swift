@@ -339,12 +339,18 @@ private extension ThreadViewController {
         table.contentOffset = .init(x: 0, y: -112)
         table.keyboardDismissMode = .onDrag
         
+        let keyboardSpacer = KeyboardSizingView()
+        keyboardSpacer.updateHeightCancellable().store(in: &cancellables)
+        let botStack = UIStackView(axis: .vertical, [replyVC.view, keyboardSpacer])
+        
         addChild(replyVC)
-        view.addSubview(replyVC.view)
-        replyVC.view.pinToSuperview(edges: [.horizontal, .bottom])
+        view.addSubview(botStack)
+        botStack.pinToSuperview(edges: [.horizontal, .bottom])
         replyVC.didMove(toParent: self)
         
-        let replyAttachmentsButton = UIButton(primaryAction: .init(handler: { [weak self] _ in self?.replyVC.previewEmbedsView.isExpanded = true }))
+        let replyAttachmentsButton = UIButton(primaryAction: .init(handler: { [weak self] _ in
+            self?.replyVC.previewEmbedsView.expandButtonTapped()
+        }))
         replyAttachmentsButton.backgroundColor = .white.withAlphaComponent(0.01)
         view.addSubview(replyAttachmentsButton)
         replyAttachmentsButton.centerToView(replyVC.previewEmbedsView, axis: .vertical).pinToSuperview(edges: .trailing).constrainToSize(100)

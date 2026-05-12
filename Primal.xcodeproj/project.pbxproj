@@ -746,8 +746,8 @@
 		B9FAC6582D42B53A00B57EF6 /* SettingsWalletNWCController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9FAC6572D42B53A00B57EF6 /* SettingsWalletNWCController.swift */; };
 		B9FAC65B2D42C5FA00B57EF6 /* SettingsNewNWCController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9FAC65A2D42C5FA00B57EF6 /* SettingsNewNWCController.swift */; };
 		C0A1B2C32E0511260000001A /* ReplyAttachmentInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0A1B2C42E0511260000001A /* ReplyAttachmentInputView.swift */; };
-		C0A1B2E72E0512260000003A /* ReplyPhotoPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0A1B2E82E0512260000003A /* ReplyPhotoPreviewView.swift */; };
 		C0A1B2D52E0511260000002A /* PollInputViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0A1B2D62E0511260000002A /* PollInputViewController.swift */; };
+		C0A1B2E72E0512260000003A /* ReplyPhotoPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0A1B2E82E0512260000003A /* ReplyPhotoPreviewView.swift */; };
 		C0LLAP5ED1AB8A7B00000001 /* CollapsedTabBarButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0LLAP5ED1AB8A7B00000002 /* CollapsedTabBarButton.swift */; };
 		C1A2B3D4E5F6A7B8C9D0E1F3 /* ThreadLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1A2B3D4E5F6A7B8C9D0E1F2 /* ThreadLayout.swift */; };
 		C1A3B7E82F3A1D0100ABCDEF /* WalletPickerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1A3B7E72F3A1D0100ABCDEF /* WalletPickerController.swift */; };
@@ -1597,8 +1597,8 @@
 		B9FAC65A2D42C5FA00B57EF6 /* SettingsNewNWCController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsNewNWCController.swift; sourceTree = "<group>"; };
 		BD61E893F7939D2AC33A6A4C /* GenerateAmountsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenerateAmountsTests.swift; sourceTree = "<group>"; };
 		C0A1B2C42E0511260000001A /* ReplyAttachmentInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReplyAttachmentInputView.swift; sourceTree = "<group>"; };
-		C0A1B2E82E0512260000003A /* ReplyPhotoPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReplyPhotoPreviewView.swift; sourceTree = "<group>"; };
 		C0A1B2D62E0511260000002A /* PollInputViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollInputViewController.swift; sourceTree = "<group>"; };
+		C0A1B2E82E0512260000003A /* ReplyPhotoPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReplyPhotoPreviewView.swift; sourceTree = "<group>"; };
 		C0LLAP5ED1AB8A7B00000002 /* CollapsedTabBarButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollapsedTabBarButton.swift; sourceTree = "<group>"; };
 		C1A2B3D4E5F6A7B8C9D0E1F2 /* ThreadLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadLayout.swift; sourceTree = "<group>"; };
 		C1A3B7E72F3A1D0100ABCDEF /* WalletPickerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletPickerController.swift; sourceTree = "<group>"; };
@@ -5056,7 +5056,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.5.22;
+				MARKETING_VERSION = 3.5.24;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -5105,7 +5105,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.5.22;
+				MARKETING_VERSION = 3.5.24;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

@@ -60,8 +60,17 @@ private extension PollInputViewController {
             .pinToSuperview(edges: .horizontal, padding: 20)
             .pinToSuperview(edges: .vertical, padding: 16)
         pollInputView.widthAnchor.constraint(equalTo: scrollView.widthAnchor, constant: -40).isActive = true
+        
+        let textLabel = UILabel()
+        textLabel.numberOfLines = 0
+        let text = NSMutableAttributedString(attributedString: manager.textView.attributedText)
+        text.addAttribute(.font, value: UIFont.appFont(withSize: 18, weight: .regular), range: .init(location: 0, length: text.length))
+        textLabel.attributedText = text
+        let textParent = UIView()
+        textParent.addSubview(textLabel)
+        textLabel.pinToSuperview(edges: .horizontal, padding: 20).pinToSuperview(edges: .vertical, padding: 0)
 
-        let mainStack = UIStackView(axis: .vertical, [topBar, scrollView, removePollButton])
+        let mainStack = UIStackView(axis: .vertical, [topBar, textParent, scrollView, removePollButton])
         mainStack.alignment = .fill
 
         view.addSubview(mainStack)

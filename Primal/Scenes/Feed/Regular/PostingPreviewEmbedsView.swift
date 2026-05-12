@@ -32,7 +32,7 @@ final class PostingPreviewEmbedsView: UIView {
     private let countBadge = UIView()
     private let countLabel = UILabel()
     private let closeButton = UIButton(configuration: .previewEmbedsClose)
-    private var chipViews: [UIView] = []
+    private var chipViews: [UIButton] = []
     private var cancellables: Set<AnyCancellable> = []
 
     private let chipStack = UIStackView(axis: .horizontal, spacing: -PostingPreviewEmbedsView.chipSize, [])
@@ -74,6 +74,14 @@ final class PostingPreviewEmbedsView: UIView {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    func expandButtonTapped() {
+        guard chipViews.count == 1, let only = chipViews.first else {
+            isExpanded = true
+            return
+        }
+        only.sendActions(for: .touchUpInside)
+    }
 
     func bind(to manager: PostingTextViewManager) {
         cancellables = []
@@ -98,22 +106,18 @@ final class PostingPreviewEmbedsView: UIView {
         $isExpanded.sink { [weak self] isExpanded in
             guard let self else { return }
 
+            let count = CGFloat(chipViews.count)
             let fullWidth = RootViewController.instance.view.frame.width
+            let contentWidth = (Self.chipSize * (count + 1)) + (12 * (count - 1))
 
             UIView.animate(withDuration: 0.2) {
                 self.countBadge.alpha = isExpanded ? 0 : 1
                 self.closeButton.alpha = isExpanded ? 1 : 0
-                self.widthC?.constant = isExpanded ? fullWidth : Self.viewHeight
+                self.widthC?.constant = isExpanded ? min(fullWidth, contentWidth) : Self.viewHeight
                 self.chipStack.spacing = isExpanded ? 12 : -Self.chipSize
 
-                if isExpanded {
-                    self.chipViews.forEach { view in
-                        view.transform = .identity
-                    }
-                } else {
-                    self.chipViews.enumerated().forEach { index, view in
-                        view.transform = CGAffineTransform(rotationAngle: self.rotation(forPositionFromBottom: index))
-                    }
+                self.chipViews.enumerated().forEach { index, view in
+                    view.transform = isExpanded ? .identity : CGAffineTransform(rotationAngle: self.rotation(forPositionFromBottom: index))
                 }
             }
         }
@@ -170,7 +174,16 @@ private extension PostingPreviewEmbedsView {
         countLabel.text = "\(total)"
 
         chipStack.addArrangedSubview(SpacerView(width: Self.chipSize - 40))
+        
+        let fullWidth = RootViewController.instance.view.frame.width
+        let contentWidth = (Self.chipSize * CGFloat(total + 1)) + CGFloat(12 * (total - 1))
+        widthC?.constant = isExpanded ? min(fullWidth, contentWidth) : Self.viewHeight
 
+        let shouldCollapse = total < 2
+        if shouldCollapse && isExpanded {
+            isExpanded = false
+        }
+        
         let shouldHide = items.isEmpty
         if shouldHide && isExpanded {
             isExpanded = false
@@ -199,7 +212,7 @@ private extension PostingPreviewEmbedsView {
         return (5 * degrees) * .pi / 180
     }
 
-    func makeChip(for item: StackItem) -> UIView {
+    func makeChip(for item: StackItem) -> UIButton {
         switch item {
         case .poll(let poll):
             return makePollChip(poll)
@@ -210,7 +223,7 @@ private extension PostingPreviewEmbedsView {
         }
     }
 
-    func makePollChip(_ poll: PollData) -> UIView {
+    func makePollChip(_ poll: PollData) -> UIButton {
         let chip = chipBase()
         chip.addAction(.init(handler: { [weak self] _ in self?.presentPollActionSheet(from: chip) }), for: .touchUpInside)
         let isValid = poll.isValid
@@ -237,7 +250,7 @@ private extension PostingPreviewEmbedsView {
         return chip
     }
 
-    func makeEmbedChip(_ embed: PostEmbedPreview, index: Int) -> UIView {
+    func makeEmbedChip(_ embed: PostEmbedPreview, index: Int) -> UIButton {
         let chip = chipBase()
         chip.addAction(.init(handler: { [weak self] _ in self?.presentEmbedActionSheet(index: index, from: chip) }), for: .touchUpInside)
         let inner = embed.makeView()
@@ -257,7 +270,7 @@ private extension PostingPreviewEmbedsView {
         return chip
     }
 
-    func makeMediaChip(_ asset: PostingAsset, index: Int, total: Int) -> UIView {
+    func makeMediaChip(_ asset: PostingAsset, index: Int, total: Int) -> UIButton {
         let chip = chipBase()
         chip.addAction(.init(handler: { [weak self] _ in self?.presentMediaActionSheet(index: index, total: total, from: chip) }), for: .touchUpInside)
         let imageView = FLAnimatedImageView()
