@@ -51,24 +51,24 @@ private extension ReplyAttachmentInputView {
             layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
         }
 
-        let mediaButton = LabeledIconButton(icon: UIImage(named: "ImageIcon"), title: "Media") { [weak self] in
+        let mediaButton = LabeledIconButton(icon: .mediaIcon24, title: "Media") { [weak self] in
             self?.onMedia?()
         }
-        let cameraButton = LabeledIconButton(icon: UIImage(named: "CameraIcon"), title: "Camera") { [weak self] in
+        let cameraButton = LabeledIconButton(icon: .cameraIcon24, title: "Camera") { [weak self] in
             self?.onCamera?()
         }
-        let gifButton = LabeledIconButton(icon: .gifButton, title: "GIF") { [weak self] in
+        let gifButton = LabeledIconButton(icon: .gifIcon24, title: "GIF") { [weak self] in
             self?.onGif?()
         }
-        let pollButton = LabeledIconButton(icon: .pollIcon, title: "Poll") { [weak self] in
+        let pollButton = LabeledIconButton(icon: .pollIcon24, title: "Poll") { [weak self] in
             self?.onPoll?()
         }
 
-        let row = UIStackView(axis: .horizontal, [mediaButton, cameraButton, gifButton, pollButton])
-        row.distribution = .equalSpacing
+        let row = UIStackView(axis: .horizontal, spacing: 8, [mediaButton, cameraButton, gifButton, pollButton])
+        row.distribution = .fillEqually
         row.alignment = .center
         row.isLayoutMarginsRelativeArrangement = true
-        row.layoutMargins = .init(top: 0, left: 24, bottom: 12, right: 24)
+        row.layoutMargins = .init(top: 0, left: 20, bottom: 12, right: 20)
 
         photoPreview.onAssetSelected = { [weak self] result in self?.onAssetSelected?(result) }
         photoPreview.onRequestPresentingViewController = { [weak self] in self?.onRequestPresentingViewController?() }
@@ -103,25 +103,24 @@ private final class LabeledIconButton: UIControl {
     }
 
     private func setupViews(icon: UIImage?, title: String) {
-        iconContainer.backgroundColor = .background3
-        iconContainer.layer.cornerRadius = 16
+        iconContainer.backgroundColor = .foreground.withAlphaComponent(0.2)
+        iconContainer.layer.cornerRadius = 20
         iconContainer.isUserInteractionEnabled = false
-        iconContainer.constrainToSize(56)
+        iconContainer.constrainToSize(height: 40)
 
         iconView.image = icon?.withRenderingMode(.alwaysTemplate)
         iconView.tintColor = .foreground
         iconView.contentMode = .scaleAspectFit
-        iconView.constrainToSize(28)
+        iconView.constrainToSize(24)
         iconContainer.addSubview(iconView)
         iconView.centerToSuperview()
 
         titleLabel.text = title
-        titleLabel.font = .appFont(withSize: 12, weight: .regular)
+        titleLabel.font = .appFont(withSize: 14, weight: .regular)
         titleLabel.textColor = .foreground
         titleLabel.textAlignment = .center
 
-        let stack = UIStackView(axis: .vertical, spacing: 6, [iconContainer, titleLabel])
-        stack.alignment = .center
+        let stack = UIStackView(axis: .vertical, spacing: 8, [iconContainer, titleLabel])
         stack.isUserInteractionEnabled = false
 
         addSubview(stack)

@@ -18,6 +18,7 @@ final class ReplyPhotoPreviewView: UIView {
     private let headerLabel = UILabel()
     private let collectionView: UICollectionView
     private let chip = UIButton(type: .system)
+    private let spacer = UIView()
 
     private var fetchResult: PHFetchResult<PHAsset>?
     private let cachingImageManager = PHCachingImageManager()
@@ -61,12 +62,27 @@ final class ReplyPhotoPreviewView: UIView {
             fetchAssets()
             startObservingIfNeeded()
         case .limited:
-            headerLabel.text = "Primal has limited access to your photos"
+            let attributed = NSMutableAttributedString(
+                string: "Primal has limited access to your photos  ",
+                attributes: [
+                    .font: UIFont.appFont(withSize: 14, weight: .regular),
+                    .foregroundColor: UIColor.foreground4,
+                ]
+            )
+            attributed.append(NSAttributedString(
+                string: "Manage",
+                attributes: [
+                    .font: UIFont.appFont(withSize: 14, weight: .regular),
+                    .foregroundColor: UIColor.accent,
+                ]
+            ))
+            headerLabel.attributedText = attributed
             headerLabel.isUserInteractionEnabled = true
             applyAuthorizedLayout()
             fetchAssets()
             startObservingIfNeeded()
         case .notDetermined, .denied, .restricted:
+            headerLabel.text = "Primal doesn't have access to your photos"
             applyChipLayout()
             fetchResult = nil
             cachingImageManager.stopCachingImagesForAllAssets()
@@ -93,52 +109,25 @@ private extension ReplyPhotoPreviewView {
         collectionView.prefetchDataSource = self
         collectionView.register(ReplyPhotoCell.self, forCellWithReuseIdentifier: ReplyPhotoCell.reuseIdentifier)
 
-        var chipConfig = UIButton.Configuration.filled()
-        chipConfig.title = "Allow photo access"
-        chipConfig.baseBackgroundColor = .background3
-        chipConfig.baseForegroundColor = .foreground
-        chipConfig.cornerStyle = .capsule
-        chipConfig.contentInsets = .init(top: 8, leading: 16, bottom: 8, trailing: 16)
-        var titleAttr = AttributeContainer()
-        titleAttr.font = .appFont(withSize: 14, weight: .medium)
-        chipConfig.attributedTitle = AttributedString("Allow photo access", attributes: titleAttr)
-        chip.configuration = chipConfig
+        chip.configuration = .accent("Allow photo access", font: .appFont(withSize: 16, weight: .semibold))
         chip.addAction(.init(handler: { [weak self] _ in self?.chipTapped() }), for: .touchUpInside)
         
-        addSubview(headerLabel)
-        addSubview(collectionView)
-        addSubview(chip)
-
-        headerLabel.translatesAutoresizingMaskIntoConstraints = false
-        collectionView.translatesAutoresizingMaskIntoConstraints = false
-        chip.translatesAutoresizingMaskIntoConstraints = false
-
-        NSLayoutConstraint.activate([
-            headerLabel.topAnchor.constraint(equalTo: topAnchor, constant: 24),
-            headerLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
-            headerLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
-            headerLabel.heightAnchor.constraint(equalToConstant: 20),
-
-            collectionView.topAnchor.constraint(equalTo: headerLabel.bottomAnchor, constant: 36),
-            collectionView.leadingAnchor.constraint(equalTo: leadingAnchor),
-            collectionView.trailingAnchor.constraint(equalTo: trailingAnchor),
-            collectionView.heightAnchor.constraint(equalToConstant: 100),
-
-            chip.centerXAnchor.constraint(equalTo: centerXAnchor),
-            chip.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -8),
-        ])
+        let mainStack = UIStackView(axis: .vertical, [headerLabel, collectionView, chip, spacer, SpacerView(height: 30)])
+        mainStack.setCustomSpacing(24, after: headerLabel)
+        addSubview(mainStack)
+        mainStack.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .top, padding: 24).pinToSuperview(edges: .bottom, padding: 8)
     }
 
     func applyAuthorizedLayout() {
-        headerLabel.isHidden = false
         collectionView.isHidden = false
         chip.isHidden = true
+        spacer.isHidden = true
     }
 
     func applyChipLayout() {
-        headerLabel.isHidden = true
         collectionView.isHidden = true
         chip.isHidden = false
+        spacer.isHidden = false
     }
 
     func fetchAssets() {
