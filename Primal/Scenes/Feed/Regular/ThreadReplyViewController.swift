@@ -48,7 +48,7 @@ final class ThreadReplyViewController: UIViewController {
 
     private let mentionTable = UITableView()
     private let mentionContainer = UIView()
-    private let mentionHorizontalSpacer = SpacerView(width: 70)
+    private let mentionHorizontalSpacer = SpacerView(width: 90)
     private let mentionVerticalSpacer = SpacerView(height: PostingPreviewEmbedsView.viewHeight - 8)
     
     private var embedsTopC: NSLayoutConstraint?
@@ -78,13 +78,12 @@ final class ThreadReplyViewController: UIViewController {
     private var isAttachmentInputShowing = false {
         didSet {
             UIView.animate(withDuration: 0.1) { [self] in
-                textView.inputView = isAttachmentInputShowing ? attachmentInputView : nil
                 plusButton.transform = isAttachmentInputShowing ? .init(rotationAngle: .pi / 4) : .identity
-
-                if textView.isFirstResponder {
-                    textView.reloadInputViews()
-                }
             }
+            
+            textView.inputView = isAttachmentInputShowing ? attachmentInputView : nil
+            textView.reloadInputViews()
+            
             if isAttachmentInputShowing {
                 attachmentInputView.photoPreview.refreshAuthState()
                 if !textView.isFirstResponder {
@@ -159,7 +158,6 @@ private extension ThreadReplyViewController {
                 guard let self else { return }
                 self.sendButton.isHidden = !shouldShow
                 self.pillRow.layoutMargins = shouldShow ? .init(top: 0, left: 12, bottom: 12, right: 12) : .init(top: 0, left: 20, bottom: 20, right: 12)
-                self.sendButton.alpha = shouldShow ? 1 : 0
                 if !shouldShow {
                     self.isAttachmentInputShowing = false
                 }
@@ -180,13 +178,13 @@ private extension ThreadReplyViewController {
             }
             .store(in: &cancellables)
 
-        manager.$users
+        Publishers.CombineLatest(manager.$isEditing, manager.$users)
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] users in
+            .sink { [weak self] isEditing, users in
                 guard let self else { return }
                 let count = min(users.count, 5)
                 manager.usersHeightConstraint.constant = CGFloat(count) * 60
-                let shouldHide = users.isEmpty
+                let shouldHide = !isEditing || users.isEmpty
                 if mentionContainer.isHidden != shouldHide {
                     UIView.animate(withDuration: 0.2) {
                         self.mentionContainer.isHidden = shouldHide
@@ -206,6 +204,7 @@ private extension ThreadReplyViewController {
                         self?.mentionHorizontalSpacer.isHidden = true
                         self?.mentionVerticalSpacer.isHidden = true
                         self?.embedsTopC?.isActive = false
+                        self?.view.superview?.layoutIfNeeded()
                     }
                     return
                 }
@@ -214,6 +213,7 @@ private extension ThreadReplyViewController {
                     self?.embedsTopC?.isActive = isExpanded
                     self?.mentionHorizontalSpacer.isHidden = isExpanded
                     self?.mentionVerticalSpacer.isHidden = !isExpanded
+                    self?.view.superview?.layoutIfNeeded()
                 }
             }
             .store(in: &cancellables)
@@ -255,6 +255,10 @@ private extension ThreadReplyViewController {
         sendButton.addAction(.init(handler: { [weak self] _ in
             self?.sendPressed()
         }), for: .touchUpInside)
+        
+        view.addGestureRecognizer(BindableTapGestureRecognizer { [weak self] in
+            self?.textView.resignFirstResponder()
+        })
     }
 
     func configureTextView() {
@@ -287,7 +291,6 @@ private extension ThreadReplyViewController {
     func configureSendButton() {
         sendButton.isEnabled = false
         sendButton.isHidden = true
-        sendButton.alpha = 0
         sendButton.constrainToSize(40)
     }
     
@@ -401,6 +404,8 @@ private extension ThreadReplyViewController {
     func openPollInput() {
         guard let manager else { return }
         isAttachmentInputShowing = false
-        present(PollInputViewController(manager: manager), animated: true)
+        DispatchQueue.main.async {
+            self.present(PollInputViewController(manager: manager), animated: true)
+        }
     }
 }

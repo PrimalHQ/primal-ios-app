@@ -27,6 +27,22 @@ final class PollInputViewController: UIViewController {
         setupViews()
         configurePollState()
     }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        if self.manager.pollOptions == nil {
+            self.manager.pollOptions = .init()
+        }
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        if self.manager.pollOptions == .init() {
+            self.manager.pollOptions = nil
+        }
+    }
 }
 
 private extension PollInputViewController {

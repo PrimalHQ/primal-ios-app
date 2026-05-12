@@ -259,12 +259,7 @@ private extension PostingPreviewEmbedsView {
         inner.backgroundColor = .background3
         inner.translatesAutoresizingMaskIntoConstraints = false
         chip.addSubview(inner)
-        NSLayoutConstraint.activate([
-            inner.widthAnchor.constraint(equalToConstant: Self.nativePreviewWidth),
-            inner.heightAnchor.constraint(equalToConstant: Self.nativePreviewWidth),
-            inner.centerXAnchor.constraint(equalTo: chip.centerXAnchor),
-            inner.centerYAnchor.constraint(equalTo: chip.centerYAnchor),
-        ])
+        inner.constrainToSize(width: Self.nativePreviewWidth).centerToSuperview()
         let scale = Self.chipSize / Self.nativePreviewWidth
         inner.transform = CGAffineTransform(scaleX: scale, y: scale)
         return chip

@@ -22,7 +22,7 @@ struct UserToken {
     var user: PrimalUser
 }
 
-enum PollType {
+enum PollType: Equatable {
     case user, zap(min: Int, max: Int)
     
     var name: String {
@@ -35,7 +35,11 @@ enum PollType {
     static var defaultZap = PollType.zap(min: 21, max: 21000)
 }
 
-struct PollData {
+struct PollData: Equatable {
+    static func == (lhs: PollData, rhs: PollData) -> Bool {
+        lhs.options == rhs.options && lhs.type == rhs.type && lhs.length == rhs.length
+    }
+    
     var type: PollType = .user
     var length: (Int, Int, Int) = (1, 0, 0)  // Hours, minutes, seconds
 
