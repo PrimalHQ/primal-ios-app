@@ -12,24 +12,44 @@ final class ReplyAttachmentInputView: UIView {
     var onCamera: (() -> Void)?
     var onGif: (() -> Void)?
     var onPoll: (() -> Void)?
+    var onAssetSelected: ((ImagePickerResult) -> Void)?
+    var onRequestPresentingViewController: (() -> UIViewController?)?
 
-    private let panelHeight: CGFloat = 291
+    let photoPreview = ReplyPhotoPreviewView()
+
+    private let panelHeight: CGFloat = 340
 
     override var intrinsicContentSize: CGSize {
         CGSize(width: UIView.noIntrinsicMetric, height: panelHeight)
     }
 
     init() {
-        super.init(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 291))
+        super.init(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 340))
         setupViews()
     }
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+
+    override func didMoveToWindow() {
+        super.didMoveToWindow()
+        if window != nil {
+            photoPreview.refreshAuthState()
+        }
+    }
 }
 
 private extension ReplyAttachmentInputView {
     func setupViews() {
-        backgroundColor = .background
+        
+        if #available(iOS 26.0, *) {
+            cornerConfiguration = .uniformTopRadius(24)
+            
+            backgroundColor = .clear
+        } else {
+            backgroundColor = .background
+            layer.cornerRadius = 24
+            layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+        }
 
         let mediaButton = LabeledIconButton(icon: UIImage(named: "ImageIcon"), title: "Media") { [weak self] in
             self?.onMedia?()
@@ -47,14 +67,15 @@ private extension ReplyAttachmentInputView {
         let row = UIStackView(axis: .horizontal, [mediaButton, cameraButton, gifButton, pollButton])
         row.distribution = .equalSpacing
         row.alignment = .center
+        row.isLayoutMarginsRelativeArrangement = true
+        row.layoutMargins = .init(top: 0, left: 24, bottom: 12, right: 24)
 
-        addSubview(row)
-        row.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            row.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 24),
-            row.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -24),
-            row.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -12),
-        ])
+        photoPreview.onAssetSelected = { [weak self] result in self?.onAssetSelected?(result) }
+        photoPreview.onRequestPresentingViewController = { [weak self] in self?.onRequestPresentingViewController?() }
+
+        let mainStack = UIStackView(axis: .vertical, spacing: 0, [photoPreview, UIView(), row])
+        addSubview(mainStack)
+        mainStack.pinToSuperview(padding: 2)
     }
 }
 

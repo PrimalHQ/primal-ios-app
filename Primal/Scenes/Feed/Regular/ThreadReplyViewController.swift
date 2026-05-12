@@ -6,6 +6,7 @@
 //
 
 import Combine
+import Photos
 import UIKit
 
 extension UIButton.Configuration {
@@ -67,6 +68,11 @@ final class ThreadReplyViewController: UIViewController {
         view.onCamera = { [weak self] in self?.openCamera() }
         view.onGif = { [weak self] in self?.openGifPicker() }
         view.onPoll = { [weak self] in self?.openPollInput() }
+        view.onAssetSelected = { [weak self] result in
+            self?.manager?.processSelectedAsset(result)
+            self?.isAttachmentInputShowing = false
+        }
+        view.onRequestPresentingViewController = { [weak self] in self }
         return view
     }()
     private var isAttachmentInputShowing = false {
@@ -74,13 +80,16 @@ final class ThreadReplyViewController: UIViewController {
             UIView.animate(withDuration: 0.1) { [self] in
                 textView.inputView = isAttachmentInputShowing ? attachmentInputView : nil
                 plusButton.transform = isAttachmentInputShowing ? .init(rotationAngle: .pi / 4) : .identity
-                
+
                 if textView.isFirstResponder {
                     textView.reloadInputViews()
                 }
             }
-            if isAttachmentInputShowing && !textView.isFirstResponder {
-                textView.becomeFirstResponder()
+            if isAttachmentInputShowing {
+                attachmentInputView.photoPreview.refreshAuthState()
+                if !textView.isFirstResponder {
+                    textView.becomeFirstResponder()
+                }
             }
         }
     }
@@ -361,6 +370,17 @@ private extension ThreadReplyViewController {
 
     func openGallery() {
         isAttachmentInputShowing = false
+        let status = PHPhotoLibrary.authorizationStatus(for: .readWrite)
+        if status == .notDetermined {
+            PHPhotoLibrary.requestAuthorization(for: .readWrite) { [weak self] _ in
+                DispatchQueue.main.async { self?.presentGalleryPicker() }
+            }
+        } else {
+            presentGalleryPicker()
+        }
+    }
+
+    func presentGalleryPicker() {
         ImagePickerManager(self, mode: .gallery, allowVideo: true, selectionLimit: 0) { [weak self] result in
             self?.manager?.processSelectedAsset(result)
         }

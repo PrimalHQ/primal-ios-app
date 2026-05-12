@@ -226,7 +226,6 @@
 		A1F2B3C4D5E6F7A8B9C0D1E2 /* MenuController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F2B3C4D5E6F7A8B9C0D1E3 /* MenuController.swift */; };
 		A1F2B3C4D5E6F7A8B9C0D1E4 /* MenuSizes.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F2B3C4D5E6F7A8B9C0D1E5 /* MenuSizes.swift */; };
 		AA9CF3DB44709B5BC13CA5A8 /* GenerateAmountsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD61E893F7939D2AC33A6A4C /* GenerateAmountsTests.swift */; };
-		D1E2F3A4B5C6D7E8F9A0B1C2 /* PostingPreviewEmbedsViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1E2F3A4B5C6D7E8F9A0B1C3 /* PostingPreviewEmbedsViewTests.swift */; };
 		B2A3C4D5E6F7A8B9C0D1E2F3 /* PrimalNavigationBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2A3C4D5E6F7A8B9C0D1E2F4 /* PrimalNavigationBar.swift */; };
 		B2A3C4D5E6F7A8B9C0D1F001 /* SlideDownShellViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2A3C4D5E6F7A8B9C0D1F002 /* SlideDownShellViewController.swift */; };
 		B2A3C4D5E6F7A8B9C0D1F003 /* GenericSelectionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2A3C4D5E6F7A8B9C0D1F004 /* GenericSelectionController.swift */; };
@@ -747,6 +746,7 @@
 		B9FAC6582D42B53A00B57EF6 /* SettingsWalletNWCController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9FAC6572D42B53A00B57EF6 /* SettingsWalletNWCController.swift */; };
 		B9FAC65B2D42C5FA00B57EF6 /* SettingsNewNWCController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9FAC65A2D42C5FA00B57EF6 /* SettingsNewNWCController.swift */; };
 		C0A1B2C32E0511260000001A /* ReplyAttachmentInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0A1B2C42E0511260000001A /* ReplyAttachmentInputView.swift */; };
+		C0A1B2E72E0512260000003A /* ReplyPhotoPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0A1B2E82E0512260000003A /* ReplyPhotoPreviewView.swift */; };
 		C0A1B2D52E0511260000002A /* PollInputViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0A1B2D62E0511260000002A /* PollInputViewController.swift */; };
 		C0LLAP5ED1AB8A7B00000001 /* CollapsedTabBarButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0LLAP5ED1AB8A7B00000002 /* CollapsedTabBarButton.swift */; };
 		C1A2B3D4E5F6A7B8C9D0E1F3 /* ThreadLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1A2B3D4E5F6A7B8C9D0E1F2 /* ThreadLayout.swift */; };
@@ -758,6 +758,7 @@
 		D07C0FFEE5F6071800000001 /* NotificationsTabIconComposer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D07C0FFEE5F6071800000002 /* NotificationsTabIconComposer.swift */; };
 		D1A1B1C1D1E1F1A1B1C1D1E2 /* MainThreadElementTextCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A1B1C1D1E1F1A1B1C1D1E1 /* MainThreadElementTextCell.swift */; };
 		D1A2B3C4E5F6071800000001 /* MainTabBarRootViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A2B3C4E5F6071800000002 /* MainTabBarRootViewController.swift */; };
+		D1E2F3A4B5C6D7E8F9A0B1C2 /* PostingPreviewEmbedsViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1E2F3A4B5C6D7E8F9A0B1C3 /* PostingPreviewEmbedsViewTests.swift */; };
 		D2A2B2C2D2E2F2A2B2C2D2E2 /* MainThreadElementReactionsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A2B2C2D2E2F2A2B2C2D2E1 /* MainThreadElementReactionsCell.swift */; };
 		D2B3C4E5F6A7089012345679 /* CacheBreakdownView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2B3C4E5F6A7089012345678 /* CacheBreakdownView.swift */; };
 		D3A3B3C3D3E3F3A3B3C3D3E2 /* MainThreadElementSmallZapGalleryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3A3B3C3D3E3F3A3B3C3D3E1 /* MainThreadElementSmallZapGalleryCell.swift */; };
@@ -1595,8 +1596,8 @@
 		B9FAC6572D42B53A00B57EF6 /* SettingsWalletNWCController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsWalletNWCController.swift; sourceTree = "<group>"; };
 		B9FAC65A2D42C5FA00B57EF6 /* SettingsNewNWCController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsNewNWCController.swift; sourceTree = "<group>"; };
 		BD61E893F7939D2AC33A6A4C /* GenerateAmountsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenerateAmountsTests.swift; sourceTree = "<group>"; };
-		D1E2F3A4B5C6D7E8F9A0B1C3 /* PostingPreviewEmbedsViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostingPreviewEmbedsViewTests.swift; sourceTree = "<group>"; };
 		C0A1B2C42E0511260000001A /* ReplyAttachmentInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReplyAttachmentInputView.swift; sourceTree = "<group>"; };
+		C0A1B2E82E0512260000003A /* ReplyPhotoPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReplyPhotoPreviewView.swift; sourceTree = "<group>"; };
 		C0A1B2D62E0511260000002A /* PollInputViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollInputViewController.swift; sourceTree = "<group>"; };
 		C0LLAP5ED1AB8A7B00000002 /* CollapsedTabBarButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollapsedTabBarButton.swift; sourceTree = "<group>"; };
 		C1A2B3D4E5F6A7B8C9D0E1F2 /* ThreadLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadLayout.swift; sourceTree = "<group>"; };
@@ -1609,6 +1610,7 @@
 		D07C0FFEE5F6071800000002 /* NotificationsTabIconComposer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationsTabIconComposer.swift; sourceTree = "<group>"; };
 		D1A1B1C1D1E1F1A1B1C1D1E1 /* MainThreadElementTextCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainThreadElementTextCell.swift; sourceTree = "<group>"; };
 		D1A2B3C4E5F6071800000002 /* MainTabBarRootViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabBarRootViewController.swift; sourceTree = "<group>"; };
+		D1E2F3A4B5C6D7E8F9A0B1C3 /* PostingPreviewEmbedsViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostingPreviewEmbedsViewTests.swift; sourceTree = "<group>"; };
 		D2A2B2C2D2E2F2A2B2C2D2E1 /* MainThreadElementReactionsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainThreadElementReactionsCell.swift; sourceTree = "<group>"; };
 		D2B3C4E5F6A7089012345678 /* CacheBreakdownView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheBreakdownView.swift; sourceTree = "<group>"; };
 		D3A3B3C3D3E3F3A3B3C3D3E1 /* MainThreadElementSmallZapGalleryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainThreadElementSmallZapGalleryCell.swift; sourceTree = "<group>"; };
@@ -2536,6 +2538,7 @@
 				9E69249F2A02838D00CAC54C /* ThreadViewController.swift */,
 				B9F1A8D02E0420041A000001 /* ThreadReplyViewController.swift */,
 				C0A1B2C42E0511260000001A /* ReplyAttachmentInputView.swift */,
+				C0A1B2E82E0512260000003A /* ReplyPhotoPreviewView.swift */,
 				C0A1B2D62E0511260000002A /* PollInputViewController.swift */,
 				B9F1A8D22E0420041A000002 /* PostingPreviewEmbedsView.swift */,
 				B91E56F82CC1383300C14809 /* NoteFeedViewController.swift */,
@@ -4373,6 +4376,7 @@
 				9E6924A02A02838D00CAC54C /* ThreadViewController.swift in Sources */,
 				B9F1A8D12E0420041A000001 /* ThreadReplyViewController.swift in Sources */,
 				C0A1B2C32E0511260000001A /* ReplyAttachmentInputView.swift in Sources */,
+				C0A1B2E72E0512260000003A /* ReplyPhotoPreviewView.swift in Sources */,
 				C0A1B2D52E0511260000002A /* PollInputViewController.swift in Sources */,
 				B9F1A8D32E0420041A000003 /* PostingPreviewEmbedsView.swift in Sources */,
 				B9C6D2372CA46EBA00B2EEBE /* FeedExploreCell.swift in Sources */,
@@ -5052,7 +5056,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.5.21;
+				MARKETING_VERSION = 3.5.22;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -5101,7 +5105,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.5.21;
+				MARKETING_VERSION = 3.5.22;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
