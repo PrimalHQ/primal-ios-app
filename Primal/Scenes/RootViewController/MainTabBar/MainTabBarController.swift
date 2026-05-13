@@ -260,7 +260,7 @@ private extension MainTabBarController {
         view.addSubview(indicatorStack)
         indicatorStack
             .pinToSuperview(edges: .horizontal, padding: 12)
-            .pinToSuperview(edges: .top, padding: 60, safeArea: true)
+            .pinToSuperview(edges: .top, padding: PrimalNavigationBar.height + 20, safeArea: true)
         
         updateTheme()
         updateChildren = true

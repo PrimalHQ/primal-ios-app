@@ -224,7 +224,6 @@
 		A1B2C3D4E5F6A7B8C9D0E1F3 /* WalletDetectedPopupController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6A7B8C9D0E1F2 /* WalletDetectedPopupController.swift */; };
 		A1B2C3D4E5F6A7B8C9D0E1F5 /* HeaderCells.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6A7B8C9D0E1F6 /* HeaderCells.swift */; };
 		A1F2B3C4D5E6F7A8B9C0D1E2 /* MenuController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F2B3C4D5E6F7A8B9C0D1E3 /* MenuController.swift */; };
-		A1F2B3C4D5E6F7A8B9C0D1E4 /* MenuSizes.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F2B3C4D5E6F7A8B9C0D1E5 /* MenuSizes.swift */; };
 		AA9CF3DB44709B5BC13CA5A8 /* GenerateAmountsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD61E893F7939D2AC33A6A4C /* GenerateAmountsTests.swift */; };
 		B2A3C4D5E6F7A8B9C0D1E2F3 /* PrimalNavigationBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2A3C4D5E6F7A8B9C0D1E2F4 /* PrimalNavigationBar.swift */; };
 		B2A3C4D5E6F7A8B9C0D1F001 /* SlideDownShellViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2A3C4D5E6F7A8B9C0D1F002 /* SlideDownShellViewController.swift */; };
@@ -1084,7 +1083,6 @@
 		A1B2C3D4E5F6A7B8C9D0E1F4 /* NoteUserHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteUserHeaderView.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F6A7B8C9D0E1F6 /* HeaderCells.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeaderCells.swift; sourceTree = "<group>"; };
 		A1F2B3C4D5E6F7A8B9C0D1E3 /* MenuController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuController.swift; sourceTree = "<group>"; };
-		A1F2B3C4D5E6F7A8B9C0D1E5 /* MenuSizes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuSizes.swift; sourceTree = "<group>"; };
 		A23B4E5D450372ED459567FF /* PollVotesFeedManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollVotesFeedManager.swift; sourceTree = "<group>"; };
 		A5764AD3FE766D500CBC6420 /* OldWalletDetectedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OldWalletDetectedView.swift; sourceTree = "<group>"; };
 		AF3D490ED6A30BA8537BEBDF /* FeedVideoPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedVideoPlayer.swift; sourceTree = "<group>"; };
@@ -2502,7 +2500,6 @@
 			isa = PBXGroup;
 			children = (
 				A1F2B3C4D5E6F7A8B9C0D1E3 /* MenuController.swift */,
-				A1F2B3C4D5E6F7A8B9C0D1E5 /* MenuSizes.swift */,
 			);
 			path = Menu;
 			sourceTree = "<group>";
@@ -4308,7 +4305,6 @@
 				9ED02D7529FBE92D008040BC /* FollowSuggestionsRequest.swift in Sources */,
 				B94F2BC02AD446840041181B /* TransactionCell.swift in Sources */,
 				A1F2B3C4D5E6F7A8B9C0D1E2 /* MenuController.swift in Sources */,
-				A1F2B3C4D5E6F7A8B9C0D1E4 /* MenuSizes.swift in Sources */,
 				B2A3C4D5E6F7A8B9C0D1E2F3 /* PrimalNavigationBar.swift in Sources */,
 				B2A3C4D5E6F7A8B9C0D1F001 /* SlideDownShellViewController.swift in Sources */,
 				B2A3C4D5E6F7A8B9C0D1F003 /* GenericSelectionController.swift in Sources */,

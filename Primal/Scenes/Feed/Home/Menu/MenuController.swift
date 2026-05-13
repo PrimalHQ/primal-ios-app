@@ -22,7 +22,7 @@ final class MenuController: UIViewController, Themeable, SearchBarButtonControll
     private let checkbox1 = VerifiedView()
     private let domainLabel = UILabel()
     private let followLabel = UILabel()
-    private let mainStack = UIStackView()
+    private let mainStack = UIStackView(axis: .vertical, [])
 
     private let premiumIndicator = NumberedNotificationIndicator()
     private let messagesIndicator = NumberedNotificationIndicator()
@@ -35,6 +35,9 @@ final class MenuController: UIViewController, Themeable, SearchBarButtonControll
     private var originalTitle = ""
     private var originalSubtitle = ""
     private var originalShowChevron = false
+    
+    private let uiScale = RootViewController.instance.view.frame.width / 375
+    static let uiScale = RootViewController.instance.view.frame.width / 375
 
     private var cancellables: Set<AnyCancellable> = []
 
@@ -69,20 +72,20 @@ final class MenuController: UIViewController, Themeable, SearchBarButtonControll
     }
 
     func updateTheme() {
-        contentView.backgroundColor = .background5
+        contentView.backgroundColor = .background4
         navBarBackground.backgroundColor = .background
         primalNavigationBar.updateTheme()
 
         nameLabel.textColor = .foreground
 
-        domainLabel.font = .appFont(withSize: MenuSizes.nipLabelFontSize, weight: .regular)
+        domainLabel.font = .appFont(withSize: 15 * uiScale, weight: .regular)
         domainLabel.textColor = .foreground5
 
         updateFollowLabel()
     }
 
     private func updateFollowLabel() {
-        let font = UIFont.appFont(withSize: MenuSizes.followingLabelFontSize, weight: .regular)
+        let font = UIFont.appFont(withSize: 15 * uiScale, weight: .regular)
         let numberAttrs: [NSAttributedString.Key: Any] = [.font: font, .foregroundColor: UIColor.extraColorMenu]
         let descAttrs: [NSAttributedString.Key: Any] = [.font: font, .foregroundColor: UIColor.foreground5]
 
@@ -105,69 +108,56 @@ private extension MenuController {
         updateTheme()
 
         let barcodeButton = UIButton()
-        barcodeButton.setImage(UIImage(named: "barcode")?.scalePreservingAspectRatio(size: MenuSizes.qrCodeSize), for: .normal)
+        barcodeButton.setImage(UIImage(named: "barcode")?.scalePreservingAspectRatio(size: 20 * uiScale), for: .normal)
         let titleStack = UIStackView(arrangedSubviews: [nameLabel, checkbox1, barcodeButton])
 
         let profile = MenuItemButton(title: "PROFILE", image: .menuSidebarProfile)
         let premium = MenuItemButton(title: "PREMIUM", image: .menuSidebarPremium)
         let messages = MenuItemButton(title: "MESSAGES", image: .menuSidebarMessages)
         let bookmarks = MenuItemButton(title: "BOOKMARKS", image: .menuSidebarBookmarks)
-        let remoteLogin = MenuItemButton(title: "Remote Login", image: .remoteSessionIcon.scalePreservingAspectRatio(size: 18))
-        let redeemCode = MenuItemButton(title: "Scan Code", image: .barcode.scalePreservingAspectRatio(size: 18))
+        let remoteLogin = MenuItemButton(title: "Remote Login", image: .remoteSessionIcon)
+        let redeemCode = MenuItemButton(title: "Scan Code", image: .barcode)
         let settings = MenuItemButton(title: "SETTINGS", image: .menuSidebarSettings)
         let signOut = MenuItemButton(title: "SIGN OUT", image: .menuSidebarSignout)
 
-        let row1 = UIStackView(axis: .horizontal, spacing: 8, [profile, premium, messages])
-        let row2 = UIStackView(axis: .horizontal, spacing: 8, [bookmarks, remoteLogin, redeemCode])
-        let row3 = UIStackView(axis: .horizontal, spacing: 8, [settings, signOut, UIView()])
+        let row1 = UIStackView(axis: .horizontal, spacing: 8 * uiScale, [profile, premium, messages])
+        let row2 = UIStackView(axis: .horizontal, spacing: 8 * uiScale, [bookmarks, remoteLogin, redeemCode])
+        let row3 = UIStackView(axis: .horizontal, spacing: 8 * uiScale, [settings, signOut, UIView()])
         [row1, row2, row3].forEach { $0.distribution = .fillEqually }
-        let buttonsStack = UIStackView(axis: .vertical, spacing: 8, [row1, row2, row3])
-        let nnfStack = UIStackView(axis: .vertical, spacing: MenuSizes.nnfStackSpacing, [titleStack, domainLabel, followLabel])
+        let buttonsStack = UIStackView(axis: .vertical, spacing: 8 * uiScale, [row1, row2, row3, UIView()])
+        let nnfStack = UIStackView(axis: .vertical, spacing: 8 * uiScale, [titleStack, domainLabel, followLabel])
         nnfStack.alignment = .leading
         
         let buttonStackParent = UIView()
         buttonStackParent.addSubview(buttonsStack)
-        buttonsStack.pinToSuperview(edges: .horizontal).centerToSuperview(axis: .vertical)
-
-        [nnfStack, buttonStackParent, UIView()].forEach { mainStack.addArrangedSubview($0) }
-        mainStack.setCustomSpacing(MenuSizes.nnfToMenuButtonsSpacing, after: nnfStack)
+        buttonsStack.pinToSuperview(edges: .horizontal, padding: 16 * uiScale)
 
         let botMenu = UIStackView([UIView(), closeButton])
         botMenu.isLayoutMarginsRelativeArrangement = true
-        botMenu.layoutMargins = .init(top: 5, left: 16, bottom: 0, right: 16)
+        botMenu.layoutMargins = .init(top: 5, left: 16 * uiScale, bottom: 0, right: 16 * uiScale)
         let separator = SpacerView(height: 1, color: .background3, priority: .required)
 
+        [nnfStack, buttonStackParent, UIView(), separator, botMenu].forEach { mainStack.addArrangedSubview($0) }
+        
+        nnfStack.isLayoutMarginsRelativeArrangement = true
+        nnfStack.layoutMargins = .init(top: 0, left: 16 * uiScale, bottom: 0, right: 16 * uiScale)
+
         contentView.addSubview(mainStack)
-        contentView.addSubview(separator)
-        contentView.addSubview(botMenu)
 
         mainStack
-            .pinToSuperview(edges: .leading, padding: 16)
-            .pinToSuperview(edges: .trailing, padding: 16)
+            .pinToSuperview(edges: .horizontal)
             .pinToSuperview(edges: .top, padding: 20)
-        mainStack.bottomAnchor.constraint(equalTo: separator.topAnchor).isActive = true
-
-        separator.pinToSuperview(edges: .horizontal)
-        botMenu.pinToSuperview(edges: .horizontal)
-        botMenu.topAnchor.constraint(equalTo: separator.bottomAnchor).isActive = true
-        botMenu.pinToSuperview(edges: .bottom, safeArea: true)
-        mainStack.axis = .vertical
-        mainStack.alignment = .fill
-
-        buttonsStack.topAnchor.constraint(greaterThanOrEqualTo: nnfStack.bottomAnchor, constant: MenuSizes.nnfToMenuButtonsSpacing).isActive = true
-        buttonsStack.bottomAnchor.constraint(lessThanOrEqualTo: separator.topAnchor, constant: -16).isActive = true
-
+            .pinToSuperview(edges: .bottom, safeArea: true)
+        
         contentView.addSubview(messagesIndicator)
-        messagesIndicator.pin(to: messages, edges: .top, padding: 8).pin(to: messages, edges: .trailing, padding: 8)
+        messagesIndicator.pin(to: messages, edges: .top, padding: 8 * uiScale).pin(to: messages, edges: .trailing, padding: 8 * uiScale)
 
         contentView.addSubview(premiumIndicator)
-        premiumIndicator.pin(to: premium, edges: .top, padding: 8).pin(to: premium, edges: .trailing, padding: 8)
+        premiumIndicator.pin(to: premium, edges: .top, padding: 8 * uiScale).pin(to: premium, edges: .trailing, padding: 8 * uiScale)
 
-        contentView.backgroundColor = .background
         view.addSubview(contentView)
         contentView.pinToSuperview(edges: [.horizontal, .bottom])
 
-        navBarBackground.backgroundColor = .background
         view.addSubview(navBarBackground)
         navBarBackground.pinToSuperview(edges: [.horizontal, .top])
 
@@ -223,21 +213,21 @@ private extension MenuController {
         contentView.transform = CGAffineTransform(translationX: 0, y: -UIScreen.main.bounds.height)
 
         titleStack.alignment = .center
-        titleStack.spacing = 4
-        titleStack.setCustomSpacing(12, after: checkbox1)
+        titleStack.spacing = 4 * uiScale
+        titleStack.setCustomSpacing(12 * uiScale, after: checkbox1)
 
-        checkbox1.constrainToSize(MenuSizes.checkboxSize)
+        checkbox1.constrainToSize(15 * uiScale)
 
         let npubs = LoginManager.instance.loggedInNpubs()
         
-        let profileImageRow = UIStackView(axis: .vertical, spacing: 24, [])
+        let profileImageRow = UIStackView(axis: .vertical, spacing: 16 * uiScale, [])
         contentView.addSubview(profileImageRow)
         profileImageRow
             .centerToView(primalNavigationBar.userImageView, axis: .horizontal)
             .pin(to: barcodeButton, edges: .top)
 
         for npub in npubs.dropFirst().prefix(2) {
-            let avatarImage = UserImageView(height: MenuSizes.accountImageSize)
+            let avatarImage = UserImageView(height: 26 * uiScale)
 
             LoginManager.instance.$loadedProfiles.receive(on: DispatchQueue.main)
                 .sink { users in
@@ -260,8 +250,7 @@ private extension MenuController {
 
         profileImageRow.alignment = .center
 
-        let manageAccountsButtonSize = MenuSizes.accountImageSize + 4
-        let manageAccountsButton = ThemeableButton().constrainToSize(manageAccountsButtonSize).setTheme {
+        let manageAccountsButton = ThemeableButton().constrainToSize(30 * uiScale).setTheme {
             var config = UIButton.Configuration.filled()
             config.cornerStyle = .capsule
             config.baseBackgroundColor = .background3
@@ -271,14 +260,20 @@ private extension MenuController {
             $0.configuration = config
         }
         profileImageRow.addArrangedSubview(manageAccountsButton)
+        
+        let topC = buttonsStack.topAnchor.constraint(equalTo: buttonStackParent.topAnchor, constant: 22 * uiScale)
+        topC.priority = .init(1)
+        NSLayoutConstraint.activate([
+            topC,
+            buttonsStack.topAnchor.constraint(greaterThanOrEqualTo: profileImageRow.bottomAnchor, constant: 22 * uiScale),
+            buttonsStack.bottomAnchor.constraint(lessThanOrEqualTo: buttonStackParent.bottomAnchor, constant: 22 * uiScale)
+        ])
 
         manageAccountsButton.addAction(.init(handler: { [weak self] _ in
             self?.present(PopupAccountSwitchingController(), animated: true)
         }), for: .touchUpInside)
 
-        buttonsStack.topAnchor.constraint(greaterThanOrEqualTo: profileImageRow.bottomAnchor, constant: 16).isActive = true
-
-        nameLabel.font = .appFont(withSize: MenuSizes.profileNameFontSize, weight: .bold)
+        nameLabel.font = .appFont(withSize: 20 * uiScale, weight: .bold)
 
         barcodeButton.addAction(.init(handler: { [weak self] _ in self?.showVC(ProfileQRController()) }), for: .touchUpInside)
         messages.addAction(.init(handler: { [weak self] _ in self?.showVC(MessagesViewController()) }), for: .touchUpInside)
@@ -416,14 +411,14 @@ final class MenuItemButton: MyButton, Themeable {
     }
 
     let titleLabel = UILabel()
-    let imageView = UIImageView().constrainToSize(MenuSizes.menuTileIconSize)
+    let imageView = UIImageView().constrainToSize(26 * MenuController.uiScale)
 
     init(title: String, image: UIImage?) {
         self.title = title.capitalized
-        self.image = image
+        self.image = image?.scalePreservingAspectRatio(size: 26 * MenuController.uiScale)
         super.init(frame: .zero)
 
-        let stack = UIStackView(axis: .vertical, spacing: MenuSizes.menuTileIconLabelSpacing, [imageView, titleLabel])
+        let stack = UIStackView(axis: .vertical, spacing: 10 * MenuController.uiScale, [imageView, titleLabel])
         stack.alignment = .center
 
         addSubview(stack)
@@ -433,7 +428,7 @@ final class MenuItemButton: MyButton, Themeable {
         titleLabel.textAlignment = .center
 
         backgroundColor = .background3
-        layer.cornerRadius = 12
+        layer.cornerRadius = 12 * MenuController.uiScale
         layer.masksToBounds = true
 
         constrainToAspect(1)
@@ -447,7 +442,7 @@ final class MenuItemButton: MyButton, Themeable {
 
     func updateTheme() {
         titleLabel.attributedText = .init(string: title, attributes: [
-            .font: UIFont.appFont(withSize: MenuSizes.menuTileFontSize, weight: .regular),
+            .font: UIFont.appFont(withSize: MenuController.uiScale * 14, weight: .regular),
             .kern: 0.2,
             .foregroundColor: isPressed ? UIColor.foreground : UIColor.foreground3,
             .paragraphStyle: {
@@ -481,14 +476,14 @@ final class NumberedNotificationIndicator: UIView, Themeable {
         super.init(frame: .zero)
         
         addSubview(label)
-        label.centerToSuperview().pinToSuperview(edges: .leading, padding: 3.5)
-        label.font = .appFont(withSize: 12, weight: .medium)
+        label.centerToSuperview().pinToSuperview(edges: .leading, padding: 3.5 * MenuController.uiScale)
+        label.font = .appFont(withSize: 12 * MenuController.uiScale, weight: .medium)
         label.textColor = .white
         label.textAlignment = .center
 
-        constrainToSize(height: 16)
-        widthAnchor.constraint(greaterThanOrEqualToConstant: 16).isActive = true
-        layer.cornerRadius = 8
+        constrainToSize(height: 16 * MenuController.uiScale)
+        widthAnchor.constraint(greaterThanOrEqualToConstant: 16 * MenuController.uiScale).isActive = true
+        layer.cornerRadius = 8 * MenuController.uiScale
         
         updateTheme()
         update()
