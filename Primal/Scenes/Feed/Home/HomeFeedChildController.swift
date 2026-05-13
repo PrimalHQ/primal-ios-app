@@ -40,6 +40,8 @@ class HomeFeedChildController: PostFeedViewController {
         view.addSubview(newPostsViewParent)
         newPostsViewParent.addSubview(newPostsView)
         newPostsViewParent.pinToSuperview(edges: .top, padding: 110).centerToSuperview(axis: .horizontal)
+        
+        table.scrollIndicatorInsets = .init(top: PrimalNavigationBar.height, left: 0, bottom: 0, right: 0)
 
         newPostsView.pinToSuperview(edges: .vertical).pinToSuperview(edges: .horizontal)
         newPostsView.setHidden(true, animated: false)

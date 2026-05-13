@@ -49,7 +49,7 @@ final class SearchTermTableCell: UITableViewCell, Themeable {
         titleLabel.textColor = .foreground5
         termLabel.textColor = .foreground
         icon.tintColor = .foreground
-        backgroundColor = .background
+        backgroundColor = .clear
         border.backgroundColor = .background3
     }
 }
