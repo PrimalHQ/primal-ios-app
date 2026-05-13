@@ -16,6 +16,7 @@ final class RecentUserView: UIView, Themeable {
     init() {
         super.init(frame: .zero)
         setup()
+        setPlaceholder()
     }
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
@@ -23,6 +24,11 @@ final class RecentUserView: UIView, Themeable {
     func setUser(_ user: ParsedUser) {
         avatar.setUserImage(user)
         nameLabel.text = user.data.firstIdentifier
+    }
+    
+    func setPlaceholder() {
+        avatar.image = .profile
+        nameLabel.text = " "
     }
 
     func updateTheme() {

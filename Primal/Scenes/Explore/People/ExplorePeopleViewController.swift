@@ -192,9 +192,8 @@ private extension ExplorePeopleViewController {
         for (index, view) in userViews.enumerated() {
             if let user = users[safe: index] {
                 view.setUser(user)
-                view.isHidden = false
             } else {
-                view.isHidden = true
+                view.setPlaceholder()
             }
         }
     }
