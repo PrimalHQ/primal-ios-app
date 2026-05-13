@@ -77,6 +77,15 @@ class RemoteSignerPillView: UIView, Themeable {
         messageView.centerToSuperview()
         iconView.pinToSuperview(edges: [.trailing, .top])
         
+        if #available(iOS 26.0, *) {
+            let effect = UIVisualEffectView(effect: UIGlassEffect(style: .regular))
+            effect.cornerConfiguration = .capsule()
+            iconView.insertSubview(effect, at: 0)
+            effect.pinToSuperview()
+        } else {
+            // Fallback on earlier versions
+        }
+        
         layer.zPosition = 900
         isHidden = true
         
@@ -88,7 +97,11 @@ class RemoteSignerPillView: UIView, Themeable {
     func updateTheme() {
         messageView.backgroundColor = .foreground
         messageLabel.textColor = .background
-        iconView.backgroundColor = .background
+        if #available(iOS 26.0, *) {
+            iconView.backgroundColor = .clear
+        } else {
+            iconView.backgroundColor = .background
+        }
         
         icon.tintColor = .foreground
         alternateIcon.tintColor = .background3
