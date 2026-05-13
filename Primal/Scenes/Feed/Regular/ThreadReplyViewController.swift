@@ -298,18 +298,23 @@ private extension ThreadReplyViewController {
         if #available(iOS 26.0, *) {
             pillStackBackground.effect = UIGlassEffect(style: .regular)
             pillStackBackground.tintColor = .background
+            pillStackBackground.overrideUserInterfaceStyle = Theme.current.userInterfaceStyle
+            pillStackBackground.layer.cornerRadius = 20
+            pillStackBackgroundBackground.addSubview(pillStackBackground)
+            pillStackBackground.pinToSuperview()
+            
+            // We need this behind glass to make it darker/lighter
+            pillStackBackgroundBackground.backgroundColor = .background.withAlphaComponent(0.3)
+            
+            pillStackBackground.contentView.addSubview(pillStack)
         } else {
-            pillStackBackground.effect = UIBlurEffect(style: .regular)
+            pillStackBackgroundBackground.backgroundColor = .background3
+            
+            pillStackBackgroundBackground.addSubview(pillStack)
         }
-        pillStackBackground.overrideUserInterfaceStyle = Theme.current.userInterfaceStyle
-        pillStackBackground.layer.cornerRadius = 20
-        pillStackBackground.contentView.addSubview(pillStack)
-        pillStack.pinToSuperview(edges: [.horizontal, .bottom]).pinToSuperview(edges: .top, padding: -4)
         
-        pillStackBackgroundBackground.backgroundColor = .background.withAlphaComponent(0.3)
+        pillStack.pinToSuperview(edges: [.horizontal, .bottom]).pinToSuperview(edges: .top, padding: -4)
         pillStackBackgroundBackground.layer.cornerRadius = 20
-        pillStackBackgroundBackground.addSubview(pillStackBackground)
-        pillStackBackground.pinToSuperview()
     }
 
     func configurePillStack() {
@@ -404,7 +409,7 @@ private extension ThreadReplyViewController {
     func openPollInput() {
         guard let manager else { return }
         isAttachmentInputShowing = false
-        DispatchQueue.main.async {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             self.present(PollInputViewController(manager: manager), animated: true)
         }
     }

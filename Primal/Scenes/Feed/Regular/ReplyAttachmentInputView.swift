@@ -40,15 +40,15 @@ final class ReplyAttachmentInputView: UIView {
 
 private extension ReplyAttachmentInputView {
     func setupViews() {
+        backgroundColor = .clear
         
         if #available(iOS 26.0, *) {
             cornerConfiguration = .uniformTopRadius(24)
             
-            backgroundColor = .clear
         } else {
-            backgroundColor = .background
-            layer.cornerRadius = 24
-            layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+//            backgroundColor = .background
+//            layer.cornerRadius = 24
+//            layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
         }
 
         let mediaButton = LabeledIconButton(icon: .mediaIcon24, title: "Media") { [weak self] in
