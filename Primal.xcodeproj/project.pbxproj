@@ -225,6 +225,11 @@
 		A1B2C3D4E5F6A7B8C9D0E1F5 /* HeaderCells.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6A7B8C9D0E1F6 /* HeaderCells.swift */; };
 		A1F2B3C4D5E6F7A8B9C0D1E2 /* MenuController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F2B3C4D5E6F7A8B9C0D1E3 /* MenuController.swift */; };
 		AA9CF3DB44709B5BC13CA5A8 /* GenerateAmountsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD61E893F7939D2AC33A6A4C /* GenerateAmountsTests.swift */; };
+		AAA1110000000000000B0001 /* AudioPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAA1110000000000000B0002 /* AudioPlayer.swift */; };
+		AAA1110000000000000B0003 /* AudioPlayerRegistry.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAA1110000000000000B0004 /* AudioPlayerRegistry.swift */; };
+		AAA1110000000000000B0005 /* AudioWaveformView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAA1110000000000000B0006 /* AudioWaveformView.swift */; };
+		AAA1110000000000000B0007 /* AudioPlayerContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAA1110000000000000B0008 /* AudioPlayerContentView.swift */; };
+		AAA1110000000000000B0009 /* FeedElementAudioCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAA1110000000000000B000A /* FeedElementAudioCell.swift */; };
 		B2A3C4D5E6F7A8B9C0D1E2F3 /* PrimalNavigationBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2A3C4D5E6F7A8B9C0D1E2F4 /* PrimalNavigationBar.swift */; };
 		B2A3C4D5E6F7A8B9C0D1F001 /* SlideDownShellViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2A3C4D5E6F7A8B9C0D1F002 /* SlideDownShellViewController.swift */; };
 		B2A3C4D5E6F7A8B9C0D1F003 /* GenericSelectionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2A3C4D5E6F7A8B9C0D1F004 /* GenericSelectionController.swift */; };
@@ -398,6 +403,7 @@
 		B934ADB02DB117450044E5B5 /* UnmuteWordCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B934ADAF2DB117410044E5B5 /* UnmuteWordCell.swift */; };
 		B93638162D80A3B2003F1EC3 /* NoConnectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B93638152D80A3B2003F1EC3 /* NoConnectionView.swift */; };
 		B9370EEB2DE88276004A9760 /* SettingsNWCQRScanController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9370EEA2DE8826B004A9760 /* SettingsNWCQRScanController.swift */; };
+		B939478C2FBBA51E005F4EA6 /* FullscreenAudioPlayerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B939478B2FBBA50F005F4EA6 /* FullscreenAudioPlayerController.swift */; };
 		B93BFFDD2F508BA3001C8BDC /* PollSatsRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B93BFFDC2F508B9C001C8BDC /* PollSatsRowView.swift */; };
 		B93BFFDF2F50937B001C8BDC /* PopupPollTypeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B93BFFDE2F50937B001C8BDC /* PopupPollTypeController.swift */; };
 		B93F6B642D75EE3700DF00CD /* DatabaseManager+MediaMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = B93F6B632D75EE3700DF00CD /* DatabaseManager+MediaMetadata.swift */; };
@@ -535,7 +541,7 @@
 		B9A1F2E34D0176AF006BB397 /* GalleryFeedDatasource.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A1F2E34D0176AE006BB397 /* GalleryFeedDatasource.swift */; };
 		B9A200982B55A12B003B6C6B /* UserListToSendAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A200972B55A12B003B6C6B /* UserListToSendAnimator.swift */; };
 		B9A2009A2B5AB1FE003B6C6B /* FadeTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A200992B5AB1FE003B6C6B /* FadeTransition.swift */; };
-		B9A335232E54B5FE000B2CA7 /* LivePlayerMoveGesture.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A335222E54B5DC000B2CA7 /* LivePlayerMoveGesture.swift */; };
+		B9A335232E54B5FE000B2CA7 /* FloatingPlayerMoveGesture.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A335222E54B5DC000B2CA7 /* FloatingPlayerMoveGesture.swift */; };
 		B9A335252E54F3A1000B2CA7 /* FeedElementLivePreviewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A335242E54F397000B2CA7 /* FeedElementLivePreviewCell.swift */; };
 		B9A335292E562773000B2CA7 /* liveIconAnimation.json in Resources */ = {isa = PBXBuildFile; fileRef = B9A335282E562773000B2CA7 /* liveIconAnimation.json */; };
 		B9A335382E5778DE000B2CA7 /* liveBufferSpinner.json in Resources */ = {isa = PBXBuildFile; fileRef = B9A335372E5778DE000B2CA7 /* liveBufferSpinner.json */; };
@@ -602,12 +608,7 @@
 		B9C672E92E2FF89C00243B45 /* LiveVideoChatZapCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C672E82E2FF89C00243B45 /* LiveVideoChatZapCell.swift */; };
 		B9C672EB2E315F5D00243B45 /* LiveVideoChatInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C672EA2E315F5D00243B45 /* LiveVideoChatInputView.swift */; };
 		B9C673142E327CB200243B45 /* AVPlayer+Extra.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C673132E327CAD00243B45 /* AVPlayer+Extra.swift */; };
-		B9C673302E37E62100243B45 /* LiveVideoEmbeddedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C6732F2E37E61300243B45 /* LiveVideoEmbeddedView.swift */; };
-		AAA1110000000000000B0001 /* AudioPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAA1110000000000000B0002 /* AudioPlayer.swift */; };
-		AAA1110000000000000B0003 /* AudioPlayerRegistry.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAA1110000000000000B0004 /* AudioPlayerRegistry.swift */; };
-		AAA1110000000000000B0005 /* AudioWaveformView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAA1110000000000000B0006 /* AudioWaveformView.swift */; };
-		AAA1110000000000000B0007 /* AudioPlayerContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAA1110000000000000B0008 /* AudioPlayerContentView.swift */; };
-		AAA1110000000000000B0009 /* FeedElementAudioCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAA1110000000000000B000A /* FeedElementAudioCell.swift */; };
+		B9C673302E37E62100243B45 /* FloatingPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C6732F2E37E61300243B45 /* FloatingPlayerView.swift */; };
 		B9C6D22F2CA1B33700B2EEBE /* DatabaseManager+ProfileCounts.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C6D22E2CA1B33700B2EEBE /* DatabaseManager+ProfileCounts.swift */; };
 		B9C6D2322CA31B4E00B2EEBE /* ExploreTopicsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C6D2312CA31B4E00B2EEBE /* ExploreTopicsViewController.swift */; };
 		B9C6D2342CA3276E00B2EEBE /* ExploreFeedsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C6D2332CA3276E00B2EEBE /* ExploreFeedsViewController.swift */; };
@@ -749,6 +750,8 @@
 		B9FAC64E2D395D5F00B57EF6 /* FeedElementMusicPreviewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9FAC64D2D395D5F00B57EF6 /* FeedElementMusicPreviewCell.swift */; };
 		B9FAC6582D42B53A00B57EF6 /* SettingsWalletNWCController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9FAC6572D42B53A00B57EF6 /* SettingsWalletNWCController.swift */; };
 		B9FAC65B2D42C5FA00B57EF6 /* SettingsNewNWCController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9FAC65A2D42C5FA00B57EF6 /* SettingsNewNWCController.swift */; };
+		BBB2220000000000000B0001 /* LivePlayerContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBB2220000000000000B0002 /* LivePlayerContentView.swift */; };
+		BBB2220000000000000B0003 /* FloatingPlayerContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBB2220000000000000B0004 /* FloatingPlayerContent.swift */; };
 		C0A1B2C32E0511260000001A /* ReplyAttachmentInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0A1B2C42E0511260000001A /* ReplyAttachmentInputView.swift */; };
 		C0A1B2D52E0511260000002A /* PollInputViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0A1B2D62E0511260000002A /* PollInputViewController.swift */; };
 		C0A1B2E72E0512260000003A /* ReplyPhotoPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0A1B2E82E0512260000003A /* ReplyPhotoPreviewView.swift */; };
@@ -1090,6 +1093,11 @@
 		A1F2B3C4D5E6F7A8B9C0D1E3 /* MenuController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuController.swift; sourceTree = "<group>"; };
 		A23B4E5D450372ED459567FF /* PollVotesFeedManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollVotesFeedManager.swift; sourceTree = "<group>"; };
 		A5764AD3FE766D500CBC6420 /* OldWalletDetectedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OldWalletDetectedView.swift; sourceTree = "<group>"; };
+		AAA1110000000000000B0002 /* AudioPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayer.swift; sourceTree = "<group>"; };
+		AAA1110000000000000B0004 /* AudioPlayerRegistry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayerRegistry.swift; sourceTree = "<group>"; };
+		AAA1110000000000000B0006 /* AudioWaveformView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioWaveformView.swift; sourceTree = "<group>"; };
+		AAA1110000000000000B0008 /* AudioPlayerContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayerContentView.swift; sourceTree = "<group>"; };
+		AAA1110000000000000B000A /* FeedElementAudioCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedElementAudioCell.swift; sourceTree = "<group>"; };
 		AF3D490ED6A30BA8537BEBDF /* FeedVideoPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedVideoPlayer.swift; sourceTree = "<group>"; };
 		B2A3C4D5E6F7A8B9C0D1E2F4 /* PrimalNavigationBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimalNavigationBar.swift; sourceTree = "<group>"; };
 		B2A3C4D5E6F7A8B9C0D1F002 /* SlideDownShellViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlideDownShellViewController.swift; sourceTree = "<group>"; };
@@ -1256,6 +1264,7 @@
 		B934ADAF2DB117410044E5B5 /* UnmuteWordCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnmuteWordCell.swift; sourceTree = "<group>"; };
 		B93638152D80A3B2003F1EC3 /* NoConnectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoConnectionView.swift; sourceTree = "<group>"; };
 		B9370EEA2DE8826B004A9760 /* SettingsNWCQRScanController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsNWCQRScanController.swift; sourceTree = "<group>"; };
+		B939478B2FBBA50F005F4EA6 /* FullscreenAudioPlayerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullscreenAudioPlayerController.swift; sourceTree = "<group>"; };
 		B93BFFDC2F508B9C001C8BDC /* PollSatsRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollSatsRowView.swift; sourceTree = "<group>"; };
 		B93BFFDE2F50937B001C8BDC /* PopupPollTypeController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupPollTypeController.swift; sourceTree = "<group>"; };
 		B93F6B632D75EE3700DF00CD /* DatabaseManager+MediaMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DatabaseManager+MediaMetadata.swift"; sourceTree = "<group>"; };
@@ -1394,7 +1403,7 @@
 		B9A1F2E34D0176AE006BB397 /* GalleryFeedDatasource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryFeedDatasource.swift; sourceTree = "<group>"; };
 		B9A200972B55A12B003B6C6B /* UserListToSendAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserListToSendAnimator.swift; sourceTree = "<group>"; };
 		B9A200992B5AB1FE003B6C6B /* FadeTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FadeTransition.swift; sourceTree = "<group>"; };
-		B9A335222E54B5DC000B2CA7 /* LivePlayerMoveGesture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LivePlayerMoveGesture.swift; sourceTree = "<group>"; };
+		B9A335222E54B5DC000B2CA7 /* FloatingPlayerMoveGesture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingPlayerMoveGesture.swift; sourceTree = "<group>"; };
 		B9A335242E54F397000B2CA7 /* FeedElementLivePreviewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedElementLivePreviewCell.swift; sourceTree = "<group>"; };
 		B9A335282E562773000B2CA7 /* liveIconAnimation.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = liveIconAnimation.json; sourceTree = "<group>"; };
 		B9A335372E5778DE000B2CA7 /* liveBufferSpinner.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = liveBufferSpinner.json; sourceTree = "<group>"; };
@@ -1459,12 +1468,7 @@
 		B9C672E82E2FF89C00243B45 /* LiveVideoChatZapCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveVideoChatZapCell.swift; sourceTree = "<group>"; };
 		B9C672EA2E315F5D00243B45 /* LiveVideoChatInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveVideoChatInputView.swift; sourceTree = "<group>"; };
 		B9C673132E327CAD00243B45 /* AVPlayer+Extra.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AVPlayer+Extra.swift"; sourceTree = "<group>"; };
-		B9C6732F2E37E61300243B45 /* LiveVideoEmbeddedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveVideoEmbeddedView.swift; sourceTree = "<group>"; };
-		AAA1110000000000000B0002 /* AudioPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayer.swift; sourceTree = "<group>"; };
-		AAA1110000000000000B0004 /* AudioPlayerRegistry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayerRegistry.swift; sourceTree = "<group>"; };
-		AAA1110000000000000B0006 /* AudioWaveformView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioWaveformView.swift; sourceTree = "<group>"; };
-		AAA1110000000000000B0008 /* AudioPlayerContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayerContentView.swift; sourceTree = "<group>"; };
-		AAA1110000000000000B000A /* FeedElementAudioCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedElementAudioCell.swift; sourceTree = "<group>"; };
+		B9C6732F2E37E61300243B45 /* FloatingPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingPlayerView.swift; sourceTree = "<group>"; };
 		B9C6D22E2CA1B33700B2EEBE /* DatabaseManager+ProfileCounts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DatabaseManager+ProfileCounts.swift"; sourceTree = "<group>"; };
 		B9C6D2312CA31B4E00B2EEBE /* ExploreTopicsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreTopicsViewController.swift; sourceTree = "<group>"; };
 		B9C6D2332CA3276E00B2EEBE /* ExploreFeedsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreFeedsViewController.swift; sourceTree = "<group>"; };
@@ -1603,6 +1607,8 @@
 		B9FAC64D2D395D5F00B57EF6 /* FeedElementMusicPreviewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedElementMusicPreviewCell.swift; sourceTree = "<group>"; };
 		B9FAC6572D42B53A00B57EF6 /* SettingsWalletNWCController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsWalletNWCController.swift; sourceTree = "<group>"; };
 		B9FAC65A2D42C5FA00B57EF6 /* SettingsNewNWCController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsNewNWCController.swift; sourceTree = "<group>"; };
+		BBB2220000000000000B0002 /* LivePlayerContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LivePlayerContentView.swift; sourceTree = "<group>"; };
+		BBB2220000000000000B0004 /* FloatingPlayerContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingPlayerContent.swift; sourceTree = "<group>"; };
 		BD61E893F7939D2AC33A6A4C /* GenerateAmountsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenerateAmountsTests.swift; sourceTree = "<group>"; };
 		C0A1B2C42E0511260000001A /* ReplyAttachmentInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReplyAttachmentInputView.swift; sourceTree = "<group>"; };
 		C0A1B2D62E0511260000002A /* PollInputViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollInputViewController.swift; sourceTree = "<group>"; };
@@ -2354,6 +2360,7 @@
 		9E88349A2A21150D005DB548 /* RootViewController */ = {
 			isa = PBXGroup;
 			children = (
+				B939478B2FBBA50F005F4EA6 /* FullscreenAudioPlayerController.swift */,
 				B904E9A12F042BCA006D195C /* MainTabBar */,
 				B9A200952B55A0D7003B6C6B /* MainNavigationController */,
 				B9CE4DBA2B7154750060A1B8 /* Views */,
@@ -2504,6 +2511,7 @@
 				B2A3C4D5E6F7A8B9C0D1F002 /* SlideDownShellViewController.swift */,
 				B2A3C4D5E6F7A8B9C0D1F004 /* GenericSelectionController.swift */,
 				AAA1110000000000000A0002 /* Audio */,
+				BBB2220000000000000A0001 /* FloatingPlayer */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -2599,6 +2607,24 @@
 			path = Header;
 			sourceTree = "<group>";
 		};
+		AAA1110000000000000A0001 /* Audio */ = {
+			isa = PBXGroup;
+			children = (
+				AAA1110000000000000B0002 /* AudioPlayer.swift */,
+				AAA1110000000000000B0004 /* AudioPlayerRegistry.swift */,
+			);
+			path = Audio;
+			sourceTree = "<group>";
+		};
+		AAA1110000000000000A0002 /* Audio */ = {
+			isa = PBXGroup;
+			children = (
+				AAA1110000000000000B0006 /* AudioWaveformView.swift */,
+				AAA1110000000000000B0008 /* AudioPlayerContentView.swift */,
+			);
+			path = Audio;
+			sourceTree = "<group>";
+		};
 		B90032832BD0180300ADD2E5 /* SocketRequests */ = {
 			isa = PBXGroup;
 			children = (
@@ -2691,7 +2717,6 @@
 				D07C0FFEE5F6071800000002 /* NotificationsTabIconComposer.swift */,
 				C0LLAP5ED1AB8A7B00000002 /* CollapsedTabBarButton.swift */,
 				D1A2B3C4E5F6071800000002 /* MainTabBarRootViewController.swift */,
-				B9A335222E54B5DC000B2CA7 /* LivePlayerMoveGesture.swift */,
 			);
 			path = MainTabBar;
 			sourceTree = "<group>";
@@ -2758,24 +2783,6 @@
 				B914CD682A9E6B4A00CD0BD1 /* VideoPlaybackManager.swift */,
 			);
 			path = Video;
-			sourceTree = "<group>";
-		};
-		AAA1110000000000000A0001 /* Audio */ = {
-			isa = PBXGroup;
-			children = (
-				AAA1110000000000000B0002 /* AudioPlayer.swift */,
-				AAA1110000000000000B0004 /* AudioPlayerRegistry.swift */,
-			);
-			path = Audio;
-			sourceTree = "<group>";
-		};
-		AAA1110000000000000A0002 /* Audio */ = {
-			isa = PBXGroup;
-			children = (
-				AAA1110000000000000B0006 /* AudioWaveformView.swift */,
-				AAA1110000000000000B0008 /* AudioPlayerContentView.swift */,
-			);
-			path = Audio;
 			sourceTree = "<group>";
 		};
 		B914CD752AA62EDC00CD0BD1 /* ImageCollection */ = {
@@ -3465,7 +3472,6 @@
 				B9C672DF2E2FB5EC00243B45 /* LiveCommentsHeaderView.swift */,
 				B991FA452E8ED0A2009D313E /* LiveVideoSmallHeaderView.swift */,
 				B9C672DA2E2535B500243B45 /* LivePlayerView.swift */,
-				B9C6732F2E37E61300243B45 /* LiveVideoEmbeddedView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -3825,6 +3831,17 @@
 				B9DAA4592D4A634500B00B82 /* SettingsExternalNwcController.swift */,
 			);
 			path = NWC;
+			sourceTree = "<group>";
+		};
+		BBB2220000000000000A0001 /* FloatingPlayer */ = {
+			isa = PBXGroup;
+			children = (
+				BBB2220000000000000B0004 /* FloatingPlayerContent.swift */,
+				B9C6732F2E37E61300243B45 /* FloatingPlayerView.swift */,
+				BBB2220000000000000B0002 /* LivePlayerContentView.swift */,
+				B9A335222E54B5DC000B2CA7 /* FloatingPlayerMoveGesture.swift */,
+			);
+			path = FloatingPlayer;
 			sourceTree = "<group>";
 		};
 		C1AF0C4AC3CFA5588D294EB0 /* Scheme */ = {
@@ -4593,7 +4610,9 @@
 				B98DD8AB2C458F4C00E8369A /* LoadArticleController.swift in Sources */,
 				B99E03A82C0DF2ED006CCECB /* PostReactionsCell.swift in Sources */,
 				B9009B6C2B1F64B9002B0613 /* AnimatedImageCache.swift in Sources */,
-				B9C673302E37E62100243B45 /* LiveVideoEmbeddedView.swift in Sources */,
+				B9C673302E37E62100243B45 /* FloatingPlayerView.swift in Sources */,
+				BBB2220000000000000B0001 /* LivePlayerContentView.swift in Sources */,
+				BBB2220000000000000B0003 /* FloatingPlayerContent.swift in Sources */,
 				AAA1110000000000000B0001 /* AudioPlayer.swift in Sources */,
 				AAA1110000000000000B0003 /* AudioPlayerRegistry.swift in Sources */,
 				AAA1110000000000000B0005 /* AudioWaveformView.swift in Sources */,
@@ -4629,7 +4648,7 @@
 				9E9D46F82A0A72B900D4837B /* PostCell.swift in Sources */,
 				9ECFD3222A013935000D1B2F /* NoteViewController.swift in Sources */,
 				B9E67ECF2D13201B006BB397 /* URL+Extra.swift in Sources */,
-				B9A335232E54B5FE000B2CA7 /* LivePlayerMoveGesture.swift in Sources */,
+				B9A335232E54B5FE000B2CA7 /* FloatingPlayerMoveGesture.swift in Sources */,
 				B9B9E5772CB57F700065DD7C /* ExploreZapsViewController.swift in Sources */,
 				B914CD772AA62EFA00CD0BD1 /* VideoCell.swift in Sources */,
 				B9B9E56E2CB462370065DD7C /* ExploreMediaController.swift in Sources */,
@@ -4799,6 +4818,7 @@
 				9ED416162A4E0D6200892235 /* PostFeedViewController.swift in Sources */,
 				B9E67EBC2D0B5131006BB397 /* ProfileFeedDatasource.swift in Sources */,
 				B94A0E242AA8D18800DEBFE1 /* ProcessingMessages.swift in Sources */,
+				B939478C2FBBA51E005F4EA6 /* FullscreenAudioPlayerController.swift in Sources */,
 				B91EF0C32CE7E70900299ECF /* PremiumManageMediaDataCell.swift in Sources */,
 				B934ADA82DAEAE110044E5B5 /* PushNotificationCell.swift in Sources */,
 				B9DF0CA82C22163B009ADC7B /* EmbeddedPostController.swift in Sources */,

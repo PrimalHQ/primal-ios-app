@@ -25,7 +25,7 @@ final class AudioPlayer: NSObject, PlayerProtocol {
 
     var blocksAutoplay: Bool { true }
 
-    private let avPlayer: AVPlayer
+    let avPlayer: AVPlayer
     private var playerItem: AVPlayerItem?
     private var timeObserverToken: Any?
     private var itemStatusObserver: NSKeyValueObservation?

@@ -378,7 +378,7 @@ class LiveVideoPlayerController: UIViewController {
         commentsVC.view.alpha = 1
         currentTransitionProgress = 0
         
-        RootViewController.instance.livePlayer.alpha = 1
+        RootViewController.instance.floatingPlayer.alpha = 1
     }
 }
 
@@ -443,9 +443,9 @@ private extension LiveVideoPlayerController {
         if case .began = gesture.state {
             let main = RootViewController.instance
             
-            main.livePlayer.alpha = 0.01
+            main.floatingPlayer.alpha = 0.01
             
-            let small = main.livePlayer.convert(main.livePlayer.bounds, to: nil)
+            let small = main.floatingPlayer.convert(main.floatingPlayer.bounds, to: nil)
             let large = liveVideoPlayer.convert(liveVideoPlayer.bounds, to: nil)
             
             dismissGestureState = .init(
@@ -480,7 +480,7 @@ private extension LiveVideoPlayerController {
                 UIView.animate(withDuration: 0.4) {
                     self.setTransition(progress: 1)
                 } completion: { _ in
-                    RootViewController.instance.livePlayer.alpha = 1
+                    RootViewController.instance.floatingPlayer.alpha = 1
                     
                     self.dismiss(animated: false) { [weak self] in
                         self?.resetDismissTransition()

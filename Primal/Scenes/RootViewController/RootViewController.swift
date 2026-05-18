@@ -46,24 +46,28 @@ final class RootViewController: UIViewController {
             if VideoPlaybackManager.instance.currentlyPlayingLiveVideo === oldValue?.player && oldValue != liveVideoController {
                 VideoPlaybackManager.instance.currentlyPlaying = nil
             }
-            
+
             if let liveVideoController, let player = liveVideoController.player {
-                livePlayer.setup(player: player)
+                floatingPlayer.mode = .live(player)
             } else {
-                livePlayer.removePlayer()
+                if case .live = floatingPlayer.mode {
+                    floatingPlayer.mode = floatingAudioPlayer.map { .audio($0) } ?? .none
+                }
                 VideoPlaybackManager.instance.currentlyLivePip = nil
             }
-            
+
             if liveVideoController == nil {
-                livePlayer.isHidden = true
+                if floatingAudioPlayer == nil {
+                    floatingPlayer.isHidden = true
+                }
             } else {
-                livePlayer.isHidden = false
-                livePlayer.frame = .init(x: 16, y: view.frame.height - view.safeAreaInsets.bottom - 166, width: 199, height: 112)
+                floatingPlayer.isHidden = false
+                floatingPlayer.frame = .init(x: 16, y: view.frame.height - view.safeAreaInsets.bottom - 166, width: 199, height: 112)
             }
         }
     }
-    
-    var livePlayer = LiveVideoEmbeddedView()
+
+    var floatingPlayer = FloatingPlayerView()
     var floatingAudioPlayer: AudioPlayer?
     var audioErrorCancellable: AnyCancellable?
     
@@ -78,8 +82,9 @@ final class RootViewController: UIViewController {
     @Published var navigateTo: DeeplinkNavigation?
     
     var myPip: AVPictureInPictureController? {
-        guard AVPictureInPictureController.isPictureInPictureSupported() else { return nil }
-        return AVPictureInPictureController(playerLayer: livePlayer.playerView.playerLayer)
+        guard AVPictureInPictureController.isPictureInPictureSupported(),
+              let layer = floatingPlayer.livePlayerLayer else { return nil }
+        return AVPictureInPictureController(playerLayer: layer)
     }
     
     override var prefersStatusBarHidden: Bool {
@@ -135,9 +140,9 @@ final class RootViewController: UIViewController {
             self?.beginScrollAnimation()
         }), for: .touchUpInside)
         
-        view.addSubview(livePlayer)
-        livePlayer.frame = .init(x: 16, y: 500, width: 178, height: 100)
-        livePlayer.isHidden = true
+        view.addSubview(floatingPlayer)
+        floatingPlayer.frame = .init(x: 16, y: 500, width: 178, height: 100)
+        floatingPlayer.isHidden = true
         smoothScrollButton.isHidden = true
 
         observeAudioPlayer()
@@ -172,28 +177,28 @@ final class RootViewController: UIViewController {
             .store(in: &cancellables)
         
         let liveTap = BindableTapGestureRecognizer(action: { [weak self] in
-            guard let livePlayer = self?.livePlayer else { return }
-            if livePlayer.showChevron {
+            guard let floatingPlayer = self?.floatingPlayer else { return }
+            if floatingPlayer.showChevron {
                 UIView.animate(withDuration: 0.2) {
-                    livePlayer.showChevron = false
-                    if livePlayer.center.x < 0 {
-                        livePlayer.center.x += LivePlayerMoveGesture.hideAdjustment
+                    floatingPlayer.showChevron = false
+                    if floatingPlayer.center.x < 0 {
+                        floatingPlayer.center.x += FloatingPlayerMoveGesture.hideAdjustment
                     } else {
-                        livePlayer.center.x -= LivePlayerMoveGesture.hideAdjustment
+                        floatingPlayer.center.x -= FloatingPlayerMoveGesture.hideAdjustment
                     }
                 }
                 return
             }
             if let audioPlayer = self?.floatingAudioPlayer {
-                if audioPlayer.isPlaying { audioPlayer.pause() } else { audioPlayer.play() }
+                self?.present(FullscreenAudioPlayerController(audio: audioPlayer), animated: true)
                 return
             }
             guard let live = self?.liveVideoController else { return }
             self?.present(live, animated: true)
         })
-        let move = LivePlayerMoveGesture()
-        
-        [move, liveTap].forEach { livePlayer.addGestureRecognizer($0) }
+        let move = FloatingPlayerMoveGesture()
+
+        [move, liveTap].forEach { floatingPlayer.addGestureRecognizer($0) }
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -376,11 +381,11 @@ extension RootViewController {
             VideoPlaybackManager.instance.currentlyPlaying = nil
         }
         floatingAudioPlayer = nil
-        livePlayer.removeAudio()
+        if case .audio = floatingPlayer.mode {
+            floatingPlayer.mode = .none
+        }
         if liveVideoController == nil {
-            livePlayer.isHidden = true
-        } else {
-            livePlayer.revealVideoChrome()
+            floatingPlayer.isHidden = true
         }
     }
 }
@@ -411,11 +416,11 @@ private extension RootViewController {
             return
         }
 
-        livePlayer.removeAudio()
+        if case .audio = floatingPlayer.mode {
+            floatingPlayer.mode = .none
+        }
         if liveVideoController == nil {
-            livePlayer.isHidden = true
-        } else {
-            livePlayer.revealVideoChrome()
+            floatingPlayer.isHidden = true
         }
     }
 
@@ -424,10 +429,10 @@ private extension RootViewController {
             liveVideoController = nil
         }
         floatingAudioPlayer = audio
-        livePlayer.setupAudio(player: audio)
-        livePlayer.isHidden = false
-        if livePlayer.frame.size != CGSize(width: 199, height: 64) {
-            livePlayer.frame = .init(x: 16, y: view.frame.height - view.safeAreaInsets.bottom - 134, width: 199, height: 64)
+        floatingPlayer.mode = .audio(audio)
+        floatingPlayer.isHidden = false
+        if floatingPlayer.frame.size != CGSize(width: 199, height: 64) {
+            floatingPlayer.frame = .init(x: 16, y: view.frame.height - view.safeAreaInsets.bottom - 134, width: 199, height: 64)
         }
 
         audioErrorCancellable = audio.$didError

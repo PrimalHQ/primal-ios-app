@@ -8,14 +8,16 @@
 import Combine
 import UIKit
 
-final class AudioPlayerContentView: UIView {
+final class AudioPlayerContentView: UIView, FloatingPlayerContent {
+    static let skipInterval: TimeInterval = 15
+
+    private let backButton = UIButton(type: .system).constrainToSize(24)
     private let playButton = UIButton(type: .system).constrainToSize(28)
+    private let forwardButton = UIButton(type: .system).constrainToSize(24)
     private let spinner = UIActivityIndicatorView(style: .medium)
     private let closeButton = UIButton(configuration: .simpleImage(.embedPlayerClose)).constrainToSize(28)
     private let titleLabel = UILabel()
     private let timeLabel = UILabel()
-    private let progressBar = UIView()
-    private let progressFill = UIView()
 
     var player: AudioPlayer? {
         didSet { bindPlayer() }
@@ -24,7 +26,6 @@ final class AudioPlayerContentView: UIView {
     var onClose: (() -> Void)?
 
     private var cancellables: Set<AnyCancellable> = []
-    private var progressFillWidth: NSLayoutConstraint?
 
     init() {
         super.init(frame: .zero)
@@ -38,13 +39,23 @@ final class AudioPlayerContentView: UIView {
         layer.cornerRadius = 6
         clipsToBounds = true
 
-        addSubview(playButton)
-        playButton
-            .pinToSuperview(edges: .leading, padding: 8)
-            .centerToSuperview(axis: .vertical)
+        backButton.setImage(UIImage(systemName: "gobackward.15"), for: .normal)
+        backButton.tintColor = .foreground
+        backButton.addAction(.init(handler: { [weak self] _ in self?.skip(-Self.skipInterval) }), for: .touchUpInside)
+
         playButton.setImage(UIImage(systemName: "play.fill"), for: .normal)
         playButton.tintColor = .foreground
         playButton.addAction(.init(handler: { [weak self] _ in self?.togglePlay() }), for: .touchUpInside)
+
+        forwardButton.setImage(UIImage(systemName: "goforward.15"), for: .normal)
+        forwardButton.tintColor = .foreground
+        forwardButton.addAction(.init(handler: { [weak self] _ in self?.skip(Self.skipInterval) }), for: .touchUpInside)
+
+        let controls = UIStackView([backButton, playButton, forwardButton])
+        controls.spacing = 6
+        controls.alignment = .center
+        addSubview(controls)
+        controls.translatesAutoresizingMaskIntoConstraints = false
 
         addSubview(spinner)
         spinner.pin(to: playButton)
@@ -70,36 +81,17 @@ final class AudioPlayerContentView: UIView {
         timeLabel.font = .appFont(withSize: 10, weight: .regular)
         timeLabel.textColor = .foreground4
 
-        addSubview(progressBar)
-        progressBar.translatesAutoresizingMaskIntoConstraints = false
-        progressBar.backgroundColor = .foreground5
-        progressBar.layer.cornerRadius = 1
-
-        progressBar.addSubview(progressFill)
-        progressFill.translatesAutoresizingMaskIntoConstraints = false
-        progressFill.backgroundColor = .foreground
-        progressFill.layer.cornerRadius = 1
-
-        let fillWidth = progressFill.widthAnchor.constraint(equalToConstant: 0)
-        progressFillWidth = fillWidth
-
         NSLayoutConstraint.activate([
-            titleLabel.leadingAnchor.constraint(equalTo: playButton.trailingAnchor, constant: 8),
-            titleLabel.trailingAnchor.constraint(lessThanOrEqualTo: closeButton.leadingAnchor, constant: -8),
-            titleLabel.topAnchor.constraint(equalTo: topAnchor, constant: 10),
+            controls.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 8),
+            controls.centerYAnchor.constraint(equalTo: centerYAnchor),
+
+            titleLabel.leadingAnchor.constraint(equalTo: controls.trailingAnchor, constant: 8),
+            titleLabel.trailingAnchor.constraint(lessThanOrEqualTo: closeButton.leadingAnchor, constant: -6),
+            titleLabel.topAnchor.constraint(equalTo: topAnchor, constant: 12),
 
             timeLabel.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor),
-            timeLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -8),
-
-            progressBar.leadingAnchor.constraint(equalTo: timeLabel.trailingAnchor, constant: 6),
-            progressBar.trailingAnchor.constraint(equalTo: closeButton.leadingAnchor, constant: -8),
-            progressBar.centerYAnchor.constraint(equalTo: timeLabel.centerYAnchor),
-            progressBar.heightAnchor.constraint(equalToConstant: 2),
-
-            progressFill.leadingAnchor.constraint(equalTo: progressBar.leadingAnchor),
-            progressFill.topAnchor.constraint(equalTo: progressBar.topAnchor),
-            progressFill.bottomAnchor.constraint(equalTo: progressBar.bottomAnchor),
-            fillWidth
+            timeLabel.trailingAnchor.constraint(lessThanOrEqualTo: closeButton.leadingAnchor, constant: -6),
+            timeLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -10)
         ])
     }
 
@@ -108,7 +100,6 @@ final class AudioPlayerContentView: UIView {
         guard let player else {
             titleLabel.text = ""
             timeLabel.text = ""
-            progressFillWidth?.constant = 0
             return
         }
 
@@ -138,7 +129,7 @@ final class AudioPlayerContentView: UIView {
         Publishers.CombineLatest(player.$currentTime, player.$duration)
             .receive(on: DispatchQueue.main)
             .sink { [weak self] time, duration in
-                self?.updateProgress(time: time, duration: duration)
+                self?.updateTimeLabel(time: time, duration: duration)
             }
             .store(in: &cancellables)
     }
@@ -148,13 +139,14 @@ final class AudioPlayerContentView: UIView {
         if player.isPlaying { player.pause() } else { player.play() }
     }
 
-    private func updateProgress(time: TimeInterval, duration: TimeInterval) {
+    private func skip(_ delta: TimeInterval) {
+        guard let player else { return }
+        player.seek(to: player.currentTime + delta)
+    }
+
+    private func updateTimeLabel(time: TimeInterval, duration: TimeInterval) {
         let effectiveDuration = duration > 0 ? duration : (player?.imetaDuration ?? 0)
-        let ratio: CGFloat = effectiveDuration > 0 ? CGFloat(time / effectiveDuration) : 0
-        layoutIfNeeded()
-        let barWidth = progressBar.bounds.width
-        progressFillWidth?.constant = max(0, min(barWidth, barWidth * ratio))
-        timeLabel.text = "\(format(time))/\(format(effectiveDuration))"
+        timeLabel.text = "\(format(time)) / \(format(effectiveDuration))"
     }
 
     private func format(_ seconds: TimeInterval) -> String {
@@ -163,5 +155,9 @@ final class AudioPlayerContentView: UIView {
         let minutes = total / 60
         let secs = total % 60
         return String(format: "%d:%02d", minutes, secs)
+    }
+
+    func setPeeking(_ peeking: Bool) {
+        subviews.forEach { $0.alpha = peeking ? 0 : 1 }
     }
 }
