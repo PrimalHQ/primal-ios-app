@@ -513,13 +513,6 @@ final class WalletManager {
         let res = try await walletRepo.pay(walletId: walletID, request: request)
 
         if let error = res.exceptionOrNull()?.description() {
-            // Breez SDK throws "Expected Lightning payment details" from a
-            // post-send helper when a Lightning send settles as a Spark
-            // transfer. The payment succeeded; only metadata extraction
-            // failed. Match Android behavior and don't surface it as failure.
-            if error.localizedCaseInsensitiveContains("Expected Lightning payment details") {
-                return
-            }
             throw WalletError.serverError(error.split(separator: ":").last?.string ?? "")
         }
         if res.getOrNull() == nil { throw WalletError.serverError("Unable to pay invoice") }

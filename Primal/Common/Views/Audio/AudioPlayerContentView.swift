@@ -8,14 +8,14 @@
 import Combine
 import UIKit
 
-final class AudioPlayerContentView: UIView, FloatingPlayerContent {
+final class AudioPlayerContentView: UIView, FloatingPlayerContent, Themeable {
     static let skipInterval: TimeInterval = 15
 
     private let backButton = UIButton(type: .system).constrainToSize(24)
     private let playButton = UIButton(type: .system).constrainToSize(28)
     private let forwardButton = UIButton(type: .system).constrainToSize(24)
     private let spinner = UIActivityIndicatorView(style: .medium)
-    private let closeButton = UIButton(configuration: .simpleImage(.embedPlayerClose)).constrainToSize(28)
+    private let closeButton = UIButton(configuration: .simpleImage(.embedPlayerClose)).constrainToSize(24)
     private let titleLabel = UILabel()
     private let timeLabel = UILabel()
 
@@ -30,69 +30,63 @@ final class AudioPlayerContentView: UIView, FloatingPlayerContent {
     init() {
         super.init(frame: .zero)
         setupLayout()
+        updateTheme()
     }
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    
+    func updateTheme() {
+        backgroundColor = .background3
+        
+        backButton.tintColor = .foreground
+        playButton.tintColor = .foreground
+        forwardButton.tintColor = .foreground
+        closeButton.tintColor = .foreground
+        
+        spinner.color = .foreground
+        
+        titleLabel.textColor = .foreground
+        timeLabel.textColor = .foreground4
+    }
 
     private func setupLayout() {
-        backgroundColor = .background3
         layer.cornerRadius = 6
         clipsToBounds = true
 
         backButton.setImage(UIImage(systemName: "gobackward.15"), for: .normal)
-        backButton.tintColor = .foreground
         backButton.addAction(.init(handler: { [weak self] _ in self?.skip(-Self.skipInterval) }), for: .touchUpInside)
 
         playButton.setImage(UIImage(systemName: "play.fill"), for: .normal)
-        playButton.tintColor = .foreground
         playButton.addAction(.init(handler: { [weak self] _ in self?.togglePlay() }), for: .touchUpInside)
 
         forwardButton.setImage(UIImage(systemName: "goforward.15"), for: .normal)
-        forwardButton.tintColor = .foreground
         forwardButton.addAction(.init(handler: { [weak self] _ in self?.skip(Self.skipInterval) }), for: .touchUpInside)
 
         let controls = UIStackView([backButton, playButton, forwardButton])
         controls.spacing = 6
         controls.alignment = .center
-        addSubview(controls)
-        controls.translatesAutoresizingMaskIntoConstraints = false
+        
+        let topStack = UIStackView(spacing: 8, [titleLabel, closeButton])
+        topStack.alignment = .center
+        let horizontalStack = UIStackView(axis: .horizontal, spacing: 0, [controls, UIView(), timeLabel])
+        horizontalStack.alignment = .center
+        
+        let mainStack = UIStackView(axis: .vertical, [topStack, UIView(), horizontalStack])
 
+        addSubview(mainStack)
+        mainStack.pinToSuperview(edges: .vertical, padding: 4).pinToSuperview(edges: .horizontal, padding: 12)
+        
         addSubview(spinner)
         spinner.pin(to: playButton)
         spinner.hidesWhenStopped = true
-        spinner.color = .foreground
-
-        addSubview(closeButton)
-        closeButton
-            .pinToSuperview(edges: .trailing, padding: 6)
-            .centerToSuperview(axis: .vertical)
-        closeButton.tintColor = .foreground
         closeButton.addAction(.init(handler: { [weak self] _ in self?.onClose?() }), for: .touchUpInside)
-
-        addSubview(titleLabel)
-        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        
         titleLabel.font = .appFont(withSize: 12, weight: .semibold)
-        titleLabel.textColor = .foreground
         titleLabel.numberOfLines = 1
         titleLabel.lineBreakMode = .byTruncatingTail
-
-        addSubview(timeLabel)
-        timeLabel.translatesAutoresizingMaskIntoConstraints = false
+        
         timeLabel.font = .appFont(withSize: 10, weight: .regular)
-        timeLabel.textColor = .foreground4
-
-        NSLayoutConstraint.activate([
-            controls.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 8),
-            controls.centerYAnchor.constraint(equalTo: centerYAnchor),
-
-            titleLabel.leadingAnchor.constraint(equalTo: controls.trailingAnchor, constant: 8),
-            titleLabel.trailingAnchor.constraint(lessThanOrEqualTo: closeButton.leadingAnchor, constant: -6),
-            titleLabel.topAnchor.constraint(equalTo: topAnchor, constant: 12),
-
-            timeLabel.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor),
-            timeLabel.trailingAnchor.constraint(lessThanOrEqualTo: closeButton.leadingAnchor, constant: -6),
-            timeLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -10)
-        ])
+        timeLabel.setContentHuggingPriority(.required, for: .horizontal)
     }
 
     private func bindPlayer() {

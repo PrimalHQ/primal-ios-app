@@ -16,12 +16,12 @@ class FeedElementAudioCell: FeedElementBaseCell, RegularFeedElementCell, AudioCe
     static var cellID: String { "FeedElementAudioCell" }
 
     private let container = UIView()
-    private let playButton = UIButton(type: .system)
+    private let playButton = UIButton(type: .system).constrainToSize(42)
     private let spinner = UIActivityIndicatorView(style: .medium)
     private let titleLabel = UILabel()
     private let domainLabel = UILabel()
     private let durationLabel = UILabel()
-    private let waveform = AudioWaveformView()
+    private let waveform = AudioWaveformView().constrainToSize(height: 32)
 
     private var player: AudioPlayer?
     private var cancellables: Set<AnyCancellable> = []
@@ -102,47 +102,30 @@ private extension FeedElementAudioCell {
             .pinToSuperview(edges: .bottom, padding: 8)
             .pinToSuperview(edges: .leading, padding: leadingPadding)
             .pinToSuperview(edges: .trailing, padding: horizontalPadding)
-            .constrainToSize(height: 90)
 
         container.clipsToBounds = true
 
-        container.addSubview(playButton)
-        playButton
-            .constrainToSize(42)
-            .pinToSuperview(edges: .leading, padding: 12)
-            .centerToSuperview(axis: .vertical)
         playButton.layer.cornerRadius = 21
         playButton.setImage(UIImage(systemName: "play.fill"), for: .normal)
         playButton.addAction(.init(handler: { [weak self] _ in self?.toggle() }), for: .touchUpInside)
 
+        let botRow = UIStackView(spacing: 8, [domainLabel, durationLabel])
+        botRow.alignment = .center
+        let verticalStack = UIStackView(axis: .vertical, spacing: 8, [titleLabel, botRow, waveform])
+        verticalStack.setCustomSpacing(2, after: titleLabel)
+        
+        let mainStack = UIStackView(spacing: 12, [playButton, verticalStack])
+        mainStack.alignment = .center
+        container.addSubview(mainStack)
+        mainStack.pinToSuperview(padding: 12)
+        
         container.addSubview(spinner)
-        spinner
-            .pin(to: playButton, edges: [.leading, .trailing, .top, .bottom])
+        spinner.pin(to: playButton)
         spinner.hidesWhenStopped = true
-
-        let infoStack = UIStackView(axis: .vertical, [titleLabel, domainLabel])
-        infoStack.spacing = 2
-        titleLabel.numberOfLines = 1
-        titleLabel.lineBreakMode = .byTruncatingTail
-        domainLabel.numberOfLines = 1
-
-        let topRow = UIStackView([infoStack, durationLabel])
-        topRow.alignment = .top
-        topRow.spacing = 8
+        
         durationLabel.setContentHuggingPriority(.required, for: .horizontal)
         durationLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
-
-        let verticalStack = UIStackView(axis: .vertical, [topRow, waveform])
-        verticalStack.spacing = 8
-
-        container.addSubview(verticalStack)
-        verticalStack.translatesAutoresizingMaskIntoConstraints = false
-        verticalStack
-            .pinToSuperview(edges: .trailing, padding: 12)
-            .centerToSuperview(axis: .vertical)
-        verticalStack.leadingAnchor.constraint(equalTo: playButton.trailingAnchor, constant: 12).isActive = true
-
-        waveform.heightAnchor.constraint(equalToConstant: 32).isActive = true
+        titleLabel.lineBreakMode = .byTruncatingTail
     }
 
     func toggle() {
