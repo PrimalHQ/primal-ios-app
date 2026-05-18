@@ -165,6 +165,11 @@ class NoteProcessor: MetadataCoding {
             
             let post = parse(post: primalPost, user: user, mentions: secondLevelMentions) // Must be second level mentions to avoid a infinite recursion
             
+            let allowedKinds: Set<Int> = Set([NostrKind.text, .poll, .zapPoll].map { $0.rawValue })
+            if !allowedKinds.contains(post.post.kind) {
+                return nil
+            }
+            
             guard let nostrUser = response.users[repost.pubkey] else { return post }
             
             post.reposted = .init(users: [response.createParsedUser(nostrUser)], date: repost.date, id: repost.id)
