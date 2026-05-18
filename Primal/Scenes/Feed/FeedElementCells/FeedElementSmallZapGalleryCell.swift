@@ -20,8 +20,9 @@ class FeedElementSmallZapGalleryCell: FeedElementBaseCell, RegularFeedElementCel
         gallery.delegate = self
         
         contentContainer.addSubview(gallery)
+        let topPadding: CGFloat = threadLayout?.position == .main ? 12 : 4
         gallery
-            .pinToSuperview(edges: .top, padding: 4)
+            .pinToSuperview(edges: .top, padding: topPadding)
             .pinToSuperview(edges: .bottom, padding: 1)
             .pinToSuperview(edges: .leading, padding: leadingPadding).pinToSuperview(edges: .trailing, padding: horizontalPadding)
         
