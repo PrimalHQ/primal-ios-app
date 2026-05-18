@@ -48,7 +48,7 @@ final class ThreadReplyViewController: UIViewController {
 
     private let mentionTable = UITableView()
     private let mentionContainer = UIView()
-    private let mentionHorizontalSpacer = SpacerView(width: 90)
+    private let mentionHorizontalSpacer = SpacerView(width: 70)
     private let mentionVerticalSpacer = SpacerView(height: PostingPreviewEmbedsView.viewHeight - 8)
     
     private var embedsTopC: NSLayoutConstraint?
@@ -297,21 +297,21 @@ private extension ThreadReplyViewController {
     func configurePillStackBackground() {
         if #available(iOS 26.0, *) {
             pillStackBackground.effect = UIGlassEffect(style: .regular)
-            pillStackBackground.tintColor = .background
-            pillStackBackground.overrideUserInterfaceStyle = Theme.current.userInterfaceStyle
-            pillStackBackground.layer.cornerRadius = 20
-            pillStackBackgroundBackground.addSubview(pillStackBackground)
-            pillStackBackground.pinToSuperview()
-            
-            // We need this behind glass to make it darker/lighter
-            pillStackBackgroundBackground.backgroundColor = .background.withAlphaComponent(0.3)
-            
-            pillStackBackground.contentView.addSubview(pillStack)
         } else {
-            pillStackBackgroundBackground.backgroundColor = .background3
-            
-            pillStackBackgroundBackground.addSubview(pillStack)
+            pillStackBackground.effect = UIBlurEffect(style: .regular)
         }
+        
+        pillStackBackground.tintColor = .background
+        pillStackBackground.overrideUserInterfaceStyle = Theme.current.userInterfaceStyle
+        pillStackBackground.layer.cornerRadius = 20
+        pillStackBackground.clipsToBounds = true
+        pillStackBackgroundBackground.addSubview(pillStackBackground)
+        pillStackBackground.pinToSuperview()
+        
+        // We need this behind glass to make it darker/lighter
+        pillStackBackgroundBackground.backgroundColor = .background.withAlphaComponent(0.3)
+        
+        pillStackBackground.contentView.addSubview(pillStack)
         
         pillStack.pinToSuperview(edges: [.horizontal, .bottom]).pinToSuperview(edges: .top, padding: -4)
         pillStackBackgroundBackground.layer.cornerRadius = 20
@@ -354,6 +354,7 @@ private extension ThreadReplyViewController {
         
         blurView.pin(to: mentionTable, edges: .vertical, padding: -4).pin(to: mentionTable, edges: .horizontal, padding: 8)
         blurView.layer.cornerRadius = 24
+        blurView.clipsToBounds = true
     }
 
     func sendPressed() {

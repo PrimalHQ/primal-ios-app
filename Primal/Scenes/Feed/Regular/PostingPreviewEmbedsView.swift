@@ -23,9 +23,8 @@ extension UIButton.Configuration {
 
 final class PostingPreviewEmbedsView: UIView {
 
-    private static let chipSize: CGFloat = 80
-    static let viewHeight: CGFloat = 104
-    private static let nativePreviewWidth: CGFloat = 375
+    private static let chipSize: CGFloat = 68
+    static let viewHeight: CGFloat = 80
     private static let chipCornerRadius: CGFloat = 10
     private static let countBadgeSize: CGFloat = 28
 
@@ -173,7 +172,7 @@ private extension PostingPreviewEmbedsView {
         }
         countLabel.text = "\(total)"
 
-        chipStack.addArrangedSubview(SpacerView(width: Self.chipSize - 40))
+        chipStack.addArrangedSubview(SpacerView(width: Self.chipSize))
         
         let fullWidth = RootViewController.instance.view.frame.width
         let contentWidth = (Self.chipSize * CGFloat(total + 1)) + CGFloat(12 * (total - 1))
@@ -223,45 +222,41 @@ private extension PostingPreviewEmbedsView {
         }
     }
 
-    func makePollChip(_ poll: PollData) -> UIButton {
+    func makeIconLabelChip(icon iconImage: UIImage, label labelText: String, tintColor: UIColor = .foreground) -> UIButton {
         let chip = chipBase()
-        chip.addAction(.init(handler: { [weak self] _ in self?.presentPollActionSheet(from: chip) }), for: .touchUpInside)
-        let isValid = poll.isValid
-        if !isValid {
-            chip.backgroundColor = .delete
-        }
-        let icon = UIImageView(image: UIImage(named: "pollIcon")?.withRenderingMode(.alwaysTemplate))
-        icon.tintColor = isValid ? .foreground : .white
-        icon.contentMode = .scaleAspectFit
-        icon.constrainToSize(28)
+        let icon = UIImageView(image: iconImage).constrainToSize(16)
+        icon.tintColor = tintColor
         let label = UILabel()
-        if !isValid {
-            label.text = "Invalid poll"
-        } else {
-            label.text = poll.options.isEmpty ? "Poll" : "\(poll.options.count) options"
-        }
+        label.text = labelText
         label.font = .appFont(withSize: 12, weight: .semibold)
-        label.textColor = isValid ? .foreground : .white
-        let stack = UIStackView(axis: .vertical, spacing: 4, [icon, label])
+        label.textColor = tintColor
+        let stack = UIStackView(axis: .vertical, spacing: 10, [icon, label])
         stack.alignment = .center
         stack.isUserInteractionEnabled = false
         chip.addSubview(stack)
-        stack.centerToSuperview()
+        stack.centerToSuperview(axis: .horizontal).centerToSuperview(axis: .vertical, offset: 2)
+        return chip
+    }
+
+    func makePollChip(_ poll: PollData) -> UIButton {
+        let isValid = poll.isValid
+        let labelText: String
+        if !isValid {
+            labelText = "Invalid poll"
+        } else {
+            labelText = poll.options.isEmpty ? "Poll" : "\(poll.options.count) options"
+        }
+        let chip = makeIconLabelChip(icon: .poll16, label: labelText, tintColor: isValid ? .foreground : .white)
+        if !isValid {
+            chip.backgroundColor = .delete
+        }
+        chip.addAction(.init(handler: { [weak self] _ in self?.presentPollActionSheet(from: chip) }), for: .touchUpInside)
         return chip
     }
 
     func makeEmbedChip(_ embed: PostEmbedPreview, index: Int) -> UIButton {
-        let chip = chipBase()
+        let chip = makeIconLabelChip(icon: embed.chipIcon, label: embed.chipLabel)
         chip.addAction(.init(handler: { [weak self] _ in self?.presentEmbedActionSheet(index: index, from: chip) }), for: .touchUpInside)
-        let inner = embed.makeView()
-        inner.isUserInteractionEnabled = false
-        inner.layer.borderWidth = 0
-        inner.backgroundColor = .background3
-        inner.translatesAutoresizingMaskIntoConstraints = false
-        chip.addSubview(inner)
-        inner.constrainToSize(width: Self.nativePreviewWidth).centerToSuperview()
-        let scale = Self.chipSize / Self.nativePreviewWidth
-        inner.transform = CGAffineTransform(scaleX: scale, y: scale)
         return chip
     }
 
@@ -395,5 +390,27 @@ private extension PostingPreviewEmbedsView {
 
     func removePoll() {
         manager?.pollOptions = nil
+    }
+}
+
+private extension PostEmbedPreview {
+    var chipLabel: String {
+        switch self {
+        case .highlight: return "Highlight"
+        case .post:      return "Note"
+        case .article:   return "Article"
+        case .invoice:   return "Invoice"
+        case .live:      return "Live"
+        }
+    }
+
+    var chipIcon: UIImage {
+        switch self {
+        case .highlight: return .highlight16
+        case .post:      return .note16
+        case .article:   return .article16
+        case .invoice:   return .invoice16
+        case .live:      return .live16
+        }
     }
 }

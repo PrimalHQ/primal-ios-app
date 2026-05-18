@@ -351,7 +351,7 @@ private extension ThreadViewController {
         let replyAttachmentsButton = UIButton(primaryAction: .init(handler: { [weak self] _ in
             self?.replyVC.previewEmbedsView.expandButtonTapped()
         }))
-        replyAttachmentsButton.backgroundColor = .white.withAlphaComponent(0.01)
+        replyAttachmentsButton.backgroundColor = .white.withAlphaComponent(0.001)
         view.addSubview(replyAttachmentsButton)
         replyAttachmentsButton.centerToView(replyVC.previewEmbedsView, axis: .vertical).pinToSuperview(edges: .trailing).constrainToSize(100)
         
