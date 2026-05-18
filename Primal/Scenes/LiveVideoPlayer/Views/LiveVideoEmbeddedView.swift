@@ -12,21 +12,23 @@ import Lottie
 
 class LiveVideoEmbeddedView: UIView {
     let playerView = PlayerView()
-    
+
     private let playButton = UIButton(configuration: .simpleImage(.embedPlayerPause)).constrainToSize(32)
     private let closeButton = UIButton(configuration: .simpleImage(.embedPlayerClose)).constrainToSize(32)
     private let loadingView = UIView().constrainToSize(32)
     private let animationView = LottieAnimationView(animation: AnimationType.liveBuffering.animation).constrainToSize(40)
-    
+
     private let leftChevron = UIImageView(image: .livePlayerChevron)
     private let rightChevron = UIImageView(image: .livePlayerChevron)
-    
+
     private let streamEndedView = UIView()
     private let streamEndedLabel = UILabel("STREAM ENDED", color: .init(rgb: 0x666666), font: .appFont(withSize: 12, weight: .bold))
-    
+
+    let audioContent = AudioPlayerContentView()
+
     @Published var showChevron = false
     var player: LiveVideoPlayer? { didSet { streamEndedView.isHidden = player != nil } }
-    
+
     var playPauseCancellable: AnyCancellable?
     
     init() {
@@ -84,6 +86,41 @@ class LiveVideoEmbeddedView: UIView {
         closeButton.addAction(.init(handler: { _ in
             RootViewController.instance.liveVideoController = nil
         }), for: .touchUpInside)
+
+        addSubview(audioContent)
+        audioContent.pinToSuperview()
+        audioContent.isHidden = true
+        audioContent.onClose = {
+            RootViewController.instance.dismissFloatingAudio(clearRegistry: false)
+        }
+    }
+
+    func setupAudio(player: AudioPlayer) {
+        playerView.isHidden = true
+        playButton.isHidden = true
+        closeButton.isHidden = true
+        loadingView.isHidden = true
+        streamEndedView.isHidden = true
+        leftChevron.isHidden = true
+        rightChevron.isHidden = true
+
+        audioContent.isHidden = false
+        audioContent.player = player
+    }
+
+    func removeAudio() {
+        audioContent.isHidden = true
+        audioContent.player = nil
+    }
+
+    func revealVideoChrome() {
+        playerView.isHidden = false
+        closeButton.isHidden = false
+        streamEndedView.isHidden = player != nil
+        if let player {
+            playButton.isHidden = false
+            playButton.configuration = .simpleImage(player.isPlaying ? .embedPlayerPause : .embedPlayerPlay)
+        }
     }
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }

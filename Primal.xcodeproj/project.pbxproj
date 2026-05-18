@@ -603,6 +603,11 @@
 		B9C672EB2E315F5D00243B45 /* LiveVideoChatInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C672EA2E315F5D00243B45 /* LiveVideoChatInputView.swift */; };
 		B9C673142E327CB200243B45 /* AVPlayer+Extra.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C673132E327CAD00243B45 /* AVPlayer+Extra.swift */; };
 		B9C673302E37E62100243B45 /* LiveVideoEmbeddedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C6732F2E37E61300243B45 /* LiveVideoEmbeddedView.swift */; };
+		AAA1110000000000000B0001 /* AudioPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAA1110000000000000B0002 /* AudioPlayer.swift */; };
+		AAA1110000000000000B0003 /* AudioPlayerRegistry.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAA1110000000000000B0004 /* AudioPlayerRegistry.swift */; };
+		AAA1110000000000000B0005 /* AudioWaveformView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAA1110000000000000B0006 /* AudioWaveformView.swift */; };
+		AAA1110000000000000B0007 /* AudioPlayerContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAA1110000000000000B0008 /* AudioPlayerContentView.swift */; };
+		AAA1110000000000000B0009 /* FeedElementAudioCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAA1110000000000000B000A /* FeedElementAudioCell.swift */; };
 		B9C6D22F2CA1B33700B2EEBE /* DatabaseManager+ProfileCounts.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C6D22E2CA1B33700B2EEBE /* DatabaseManager+ProfileCounts.swift */; };
 		B9C6D2322CA31B4E00B2EEBE /* ExploreTopicsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C6D2312CA31B4E00B2EEBE /* ExploreTopicsViewController.swift */; };
 		B9C6D2342CA3276E00B2EEBE /* ExploreFeedsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C6D2332CA3276E00B2EEBE /* ExploreFeedsViewController.swift */; };
@@ -1455,6 +1460,11 @@
 		B9C672EA2E315F5D00243B45 /* LiveVideoChatInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveVideoChatInputView.swift; sourceTree = "<group>"; };
 		B9C673132E327CAD00243B45 /* AVPlayer+Extra.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AVPlayer+Extra.swift"; sourceTree = "<group>"; };
 		B9C6732F2E37E61300243B45 /* LiveVideoEmbeddedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveVideoEmbeddedView.swift; sourceTree = "<group>"; };
+		AAA1110000000000000B0002 /* AudioPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayer.swift; sourceTree = "<group>"; };
+		AAA1110000000000000B0004 /* AudioPlayerRegistry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayerRegistry.swift; sourceTree = "<group>"; };
+		AAA1110000000000000B0006 /* AudioWaveformView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioWaveformView.swift; sourceTree = "<group>"; };
+		AAA1110000000000000B0008 /* AudioPlayerContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayerContentView.swift; sourceTree = "<group>"; };
+		AAA1110000000000000B000A /* FeedElementAudioCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedElementAudioCell.swift; sourceTree = "<group>"; };
 		B9C6D22E2CA1B33700B2EEBE /* DatabaseManager+ProfileCounts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DatabaseManager+ProfileCounts.swift"; sourceTree = "<group>"; };
 		B9C6D2312CA31B4E00B2EEBE /* ExploreTopicsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreTopicsViewController.swift; sourceTree = "<group>"; };
 		B9C6D2332CA3276E00B2EEBE /* ExploreFeedsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreFeedsViewController.swift; sourceTree = "<group>"; };
@@ -2065,6 +2075,7 @@
 			children = (
 				B9C5A0EB2F44AD91007CB5D3 /* BigManagers */,
 				B90DB0632E58DDDF00A67D4A /* Video */,
+				AAA1110000000000000A0001 /* Audio */,
 				B9C6D23E2CAC53CD00B2EEBE /* HelperExtensions */,
 				B906AB142C9B52A40089813F /* Database */,
 				B9009B6A2B1F458B002B0613 /* SmallManagers */,
@@ -2492,6 +2503,7 @@
 				B2A3C4D5E6F7A8B9C0D1E2F4 /* PrimalNavigationBar.swift */,
 				B2A3C4D5E6F7A8B9C0D1F002 /* SlideDownShellViewController.swift */,
 				B2A3C4D5E6F7A8B9C0D1F004 /* GenericSelectionController.swift */,
+				AAA1110000000000000A0002 /* Audio */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -2746,6 +2758,24 @@
 				B914CD682A9E6B4A00CD0BD1 /* VideoPlaybackManager.swift */,
 			);
 			path = Video;
+			sourceTree = "<group>";
+		};
+		AAA1110000000000000A0001 /* Audio */ = {
+			isa = PBXGroup;
+			children = (
+				AAA1110000000000000B0002 /* AudioPlayer.swift */,
+				AAA1110000000000000B0004 /* AudioPlayerRegistry.swift */,
+			);
+			path = Audio;
+			sourceTree = "<group>";
+		};
+		AAA1110000000000000A0002 /* Audio */ = {
+			isa = PBXGroup;
+			children = (
+				AAA1110000000000000B0006 /* AudioWaveformView.swift */,
+				AAA1110000000000000B0008 /* AudioPlayerContentView.swift */,
+			);
+			path = Audio;
 			sourceTree = "<group>";
 		};
 		B914CD752AA62EDC00CD0BD1 /* ImageCollection */ = {
@@ -3683,6 +3713,7 @@
 				B9E67E7E2D0760B6006BB397 /* FeedElementTextCell.swift */,
 				B9E67E802D0762CD006BB397 /* FeedElementSmallZapGalleryCell.swift */,
 				B9E67E822D076303006BB397 /* FeedElementImageGalleryCell.swift */,
+				AAA1110000000000000B000A /* FeedElementAudioCell.swift */,
 				B9E67E842D076327006BB397 /* FeedElementWebPreviewCell.swift */,
 				B9FAC6432D319FDC00B57EF6 /* FeedElementSystemWebPreviewCell.swift */,
 				B9FAC6492D37E5AF00B57EF6 /* FeedElementWebkitLinkPreviewCell.swift */,
@@ -4563,6 +4594,11 @@
 				B99E03A82C0DF2ED006CCECB /* PostReactionsCell.swift in Sources */,
 				B9009B6C2B1F64B9002B0613 /* AnimatedImageCache.swift in Sources */,
 				B9C673302E37E62100243B45 /* LiveVideoEmbeddedView.swift in Sources */,
+				AAA1110000000000000B0001 /* AudioPlayer.swift in Sources */,
+				AAA1110000000000000B0003 /* AudioPlayerRegistry.swift in Sources */,
+				AAA1110000000000000B0005 /* AudioWaveformView.swift in Sources */,
+				AAA1110000000000000B0007 /* AudioPlayerContentView.swift in Sources */,
+				AAA1110000000000000B0009 /* FeedElementAudioCell.swift in Sources */,
 				9E8834A42A274A0D005DB548 /* PostPreviewView.swift in Sources */,
 				B991FA462E8ED0A2009D313E /* LiveVideoSmallHeaderView.swift in Sources */,
 				B9C6D2472CB0140B00B2EEBE /* NotificationFeedViewController.swift in Sources */,

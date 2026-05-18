@@ -207,13 +207,16 @@ class NoteProcessor: MetadataCoding {
         var markedMentions: [(String, ref: String)] = []
         let hashtags: [String] = text.extractHashtags()
         var itemsToRemove: [String] = []
-        
+
         for str in text.extractURLs() {
             if str.isImageURL {
                 imageURLs.append(str)
                 itemsToRemove.append(str)
             } else if str.isVideoURL {
                 videoURLS.append(str)
+                itemsToRemove.append(str)
+            } else if str.isAudioURL {
+                p.audioAttachments.append(makeParsedAudio(url: str, tags: post.tags))
                 itemsToRemove.append(str)
             } else {
                 if str.contains("primal.net/e/") || str.contains("primal.net/p/") {
@@ -556,4 +559,30 @@ class NoteProcessor: MetadataCoding {
             itemsToRemove.append(mentionText)
         }
     }
+}
+
+private func makeParsedAudio(url: String, tags: [[String]]) -> ParsedAudio {
+    let imetaTag = tags.tagArrayForKeyWithValue("imeta", value: "url \(url.lowercased())")
+
+    var title: String?
+    var duration: TimeInterval?
+
+    if let imetaTag {
+        for entry in imetaTag {
+            if entry.hasPrefix("alt ") {
+                let value = String(entry.dropFirst(4)).trimmingCharacters(in: .whitespaces)
+                if !value.isEmpty { title = value }
+            } else if entry.hasPrefix("duration ") {
+                duration = TimeInterval(String(entry.dropFirst(9)).trimmingCharacters(in: .whitespaces))
+            }
+        }
+    }
+
+    if title == nil, let parsed = URL(string: url) {
+        let filename = parsed.deletingPathExtension().lastPathComponent
+        let decoded = filename.removingPercentEncoding ?? filename
+        if !decoded.isEmpty { title = decoded }
+    }
+
+    return ParsedAudio(url: url, title: title ?? url, duration: duration)
 }

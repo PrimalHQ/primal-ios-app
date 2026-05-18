@@ -78,6 +78,12 @@ enum NotFoundContent: Hashable {
     case note, article
 }
 
+struct ParsedAudio: Hashable {
+    let url: String
+    let title: String
+    let duration: TimeInterval?
+}
+
 final class ParsedContent: Hashable {
     let uniqueID: String = UUID().uuidString
     
@@ -100,6 +106,7 @@ final class ParsedContent: Hashable {
     var mediaResources: [MediaMetadata.Resource] = []
     var videoThumbnails: [String: String] = [:]
     var linkPreviews: [LinkMetadata] = []
+    var audioAttachments: [ParsedAudio] = []
     var article: Article?
     
     var invoice: Invoice?

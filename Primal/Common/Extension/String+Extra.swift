@@ -38,8 +38,10 @@ extension String {
 
 extension URL {
     var isImageURL: Bool { lastPathComponent.isImageURLPathComponent || absoluteString.isImageURLPathComponent }
-    
+
     var isVideoURL: Bool { lastPathComponent.isVideoButNotYoutubePathComponent || absoluteString.isVideoButNotYoutubePathComponent }
+
+    var isAudioURL: Bool { lastPathComponent.isAudioURLPathComponent || absoluteString.isAudioURLPathComponent }
 }
 
 extension String: Identifiable {
@@ -86,6 +88,15 @@ extension String: Identifiable {
     var isVideoButNotYoutubePathComponent: Bool {
         let lowercased = lowercased()
         return lowercased.hasSuffix(".mov") || lowercased.hasSuffix(".mp4") || lowercased.hasSuffix(".3gp")
+    }
+
+    var isAudioURL: Bool {
+        URL(string: self)?.isAudioURL ?? false
+    }
+
+    var isAudioURLPathComponent: Bool {
+        let lowercased = lowercased()
+        return lowercased.hasSuffix(".mp3") || lowercased.hasSuffix(".wav") || lowercased.hasSuffix(".m4a") || lowercased.hasSuffix(".aac")
     }
     
     var isYoutubeVideoURL: Bool {

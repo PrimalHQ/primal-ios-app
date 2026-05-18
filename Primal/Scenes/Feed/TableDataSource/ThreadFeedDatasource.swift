@@ -54,6 +54,10 @@ class ThreadFeedDatasource: UITableViewDiffableDataSource<TwoSectionFeed, Thread
                 switch item.element {
                 case .webPreview(_, let metadata):
                     (cell as? WebPreviewCell)?.updateWebPreview(metadata)
+                case .audio(let url):
+                    if let audio = item.content.audioAttachments.first(where: { $0.url == url }) {
+                        (cell as? AudioCellBindable)?.bind(audio: audio)
+                    }
                 case .postPreview(let embedded):
                     if let cell = cell as? RegularFeedElementCell {
                         cell.update(embedded)
@@ -125,6 +129,7 @@ class ThreadFeedDatasource: UITableViewDiffableDataSource<TwoSectionFeed, Thread
         registerAll(FeedElementYoutubePreviewCell.self, id: FeedElementYoutubePreviewCell.cellID)
         registerAll(FeedElementMusicPreviewCell.self, id: FeedElementMusicPreviewCell.cellID)
         registerAll(FeedElementTidalPreviewCell.self, id: FeedElementTidalPreviewCell.cellID)
+        registerAll(FeedElementAudioCell.self, id: FeedElementAudioCell.cellID)
 
         tableView.register(ArticleCell.self, forCellReuseIdentifier: "article")
         tableView.register(SkeletonLoaderCell.self, forCellReuseIdentifier: "loading")

@@ -64,6 +64,8 @@ final class RootViewController: UIViewController {
     }
     
     var livePlayer = LiveVideoEmbeddedView()
+    var floatingAudioPlayer: AudioPlayer?
+    var audioErrorCancellable: AnyCancellable?
     
     let smoothScrollButton = UIView()
     var smoothScrollingDisplayLink: CADisplayLink?
@@ -137,6 +139,8 @@ final class RootViewController: UIViewController {
         livePlayer.frame = .init(x: 16, y: 500, width: 178, height: 100)
         livePlayer.isHidden = true
         smoothScrollButton.isHidden = true
+
+        observeAudioPlayer()
         
         _ = WalletManager.instance
         
@@ -178,6 +182,10 @@ final class RootViewController: UIViewController {
                         livePlayer.center.x -= LivePlayerMoveGesture.hideAdjustment
                     }
                 }
+                return
+            }
+            if let audioPlayer = self?.floatingAudioPlayer {
+                if audioPlayer.isPlaying { audioPlayer.pause() } else { audioPlayer.play() }
                 return
             }
             guard let live = self?.liveVideoController else { return }
@@ -358,7 +366,79 @@ extension WalletHomeViewController: AnimatableFirstViewController {
     }
 }
 
+extension RootViewController {
+    func dismissFloatingAudio(clearRegistry: Bool) {
+        audioErrorCancellable = nil
+        if let url = floatingAudioPlayer?.url, clearRegistry {
+            AudioPlayerRegistry.instance.drop(url: url)
+        }
+        if let active = floatingAudioPlayer, VideoPlaybackManager.instance.currentlyPlaying === active {
+            VideoPlaybackManager.instance.currentlyPlaying = nil
+        }
+        floatingAudioPlayer = nil
+        livePlayer.removeAudio()
+        if liveVideoController == nil {
+            livePlayer.isHidden = true
+        } else {
+            livePlayer.revealVideoChrome()
+        }
+    }
+}
+
 private extension RootViewController {
+    func observeAudioPlayer() {
+        VideoPlaybackManager.instance.$currentlyPlaying
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] player in
+                self?.handlePlayerChange(player)
+            }
+            .store(in: &cancellables)
+    }
+
+    func handlePlayerChange(_ player: PlayerProtocol?) {
+        if let audio = player as? AudioPlayer {
+            attachFloatingAudio(audio)
+            return
+        }
+
+        if player is LiveVideoPlayer {
+            dismissFloatingAudio(clearRegistry: false)
+            return
+        }
+
+        // Feed video or nil: keep the audio bar visible if one is active.
+        if floatingAudioPlayer != nil {
+            return
+        }
+
+        livePlayer.removeAudio()
+        if liveVideoController == nil {
+            livePlayer.isHidden = true
+        } else {
+            livePlayer.revealVideoChrome()
+        }
+    }
+
+    func attachFloatingAudio(_ audio: AudioPlayer) {
+        if liveVideoController != nil {
+            liveVideoController = nil
+        }
+        floatingAudioPlayer = audio
+        livePlayer.setupAudio(player: audio)
+        livePlayer.isHidden = false
+        if livePlayer.frame.size != CGSize(width: 199, height: 64) {
+            livePlayer.frame = .init(x: 16, y: view.frame.height - view.safeAreaInsets.bottom - 134, width: 199, height: 64)
+        }
+
+        audioErrorCancellable = audio.$didError
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] didError in
+                guard didError else { return }
+                self?.showToast("Failed to play audio", icon: nil)
+                self?.dismissFloatingAudio(clearRegistry: true)
+            }
+    }
+
     func animateFromIntro() {
         DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) {
             if self.introVC != nil {

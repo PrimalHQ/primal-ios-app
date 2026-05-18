@@ -17,6 +17,7 @@ enum NoteFeedElement: Hashable {
     case text
     case zapGallery([ParsedZap])
     case imageGallery
+    case audio(String)
     case webPreview(WebPreviewType, LinkMetadata)
     case postPreview(ParsedContent)
     case zapPreview
@@ -39,6 +40,8 @@ extension NoteFeedElement {
             return FeedElementSmallZapGalleryCell.cellID
         case .imageGallery:
             return FeedElementImageGalleryCell.cellID
+        case .audio:
+            return FeedElementAudioCell.cellID
         case .webPreview(let webPreviewType, _):
             switch webPreviewType {
             case .small:
@@ -85,6 +88,8 @@ extension NoteFeedElement {
             return HeaderZapGalleryCell.headerID
         case .imageGallery:
             return HeaderImageGalleryCell.headerID
+        case .audio:
+            return HeaderAudioCell.headerID
         case .webPreview(let webPreviewType, _):
             switch webPreviewType {
             case .small:
@@ -130,6 +135,7 @@ extension RegularFeedDatasourceProtocol {
     func registerHeaderCells(_ tableView: UITableView) {
         tableView.register(HeaderTextCell.self, forCellReuseIdentifier: HeaderTextCell.headerID)
         tableView.register(HeaderImageGalleryCell.self, forCellReuseIdentifier: HeaderImageGalleryCell.headerID)
+        tableView.register(HeaderAudioCell.self, forCellReuseIdentifier: HeaderAudioCell.headerID)
         tableView.register(HeaderReactionsCell.self, forCellReuseIdentifier: HeaderReactionsCell.headerID)
         tableView.register(HeaderZapGalleryCell.self, forCellReuseIdentifier: HeaderZapGalleryCell.headerID)
         tableView.register(HeaderPostPreviewCell.self, forCellReuseIdentifier: HeaderPostPreviewCell.headerID)
@@ -170,6 +176,7 @@ extension RegularFeedDatasourceProtocol {
         tableView.register(FeedElementTextCell.self, forCellReuseIdentifier: FeedElementTextCell.cellID)
         tableView.register(FeedElementSmallZapGalleryCell.self, forCellReuseIdentifier: FeedElementSmallZapGalleryCell.cellID)
         tableView.register(FeedElementImageGalleryCell.self, forCellReuseIdentifier: FeedElementImageGalleryCell.cellID)
+        tableView.register(FeedElementAudioCell.self, forCellReuseIdentifier: FeedElementAudioCell.cellID)
         tableView.register(FeedElementInfoCell.self, forCellReuseIdentifier: FeedElementInfoCell.cellID)
         tableView.register(FeedElementPostPreviewCell.self, forCellReuseIdentifier: FeedElementPostPreviewCell.cellID)
         tableView.register(FeedElementZapPreviewCell.self, forCellReuseIdentifier: FeedElementZapPreviewCell.cellID)
@@ -196,6 +203,7 @@ extension RegularFeedDatasourceProtocol {
 
             if !content.text.isEmpty { parts.append(.text) }
             if !content.mediaResources.isEmpty { parts.append(.imageGallery) }
+            for audio in content.audioAttachments { parts.append(.audio(audio.url)) }
             if content.invoice != nil { parts.append(.invoice) }
             if content.poll != nil { parts.append(.poll) }
             if let article = content.article { parts.append(.article) }

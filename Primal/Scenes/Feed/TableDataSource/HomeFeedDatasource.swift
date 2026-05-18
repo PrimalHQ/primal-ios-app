@@ -66,6 +66,10 @@ class HomeFeedDatasource: UITableViewDiffableDataSource<SingleSection, HomeFeedI
         switch element {
         case .webPreview(_, let metadata):
             (cell as? WebPreviewCell)?.updateWebPreview(metadata)
+        case .audio(let url):
+            if let audio = content.audioAttachments.first(where: { $0.url == url }) {
+                (cell as? AudioCellBindable)?.bind(audio: audio)
+            }
         case .postPreview(let embedded):
             if let cell = cell as? RegularFeedElementCell {
                 cell.update(embedded)

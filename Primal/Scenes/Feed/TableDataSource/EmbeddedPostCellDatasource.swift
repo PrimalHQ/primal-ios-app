@@ -72,6 +72,10 @@ class ArticleEmbeddedPostDatasource: UITableViewDiffableDataSource<SingleSection
                     (cell as? WebPreviewCell)?.updateWebPreview(metadata)
                 case .reactions:
                     (cell as? FeedElementReactionsCell)?.bottomBorder.removeFromSuperview()
+                case .audio(let url):
+                    if let audio = content.audioAttachments.first(where: { $0.url == url }) {
+                        (cell as? AudioCellBindable)?.bind(audio: audio)
+                    }
                 case .postPreview(let embedded):
                     if let cell = cell as? RegularFeedElementCell {
                         cell.update(embedded)

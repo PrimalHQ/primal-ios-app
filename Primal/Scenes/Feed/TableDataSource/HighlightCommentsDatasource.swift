@@ -29,6 +29,11 @@ class HighlightCommentsDatasource: UITableViewDiffableDataSource<SingleSection, 
             case .webPreview(_, let metadata):
                 cell = tableView.dequeueReusableCell(withIdentifier: element.cellID, for: indexPath)
                 (cell as? WebPreviewCell)?.updateWebPreview(metadata)
+            case .audio(let url):
+                cell = tableView.dequeueReusableCell(withIdentifier: element.cellID, for: indexPath)
+                if let audio = content.audioAttachments.first(where: { $0.url == url }) {
+                    (cell as? AudioCellBindable)?.bind(audio: audio)
+                }
             case .postPreview(let embedded):
                 let cell = tableView.dequeueReusableCell(withIdentifier: element.cellID, for: indexPath)
                 if let cell = cell as? RegularFeedElementCell {
