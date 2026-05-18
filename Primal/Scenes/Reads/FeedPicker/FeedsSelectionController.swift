@@ -126,7 +126,7 @@ extension PrimalFeed {
     }
     
     static let defaultReadsFeed = PrimalFeed(name: "Nostr Reads", spec: "{\"scope\":\"follows\"}")
-    static let defaultNotesFeed = PrimalFeed(name: "Latest", spec: "{\"id\":\"latest\"}")
+    static let defaultNotesFeed = PrimalFeed(name: "Latest", spec: "{\"id\":\"latest\",\"kind\":\"notes\"}", description: "Latest notes by your follows", feedkind: "primal", enabled: true)
     
     static func fetchPublisher(type: PrimalFeedType) -> AnyPublisher<[PrimalFeed], Never> {
         guard let ev = NostrObject.create(content: "{\"subkey\":\"\(type.subkey)\"}", kind: 30078)?.toJSON() else {
