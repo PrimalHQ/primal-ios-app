@@ -235,17 +235,17 @@ private extension ThreadReplyViewController {
 
         let bottomStack = UIStackView(axis: .vertical, spacing: 8, [mentionContainer, pillRow])
         bottomStack.alignment = .fill
-        
+
         view.addSubview(bottomStack)
         bottomStack.pinToSuperview(edges: [.horizontal, .bottom])
-        
+
         view.addSubview(previewEmbedsView)
         previewEmbedsView.pinToSuperview(edges: .trailing).pin(to: pillRow, edges: .top, padding: -PostingPreviewEmbedsView.viewHeight)
-        
+
         let topC = view.topAnchor.constraint(equalTo: bottomStack.topAnchor)
         topC.priority = .defaultHigh
         topC.isActive = true
-        
+
         embedsTopC = view.topAnchor.constraint(lessThanOrEqualTo: previewEmbedsView.topAnchor)
 
         plusButton.addAction(.init(handler: { [weak self] _ in
@@ -255,10 +255,6 @@ private extension ThreadReplyViewController {
         sendButton.addAction(.init(handler: { [weak self] _ in
             self?.sendPressed()
         }), for: .touchUpInside)
-        
-        view.addGestureRecognizer(BindableTapGestureRecognizer { [weak self] in
-            self?.textView.resignFirstResponder()
-        })
     }
 
     func configureTextView() {
@@ -277,7 +273,7 @@ private extension ThreadReplyViewController {
 
     func configurePlaceholder() {
         placeholderLabel.font = .appFont(withSize: 15, weight: .regular)
-        placeholderLabel.textColor = .foreground4
+        placeholderLabel.textColor = .foreground.withAlphaComponent(0.7)
         placeholderLabel.isUserInteractionEnabled = false
         updatePlaceholder()
     }
@@ -348,6 +344,12 @@ private extension ThreadReplyViewController {
             UIStackView(axis: .horizontal, [mentionTable, mentionHorizontalSpacer]),
             mentionVerticalSpacer
         ])
+        
+        [mentionHorizontalSpacer, mentionVerticalSpacer].forEach { view in
+            view.addGestureRecognizer(BindableTapGestureRecognizer { [weak self] in
+                self?.textView.resignFirstResponder()
+            })
+        }
         
         mentionContainer.addSubview(vStack)
         vStack.pinToSuperview(edges: .vertical, padding: 4).pinToSuperview(edges: .horizontal, padding: 12)
