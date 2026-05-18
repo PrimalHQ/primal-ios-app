@@ -73,6 +73,8 @@ class FeedElementAudioCell: FeedElementBaseCell, RegularFeedElementCell, AudioCe
                 self?.updateTimes(time: time, duration: duration)
             }
             .store(in: &cancellables)
+        
+        updateTheme()
     }
 
     override func updateTheme() {
