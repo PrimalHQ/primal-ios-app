@@ -94,7 +94,11 @@ class RemoteSignerRootController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
+        if #available(iOS 26.0, *) {
+            view.backgroundColor = .clear
+        }
+
         child.willMove(toParent: self)
         view.addSubview(child.view)
         addChild(child)
