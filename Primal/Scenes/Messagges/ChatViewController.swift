@@ -99,20 +99,7 @@ final class ChatViewController: UIViewController, Themeable, WalletSearchControl
         
         navigationController?.setNavigationBarHidden(false, animated: animated)
     
-        mainTabBarController?.setTabBarHidden(false, animated: animated)
-        mainTabBarController?.showTabBarBorder = false
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        
-        mainTabBarController?.showTabBarBorder = false
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        
-        mainTabBarController?.showTabBarBorder = true
+        mainTabBarController?.setTabBarHidden(true, animated: animated)
     }
     
     required init?(coder: NSCoder) {
@@ -143,7 +130,7 @@ private extension ChatViewController {
         
         let stack = UIStackView(axis: .vertical, [navigationBarExtender, navigationBorder, table, inputParent, bottomBarSpacer])
         view.addSubview(stack)
-        stack.pinToSuperview(edges: [.horizontal, .top], safeArea: true).pinToSuperview(edges: .bottom, padding: 48, safeArea: true)
+        stack.pinToSuperview(edges: [.horizontal, .top], safeArea: true).pinToSuperview(edges: .bottom, safeArea: true)
         
 //        view.addSubview(loadingSpinner)
 //        loadingSpinner.centerToSuperview()
@@ -204,7 +191,7 @@ private extension ChatViewController {
         
         inputBorder.pinToSuperview(edges: [.top, .horizontal])
         
-        let bottomC = bottomBarSpacer.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -48)
+        let bottomC = bottomBarSpacer.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 0)
         bottomC.priority = .defaultLow
         bottomC.isActive = true
         
