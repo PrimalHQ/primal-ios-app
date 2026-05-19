@@ -22,8 +22,10 @@ class FeedElementPostPreviewCell: FeedElementBaseCell, RegularFeedElementCell {
         contentContainer.addSubview(postPreview)
         postPreview
             .pinToSuperview(edges: .top, padding: 8)
-            .pinToSuperview(edges: .bottom, padding: 0)
             .pinToSuperview(edges: .leading, padding: leadingPadding).pinToSuperview(edges: .trailing, padding: horizontalPadding)
+        let botC = postPreview.bottomAnchor.constraint(equalTo: contentContainer.bottomAnchor)
+        botC.priority = .defaultLow
+        botC.isActive = true
         
         let previewTap = BindableTapGestureRecognizer { [unowned self] in
             delegate?.postCellDidTap(self, .embeddedPost)
