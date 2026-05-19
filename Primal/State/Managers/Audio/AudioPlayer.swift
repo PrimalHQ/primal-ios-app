@@ -129,7 +129,7 @@ final class AudioPlayer: NSObject, PlayerProtocol {
     }
 
     func setMuted(_ isMuted: Bool) {
-        avPlayer.isMuted = isMuted
+        // No action, unable to mute this
     }
 
     func seek(to seconds: TimeInterval) {

@@ -56,7 +56,6 @@ final class ThreadReplyViewController: UIViewController {
     let previewEmbedsView = PostingPreviewEmbedsView()
     
     private lazy var pillRow = UIStackView(axis: .horizontal, spacing: 8, [pillStackBackgroundBackground, sendButton])
-    private lazy var pillStack = UIStackView(spacing: 4, [textView, plusButton])
     
     private let pillStackBackground = UIVisualEffectView()
     // We need this background behind glass to force it to stay the same base color as our background
@@ -157,7 +156,7 @@ private extension ThreadReplyViewController {
             .sink { [weak self] shouldShow in
                 guard let self else { return }
                 self.sendButton.isHidden = !shouldShow
-                self.pillRow.layoutMargins = shouldShow ? .init(top: 0, left: 12, bottom: 12, right: 12) : .init(top: 0, left: 20, bottom: 20, right: 12)
+                self.pillRow.layoutMargins = shouldShow ? .init(top: 0, left: 12, bottom: 12, right: 12) : .init(top: 0, left: 20, bottom: 28, right: 12)
                 if !shouldShow {
                     self.isAttachmentInputShowing = false
                 }
@@ -224,14 +223,14 @@ private extension ThreadReplyViewController {
         configurePlaceholder()
         configurePlusButton()
         configureSendButton()
-        configurePillStack()
-        configurePillStackBackground()
+        configureInputPill()
         configureMentionContainer()
         configureTextView()
 
         pillRow.alignment = .bottom
         pillRow.isLayoutMarginsRelativeArrangement = true
-        pillRow.layoutMargins = .init(top: 0, left: 12, bottom: 12, right: 12)
+        pillRow.insetsLayoutMarginsFromSafeArea = false
+        pillRow.layoutMargins = .init(top: 0, left: 12, bottom: 28, right: 12)
 
         let bottomStack = UIStackView(axis: .vertical, spacing: 8, [mentionContainer, pillRow])
         bottomStack.alignment = .fill
@@ -262,13 +261,8 @@ private extension ThreadReplyViewController {
         textView.textColor = .foreground.withAlphaComponent(0.9)
         textView.backgroundColor = .clear
         textView.tintColor = .accent
-        textView.textContainerInset = .init(top: 12, left: 0, bottom: 0, right: 0)
+        textView.textContainerInset = .init(top: 12, left: 0, bottom: 10, right: 0)
         textView.textContainer.lineFragmentPadding = 0
-
-        let minH = textView.heightAnchor.constraint(greaterThanOrEqualToConstant: 40)
-        minH.priority = .defaultHigh
-        minH.isActive = true
-        textView.heightAnchor.constraint(lessThanOrEqualToConstant: 140).isActive = true
     }
 
     func configurePlaceholder() {
@@ -280,17 +274,17 @@ private extension ThreadReplyViewController {
 
     func configurePlusButton() {
         plusButton.setImage(.addPostPlus.withRenderingMode(.alwaysTemplate), for: .normal)
-        plusButton.tintColor = .foreground
+        plusButton.tintColor = .foreground.withAlphaComponent(0.6)
         plusButton.constrainToSize(32)
     }
 
     func configureSendButton() {
         sendButton.isEnabled = false
         sendButton.isHidden = true
-        sendButton.constrainToSize(40)
+        sendButton.constrainToSize(46)
     }
     
-    func configurePillStackBackground() {
+    func configureInputPill() {
         if #available(iOS 26.0, *) {
             pillStackBackground.effect = UIGlassEffect(style: .regular)
         } else {
@@ -299,29 +293,32 @@ private extension ThreadReplyViewController {
         
         pillStackBackground.tintColor = .background
         pillStackBackground.overrideUserInterfaceStyle = Theme.current.userInterfaceStyle
-        pillStackBackground.layer.cornerRadius = 20
+        pillStackBackground.layer.cornerRadius = 23
         pillStackBackground.clipsToBounds = true
-        pillStackBackgroundBackground.addSubview(pillStackBackground)
-        pillStackBackground.pinToSuperview()
         
         // We need this behind glass to make it darker/lighter
         pillStackBackgroundBackground.backgroundColor = .background.withAlphaComponent(0.3)
+        pillStackBackgroundBackground.layer.cornerRadius = 23
         
-        pillStackBackground.contentView.addSubview(pillStack)
+        pillStackBackgroundBackground.addSubview(pillStackBackground)
+        pillStackBackground.contentView.addSubview(textView)
+        pillStackBackground.contentView.addSubview(plusButton)
+        pillStackBackground.contentView.addSubview(placeholderLabel)
         
-        pillStack.pinToSuperview(edges: [.horizontal, .bottom]).pinToSuperview(edges: .top, padding: -4)
-        pillStackBackgroundBackground.layer.cornerRadius = 20
-    }
-
-    func configurePillStack() {
-        pillStack.alignment = .bottom
-        pillStack.isLayoutMarginsRelativeArrangement = true
-        pillStack.layoutMargins = .init(top: 0, left: 16, bottom: 4, right: 4)
+        pillStackBackground.pinToSuperview()
+        placeholderLabel.centerToSuperview(axis: .vertical).pin(to: textView, edges: .leading)
+        plusButton.pinToSuperview(edges: .trailing, padding: 8).pinToSuperview(edges: .bottom, padding: 7)
         
-        pillStack.addSubview(placeholderLabel)
-        placeholderLabel
-            .centerToSuperview(axis: .vertical)
-            .pin(to: textView, edges: .leading)
+        let minH = pillStackBackgroundBackground.heightAnchor.constraint(greaterThanOrEqualToConstant: 46)
+        minH.priority = .defaultHigh
+        minH.isActive = true
+        pillStackBackgroundBackground.heightAnchor.constraint(lessThanOrEqualToConstant: 140).isActive = true
+        
+        textView
+            .pinToSuperview(edges: .bottom)
+            .pinToSuperview(edges: .top)
+            .pinToSuperview(edges: .leading, padding: 16)
+            .pinToSuperview(edges: .trailing, padding: 40)
     }
 
     func configureMentionContainer() {
