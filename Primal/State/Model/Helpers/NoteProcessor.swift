@@ -581,7 +581,19 @@ private func makeParsedAudio(url: String, tags: [[String]]) -> ParsedAudio {
     if title == nil, let parsed = URL(string: url) {
         let filename = parsed.deletingPathExtension().lastPathComponent
         let decoded = filename.removingPercentEncoding ?? filename
-        if !decoded.isEmpty { title = decoded }
+        let isHash = decoded.range(of: "^[a-fA-F0-9]{32,}$", options: .regularExpression) != nil
+        if isHash {
+            let ext = parsed.pathExtension
+            let kind = ext.isEmpty ? "Audio" : ext.uppercased()
+            let shortHost = parsed.host?.split(separator: ".").suffix(2).joined(separator: ".")
+            if let shortHost, !shortHost.isEmpty {
+                title = "\(kind) on \(shortHost)"
+            } else {
+                title = kind
+            }
+        } else if !decoded.isEmpty {
+            title = decoded
+        }
     }
 
     return ParsedAudio(url: url, title: title ?? url, duration: duration)
