@@ -151,7 +151,7 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
         }
     }
     
-    var startIgnoreAreaSize: CGFloat { PrimalNavigationBar.maxTranslation }
+    var startIgnoreAreaSize: CGFloat { PrimalNavigationBar.maxTranslation + 4 }
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         let newPosition = scrollView.contentOffset.y
         let delta = newPosition - prevPosition
