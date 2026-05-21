@@ -52,7 +52,7 @@ class ArticleViewController: UIViewController, Themeable, AnimatedChromeControll
     
     lazy var infoVC = EmbeddedPostController<PostReactionsCell>()
     lazy var commentsVC = LongFormCommentsController(content: content)
-    lazy var chromeManager = ArticleChromeManager(viewController: self, extraTopView: navExtension, extraBottomView: commentZapPill, bottomBarHeight: 130)
+    lazy var chromeManager = ArticleChromeManager(viewController: self, extraBottomView: commentZapPill, topBarHeight: 108, bottomBarHeight: 130)
     
     let bookmarkNavButton = UIButton().constrainToSize(width: 30)
     let threeDotsButton = UIButton().constrainToSize(width: 30)
@@ -208,6 +208,7 @@ private extension ArticleViewController {
         scrollView.refreshControl = refreshControl
         
         let mainStack = UIStackView(axis: .vertical, [
+            navExtension,
             SpacerView(height: 12),
             topInfoView,
             contentStack,
@@ -251,16 +252,11 @@ private extension ArticleViewController {
         mainStack.pinToSuperview()
         mainStack.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
         
-        scrollView.contentInset = UIEdgeInsets(top: 64, left: 0, bottom: 0, right: 0)
-        
         scrollView.addSubview(selectionMenuView)
         selectionMenuView.pinToSuperview(edges: .horizontal, padding: 20)
         selectionMenuConstraint = selectionMenuView.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 0)
         selectionMenuConstraint?.isActive = true
         selectionMenuView.alpha = 0
-        
-        view.addSubview(navExtension)
-        navExtension.pinToSuperview(edges: [.horizontal, .top])
         
         commentsVC.didMove(toParent: self)
         infoVC.didMove(toParent: self)
@@ -275,9 +271,9 @@ private extension ArticleViewController {
         commentsVC.viewHeight.assign(to: \.constant, on: commentHeight).store(in: &cancellables)
         
         view.addSubview(commentZapPill)
-        commentZapPill.anchorPoint = .init(x: 1, y: 1)
-        commentZapPill.pinToSuperview(edges: .bottom, padding: 36, safeArea: true)
-        commentZapPill.centerXAnchor.constraint(equalTo: view.trailingAnchor, constant: -12).isActive = true
+        commentZapPill
+            .pinToSuperview(edges: .bottom, padding: 36, safeArea: true)
+            .pinToSuperview(edges: .trailing, padding: 21)
         
         commentZapPill.commentButton.addAction(.init(handler: { [weak self] _ in
             guard let self else { return }

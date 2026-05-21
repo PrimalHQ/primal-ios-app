@@ -74,6 +74,7 @@ class HomeFeedChildController: PostFeedViewController {
         super.viewDidAppear(animated)
         
         tabController = findParent()
+        parentHomeVC = findParent()
         
         navigationController?.setNavigationBarHidden(true, animated: animated)
     }
@@ -112,8 +113,6 @@ class HomeFeedChildController: PostFeedViewController {
         let delta = newPosition - prevPosition
         let prevDelta = prevDelta
         
-        parentHomeVC = parentHomeVC ?? findParent()
-        
         super.scrollViewDidScroll(scrollView)
         
         if newPostsViewParent.alpha != 0 {
@@ -146,7 +145,7 @@ class HomeFeedChildController: PostFeedViewController {
             newPostsView.setHidden(barsHidden || delta > 0 || accumulatedDelta > 0, animated: true)
         }
         if delta != 0 {
-            mainTabBarController?.setIsExcited(barsHidden ? delta < 0 : delta > 0)
+            tabController?.setIsExcited(barsHidden ? delta < 0 : delta > 0)
         }
     }
 
@@ -155,7 +154,7 @@ class HomeFeedChildController: PostFeedViewController {
         
         guard !decelerate else { return }
         parentHomeVC?.postButton.setIsExcited(false)
-        mainTabBarController?.setIsExcited(false)
+        tabController?.setIsExcited(false)
         parentHomeVC?.setNavigationBarExcited(excited: 0, animated: true)
         newPostsView.setHidden(barsHidden, animated: true)
     }
@@ -164,8 +163,8 @@ class HomeFeedChildController: PostFeedViewController {
         super.scrollViewDidEndDecelerating(scrollView)
         
         parentHomeVC?.postButton.setIsExcited(false)
-        mainTabBarController?.setIsExcited(false)
         parentHomeVC?.setNavigationBarExcited(excited: 0, animated: true)
+        tabController?.setIsExcited(false)
         newPostsView.setHidden(barsHidden, animated: true)
     }
     

@@ -145,7 +145,10 @@ final class NotificationFeedViewController: NoteViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        if notifications.isEmpty || mainTabBarController?.newNotifications ?? 0 > 0 || lastRefresh.timeIntervalSinceNow < -600 {
+        parentHomeVC = parentHomeVC ?? findParent()
+        tabController = tabController ?? findParent()
+        
+        if notifications.isEmpty || tabController?.newNotifications ?? 0 > 0 || lastRefresh.timeIntervalSinceNow < -600 {
             refresh()
         }
     }
@@ -275,14 +278,11 @@ final class NotificationFeedViewController: NoteViewController {
     override func setBarsHidden(_ hidden: Bool, animated: Bool) {
         super.setBarsHidden(hidden, animated: animated)
         
-        parentHomeVC = parentHomeVC ?? findParent()
-        tabController = tabController ?? findParent()
-        
         let percent: CGFloat = hidden ? 1 : 0
 
         let apply = { [self] in
-            mainTabBarController?.indicatorStack.alpha = 1 - percent
-            mainTabBarController?.indicatorStack.transform = hidden ? .init(translationX: 0, y: -barsMaxTransform) : .identity
+            tabController?.indicatorStack.alpha = 1 - percent
+            tabController?.indicatorStack.transform = hidden ? .init(translationX: 0, y: -barsMaxTransform) : .identity
         }
 
         if animated {
@@ -320,7 +320,7 @@ final class NotificationFeedViewController: NoteViewController {
             parentHomeVC?.setNavigationBarExcited(excited: accumulatedDelta, animated: accumulatedDelta == 0)
         }
         if delta != 0 {
-            mainTabBarController?.setIsExcited(barsHidden ? delta < 0 : delta > 0)
+            tabController?.setIsExcited(barsHidden ? delta < 0 : delta > 0)
         }
     }
     
@@ -329,7 +329,7 @@ final class NotificationFeedViewController: NoteViewController {
         
         guard !decelerate else { return }
         parentHomeVC?.postButton.setIsExcited(false)
-        mainTabBarController?.setIsExcited(false)
+        tabController?.setIsExcited(false)
         parentHomeVC?.setNavigationBarExcited(excited: 0, animated: true)
     }
     
@@ -337,7 +337,7 @@ final class NotificationFeedViewController: NoteViewController {
         super.scrollViewDidEndDecelerating(scrollView)
         
         parentHomeVC?.postButton.setIsExcited(false)
-        mainTabBarController?.setIsExcited(false)
+        tabController?.setIsExcited(false)
         parentHomeVC?.setNavigationBarExcited(excited: 0, animated: true)
     }
     

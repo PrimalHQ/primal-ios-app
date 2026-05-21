@@ -12,38 +12,22 @@ class ArticleChromeManager: AppChromeManager {
     override func setBarsHidden(_ hidden: Bool, animated: Bool) {
         guard let controller = viewController else { return }
 
-        let navTransform: CGAffineTransform = hidden ? .init(translationX: 0, y: -topBarHeight) : .identity
-        let tabBar = controller.mainTabBarController
-        let tabTransform = tabBar?.targetTransformForTabBarState(hidden: hidden, excited: tabBar?.isExcited ?? false) ?? .identity
+        controller.navigationController?.setNavigationBarHidden(hidden, animated: animated)
+        controller.mainTabBarController?.setTabBarHidden(hidden, animated: animated)
 
-        let apply = { [self] in
-            controller.navigationController?.navigationBar.transform = navTransform
-            tabBar?.tabBarContainerView.transform = tabTransform
-
-            if hidden {
-                extraBottomView?.subviews.first?.alpha = 0
-                extraBottomView?.transform = .init(translationX: 0, y: bottomBarHeight).scaledBy(x: 0, y: 0)
-                extraBottomView?.alpha = 0
-            } else {
-                extraBottomView?.subviews.first?.alpha = 1
-                extraBottomView?.transform = .identity
-                extraBottomView?.alpha = 1
+        if animated, let extraBottomView {
+            let offset = bottomBarHeight + 30
+            extraBottomView.isHidden = false
+            extraBottomView.transform = hidden ? .identity : .init(translationX: 0, y: offset)
+            UIView.animate(withDuration: 0.3) {
+                if hidden {
+                    extraBottomView.transform = .init(translationX: 0, y: offset)
+                } else {
+                    extraBottomView.transform = .identity
+                }
             }
-        }
-
-        if animated {
-            UIView.animate(withDuration: 0.3, animations: apply)
         } else {
-            apply()
+            extraBottomView?.isHidden = hidden
         }
-    }
-    
-    override func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        super.scrollViewDidScroll(scrollView)
-        
-        extraTopView?.transform = .init(
-            translationX: 0,
-            y: (-(viewController?.scrollView.contentOffset.y ?? 0) - 64).clamped(to: -64...96)
-        )
     }
 }

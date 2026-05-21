@@ -34,6 +34,8 @@ class AppChromeManager: NSObject, UIScrollViewDelegate {
     var bottomBarHeight: CGFloat
 
     var prevPosition: CGFloat = 0
+    var prevDelta: CGFloat = 0
+    var accumulatedDelta: CGFloat = 0
     var barsHidden: Bool = false
 
     func viewWillDisappear(_ animated: Bool) {
@@ -45,16 +47,37 @@ class AppChromeManager: NSObject, UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         let newPosition = scrollView.contentOffset.y
         let delta = newPosition - prevPosition
-        prevPosition = newPosition
+        defer {
+            prevPosition = newPosition
+            prevDelta = delta
+        }
 
-        if !scrollView.isTracking { return }
+        // Ignore large system-driven jumps (layout changes, inset adjustments).
+        if abs(delta) > 100 || (delta.sign != prevDelta.sign && prevDelta != 0) {
+            return
+        }
 
-        if newPosition <= 0 {
+        // Only react to user-driven scrolls — content insertions / programmatic scrolls fire
+        // scrollViewDidScroll with deltas that would otherwise toggle the chrome incorrectly.
+        guard scrollView.isDragging || scrollView.isDecelerating else { return }
+
+        if newPosition < extraTopView?.frame.height ?? 0 && delta > 0 {
+            // NO OP because we don't want to hide the header if we over-scrolled on top
+        } else {
+            accumulatedDelta += delta
+        }
+        
+        if !barsHidden && accumulatedDelta < 0 {
+            accumulatedDelta = 0
+        }
+
+        let threshold: CGFloat = 80
+        if accumulatedDelta < -threshold {
             updateBarsHidden(false)
-        } else if delta > 0 {
+            accumulatedDelta = 0
+        } else if accumulatedDelta > threshold {
             updateBarsHidden(true)
-        } else if delta < 0 {
-            updateBarsHidden(false)
+            accumulatedDelta = 0
         }
     }
 
