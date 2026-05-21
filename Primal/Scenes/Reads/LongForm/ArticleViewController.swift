@@ -272,7 +272,7 @@ private extension ArticleViewController {
         
         view.addSubview(commentZapPill)
         commentZapPill
-            .pinToSuperview(edges: .bottom, padding: 36, safeArea: true)
+            .pinToSuperview(edges: .bottom, padding: 96)
             .pinToSuperview(edges: .trailing, padding: 21)
         
         commentZapPill.commentButton.addAction(.init(handler: { [weak self] _ in
