@@ -231,7 +231,7 @@ final class WalletManager {
     private init() {
         eventRepo = PrimalRepositoryFactory.shared.createEventRepository(cachingPrimalApiClient: regConnection, mediaCacher: MediaCacher.instance)
         
-        profileRepo = PrimalRepositoryFactory.shared.createProfileRepository(cachingPrimalApiClient: regConnection, primalPublisher: SigningManager.instance, mediaCacher: MediaCacher.instance)
+        profileRepo = PrimalRepositoryFactory.shared.createProfileRepository(cachingPrimalApiClient: regConnection, primalPublisher: SigningManager.instance, mediaCacher: MediaCacher.instance, nip05VerificationService: nil)
         
         // WalletRepo wallet info by id (balance, transactions, etc.)
         walletRepo = WalletRepositoryFactory.shared.createWalletRepository(
