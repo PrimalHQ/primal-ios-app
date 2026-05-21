@@ -125,7 +125,7 @@ extension PrimalFeed {
         getAllFeeds(type).filter { $0.enabled }
     }
     
-    static let defaultReadsFeed = PrimalFeed(name: "Nostr Reads", spec: "{\"scope\":\"follows\"}")
+    static let defaultReadsFeed = PrimalFeed(name: "Nostr Reads", spec: "{\"id\":\"nostr-reads-feed\",\"kind\":\"reads\"}", description: "Latest reads from your network", feedkind: "primal", enabled: true)
     static let defaultNotesFeed = PrimalFeed(name: "Latest", spec: "{\"id\":\"latest\",\"kind\":\"notes\"}", description: "Latest notes by your follows", feedkind: "primal", enabled: true)
     
     static func fetchPublisher(type: PrimalFeedType) -> AnyPublisher<[PrimalFeed], Never> {
