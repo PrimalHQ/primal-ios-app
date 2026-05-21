@@ -754,7 +754,7 @@ extension NoteViewController: PostCellDelegate {
             cell.repostButton.animateTo(post.reposts + 1, filled: true)
         }))
         
-        popup.addAction(.init(title: "Quote", image: .init(named: "quoteIconLarge"), handler: { [weak self] _ in
+        popup.addAction(.init(title: "Quote", image: .quoteIconLarge, handler: { [weak self] _ in
             guard let self else { return }
             
             let new = AdvancedEmbedPostViewController()

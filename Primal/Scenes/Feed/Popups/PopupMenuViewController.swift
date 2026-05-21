@@ -130,7 +130,7 @@ final class PopupMenuIconButton: MyButton {
         iconView.image = action.image
         label.text = action.title
         
-        label.font = .appFont(withSize: 20, weight: .regular)
+        label.font = .appFont(withSize: 18, weight: .regular)
         
         if action.attributes.contains(.destructive) {
             label.textColor = .red
@@ -138,19 +138,21 @@ final class PopupMenuIconButton: MyButton {
             label.textColor = .foreground
         }
         
-        iconView.constrainToSize(24)
+        iconView.constrainToSize(22)
         iconView.contentMode = .center
         iconView.tintColor = .foreground
         
         let backgroundView = UIView()
         addSubview(backgroundView)
-        backgroundView.pinToSuperview(edges: .vertical).constrainToSize(width: 240, height: 56).centerToSuperview(axis: .horizontal)
-        backgroundView.layer.cornerRadius = 28
-        backgroundView.backgroundColor = .background3
+        backgroundView.pinToSuperview(edges: .vertical).constrainToSize(width: 240, height: 50).centerToSuperview(axis: .horizontal)
+        backgroundView.layer.cornerRadius = 25
+        backgroundView.backgroundColor = .background.withAlphaComponent(0.7)
+        backgroundView.layer.borderColor = UIColor.foreground.withAlphaComponent(0.2).cgColor
+        backgroundView.layer.borderWidth = 1
         
         let stack = UIStackView(arrangedSubviews: [iconView, label])
         stack.alignment = .center
-        stack.spacing = 8
+        stack.spacing = 6
         addSubview(stack)
         stack.centerToSuperview()
     }
