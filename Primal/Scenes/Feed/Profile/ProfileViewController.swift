@@ -33,7 +33,7 @@ final class ProfileViewController: PostFeedViewController, ArticleCellController
             if profileDataSource?.profile.data != profile.data {
                 profileDataSource?.profile = profile
             }
-            navigationBar.updateInfo(profile, isMuted: MuteManager.instance.isMutedUser(profile.data.pubkey))
+            navigationBar.updateInfo(profile)
         }
     }
     
@@ -279,7 +279,7 @@ private extension ProfileViewController {
         
         view.addSubview(navigationBar)
         navigationBar.pinToSuperview(edges: [.horizontal, .top])
-        navigationBar.updateInfo(profile, isMuted: MuteManager.instance.isMutedUser(profile.data.pubkey))
+        navigationBar.updateInfo(profile)
         navigationBar.delegate = self
         
         navigationBar.backButton.addTarget(self, action: #selector(backButtonPressed), for: .touchUpInside)

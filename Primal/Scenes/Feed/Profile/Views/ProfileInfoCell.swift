@@ -21,6 +21,12 @@ protocol ProfileInfoCellDelegate: AnyObject {
     func followingPressed()
     func premiumPillPressed()
     
+    func tappedAddUserFeed()
+    func tappedShareProfile()
+    func tappedReportUser()
+    func tappedMuteUser()
+    func tappedFollowUsersMuteList()
+    
     func didSelectTab(_ tab: Int)
 }
 
@@ -32,9 +38,8 @@ class ProfileCellNantesDelegate {
 }
 
 class ProfileInfoCell: UITableViewCell {
-    let qrButton = CircleIconButton(icon: UIImage(named: "profileQR"))
-    let zapButton = CircleIconButton(icon: UIImage(named: "profileZap"))
-    let messageButton = CircleIconButton(icon: UIImage(named: "profileMessage"))
+    let qrButton = CircleIconButton(icon: .profileQR)
+    let threeDotsButton = CircleIconUIButton(icon: .threeDots)
     let followButton = BrightSmallButton(title: "follow").constrainToSize(width: 100)
     let unfollowButton = RoundedSmallButton(text: "unfollow").constrainToSize(width: 100)
     let editProfile = RoundedSmallButton(text: "edit profile")
@@ -130,13 +135,14 @@ class ProfileInfoCell: UITableViewCell {
         infoStack.set(selectedTab, animated: false)
         
         editProfile.isHidden = !user.isCurrentUser
-        zapButton.isHidden = user.isCurrentUser
 
         if user.isCurrentUser {
             followButton.isHidden = true
             unfollowButton.isHidden = true
+            threeDotsButton.isHidden = true
         } else {
             updateFollowButton(FollowManager.instance.isFollowing(user.pubkey))
+            updateMenuButton(isMuted: MuteManager.instance.isMuted(.user(pubkey: user.pubkey)))
         }
         
         contentView.backgroundColor = .background2
@@ -190,7 +196,7 @@ extension ProfileCellNantesDelegate: NantesLabelDelegate {
 
 private extension ProfileInfoCell {
     func setup() {
-        let actionStack = UIStackView(arrangedSubviews: [SpacerView(width: 400, priority: .defaultLow), qrButton, zapButton, messageButton, followButton, unfollowButton, editProfile])
+        let actionStack = UIStackView(arrangedSubviews: [SpacerView(width: 400, priority: .defaultLow), threeDotsButton, qrButton, followButton, unfollowButton, editProfile])
         actionStack.spacing = 8
         actionStack.alignment = .bottom
         
@@ -255,12 +261,6 @@ private extension ProfileInfoCell {
         editProfile.addAction(.init(handler: { [weak self] _ in
             self?.delegate?.editProfilePressed()
         }), for: .touchUpInside)
-        zapButton.addAction(.init(handler: { [weak self] _ in
-            self?.delegate?.zapPressed()
-        }), for: .touchUpInside)
-        messageButton.addAction(.init(handler: { [weak self] _ in
-            self?.delegate?.messagePressed()
-        }), for: .touchUpInside)
         
         infoStack.$selectedTab.removeDuplicates().dropFirst().sink { [weak self] tab in
             self?.delegate?.didSelectTab(tab)
@@ -279,6 +279,43 @@ private extension ProfileInfoCell {
     
     @objc func followPressed() {
         delegate?.followPressed(in: self)
+    }
+    
+    
+    func updateMenuButton(isMuted: Bool) {
+        threeDotsButton.menu = UIMenu(children: [
+            UIDeferredMenuElement.uncached { [weak self] completion in
+                guard let self else { return }
+                
+                let muteTitle = isMuted ? "Unmute user" : "Mute user"
+
+                let actions = [
+                    UIAction(title: "Zap User", image: .profileZap) { [weak self] _ in
+                        self?.delegate?.zapPressed()
+                    },
+                    UIAction(title: "Message User", image: .menuMessage) { [weak self] _ in
+                        self?.delegate?.messagePressed()
+                    },
+                    UIAction(title: "Share user profile", image: .menuShare) { [weak self] _ in
+                        self?.delegate?.tappedShareProfile()
+                    },
+                    UIAction(title: "Add user feed", image: .addFeedIcon) { [weak self] _ in
+                        self?.delegate?.tappedAddUserFeed()
+                    },
+                    UIAction(title: "Follow user's mute list", image: .blockIcon, handler: { [weak self] _ in
+                        self?.delegate?.tappedFollowUsersMuteList()
+                    }),
+                    UIAction(title: muteTitle, image: .blockIcon, attributes: .destructive) { [weak self] _ in
+                        self?.delegate?.tappedMuteUser()
+                    },
+                    UIAction(title: "Report user", image: .warningIcon, attributes: .destructive) { [weak self] _ in
+                        self?.delegate?.tappedReportUser()
+                    }
+                ]
+                completion(actions)
+            }
+        ])
+        threeDotsButton.showsMenuAsPrimaryAction = true
     }
 }
 

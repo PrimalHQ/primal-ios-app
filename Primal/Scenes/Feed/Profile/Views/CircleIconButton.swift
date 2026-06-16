@@ -33,3 +33,24 @@ final class CircleIconButton: MyButton, Themeable {
         iconView.tintColor = .foreground
     }
 }
+
+final class CircleIconUIButton: UIButton, Themeable {
+    init(icon: UIImage?) {
+        super.init(frame: .zero)
+     
+        setImage(icon, for: .normal)
+        
+        constrainToSize(36)
+        layer.cornerRadius = 18
+        updateTheme()
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    func updateTheme() {
+        backgroundColor = .background3
+        tintColor = .foreground
+    }
+}
