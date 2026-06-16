@@ -107,9 +107,15 @@ class NoteUserHeaderView: UIView {
         tapArea.backgroundColor = .white.withAlphaComponent(0.001)
         addSubview(tapArea)
         tapArea
-            .pin(to: profileImageView, edges: [.leading, .vertical])
+            .pin(to: profileImageView, edges: .leading)
+            .pin(to: nameStack, edges: .vertical)
             .pin(to: separatorLabel, edges: .trailing)
         tapArea.addGestureRecognizer(BindableTapGestureRecognizer(action: { [unowned self] in
+            guard let ownerCell else { return }
+            delegate?.postCellDidTap(ownerCell, .profile)
+        }))
+
+        profileImageView.addGestureRecognizer(BindableTapGestureRecognizer(action: { [unowned self] in
             guard let ownerCell else { return }
             delegate?.postCellDidTap(ownerCell, .profile)
         }))
