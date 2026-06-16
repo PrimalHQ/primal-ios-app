@@ -460,6 +460,11 @@ extension MainTabBarController {
         if tab == .home, let child: HomeFeedChildController = nav.viewControllers.first?.findInChildren() {
             child.feed.addAllFuturePosts()
         }
+        
+        if tab == .explore {
+            SearchViewController.present(from: nav, advanced: false)
+            return
+        }
 
         if let tableViews: [UITableView] = nav.topViewController?.view.findAllSubviews(), !tableViews.isEmpty {
             tableViews.forEach {
