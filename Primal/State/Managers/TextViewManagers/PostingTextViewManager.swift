@@ -73,7 +73,7 @@ struct PollData: Equatable {
         }
 
         if forPosting {
-            tags.append(["client", "Primal iOS"])
+            tags.append(NostrObject.clientTag)
         } else {
             tags.append(["draft_poll_length", "\(days)", "\(hours)", "\(minutes)"])
         }
@@ -539,6 +539,8 @@ final class PostingTextViewManager: TextViewManager, MetadataCoding {
 
             return NostrObject.create(content: postingText, kind: kind, tags: allTags)
         }
+
+        allTags.append(NostrObject.clientTag)
 
         return NostrObject.create(content: postingText, kind: 1, tags: allTags)
     }

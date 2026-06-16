@@ -94,6 +94,8 @@ extension NostrObject {
         createNostrObjectAndSign(pubkey: pubkey, privkey: privkey, content: content, kind: kind, tags: tags, createdAt: createdAt)
     }
     
+    static let clientTag = ["client", "Primal iOS"]
+
     static func like(reference: PostingReferenceObject) -> NostrObject? {
         createNostrLikeEvent(reference: reference)
     }
@@ -332,7 +334,7 @@ extension NostrObject {
         createNostrObject(content: "", kind: NostrKind.pollVote.rawValue, tags: [
             ["e", pollEventId],
             ["response", optionId],
-            ["client", "Primal iOS"]
+            NostrObject.clientTag
         ])
     }
 
@@ -348,7 +350,7 @@ extension NostrObject {
             ["poll_option", optionId],
             ["amount", "\(sats)000"],
             ["relays"] + relays,
-            ["client", "Primal iOS"]
+            NostrObject.clientTag
         ])
     }
 
@@ -356,7 +358,7 @@ extension NostrObject {
         let relay = IdentityManager.instance.userRelays?.first(where: { $0.value.write })?.key ?? ""
         return createNostrObject(content: comment, kind: NostrKind.liveComment.rawValue, tags: [
             ["a", live.creatorUniversalID, relay, "root"],
-            ["client", "Primal-iOS-App"]
+            NostrObject.clientTag
         ])
     }
     
@@ -390,7 +392,7 @@ private func createNostrObject(content: String, kind: Int = 1, tags: [[String]] 
 
 private func createNostrLikeEvent(reference: PostingReferenceObject) -> NostrObject? {
     guard let (tagLetter, universalID) = reference.reference else { return nil }
-    return createNostrObject(content: "+", kind: 7, tags: [[tagLetter, universalID], ["p", reference.referencePubkey]])
+    return createNostrObject(content: "+", kind: 7, tags: [[tagLetter, universalID], ["p", reference.referencePubkey], NostrObject.clientTag])
 }
 
 private func createNostrRepostEvent(_ post: PrimalFeedPost) -> NostrObject? {
@@ -401,7 +403,7 @@ private func createNostrRepostEvent(_ post: PrimalFeedPost) -> NostrObject? {
     }
     let jsonStr = String(data: jsonData, encoding: .utf8)!
     
-    return createNostrObject(content: jsonStr, kind: 6, tags: [[post.referenceTagLetter, post.universalID], ["p", post.pubkey]])
+    return createNostrObject(content: jsonStr, kind: 6, tags: [[post.referenceTagLetter, post.universalID], ["p", post.pubkey], NostrObject.clientTag])
 }
 
 private func createNostrGetSettingsEvent() -> NostrObject? {
