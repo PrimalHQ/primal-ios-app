@@ -16,7 +16,22 @@ protocol AdvancedSearchControllerProtocol: UIViewController {
 final class SearchViewController: MainNavigationController {
     static func present(from presenter: UIViewController, scope: SearchScope = .global, type: SearchType = .notes, advanced: Bool) {
         let search = SearchViewController(scope: scope, type: type, advanced: advanced)
-        
+
+        if let sheet = search.sheetPresentationController {
+            sheet.prefersGrabberVisible = true
+            if #available(iOS 17.0, *) {
+                sheet.traitOverrides.userInterfaceStyle = Theme.current.userInterfaceStyle
+            }
+        }
+
+        presenter.present(search, animated: true)
+    }
+
+    /// Opens the advanced search builder pre-populated from an existing
+    /// `AdvancedSearchManager` (e.g. profile search preselects the user).
+    static func present(from presenter: UIViewController, manager: AdvancedSearchManager) {
+        let search = SearchViewController(manager: manager)
+
         if let sheet = search.sheetPresentationController {
             sheet.prefersGrabberVisible = true
             if #available(iOS 17.0, *) {
@@ -49,6 +64,11 @@ final class SearchViewController: MainNavigationController {
     init(scope: SearchScope = .global, type: SearchType = .notes, advanced: Bool) {
         let searchChild = SearchViewChildController(scope: scope, type: type)
         child = advanced ? AdvancedSearchHomeController(manager: searchChild.advancedSearchManager) : searchChild
+        super.init(rootViewController: child)
+    }
+
+    init(manager: AdvancedSearchManager) {
+        child = AdvancedSearchHomeController(manager: manager)
         super.init(rootViewController: child)
     }
     

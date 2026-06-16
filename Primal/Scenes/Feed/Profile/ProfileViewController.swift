@@ -332,7 +332,7 @@ extension ProfileViewController: ProfileNavigationViewDelegate {
     }
     
     func tappedSearch() {
-        SearchViewController.present(from: self, advanced: true)
+        SearchViewController.present(from: self, manager: advancedSearchManager)
     }
     
     func tappedMuteUser() {
