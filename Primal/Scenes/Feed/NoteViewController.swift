@@ -81,7 +81,9 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
     var firstRun = true
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
+
+        adjustTopBarHeightIfNeeded()
+
         DispatchQueue.main.async { [self] in
             if !firstRun || !posts.isEmpty {
                 dataSource.setPosts(posts)
@@ -112,6 +114,26 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
     var topBarHeight: CGFloat = 100
     var adjustedTopBarHeight: CGFloat { topBarHeight }
     var barsMaxTransform: CGFloat { topBarHeight }
+    private var didAdjustTopBarHeight = false
+
+    // Computed once on first appearance — not at init time — so findParent() reliably
+    // sees the PrimalNavigationBar owner. Computing this in an init-scheduled async raced
+    // the parent chain being wired up, leaving a stale top inset (the gap above live banners).
+    func adjustTopBarHeightIfNeeded() {
+        guard !didAdjustTopBarHeight else { return }
+        didAdjustTopBarHeight = true
+
+        let hasPrimalNavBar: Bool = (findParent() as (any PrimalNavigationBarController)?) != nil
+        if hasPrimalNavBar {
+            topBarHeight = PrimalNavigationBar.height - 4 // table starts at safe area, only need PrimalNavigationBar height
+        } else {
+            topBarHeight = RootViewController.instance.view.safeAreaInsets.top + 50 // 50 is nav bar height without safe area
+        }
+        table.contentInset = .init(top: adjustedTopBarHeight, left: 0, bottom: 150, right: 0)
+        if table.contentOffset.y <= 0 { // only snap to top on first setup, never yank an already-scrolled feed
+            table.contentOffset = .init(x: 0, y: -adjustedTopBarHeight)
+        }
+    }
     var prevPosition: CGFloat = 0
     var prevDelta: CGFloat = 0
     var accumulatedDelta: CGFloat = 0
@@ -548,18 +570,7 @@ private extension NoteViewController {
         table.separatorStyle = .none
         table.contentInsetAdjustmentBehavior = .never
         table.contentInset = .init(top: 100, left: 0, bottom: 150, right: 0)
-        
-        DispatchQueue.main.async {
-            let hasPrimalNavBar: Bool = (self.findParent() as (any PrimalNavigationBarController)?) != nil
-            if hasPrimalNavBar {
-                self.topBarHeight = PrimalNavigationBar.height - 4 // table starts at safe area, only need PrimalNavigationBar height
-            } else {
-                self.topBarHeight = RootViewController.instance.view.safeAreaInsets.top + 50 // 50 is nav bar height without safe area
-            }
-            self.table.contentInset = .init(top: self.adjustedTopBarHeight, left: 0, bottom: 150, right: 0)
-            self.table.contentOffset = .init(x: 0, y: -self.adjustedTopBarHeight)
-        }
-        
+
         view.addSubview(navigationBorder)
         navigationBorder.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .top, safeArea: true)
         
