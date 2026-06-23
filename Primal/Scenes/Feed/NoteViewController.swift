@@ -449,6 +449,8 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
         case .share:
             let activityViewController = UIActivityViewController(activityItems: [post.webURL()], applicationActivities: nil)
             present(activityViewController, animated: true, completion: nil)
+        case .translate:
+            openTranslation(for: post)
         case .shareAsImage:
             guard
                 let cell,
@@ -518,6 +520,25 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
     
     func showToast(_ message: String) {
         mainTabBarController?.showToast(message)
+    }
+
+    func openTranslation(for post: ParsedContent) {
+        let text = post.post.content.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !text.isEmpty else { return }
+
+        var components = URLComponents()
+        components.scheme = "https"
+        components.host = "translate.google.com"
+        components.queryItems = [
+            URLQueryItem(name: "sl", value: "auto"),
+            URLQueryItem(name: "tl", value: Locale.preferredLanguages.first?.split(separator: "-").first.map(String.init) ?? Locale.current.languageCode ?? "en"),
+            URLQueryItem(name: "text", value: text),
+            URLQueryItem(name: "op", value: "translate")
+        ]
+
+        guard let url = components.url else { return }
+
+        present(SFSafariViewController(url: url), animated: true)
     }
 }
 
