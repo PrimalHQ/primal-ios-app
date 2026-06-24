@@ -39,7 +39,7 @@ final class WalletSendAmountController: UIViewController, Themeable, KeyboardInp
         }
         
         var name: String {
-            user?.data.name ?? (address.count <= 30 ? address : (address.isBitcoinAddress ? "Bitcoin Address" : "Lightning Invoice"))
+            user?.data.firstIdentifier ?? (address.count <= 30 ? address : (address.isBitcoinAddress ? "Bitcoin Address" : "Lightning Invoice"))
         }
         
         var startingAmount: Int {

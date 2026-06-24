@@ -372,7 +372,7 @@ private extension MenuController {
     func update(_ user: ParsedUser) {
         let user = user.data
         
-        nameLabel.text = user.displayName.isEmpty ? user.name : user.displayName
+        nameLabel.text = user.firstIdentifier
         domainLabel.text = user.parsedNip
         checkbox1.user = user
     }

@@ -40,7 +40,7 @@ final class WalletSendViewController: UIViewController, Themeable {
         }
         
         var name: String {
-            user?.data.name ?? (address.count <= 30 ? address : (address.isBitcoinAddress ? "Bitcoin Address" : "Lightning Invoice"))
+            user?.data.firstIdentifier ?? (address.count <= 30 ? address : (address.isBitcoinAddress ? "Bitcoin Address" : "Lightning Invoice"))
         }
         
         var summaryAddressDisplay: String {

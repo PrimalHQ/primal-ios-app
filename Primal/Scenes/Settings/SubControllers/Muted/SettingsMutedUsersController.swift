@@ -97,7 +97,7 @@ extension SettingsMutedUsersController: UITableViewDataSource {
             .cacheOriginalImage
         ])
         
-        cell.nameLabel.text = nostrData.name
+        cell.nameLabel.text = nostrData.firstIdentifier
         cell.usernameLabel.text = nostrData.parsedNip
         
         return cell
