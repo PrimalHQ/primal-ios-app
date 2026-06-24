@@ -51,7 +51,7 @@ class QRCopyView: MyButton {
             if let dimmingView = self?.dimmingView {
                 dimmingView.showDimmedToastCentered("Copied!")
             } else {
-                RootViewController.instance.view.showToast("Copied!", extraPadding: 0)
+                RootViewController.instance.view.showToast("Copied!")
             }
         }), for: .touchUpInside)
     }

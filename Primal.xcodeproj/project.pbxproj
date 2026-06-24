@@ -192,7 +192,6 @@
 		9ED415FA2A41DF3E00892235 /* HashtagCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ED415F92A41DF3E00892235 /* HashtagCollectionViewCell.swift */; };
 		9ED415FF2A42442600892235 /* CollectionViewCenterHorizonatallyLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ED415FE2A42442600892235 /* CollectionViewCenterHorizonatallyLayout.swift */; };
 		9ED416042A424AAD00892235 /* SearchTermTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ED416032A424AAD00892235 /* SearchTermTableCell.swift */; };
-		9ED4160B2A45BE3100892235 /* UndoToastMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ED4160A2A45BE3100892235 /* UndoToastMessageView.swift */; };
 		9ED4160D2A48744600892235 /* PopupMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ED4160C2A48744600892235 /* PopupMenuViewController.swift */; };
 		9ED4160F2A4B7A8500892235 /* Notification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ED4160E2A4B7A8500892235 /* Notification.swift */; };
 		9ED416122A4CAC5A00892235 /* NotificationCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ED416112A4CAC5A00892235 /* NotificationCell.swift */; };
@@ -1059,7 +1058,6 @@
 		9ED415F92A41DF3E00892235 /* HashtagCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HashtagCollectionViewCell.swift; sourceTree = "<group>"; };
 		9ED415FE2A42442600892235 /* CollectionViewCenterHorizonatallyLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewCenterHorizonatallyLayout.swift; sourceTree = "<group>"; };
 		9ED416032A424AAD00892235 /* SearchTermTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchTermTableCell.swift; sourceTree = "<group>"; };
-		9ED4160A2A45BE3100892235 /* UndoToastMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UndoToastMessageView.swift; sourceTree = "<group>"; };
 		9ED4160C2A48744600892235 /* PopupMenuViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupMenuViewController.swift; sourceTree = "<group>"; };
 		9ED4160E2A4B7A8500892235 /* Notification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notification.swift; sourceTree = "<group>"; };
 		9ED416112A4CAC5A00892235 /* NotificationCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationCell.swift; sourceTree = "<group>"; };
@@ -2498,7 +2496,6 @@
 				9E55CC6C2A03CF33002D3DC4 /* SpacerView.swift */,
 				9E5BD9422A1E701C008DFFBE /* SelfSizingTextView.swift */,
 				9E8834C12A33BE24005DB548 /* ToastMessageView.swift */,
-				9ED4160A2A45BE3100892235 /* UndoToastMessageView.swift */,
 				9EF4BFCB2A8E57EF003396AA /* VerifiedView.swift */,
 				7E5A9C0B1D2E3F4051628494 /* SearchBarButton.swift */,
 				B94F2BE32AE2EFDD0041181B /* PlaceholderTextView.swift */,
@@ -4723,7 +4720,6 @@
 				B9FAC6582D42B53A00B57EF6 /* SettingsWalletNWCController.swift in Sources */,
 				B91EF0C12CE7E27F00299ECF /* PremiumManageMediaHeaderCell.swift in Sources */,
 				B94F2BB12AD053020041181B /* PrimalWalletRequest.swift in Sources */,
-				9ED4160B2A45BE3100892235 /* UndoToastMessageView.swift in Sources */,
 				B91E571C2CDBC17E00C14809 /* PremiumSearchNameController.swift in Sources */,
 				B9D332012EE865DF0023D541 /* RemoteSignerPermissionEditCell.swift in Sources */,
 				B91E57022CC6B5D100C14809 /* KeyboardManager.swift in Sources */,
@@ -5108,7 +5104,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.5.42;
+				MARKETING_VERSION = 3.5.51;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -5157,7 +5153,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.5.42;
+				MARKETING_VERSION = 3.5.51;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

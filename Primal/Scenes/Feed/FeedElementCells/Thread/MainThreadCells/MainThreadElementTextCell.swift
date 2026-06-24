@@ -81,7 +81,7 @@ extension MainThreadElementTextCell: UITextViewDelegate {
                 }),
                 UIAction(title: "Copy hashtag", image: UIImage(named: "MenuCopyText"), handler: { _ in
                     UIPasteboard.general.string = hashtag
-                    RootViewController.instance.view?.showToast("Copied!", extraPadding: 0)
+                    RootViewController.instance.view?.showToast("Copied!")
                 })
             ]))
         }
@@ -95,7 +95,7 @@ extension MainThreadElementTextCell: UITextViewDelegate {
                 }),
                 UIAction(title: "Copy pubkey", image: UIImage(named: "MenuCopyText"), handler: { _ in
                     UIPasteboard.general.string = bech32_pubkey(mention) ?? mention
-                    RootViewController.instance.view?.showToast("Copied!", extraPadding: 0)
+                    RootViewController.instance.view?.showToast("Copied!")
                 })
             ]))
         }

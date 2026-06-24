@@ -23,7 +23,7 @@ extension ImageMenuHandler {
                 UIAction(title: "Copy Video URL", image: UIImage(named: "MenuCopyLink")) { [weak self] _ in
                     guard let self else { return }
                     UIPasteboard.general.string = url
-                    viewController.view?.showToast("Copied!", extraPadding: 0)
+                    viewController.view?.showToast("Copied!")
                 }
             ]
         }
@@ -32,7 +32,7 @@ extension ImageMenuHandler {
             UIAction(title: "Save Image", image: UIImage(named: "MenuImageSave"), handler: { [weak self] _ in
                 guard let self, let image = image else { return }
                 UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
-                viewController.view?.showToast("Saved!", extraPadding: 0)
+                viewController.view?.showToast("Saved!")
             }),
             UIAction(title: "Share Image", image: UIImage(named: "MenuImageShare"), handler: { [weak self] _ in
                 guard let self, let image = image else { return }
@@ -42,12 +42,12 @@ extension ImageMenuHandler {
             UIAction(title: "Copy Image", image: UIImage(named: "MenuImageCopy"), handler: { [weak self] _ in
                 guard let self, let image = image else { return }
                 UIPasteboard.general.image = image
-                viewController.view?.showToast("Copied!", extraPadding: 0)
+                viewController.view?.showToast("Copied!")
             }),
             UIAction(title: "Copy Image URL", image: UIImage(named: "MenuCopyLink")) { [weak self] _ in
                 guard let self else { return }
                 UIPasteboard.general.string = url
-                viewController.view?.showToast("Copied!", extraPadding: 0)
+                viewController.view?.showToast("Copied!")
             }
         ]
     }

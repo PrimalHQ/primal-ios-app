@@ -289,7 +289,7 @@ final class RootViewController: UIViewController {
     
     func showToast(_ message: String, icon: UIImage? = UIImage(named: "toastCheckmark")) {
         if let presentedViewController {
-            presentedViewController.view.showToast(message, icon: icon, extraPadding: 0)
+            presentedViewController.view.showToast(message, icon: icon)
         } else if let mainTab: MainTabBarController = findInChildren() {
             mainTab.showToast(message, icon: icon)
         } else {

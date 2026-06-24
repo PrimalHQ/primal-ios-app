@@ -199,7 +199,7 @@ final class ThreadViewController: PostFeedViewController, ArticleCellController 
     }
 
     override func showToast(_ message: String) {
-        view.showToastTop(message)
+        view.showToast(message)
     }
 
     func openReplyComposer() {

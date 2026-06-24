@@ -462,7 +462,7 @@ private extension ChatViewController {
     }
     
     func showToast(_ text: String) {
-        inputParent.showToast(text, extraPadding: inputParent.frame.height)
+        view.showToast(text)
     }
 }
 

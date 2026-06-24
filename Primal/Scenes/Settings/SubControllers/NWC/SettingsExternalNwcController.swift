@@ -148,7 +148,7 @@ private extension SettingsExternalNwcController {
                 else {
                     self?.show(SettingsNewNwcQRController(uri: newNWC), sender: nil)
                     
-                    RootViewController.instance.view.showToast("Unable to deeplink", extraPadding: 0)
+                    RootViewController.instance.view.showToast("Unable to deeplink")
                     return
                 }
                 

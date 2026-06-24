@@ -115,7 +115,7 @@ final class VideoCell: UICollectionViewCell {
     
     func showToast(_ text: String) {
         guard let mainTab: MainTabBarController = RootViewController.instance.findInChildren() else {
-            RootViewController.instance.view?.showToast(text, extraPadding: 0)
+            RootViewController.instance.view?.showToast(text)
             return
         }
         mainTab.showToast(text)
@@ -141,7 +141,7 @@ extension VideoCell: UIContextMenuInteractionDelegate {
                     UIAction(title: "Copy Video URL", image: UIImage(named: "MenuCopyLink")) { [weak self] _ in
                         guard let self, let url = player?.originalURL else { return }
                         UIPasteboard.general.string = url
-                        showToast("Copied!", extraPadding: 0)
+                        showToast("Copied!")
                     }
                 ] + suggestedActions)
             })
@@ -153,7 +153,7 @@ extension VideoCell: UIContextMenuInteractionDelegate {
             let documentsPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first
         else { return }
         
-        showToast("Downloading!", extraPadding: 0)
+        showToast("Downloading!")
         
         DispatchQueue.global(qos: .background).async {
             let urlData = NSData(contentsOf: url)
@@ -165,7 +165,7 @@ extension VideoCell: UIContextMenuInteractionDelegate {
                 }) { completed, _ in
                     if completed {
                         DispatchQueue.main.async {
-                            RootViewController.instance.view?.showToast("Saved!", extraPadding: 0)
+                            RootViewController.instance.view?.showToast("Saved!")
                         }
                     }
                 }

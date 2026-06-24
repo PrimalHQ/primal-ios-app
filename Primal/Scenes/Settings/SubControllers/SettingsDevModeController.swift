@@ -62,7 +62,7 @@ private extension SettingsDevModeController {
             clearCacheButton?.isEnabled = false
             CachingManager.instance.clearImageCaches {
                 clearCacheButton?.isEnabled = true
-                RootViewController.instance.view.showToast("Image cache cleared", extraPadding: 0)
+                RootViewController.instance.view.showToast("Image cache cleared")
             }
         }), for: .touchUpInside)
 
@@ -81,12 +81,12 @@ private extension SettingsDevModeController {
                     guard let self else { return }
 
                     if logs.isEmpty {
-                        RootViewController.instance.view.showToast("No NWC logs found", extraPadding: 0)
+                        RootViewController.instance.view.showToast("No NWC logs found")
                     } else {
                         CSVExporter.exportNwcLogs(logs, from: self)
                     }
                 } catch {
-                    RootViewController.instance.view.showToast("Failed to export NWC logs", extraPadding: 0)
+                    RootViewController.instance.view.showToast("Failed to export NWC logs")
                 }
                 exportNwcLogsButton?.isEnabled = true
             }
@@ -110,7 +110,7 @@ private extension SettingsDevModeController {
         exportWalletLogsButton.addAction(.init(handler: { [weak self] _ in
             let urls = WalletLogRecorder.instance.logFileURLs()
             guard !urls.isEmpty else {
-                RootViewController.instance.view.showToast("No wallet logs to export", extraPadding: 0)
+                RootViewController.instance.view.showToast("No wallet logs to export")
                 return
             }
             guard let self else { return }
@@ -124,7 +124,7 @@ private extension SettingsDevModeController {
             WalletLogRecorder.instance.clearLogs()
             walletLogToggle?.switchView.setOn(false, animated: true)
             clearWalletLogsButton?.isEnabled = true
-            RootViewController.instance.view.showToast("Wallet logs cleared", extraPadding: 0)
+            RootViewController.instance.view.showToast("Wallet logs cleared")
         }), for: .touchUpInside)
 
         let stack = UIStackView(axis: .vertical, [

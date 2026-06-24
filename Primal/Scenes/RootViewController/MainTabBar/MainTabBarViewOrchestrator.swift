@@ -233,14 +233,7 @@ final class MainTabBarViewOrchestrator: NSObject, Themeable {
 
     func showToast(_ message: String, icon: UIImage? = UIImage(named: "toastCheckmark")) {
         guard let controller else { return }
-        let bar = tabBarContainerView
-        let isTabBarHidden = bar.transform.ty != 0
-
-        if isTabBarHidden {
-            controller.view.showToast(message, icon: icon, extraPadding: 0)
-        } else {
-            bar.showToast(message, icon: icon, extraPadding: 95)
-        }
+        controller.view.showToast(message, icon: icon)
     }
 
     func updateButtons() {
