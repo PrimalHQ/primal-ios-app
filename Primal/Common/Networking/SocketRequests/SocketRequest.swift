@@ -356,8 +356,12 @@ extension PostRequestResult {
             
             guard let tagsArray = payload["tags"]?.arrayValue else { return }
             let tags: Set<String> = Set(tagsArray.compactMap { tag -> String? in
-                guard tag.arrayValue?[safe: 0]?.stringValue == "p" else { return nil }
-                return tag.arrayValue?[safe: 1]?.stringValue
+                guard
+                    tag.arrayValue?[safe: 0]?.stringValue == "p",
+                    let hex = tag.arrayValue?[safe: 1]?.stringValue,
+                    hex.hexToNpub()?.isNPub() == true
+                else { return nil }
+                return hex
             })
             
             if !tags.isEmpty {
