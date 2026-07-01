@@ -31,6 +31,8 @@
 		933B85772A9F6EE300C48FF6 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 933B85762A9F6EE300C48FF6 /* Utils.swift */; };
 		933DBDBD2A1145A1008DCF1F /* StringProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 933DBDBC2A1145A1008DCF1F /* StringProtocol.swift */; };
 		933DBDBF2A11FF87008DCF1F /* ParsedContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 933DBDBE2A11FF87008DCF1F /* ParsedContent.swift */; };
+		C0D1E2060000000000000001 /* NoteTranslationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D1E2060000000000000002 /* NoteTranslationService.swift */; };
+		C0D1E2060000000000000003 /* NoteTranslationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D1E2060000000000000004 /* NoteTranslationView.swift */; };
 		9344DB312A1D28EB00C9F281 /* NostrKind.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9344DB302A1D28EB00C9F281 /* NostrKind.swift */; };
 		9363DE712A30DD9E0060F4BD /* DeeplinkHandlerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9363DE702A30DD9E0060F4BD /* DeeplinkHandlerProtocol.swift */; };
 		9363DE732A30DDB90060F4BD /* DeeplinkHandlerCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9363DE722A30DDB90060F4BD /* DeeplinkHandlerCoordinator.swift */; };
@@ -841,6 +843,8 @@
 		933B85762A9F6EE300C48FF6 /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		933DBDBC2A1145A1008DCF1F /* StringProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringProtocol.swift; sourceTree = "<group>"; };
 		933DBDBE2A11FF87008DCF1F /* ParsedContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParsedContent.swift; sourceTree = "<group>"; };
+		C0D1E2060000000000000002 /* NoteTranslationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteTranslationService.swift; sourceTree = "<group>"; };
+		C0D1E2060000000000000004 /* NoteTranslationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteTranslationView.swift; sourceTree = "<group>"; };
 		9344DB302A1D28EB00C9F281 /* NostrKind.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NostrKind.swift; sourceTree = "<group>"; };
 		9363DE702A30DD9E0060F4BD /* DeeplinkHandlerProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeeplinkHandlerProtocol.swift; sourceTree = "<group>"; };
 		9363DE722A30DDB90060F4BD /* DeeplinkHandlerCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeeplinkHandlerCoordinator.swift; sourceTree = "<group>"; };
@@ -2375,6 +2379,8 @@
 				9E9D46F72A0A72B900D4837B /* PostCell.swift */,
 				B99E03882BF7B10C006CCECB /* PostFeedCell.swift */,
 				9E9D46F42A0A717400D4837B /* ThreadCell.swift */,
+				C0D1E2060000000000000002 /* NoteTranslationService.swift */,
+				C0D1E2060000000000000004 /* NoteTranslationView.swift */,
 			);
 			path = PostCell;
 			sourceTree = "<group>";
@@ -4320,6 +4326,8 @@
 				B9DAA4582D4A61D400B00B82 /* NWCScheme.swift in Sources */,
 				B914CD6B2AA20DC400CD0BD1 /* MutedUserCell.swift in Sources */,
 				933DBDBF2A11FF87008DCF1F /* ParsedContent.swift in Sources */,
+				C0D1E2060000000000000001 /* NoteTranslationService.swift in Sources */,
+				C0D1E2060000000000000003 /* NoteTranslationView.swift in Sources */,
 				B9E67EAA2D09D8FA006BB397 /* ThreadElementUserCell.swift in Sources */,
 				B91E56E82CB9843A00C14809 /* AdvancedSearchMenuItemView.swift in Sources */,
 				B9E67E7D2D075E35006BB397 /* FeedElementUserCell.swift in Sources */,
