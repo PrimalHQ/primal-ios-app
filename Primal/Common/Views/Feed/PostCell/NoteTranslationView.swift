@@ -12,6 +12,7 @@ final class NoteTranslationView: UIStackView {
 
     private var currentText = ""
     private var currentRequestID = UUID()
+    private var currentTask: URLSessionDataTask?
     private var translationResult: NoteTranslationService.TranslationResult?
     private var isShowingTranslation = false
 
@@ -24,7 +25,13 @@ final class NoteTranslationView: UIStackView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    deinit {
+        currentTask?.cancel()
+    }
+
     func configure(with text: String) {
+        currentTask?.cancel()
+        currentTask = nil
         currentText = text.trimmingCharacters(in: .whitespacesAndNewlines)
         currentRequestID = UUID()
         translationResult = nil
@@ -38,6 +45,7 @@ final class NoteTranslationView: UIStackView {
         isHidden = !NoteTranslationService.shared.shouldOfferTranslation(for: currentText)
         translateButton.isEnabled = true
         translateButton.setTitle("Translate", for: .normal)
+        translateButton.accessibilityLabel = "Translate note"
     }
 }
 
@@ -58,6 +66,7 @@ private extension NoteTranslationView {
         translatedLabel.font = .appFont(withSize: FontSizeSelection.current.contentFontSize, weight: .regular)
         translatedLabel.textColor = .foreground
         translatedLabel.isHidden = true
+        translatedLabel.accessibilityLabel = "Translated note"
 
         sourceLabel.numberOfLines = 1
         sourceLabel.font = .appFont(withSize: 12, weight: .regular)
@@ -76,14 +85,16 @@ private extension NoteTranslationView {
             return
         }
 
+        currentTask?.cancel()
         let requestID = UUID()
         currentRequestID = requestID
         translateButton.isEnabled = false
-        translateButton.setTitle("Translating...", for: .normal)
+        translateButton.setTitle("Translating…", for: .normal)
+        translateButton.accessibilityLabel = "Translating note"
 
-        NoteTranslationService.shared.translate(currentText) { [weak self] result in
+        currentTask = NoteTranslationService.shared.translate(currentText) { [weak self] result in
             guard let self, self.currentRequestID == requestID else { return }
-
+            self.currentTask = nil
             self.translateButton.isEnabled = true
 
             switch result {
@@ -91,13 +102,17 @@ private extension NoteTranslationView {
                 self.translationResult = translation
                 self.isShowingTranslation = true
                 self.updateVisibleTranslation()
-            case .failure:
+            case .failure(let error):
+                if (error as? URLError)?.code == .cancelled {
+                    return
+                }
                 self.translationResult = nil
                 self.isShowingTranslation = false
-                self.translatedLabel.text = "Translation unavailable."
+                self.translatedLabel.text = error.localizedDescription
                 self.translatedLabel.isHidden = false
                 self.sourceLabel.isHidden = true
                 self.translateButton.setTitle("Retry Translate", for: .normal)
+                self.translateButton.accessibilityLabel = "Retry note translation"
             }
         }
     }
@@ -117,5 +132,6 @@ private extension NoteTranslationView {
         }
 
         translateButton.setTitle(isShowingTranslation ? "Hide translation" : "Show translation", for: .normal)
+        translateButton.accessibilityLabel = isShowingTranslation ? "Hide note translation" : "Show note translation"
     }
 }
