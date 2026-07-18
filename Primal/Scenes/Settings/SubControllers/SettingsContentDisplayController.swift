@@ -20,17 +20,17 @@ struct ContentDisplaySettings {
         get { UserDefaults.standard.bool(forKey: .autoPlayVideosKey) }
         set { UserDefaults.standard.set(newValue, forKey: .autoPlayVideosKey) }
     }
-    
+
     static var animatedAvatars: Bool {
         get { UserDefaults.standard.bool(forKey: .animatedAvatarsKey) }
         set { UserDefaults.standard.set(newValue, forKey: .animatedAvatarsKey) }
     }
-    
+
     static var autoDarkMode: Bool {
         get { UserDefaults.standard.bool(forKey: .autoDarkModeKey) }
         set { UserDefaults.standard.set(newValue, forKey: .autoDarkModeKey) }
     }
-    
+
     static var hugeFonts: Bool {
         get { UserDefaults.standard.bool(forKey: .hugeFontKey) }
         set { UserDefaults.standard.setValue(newValue, forKey: .hugeFontKey) }
@@ -42,7 +42,7 @@ final class SettingsContentDisplayController: UIViewController, Themeable {
         super.viewDidLoad()
         setup()
     }
-    
+
     func updateTheme() {
         view.backgroundColor = .background
         navigationItem.leftBarButtonItem = customBackButton
@@ -52,55 +52,119 @@ final class SettingsContentDisplayController: UIViewController, Themeable {
 private extension SettingsContentDisplayController {
     func setup() {
         title = "Content Display"
-        
+
         let autoplay = SettingsSwitchView("Auto play videos")
         let animatedAvatars = SettingsSwitchView("Show animated avatars")
         let hugeFont = SettingsSwitchView("Use huge font for short notes")
-        
+        let noteTranslation = SettingsSwitchView("Translate notes")
+        let endpoint = SettingsTextFieldView(
+            title: "Translation endpoint",
+            placeholder: "https://example.com/translate"
+        )
+        let apiKey = SettingsTextFieldView(
+            title: "API key (optional)",
+            placeholder: "Stored securely in Keychain",
+            isSecureTextEntry: true
+        )
+
+        endpoint.textField.keyboardType = .URL
+        endpoint.textField.textContentType = .URL
+        endpoint.textField.autocapitalizationType = .none
+        endpoint.textField.autocorrectionType = .no
+        endpoint.textField.accessibilityLabel = "Translation endpoint"
+
+        apiKey.textField.autocapitalizationType = .none
+        apiKey.textField.autocorrectionType = .no
+        apiKey.textField.accessibilityLabel = "Translation API key"
+
+        let translationDescription = descLabel(
+            "Uses a LibreTranslate-compatible endpoint that you choose. Note text is sent only after you tap Translate. " +
+            "The target language follows your device language, and the optional API key is stored in Keychain. HTTPS is required except for localhost."
+        )
+
         let stack = UIStackView(axis: .vertical, [
             autoplay, SpacerView(height: 10),
             descLabel("Start playing videos automatically as you scroll the feed. Turn this off to use less network data."), SpacerView(height: 32),
             animatedAvatars, SpacerView(height: 10),
             descLabel("Switch off to disable animated avatars in feeds. Profile will continue to show the full version."), SpacerView(height: 32),
             hugeFont, SpacerView(height: 10),
-            descLabel("Display short notes of up to 42 characters using an unreasonably large font."), SpacerView(height: 32)
+            descLabel("Display short notes of up to 42 characters using an unreasonably large font."), SpacerView(height: 32),
+            noteTranslation, SpacerView(height: 10),
+            translationDescription, SpacerView(height: 16),
+            endpoint, SpacerView(height: 12),
+            apiKey, SpacerView(height: 32)
         ])
-        
+
         let scroll = UIScrollView()
         view.addSubview(scroll)
         scroll
             .pinToSuperview(edges: .horizontal)
             .pinToSuperview(edges: .bottom, padding: 56, safeArea: true)
             .pinToSuperview(edges: .top, padding: 7, safeArea: true)
-        
+
         scroll.addSubview(stack)
         stack.pinToSuperview(edges: .horizontal, padding: 20).pinToSuperview(edges: .vertical, padding: 38)
         stack.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -40).isActive = true
-        
+
         updateTheme()
-        
+
         autoplay.switchView.isOn = ContentDisplaySettings.autoPlayVideos
         animatedAvatars.switchView.isOn = ContentDisplaySettings.animatedAvatars
         hugeFont.switchView.isOn = ContentDisplaySettings.hugeFonts
-        
+        noteTranslation.switchView.isOn = NoteTranslationSettings.isEnabled
+        endpoint.textField.text = NoteTranslationSettings.endpointString
+        apiKey.textField.text = NoteTranslationSettings.apiKey
+
+        updateTranslationFields(noteTranslation.switchView.isOn, endpoint: endpoint, apiKey: apiKey)
+
         autoplay.switchView.addAction(.init(handler: { [weak autoplay] _ in
             guard let value = autoplay?.switchView.isOn else { return }
             ContentDisplaySettings.autoPlayVideos = value
         }), for: .valueChanged)
-        
+
         animatedAvatars.switchView.addAction(.init(handler: { [weak animatedAvatars] _ in
             guard let value = animatedAvatars?.switchView.isOn else { return }
             ContentDisplaySettings.animatedAvatars = value
             ThemingManager.instance.themeDidChange()
         }), for: .valueChanged)
-        
+
         hugeFont.switchView.addAction(.init(handler: { [weak hugeFont] _ in
             guard let value = hugeFont?.switchView.isOn else { return }
             ContentDisplaySettings.hugeFonts = value
             ThemingManager.instance.themeDidChange()
         }), for: .valueChanged)
+
+        noteTranslation.switchView.addAction(.init(handler: { [weak self, weak noteTranslation, weak endpoint, weak apiKey] _ in
+            guard
+                let self,
+                let enabled = noteTranslation?.switchView.isOn,
+                let endpoint,
+                let apiKey
+            else { return }
+            NoteTranslationSettings.isEnabled = enabled
+            self.updateTranslationFields(enabled, endpoint: endpoint, apiKey: apiKey)
+        }), for: .valueChanged)
+
+        endpoint.textField.addAction(.init(handler: { [weak endpoint] _ in
+            NoteTranslationSettings.endpointString = endpoint?.textField.text ?? ""
+        }), for: .editingChanged)
+
+        apiKey.textField.addAction(.init(handler: { [weak apiKey] _ in
+            NoteTranslationSettings.apiKey = apiKey?.textField.text ?? ""
+        }), for: .editingChanged)
     }
-    
+
+    func updateTranslationFields(
+        _ enabled: Bool,
+        endpoint: SettingsTextFieldView,
+        apiKey: SettingsTextFieldView
+    ) {
+        [endpoint, apiKey].forEach {
+            $0.isUserInteractionEnabled = enabled
+            $0.alpha = enabled ? 1 : 0.55
+        }
+    }
+
     func descLabel(_ text: String) -> UILabel {
         let label = ThemeableLabel().setTheme { $0.textColor = .foreground3 }
         label.text = text
@@ -113,31 +177,76 @@ private extension SettingsContentDisplayController {
 final class SettingsSwitchView: UIView, Themeable {
     let switchView = UISwitch()
     let label = UILabel()
-    
+
     init(_ text: String) {
         super.init(frame: .zero)
-        
+
         updateTheme()
-        
+
         label.font = .appFont(withSize: 16, weight: .regular)
         label.text = text
-        
+
         let stack = UIStackView([label, UIView(), switchView])
         stack.alignment = .center
-        
+
         addSubview(stack)
         stack.pinToSuperview(edges: .horizontal, padding: 16).centerToSuperview()
-        
+
         layer.cornerRadius = 12
         constrainToSize(height: 48)
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     func updateTheme() {
         backgroundColor = .background3
         label.textColor = .foreground
+    }
+}
+
+final class SettingsTextFieldView: UIView, Themeable {
+    let textField = UITextField()
+    private let titleLabel = UILabel()
+    private let placeholder: String
+
+    init(title: String, placeholder: String, isSecureTextEntry: Bool = false) {
+        self.placeholder = placeholder
+        super.init(frame: .zero)
+
+        titleLabel.text = title
+        titleLabel.font = .appFont(withSize: 13, weight: .regular)
+
+        textField.placeholder = placeholder
+        textField.font = .appFont(withSize: 16, weight: .regular)
+        textField.isSecureTextEntry = isSecureTextEntry
+        textField.clearButtonMode = .whileEditing
+
+        let stack = UIStackView(arrangedSubviews: [titleLabel, textField])
+        stack.axis = .vertical
+        stack.spacing = 5
+
+        addSubview(stack)
+        stack.pinToSuperview(edges: .horizontal, padding: 16).pinToSuperview(edges: .vertical, padding: 10)
+
+        layer.cornerRadius = 12
+        constrainToSize(height: 72)
+        updateTheme()
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    func updateTheme() {
+        backgroundColor = .background3
+        titleLabel.textColor = .foreground3
+        textField.textColor = .foreground
+        textField.tintColor = .accent2
+        textField.attributedPlaceholder = NSAttributedString(
+            string: placeholder,
+            attributes: [.foregroundColor: UIColor.foreground3]
+        )
     }
 }
