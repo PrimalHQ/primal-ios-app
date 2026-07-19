@@ -33,6 +33,7 @@ class PostCell: UITableViewCell {
     let nipLabel = UILabel()
     let replyingToView = ReplyingToView()
     let mainLabel = NantesLabel()
+    let translationView = NoteTranslationView()
     let invoiceView = LightningInvoiceView()
     let mainImages = ImageGalleryView()
     let articleView = ArticleFeedView()
@@ -207,6 +208,7 @@ class PostCell: UITableViewCell {
         }
         
         mainLabel.attributedText = useShortText ? content.attributedTextShort : content.attributedText
+        translationView.configure(with: content.text)
         mainImages.resources = content.mediaResources
         mainImages.thumbnails = content.videoThumbnails
         
