@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		024790235F8243AC95A947C7 /* PollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 254BECF85EE9411B88FDCEFA /* PollView.swift */; };
+		0A9335F336F9460F6AD26BEE /* NoteTranslationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1362A58B49FDEA45A394E8D2 /* NoteTranslationService.swift */; };
 		2D7F552B70900BC23221F4AC /* PollVoteOptionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC1B50E71AC4CB3BACD02E0A /* PollVoteOptionCell.swift */; };
 		2F98EB1DCC624734794395F1 /* PollVoteUserCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 251E11AFC9FB66D804B5217F /* PollVoteUserCell.swift */; };
 		37F34936B75F413BAC729EB5 /* FeedElementPollCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11014EF06E484DF7AE794F7D /* FeedElementPollCell.swift */; };
@@ -752,8 +753,10 @@
 		C7F8A2B3D4E5061798A3B1C2 /* PrimalPremiumLogoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7F8A2B3D4E5061798A3B1C3 /* PrimalPremiumLogoView.swift */; };
 		D2B3C4E5F6A7089012345679 /* CacheBreakdownView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2B3C4E5F6A7089012345678 /* CacheBreakdownView.swift */; };
 		D5A4266E6F84FB8044839C0E /* PollVoteDetailsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDBBAA6B683A9D0CB02B7060 /* PollVoteDetailsCell.swift */; };
+		D6285FE9715E496830EDCFD5 /* NoteTranslationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7AA648627E2689C746300DA /* NoteTranslationView.swift */; };
 		E365D8456ACE78BF9DE4C077 /* OldWalletDetectedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5764AD3FE766D500CBC6420 /* OldWalletDetectedView.swift */; };
 		ED696C5B32C51E1E05C1EADD /* LiveVideoPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58BCEEB23F4CCE0243097494 /* LiveVideoPlayer.swift */; };
+		F2C47684F44B346A5CB05112 /* SettingsTranslationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B8542D7841C091345F6AAF /* SettingsTranslationViewController.swift */; };
 		F8E7A8239A9F7E466C01EBF5 /* FeedVideoPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF3D490ED6A30BA8537BEBDF /* FeedVideoPlayer.swift */; };
 /* End PBXBuildFile section */
 
@@ -823,9 +826,11 @@
 
 /* Begin PBXFileReference section */
 		11014EF06E484DF7AE794F7D /* FeedElementPollCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedElementPollCell.swift; sourceTree = "<group>"; };
+		1362A58B49FDEA45A394E8D2 /* NoteTranslationService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = NoteTranslationService.swift; path = Primal/Common/Views/Feed/PostCell/NoteTranslationService.swift; sourceTree = "<group>"; };
 		251E11AFC9FB66D804B5217F /* PollVoteUserCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollVoteUserCell.swift; sourceTree = "<group>"; };
 		254BECF85EE9411B88FDCEFA /* PollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollView.swift; sourceTree = "<group>"; };
 		32167054FC4146F3845A370A /* ThreadElementPollCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadElementPollCell.swift; sourceTree = "<group>"; };
+		34B8542D7841C091345F6AAF /* SettingsTranslationViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SettingsTranslationViewController.swift; path = Primal/Scenes/Settings/SubControllers/SettingsTranslationViewController.swift; sourceTree = "<group>"; };
 		58BCEEB23F4CCE0243097494 /* LiveVideoPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveVideoPlayer.swift; sourceTree = "<group>"; };
 		661FE298A909D88F0B34B14F /* PollVotesDatasource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollVotesDatasource.swift; sourceTree = "<group>"; };
 		731729354B231F6AE303270F /* PollVoteTitleCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollVoteTitleCell.swift; sourceTree = "<group>"; };
@@ -1590,25 +1595,26 @@
 		D2B3C4E5F6A7089012345678 /* CacheBreakdownView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheBreakdownView.swift; sourceTree = "<group>"; };
 		EC1B50E71AC4CB3BACD02E0A /* PollVoteOptionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollVoteOptionCell.swift; sourceTree = "<group>"; };
 		F2BF0F83E0F616FCB6C4AB48 /* PollResultsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollResultsViewController.swift; sourceTree = "<group>"; };
+		F7AA648627E2689C746300DA /* NoteTranslationView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = NoteTranslationView.swift; path = Primal/Common/Views/Feed/PostCell/NoteTranslationView.swift; sourceTree = "<group>"; };
 		FDBBAA6B683A9D0CB02B7060 /* PollVoteDetailsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollVoteDetailsCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		B9658AF62D9FF9460037E5DB /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+		B9658AF62D9FF9460037E5DB /* Exceptions for "PrimalNotifications" folder in "PrimalNotifications" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
 			);
 			target = B9658AEB2D9FF9460037E5DB /* PrimalNotifications */;
 		};
-		B9DFA0B12D7EFBC9002C6F34 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+		B9DFA0B12D7EFBC9002C6F34 /* Exceptions for "primalShare" folder in "primalShare" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
 			);
 			target = B9DFA0A22D7EFBC9002C6F34 /* primalShare */;
 		};
-		B9E0E64C2EF08D0800F48B2A /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+		B9E0E64C2EF08D0800F48B2A /* Exceptions for "RemoteSignerWidget" folder in "RemoteSignerWidgetExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
@@ -1616,7 +1622,7 @@
 			);
 			target = B9E0E6352EF08D0500F48B2A /* RemoteSignerWidgetExtension */;
 		};
-		B9E0E6552EF1F58200F48B2A /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+		B9E0E6552EF1F58200F48B2A /* Exceptions for "RemoteSignerWidget" folder in "Primal" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				AppIntent.swift,
@@ -1629,9 +1635,43 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		B9658AED2D9FF9460037E5DB /* PrimalNotifications */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (B9658AF62D9FF9460037E5DB /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = PrimalNotifications; sourceTree = "<group>"; };
-		B9DFA0A42D7EFBC9002C6F34 /* primalShare */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (B9DFA0B12D7EFBC9002C6F34 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = primalShare; sourceTree = "<group>"; };
-		B9E0E63B2EF08D0600F48B2A /* RemoteSignerWidget */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (B9E0E6552EF1F58200F48B2A /* PBXFileSystemSynchronizedBuildFileExceptionSet */, B9E0E64C2EF08D0800F48B2A /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = RemoteSignerWidget; sourceTree = "<group>"; };
+		B9658AED2D9FF9460037E5DB /* PrimalNotifications */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				B9658AF62D9FF9460037E5DB /* Exceptions for "PrimalNotifications" folder in "PrimalNotifications" target */,
+			);
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
+			path = PrimalNotifications;
+			sourceTree = "<group>";
+		};
+		B9DFA0A42D7EFBC9002C6F34 /* primalShare */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				B9DFA0B12D7EFBC9002C6F34 /* Exceptions for "primalShare" folder in "primalShare" target */,
+			);
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
+			path = primalShare;
+			sourceTree = "<group>";
+		};
+		B9E0E63B2EF08D0600F48B2A /* RemoteSignerWidget */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				B9E0E6552EF1F58200F48B2A /* Exceptions for "RemoteSignerWidget" folder in "Primal" target */,
+				B9E0E64C2EF08D0800F48B2A /* Exceptions for "RemoteSignerWidget" folder in "RemoteSignerWidgetExtension" target */,
+			);
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
+			path = RemoteSignerWidget;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1702,6 +1742,38 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		53674D879DBAC96BB352F006 /* SubControllers */ = {
+			isa = PBXGroup;
+			children = (
+				34B8542D7841C091345F6AAF /* SettingsTranslationViewController.swift */,
+			);
+			name = SubControllers;
+			sourceTree = "<group>";
+		};
+		736A0474675AA9E307E170F8 /* Feed */ = {
+			isa = PBXGroup;
+			children = (
+				B8890F1FEC023ADA88E83489 /* PostCell */,
+			);
+			name = Feed;
+			sourceTree = "<group>";
+		};
+		7DA168AC14D2020296490BC0 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				736A0474675AA9E307E170F8 /* Feed */,
+			);
+			name = Views;
+			sourceTree = "<group>";
+		};
+		874C975F831BE3324D50128B /* Scenes */ = {
+			isa = PBXGroup;
+			children = (
+				96D5C5492851AC8EFED118BF /* Settings */,
+			);
+			name = Scenes;
+			sourceTree = "<group>";
+		};
 		933DBDA82A1124F7008DCF1F /* Notes */ = {
 			isa = PBXGroup;
 			children = (
@@ -1771,6 +1843,7 @@
 				B9E0E63B2EF08D0600F48B2A /* RemoteSignerWidget */,
 				939330F329A3E36F003954C2 /* Products */,
 				933DBDB12A1126CE008DCF1F /* Frameworks */,
+				9BB6494955BD9DBC6DEE59FF /* Primal */,
 			);
 			sourceTree = "<group>";
 		};
@@ -2076,6 +2149,23 @@
 				B98DD8C72C5C108700E8369A /* Article.swift */,
 			);
 			path = Model;
+			sourceTree = "<group>";
+		};
+		96D5C5492851AC8EFED118BF /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				53674D879DBAC96BB352F006 /* SubControllers */,
+			);
+			name = Settings;
+			sourceTree = "<group>";
+		};
+		9BB6494955BD9DBC6DEE59FF /* Primal */ = {
+			isa = PBXGroup;
+			children = (
+				E5750C5A47D5F1D308A23277 /* Common */,
+				874C975F831BE3324D50128B /* Scenes */,
+			);
+			name = Primal;
 			sourceTree = "<group>";
 		};
 		9E0DEAF029FD301D00145E08 /* Animations */ = {
@@ -2535,6 +2625,15 @@
 				9EF4BFC32A8BE9C5003396AA /* IceWave.swift */,
 			);
 			path = Themes;
+			sourceTree = "<group>";
+		};
+		B8890F1FEC023ADA88E83489 /* PostCell */ = {
+			isa = PBXGroup;
+			children = (
+				1362A58B49FDEA45A394E8D2 /* NoteTranslationService.swift */,
+				F7AA648627E2689C746300DA /* NoteTranslationView.swift */,
+			);
+			name = PostCell;
 			sourceTree = "<group>";
 		};
 		B90032832BD0180300ADD2E5 /* SocketRequests */ = {
@@ -3752,6 +3851,14 @@
 			path = Scheme;
 			sourceTree = "<group>";
 		};
+		E5750C5A47D5F1D308A23277 /* Common */ = {
+			isa = PBXGroup;
+			children = (
+				7DA168AC14D2020296490BC0 /* Views */,
+			);
+			name = Common;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -3874,8 +3981,6 @@
 				B9DFA0A42D7EFBC9002C6F34 /* primalShare */,
 			);
 			name = primalShare;
-			packageProductDependencies = (
-			);
 			productName = primalShare;
 			productReference = B9DFA0A32D7EFBC9002C6F34 /* primalShare.appex */;
 			productType = "com.apple.product-type.app-extension";
@@ -3896,8 +4001,6 @@
 				B9E0E63B2EF08D0600F48B2A /* RemoteSignerWidget */,
 			);
 			name = RemoteSignerWidgetExtension;
-			packageProductDependencies = (
-			);
 			productName = RemoteSignerWidgetExtension;
 			productReference = B9E0E6362EF08D0500F48B2A /* RemoteSignerWidgetExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
@@ -4740,6 +4843,9 @@
 				B9DF0CB22C25AD78009ADC7B /* LargeZapGalleryView.swift in Sources */,
 				B9318F602B6048FE0044B6AA /* SettingsEditZapController.swift in Sources */,
 				B9DAA45A2D4A634500B00B82 /* SettingsExternalNwcController.swift in Sources */,
+				0A9335F336F9460F6AD26BEE /* NoteTranslationService.swift in Sources */,
+				D6285FE9715E496830EDCFD5 /* NoteTranslationView.swift in Sources */,
+				F2C47684F44B346A5CB05112 /* SettingsTranslationViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
