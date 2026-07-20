@@ -10,26 +10,30 @@ import UIKit
 class SearchArticleFeedController: ArticleFeedViewController {
     let saveButton = UIButton.smallRoundedButton(title: "Save").constrainToSize(width: 76)
     let navigationBorder = UIView().constrainToSize(height: 6)
-    
+
     lazy var showPremiumCard = !WalletManager.instance.hasPremium && manager.feed.isFromAdvancedSearchScreen == true
-    
+
+    /// When set, saving replaces this feed in place instead of appending.
+    var editingFeed: PrimalFeed?
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         title = "Search Results"
-        
+
         saveButton.addAction(.init(handler: { [weak self] _ in
             guard let self else { return }
             let feed = manager.feed
-            
+
             var allFeeds = PrimalFeed.getAllFeeds(.article)
-            
-            if allFeeds.contains(where: { $0.spec == feed.spec }) {
+
+            if editingFeed == nil, allFeeds.contains(where: { $0.spec == feed.spec }) {
                 allFeeds.removeAll(where: { $0.spec == feed.spec })
                 PrimalFeed.setAllFeeds(allFeeds, type: .article)
                 updateSaveButton()
             } else {
-                present(SaveFeedController(feedType: .article, feed: feed) { [weak self] in
+                present(SaveFeedController(feedType: .article, feed: feed, editingFeed: editingFeed) { [weak self] in
+                    self?.editingFeed = nil
                     self?.updateSaveButton()
                 }, animated: true)
             }
@@ -37,7 +41,7 @@ class SearchArticleFeedController: ArticleFeedViewController {
         
         table.register(SearchPremiumCell.self, forCellReuseIdentifier: "premiumCell")
         
-        navigationItem.rightBarButtonItem = .init(customView: saveButton)
+        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: saveButton).hidingGlassBackground()
         updateSaveButton()
         
         view.addSubview(navigationBorder)
@@ -66,8 +70,10 @@ class SearchArticleFeedController: ArticleFeedViewController {
         let feed = manager.feed
 
         let allFeeds = PrimalFeed.getAllFeeds(.article)
-        
-        if allFeeds.contains(where: { $0.spec == feed.spec }) {
+
+        if editingFeed != nil {
+            saveButton.setTitle("Update", for: .normal)
+        } else if allFeeds.contains(where: { $0.spec == feed.spec }) {
             saveButton.setTitle("Remove", for: .normal)
         } else {
             saveButton.setTitle("Save", for: .normal)

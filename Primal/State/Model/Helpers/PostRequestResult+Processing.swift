@@ -64,9 +64,9 @@ extension PrimalUser {
         }
         return npub
     }
-    
+
     var atIdentifier: String { "@" + atIdentifierWithoutAt.trimmingCharacters(in: .whitespacesAndNewlines) }
-    
+
     var atIdentifierWithoutAt: String {
         if !name.isEmpty {
             return name
@@ -76,9 +76,9 @@ extension PrimalUser {
         }
         return npub
     }
-    
+
     var parsedNip: String { nip05.hasPrefix("_@") ? nip05.replacingOccurrences(of: "_@", with: "") : nip05 }
-    
+
     var secondIdentifier: String? { [parsedNip, name].filter { !$0.isEmpty && $0 != firstIdentifier } .first }
     
     var isCurrentUser: Bool { pubkey == IdentityManager.instance.userHexPubkey }

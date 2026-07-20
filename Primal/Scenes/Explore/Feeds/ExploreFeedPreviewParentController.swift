@@ -113,7 +113,7 @@ private extension ExploreFeedPreviewParentController {
                 c.isActive = true
             }
         
-        navigationItem.rightBarButtonItem = .init(customView: addParent)
+        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: addParent).hidingGlassBackground()
         
         let previewFeed: UIViewController
         switch type {

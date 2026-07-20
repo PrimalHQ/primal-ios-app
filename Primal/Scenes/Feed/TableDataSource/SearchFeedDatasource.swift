@@ -8,6 +8,7 @@
 import UIKit
 
 enum SearchFeedItem: Hashable {
+    case noteHeader(content: ParsedContent, element: NoteFeedElement)
     case noteElement(content: ParsedContent, element: NoteFeedElement)
     case premium
     case loading
@@ -41,30 +42,18 @@ class SearchFeedDatasource: UITableViewDiffableDataSource<TwoSectionFeed, Search
             case .premium:
                 cell = tableView.dequeueReusableCell(withIdentifier: "premium", for: indexPath)
                 (cell as? SearchPremiumCell)?.delegate = delegate
+            case .noteHeader(let content, let element):
+                cell = tableView.dequeueReusableCell(withIdentifier: element.headerCellID, for: indexPath)
+                HomeFeedDatasource.configureNoteCell(cell, content: content, element: element, delegate: delegate)
             case .noteElement(let content, let element):
                 cell = tableView.dequeueReusableCell(withIdentifier: element.cellID, for: indexPath)
-                switch element {
-                case .webPreview(_, let metadata):
-                    (cell as? WebPreviewCell)?.updateWebPreview(metadata)
-                case .postPreview(let embedded):
-                    if let cell = cell as? RegularFeedElementCell {
-                        cell.update(embedded)
-                        cell.delegate = delegate
-                    }
-                    return cell
-                default:
-                    break
-                }
-                
-                if let cell = cell as? RegularFeedElementCell {
-                    cell.update(content)
-                    cell.delegate = delegate
-                }
+                HomeFeedDatasource.configureNoteCell(cell, content: content, element: element, delegate: delegate)
             }
             return cell
         }
         
         registerCells(tableView)
+        registerHeaderCells(tableView)
         tableView.register(SearchPremiumCell.self, forCellReuseIdentifier: "premium")
         tableView.register(EmptyTableViewCell.self, forCellReuseIdentifier: "empty")
         
@@ -72,19 +61,31 @@ class SearchFeedDatasource: UITableViewDiffableDataSource<TwoSectionFeed, Search
     }
     
     func elementForIndexPath(_ indexPath: IndexPath) -> NoteFeedElement? {
-        guard indexPath.section == 0, let data = cells[safe: indexPath.row], case .noteElement(_, let element) = data else { return nil }
-        return element
+        guard indexPath.section == 0, let data = cells[safe: indexPath.row] else { return nil }
+        switch data {
+        case .noteElement(_, let element), .noteHeader(_, let element):
+            return element
+        default:
+            return nil
+        }
     }
-    
+
     func postForIndexPath(_ indexPath: IndexPath) -> ParsedContent? {
-        guard indexPath.section == 0, let data = cells[safe: indexPath.row], case .noteElement(let content, _) = data else { return nil }
-        return content
+        guard indexPath.section == 0, let data = cells[safe: indexPath.row] else { return nil }
+        switch data {
+        case .noteElement(let content, _), .noteHeader(let content, _):
+            return content
+        default:
+            return nil
+        }
     }
-    
+
     var firstRun = true
     func setPosts(_ posts: [ParsedContent]) {
-        var cells: [SearchFeedItem] = convertPostsToCells(posts).flatMap { post, elements in
-            elements.map { .noteElement(content: post, element: $0) }
+        var cells: [SearchFeedItem] = convertPostsToHeaderCells(posts).flatMap { content, header, elements in
+            var items: [SearchFeedItem] = [.noteHeader(content: content, element: header)]
+            items += elements.map { .noteElement(content: content, element: $0) }
+            return items
         }
         
         if cells.isEmpty {

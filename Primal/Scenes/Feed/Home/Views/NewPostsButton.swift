@@ -8,21 +8,33 @@
 import FLAnimatedImage
 import UIKit
 
+extension PrimalNavigationBar {
+    static func transformForExcited(_ excited: CGFloat) -> CGAffineTransform {
+        .init(translationX: 0, y: max(maxTranslation, min(0, -excited)))
+    }
+    
+    static var transformForMaxExcited: CGAffineTransform {
+        .init(translationX: 0, y: maxTranslation)
+    }
+    
+    static var maxTranslation: CGFloat { -PrimalNavigationBar.height }
+}
+
 final class NewPostsButton: MyButton, Themeable {
     private let noteAvatars: [UserImageView] = (0..<3).map { _ in UserImageView(height: 28, showLegendGlow: false) }
     private let noteLabel = UILabel()
-    
+
     private let liveAvatars: [UserImageView] = (0..<3).map { _ in UserImageView(height: 28, showLegendGlow: false) }
     private let liveLabel = UILabel()
-    
+
     lazy var noteAvatarStack = UIStackView()
     lazy var noteStack = UIStackView([noteAvatarStack, noteLabel])
-    
+
     lazy var liveAvatarStack = UIStackView()
     lazy var liveStack = UIStackView([liveAvatarStack, liveLabel])
-    
+
     let separator = SpacerView(width: 1, height: 24, color: .white.withAlphaComponent(0.5))
-    
+
     override var isPressed: Bool {
         didSet {
             noteStack.alpha = isPressed ? 0.5 : 1
@@ -126,6 +138,39 @@ final class NewPostsButton: MyButton, Themeable {
         fatalError("init(coder:) has not been implemented")
     }
     
+    var shouldBeHidden: Bool?
+    var animating = false
+    func setHidden(_ hidden: Bool, animated: Bool) {
+//        guard isHidden != hidden else { return }
+        guard shouldBeHidden != hidden else { return }
+        
+        shouldBeHidden = hidden
+
+        guard animated else {
+//            isHidden = hidden
+            alpha = hidden ? 0 : 1
+//            transform = .identity
+            return
+        }
+        
+        UIView.animate(withDuration: 0.25) {
+            self.alpha = hidden ? 0 : 1
+        }
+    }
+
+//    func setIsExcited(_ excited: CGFloat, animated: Bool) {
+//        guard !isHidden, alpha > 0 else { return }
+//        
+//        guard animated else {
+//            transform = PrimalNavigationBar.transformForExcited(excited)
+//            return
+//        }
+//        
+//        UIView.animate(withDuration: 0.25) {
+//            self.transform = PrimalNavigationBar.transformForExcited(excited)
+//        }
+//    }
+
     func updateTheme() {
         backgroundColor = .accent
     }

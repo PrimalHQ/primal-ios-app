@@ -108,7 +108,7 @@ extension NoteZapsViewController: ZapTableViewCellDelegate {
             UIAction(title: NSLocalizedString("Copy text", comment: ""), image: UIImage(named: "MenuCopyText")) { [weak self] _ in
                 UIPasteboard.general.string = zap.message
                 
-                self?.view.showToast("Copied!", extraPadding: 0)
+                self?.view.showToast("Copied!")
             }
         ]
         

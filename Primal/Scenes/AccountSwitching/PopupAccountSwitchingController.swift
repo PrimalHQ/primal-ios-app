@@ -41,15 +41,18 @@ private extension PopupAccountSwitchingController {
         if let pc = presentationController as? UISheetPresentationController {
             pc.detents = [.custom(resolver: { _ in
                 let count = npubs.count
-                
+
                 return 220 + CGFloat(count) * 60
             })]
             pc.animateChanges {
                 pc.invalidateDetents()
             }
+            if #available(iOS 17.0, *) {
+                pc.traitOverrides.userInterfaceStyle = Theme.current.userInterfaceStyle
+            }
         }
     }
-    
+
     func setupEditMode() {
         doneButton.isHidden = false
         editButton.isHidden = true
@@ -95,7 +98,11 @@ private extension PopupAccountSwitchingController {
         
         let npubs = LoginManager.instance.loggedInNpubs()
         
-        view.backgroundColor = .background2
+        if #available(iOS 26.0, *) {
+            // Liquid Glass — no opaque background
+        } else {
+            view.backgroundColor = .background2
+        }
         
         let pullBarParent = UIView()
         let pullBar = UIView()
@@ -197,7 +204,7 @@ final class AccountEditingView: UIView {
             })
             
             alert.addAction(.init(title: "Cancel", style: .cancel))
-            (RootViewController.instance.presentedViewController ?? RootViewController.instance).present(alert, animated: true)
+            RootViewController.instance.smartPresent(alert)
         }))
         
         let nameStack = UIStackView(axis: .vertical, [nameLabel, subLabel])

@@ -62,7 +62,11 @@ class RemoteSignerActiveSessionsController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
     
-        view.backgroundColor = .background4
+        if #available(iOS 26.0, *) {
+            // Liquid Glass — no opaque background
+        } else {
+            view.backgroundColor = .background4
+        }
         
         let titleLabel = UILabel("Active Sessions", color: .foreground, font: .appFont(withSize: 18, weight: .bold))
         let selectButton = UIButton(configuration: .accent("Select All", font: .appFont(withSize: 16, weight: .regular)))

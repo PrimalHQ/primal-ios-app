@@ -20,10 +20,11 @@ extension UIButton {
     }
 }
 
-class AdvancedSearchHomeController: UIViewController {
-    let manager: AdvancedSearchManager
+class AdvancedSearchHomeController: UIViewController, AdvancedSearchControllerProtocol {
+    let advancedSearchManager: AdvancedSearchManager
     init(manager: AdvancedSearchManager = .init()) {
-        self.manager = manager
+        advancedSearchManager = manager
+        manager.isFromAdvancedSearchScreen = true
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -36,6 +37,11 @@ class AdvancedSearchHomeController: UIViewController {
         setup()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(false, animated: animated)
+    }
+    
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
@@ -46,15 +52,15 @@ class AdvancedSearchHomeController: UIViewController {
 
 extension AdvancedSearchHomeController {
     func setup() {
-        title = "Advanced Search"
-        
+        title = advancedSearchManager.editingFeed == nil ? "Advanced Search" : "Edit Feed"
+
         let scroll = UIScrollView()
         let content = contentStack()
         scroll.addSubview(content)
         content.pinToSuperview()
         content.widthAnchor.constraint(equalTo: scroll.widthAnchor).isActive = true
         scroll.keyboardDismissMode = .onDrag
-        
+
         let searchButton = UIButton.largeRoundedButton(title: "Search")
         let keyboardSpacer = KeyboardSizingView()
         let mainStack = UIStackView(axis: .vertical, [scroll, SpacerView(height: 20, priority: .required), searchButton, keyboardSpacer])
@@ -63,33 +69,78 @@ extension AdvancedSearchHomeController {
             .pinToSuperview(edges: .top, safeArea: true)
             .pinToSuperview(edges: .horizontal, padding: 20)
             .pinToSuperview(edges: .bottom)
-        
+
         mainStack.setCustomSpacing(20, after: searchButton)
         searchButton.bottomAnchor.constraint(lessThanOrEqualTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
-        
+
         view.backgroundColor = .background4
-        
+
+        let loadingOverlay = UIView()
+        loadingOverlay.backgroundColor = UIColor.background4.withAlphaComponent(0.6)
+        let spinner = LoadingSpinnerView().constrainToSize(60)
+        loadingOverlay.addSubview(spinner)
+        spinner.centerToSuperview()
+        view.addSubview(loadingOverlay)
+        loadingOverlay.pinToSuperview()
+        loadingOverlay.isHidden = true
+
+        advancedSearchManager.$isLoadingEdit
+            .receive(on: DispatchQueue.main)
+            .sink { isLoading in
+                loadingOverlay.isHidden = !isLoading
+                if isLoading { spinner.play() } else { spinner.stop() }
+                mainStack.isUserInteractionEnabled = !isLoading
+            }
+            .store(in: &cancellables)
+
         searchButton.addAction(.init(handler: { [weak self] _ in
             guard let self, let nav: UINavigationController = presentingViewController?.findInChildren()  else { return }
-            
-            if manager.searchType == .reads {
-                nav.pushViewController(SearchArticleFeedController(feed: manager.feed), animated: false)
+
+            let editingFeed = advancedSearchManager.editingFeed
+            if advancedSearchManager.searchType == .reads {
+                let vc = SearchArticleFeedController(feed: advancedSearchManager.feed)
+                vc.editingFeed = editingFeed
+                nav.pushViewController(vc, animated: false)
             } else {
-                nav.pushViewController(SearchNoteFeedController(feed: .init(newFeed: manager.feed)), animated: false)
+                let vc = SearchNoteFeedController(feed: .init(newFeed: advancedSearchManager.feed))
+                vc.editingFeed = editingFeed
+                nav.pushViewController(vc, animated: false)
             }
-            
+
             dismiss(animated: true)
         }), for: .touchUpInside)
-        
+
         keyboardSpacer.updateHeightCancellable().store(in: &cancellables)
+
+        if let feed = advancedSearchManager.editingFeed {
+            advancedSearchManager.loadAdvancedSearch(for: feed)
+                .sink { _ in }
+                .store(in: &cancellables)
+        }
     }
     
     func contentStack() -> UIStackView {
         let includeField = SearchInputView(placeholder: "Include these words...")
         let excludeField = SearchInputView(icon: UIImage(named: "xIcon10")?.scalePreservingAspectRatio(size: 12).withRenderingMode(.alwaysTemplate), placeholder: "Exclude these words...")
         
-        includeField.inputField.text = manager.includeWordsText
-        
+        includeField.inputField.text = advancedSearchManager.includeWordsText
+        excludeField.inputField.text = advancedSearchManager.excludeWordsText
+
+        advancedSearchManager.$includeWordsText
+            .sink { newValue in
+                if includeField.inputField.text != newValue {
+                    includeField.inputField.text = newValue
+                }
+            }
+            .store(in: &cancellables)
+        advancedSearchManager.$excludeWordsText
+            .sink { newValue in
+                if excludeField.inputField.text != newValue {
+                    excludeField.inputField.text = newValue
+                }
+            }
+            .store(in: &cancellables)
+
         let searchType = AdvancedSearchMenuItemView(title: "Search")
         let postedBy = AdvancedSearchUsersMenuItemView(title: "Posted By")
         let replyingTo = AdvancedSearchUsersMenuItemView(title: "Replying To")
@@ -99,78 +150,78 @@ extension AdvancedSearchHomeController {
         let filters = AdvancedSearchAccentMenuItemView(title: "Filter(s)")
         let orderBy = AdvancedSearchMenuItemView(title: "Order By")
         
-        manager.$searchType.map({ $0.name }).assign(to: \.value, on: searchType).store(in: &cancellables)
-        manager.$searchScope.map({ $0.name }).assign(to: \.value, on: scope).store(in: &cancellables)
-        manager.$searchOrder.map({ $0.name }).assign(to: \.value, on: orderBy).store(in: &cancellables)
+        advancedSearchManager.$searchType.map({ $0.name }).assign(to: \.value, on: searchType).store(in: &cancellables)
+        advancedSearchManager.$searchScope.map({ $0.name }).assign(to: \.value, on: scope).store(in: &cancellables)
+        advancedSearchManager.$searchOrder.map({ $0.name }).assign(to: \.value, on: orderBy).store(in: &cancellables)
         
-        manager.$postedBy.sink(receiveValue: { postedBy.setUsers($0) }).store(in: &cancellables)
-        manager.$replyingTo.sink(receiveValue: { replyingTo.setUsers($0) }).store(in: &cancellables)
-        manager.$zappedBy.sink(receiveValue: { zappedBy.setUsers($0) }).store(in: &cancellables)
+        advancedSearchManager.$postedBy.sink(receiveValue: { postedBy.setUsers($0) }).store(in: &cancellables)
+        advancedSearchManager.$replyingTo.sink(receiveValue: { replyingTo.setUsers($0) }).store(in: &cancellables)
+        advancedSearchManager.$zappedBy.sink(receiveValue: { zappedBy.setUsers($0) }).store(in: &cancellables)
         
-        manager.$timePosted
+        advancedSearchManager.$timePosted
             .map({ $0.name })
             .assign(to: \.value, on: timePosted).store(in: &cancellables)
         
-        Publishers.CombineLatest(manager.$filters, manager.$searchType)
+        Publishers.CombineLatest(advancedSearchManager.$filters, advancedSearchManager.$searchType)
             .map({ $0.configurationString(type: $1) })
             .assign(to: \.accentValue, on: filters).store(in: &cancellables)
         
         includeField.inputField.addAction(.init(handler: { [weak self] _ in
-            self?.manager.includeWordsText = includeField.inputField.text ?? ""
+            self?.advancedSearchManager.includeWordsText = includeField.inputField.text ?? ""
         }), for: .editingChanged)
         excludeField.inputField.addAction(.init(handler: { [weak self] _ in
-            self?.manager.excludeWordsText = excludeField.inputField.text ?? ""
+            self?.advancedSearchManager.excludeWordsText = excludeField.inputField.text ?? ""
         }), for: .editingChanged)
         
         postedBy.addAction(.init(handler: { [weak self] _ in
             guard let self else { return }
-            show(AdvancedSearchUserPickerController(current: manager.postedBy, title: "Posted By", callback: { [weak self] users in
-                self?.manager.postedBy = users
+            show(AdvancedSearchUserPickerController(current: advancedSearchManager.postedBy, title: "Posted By", callback: { [weak self] users in
+                self?.advancedSearchManager.postedBy = users
             }), sender: nil)
         }), for: .touchUpInside)
         replyingTo.addAction(.init(handler: { [weak self] _ in
             guard let self else { return }
-            show(AdvancedSearchUserPickerController(current: manager.replyingTo, title: "Replying To", callback: { [weak self] users in
-                self?.manager.replyingTo = users
+            show(AdvancedSearchUserPickerController(current: advancedSearchManager.replyingTo, title: "Replying To", callback: { [weak self] users in
+                self?.advancedSearchManager.replyingTo = users
             }), sender: nil)
         }), for: .touchUpInside)
         zappedBy.addAction(.init(handler: { [weak self] _ in
             guard let self else { return }
-            show(AdvancedSearchUserPickerController(current: manager.zappedBy, title: "Zapped By", callback: { [weak self] users in
-                self?.manager.zappedBy = users
+            show(AdvancedSearchUserPickerController(current: advancedSearchManager.zappedBy, title: "Zapped By", callback: { [weak self] users in
+                self?.advancedSearchManager.zappedBy = users
             }), sender: nil)
         }), for: .touchUpInside)
         
         searchType.addAction(.init(handler: { [weak self] _ in
             guard let self else { return }
-            show(AdvancedSearchEnumPickerController(currentValue: manager.searchType) { [weak self] type in
-                self?.manager.searchType = type
+            show(AdvancedSearchEnumPickerController(currentValue: advancedSearchManager.searchType) { [weak self] type in
+                self?.advancedSearchManager.searchType = type
             }, sender: nil)
         }), for: .touchUpInside)
         scope.addAction(.init(handler: { [weak self] _ in
             guard let self else { return }
-            show(AdvancedSearchEnumPickerController(currentValue: manager.searchScope) { [weak self] scope in
-                self?.manager.searchScope = scope
+            show(AdvancedSearchEnumPickerController(currentValue: advancedSearchManager.searchScope) { [weak self] scope in
+                self?.advancedSearchManager.searchScope = scope
             }, sender: nil)
         }), for: .touchUpInside)
         orderBy.addAction(.init(handler: { [weak self] _ in
             guard let self else { return }
-            show(AdvancedSearchEnumPickerController(currentValue: manager.searchOrder) { [weak self] order in
-                self?.manager.searchOrder = order
+            show(AdvancedSearchEnumPickerController(currentValue: advancedSearchManager.searchOrder) { [weak self] order in
+                self?.advancedSearchManager.searchOrder = order
             }, sender: nil)
         }), for: .touchUpInside)
         
         timePosted.addAction(.init(handler: { [weak self] _ in
             guard let self else { return }
-            show(AdvancedSearchTimePickerController(currentValue: manager.timePosted, callback: { [weak self] time in
-                self?.manager.timePosted = time
+            show(AdvancedSearchTimePickerController(currentValue: advancedSearchManager.timePosted, callback: { [weak self] time in
+                self?.advancedSearchManager.timePosted = time
             }), sender: nil)
         }), for: .touchUpInside)
         
         filters.addAction(.init(handler: { [weak self] _ in
             guard let self else { return }
-            show(AdvancedSearchFilterController(values: manager.filters, type: manager.searchType, callback: { [weak self] filters in
-                self?.manager.filters = filters
+            show(AdvancedSearchFilterController(values: advancedSearchManager.filters, type: advancedSearchManager.searchType, callback: { [weak self] filters in
+                self?.advancedSearchManager.filters = filters
             }), sender: nil)
         }), for: .touchUpInside)
         

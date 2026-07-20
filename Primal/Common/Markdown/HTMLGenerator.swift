@@ -104,7 +104,15 @@ struct HTMLGenerator: MarkupWalker {
     mutating func visitLineBreak(_ lineBreak: LineBreak) {
         html += "<br>\n"
     }
-    
+
+    mutating func visitInlineHTML(_ inlineHTML: InlineHTML) {
+        html += inlineHTML.rawHTML
+    }
+
+    mutating func visitHTMLBlock(_ htmlBlock: HTMLBlock) {
+        html += htmlBlock.rawHTML
+    }
+
     // MARK: - Tables
     
     mutating func visitTable(_ table: Table) {

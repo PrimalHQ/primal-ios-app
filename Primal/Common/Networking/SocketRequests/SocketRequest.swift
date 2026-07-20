@@ -355,7 +355,14 @@ extension PostRequestResult {
             }
             
             guard let tagsArray = payload["tags"]?.arrayValue else { return }
-            let tags: Set<String> = Set(tagsArray.compactMap { $0.arrayValue?[safe: 1]?.stringValue })
+            let tags: Set<String> = Set(tagsArray.compactMap { tag -> String? in
+                guard
+                    tag.arrayValue?[safe: 0]?.stringValue == "p",
+                    let hex = tag.arrayValue?[safe: 1]?.stringValue,
+                    hex.hexToNpub()?.isNPub() == true
+                else { return nil }
+                return hex
+            })
             
             if !tags.isEmpty {
                 let set = DatedSet(created_at: Int(payload["created_at"]?.doubleValue ?? -1), set: tags)

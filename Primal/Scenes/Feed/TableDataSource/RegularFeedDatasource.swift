@@ -13,6 +13,7 @@ enum SingleSection {
 }
 
 enum NoteFeedItem: Hashable {
+    case noteHeader(content: ParsedContent, element: NoteFeedElement)
     case note(content: ParsedContent, element: NoteFeedElement)
     case loading
 }
@@ -53,47 +54,47 @@ class RegularFeedDatasource: UITableViewDiffableDataSource<SingleSection, NoteFe
             case .loading:
                 cell = tableView.dequeueReusableCell(withIdentifier: "loading", for: indexPath)
                 (cell as? SkeletonLoaderCell)?.loaderView.play()
+            case let .noteHeader(content, element):
+                cell = tableView.dequeueReusableCell(withIdentifier: element.headerCellID, for: indexPath)
+                HomeFeedDatasource.configureNoteCell(cell, content: content, element: element, delegate: delegate)
             case let .note(content, element):
                 cell = tableView.dequeueReusableCell(withIdentifier: element.cellID, for: indexPath)
-                switch element {
-                case .webPreview(_, let metadata):
-                    (cell as? WebPreviewCell)?.updateWebPreview(metadata)
-                case .postPreview(let embedded):
-                    if let cell = cell as? RegularFeedElementCell {
-                        cell.update(embedded)
-                        cell.delegate = delegate
-                    }
-                    return cell
-                default:
-                    break
-                }
-                
-                if let cell = cell as? RegularFeedElementCell {
-                    cell.update(content)
-                    cell.delegate = delegate
-                }
+                HomeFeedDatasource.configureNoteCell(cell, content: content, element: element, delegate: delegate)
             }
             return cell
         }
         
         registerCells(tableView)
-        
+        registerHeaderCells(tableView)
+
         defaultRowAnimation = .fade
     }
     
     func elementForIndexPath(_ indexPath: IndexPath) -> NoteFeedElement? {
-        guard indexPath.section == 0, let data = cells[safe: indexPath.row], case .note(_, let element) = data else { return nil }
-        return element
+        guard indexPath.section == 0, let data = cells[safe: indexPath.row] else { return nil }
+        switch data {
+        case .note(_, let element), .noteHeader(_, let element):
+            return element
+        default:
+            return nil
+        }
     }
-    
+
     func postForIndexPath(_ indexPath: IndexPath) -> ParsedContent? {
-        guard indexPath.section == 0, let data = cells[safe: indexPath.row], case .note(let content, _) = data else { return nil }
-        return content
+        guard indexPath.section == 0, let data = cells[safe: indexPath.row] else { return nil }
+        switch data {
+        case .note(let content, _), .noteHeader(let content, _):
+            return content
+        default:
+            return nil
+        }
     }
-    
+
     func setPosts(_ posts: [ParsedContent]) {
-        cells = convertPostsToCells(posts).flatMap { post, elements in
-            elements.map { .note(content: post, element: $0) }
+        cells = convertPostsToHeaderCells(posts).flatMap { content, header, elements in
+            var items: [NoteFeedItem] = [.noteHeader(content: content, element: header)]
+            items += elements.map { .note(content: content, element: $0) }
+            return items
         }
         
         if cells.isEmpty {

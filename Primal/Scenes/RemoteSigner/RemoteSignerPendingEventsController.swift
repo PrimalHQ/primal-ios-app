@@ -38,8 +38,12 @@ class RemoteSignerPendingEventsController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-    
-        view.backgroundColor = .background4
+
+        if #available(iOS 26.0, *) {
+            // Liquid Glass — no opaque background
+        } else {
+            view.backgroundColor = .background4
+        }
         
         table.dataSource = self
         table.delegate = self

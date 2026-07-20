@@ -1,0 +1,192 @@
+//
+//  GenericSelectionController.swift
+//  Primal
+//
+//  Created by Pavle Stevanović on 24.4.26..
+//
+
+import UIKit
+
+protocol SelectionItem: Equatable {
+    var selectionTitle: String { get }
+    var selectionSubtitle: String? { get }
+}
+
+extension SelectionItem {
+    var selectionSubtitle: String? { nil }
+}
+
+final class GenericSelectionController<Item: SelectionItem>: SlideDownShellViewController, UITableViewDataSource, UITableViewDelegate {
+    private let table = UITableView()
+    private let closeButton = UIButton(configuration: .accent18("Close"))
+
+    private var items: [Item]
+    private var selectedItem: Item?
+    private let onSelect: (Item) -> Void
+
+    init(
+        items: [Item],
+        selectedItem: Item?,
+        onSelect: @escaping (Item) -> Void
+    ) {
+        self.items = items
+        self.selectedItem = selectedItem
+        self.onSelect = onSelect
+        super.init()
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        setupContent()
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        DispatchQueue.main.async { [self] in
+            if let selectedItem, let index = items.firstIndex(of: selectedItem) {
+                table.scrollToRow(at: IndexPath(row: index, section: 0), at: .middle, animated: false)
+            }
+        }
+
+        table.reloadData()
+    }
+
+    private func setupContent() {
+        table.showsVerticalScrollIndicator = false
+        table.register(GenericSelectionCell.self, forCellReuseIdentifier: "cell")
+        table.dataSource = self
+        table.delegate = self
+        table.separatorStyle = .none
+        table.backgroundColor = .background4
+        table.contentInsetAdjustmentBehavior = .never
+        table.contentInset = .init(top: 12, left: 0, bottom: 12, right: 0)
+
+        let botMenu = UIStackView([UIView(), closeButton])
+        botMenu.isLayoutMarginsRelativeArrangement = true
+        botMenu.layoutMargins = .init(top: 5, left: 16, bottom: 0, right: 16)
+
+        let contentStack = UIStackView(arrangedSubviews: [
+            table, SpacerView(height: 1, color: .background3, priority: .required),
+            botMenu
+        ])
+        contentStack.axis = .vertical
+
+        contentView.addSubview(contentStack)
+        contentStack.pinToSuperview()
+
+        primalNavigationBar.showChevron = true
+        primalNavigationBar.onTitleTapped = { [weak self] in
+            self?.dismissAnimated()
+        }
+        
+        primalNavigationBar.onAvatarTapped = { [weak self] in
+            guard let primalNavBarController: PrimalNavigationBarController = self?.presentingViewController?.findInChildren() else { return }
+            self?.animateOut {
+                self?.dismiss(animated: false) {
+                    MenuController().present(from: primalNavBarController)
+                }
+            }
+        }
+
+        closeButton.addAction(.init(handler: { [weak self] _ in
+            self?.dismissAnimated()
+        }), for: .touchUpInside)
+    }
+
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { items.count }
+
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = table.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
+        let item = items[indexPath.row]
+        (cell as? GenericSelectionCell)?.setup(
+            title: item.selectionTitle,
+            subtitle: item.selectionSubtitle,
+            selected: item == selectedItem
+        )
+        return cell
+    }
+
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let item = items[indexPath.row]
+        selectedItem = item
+        table.reloadData()
+        onSelect(item)
+
+        UIView.transition(with: primalNavigationBar.titleLabel, duration: 0.25, options: .transitionCrossDissolve) { [self] in
+            primalNavigationBar.title = item.selectionTitle
+        }
+        UIView.transition(with: primalNavigationBar.subtitleLabel, duration: 0.25, options: .transitionCrossDissolve) { [self] in
+            primalNavigationBar.subtitle = item.selectionSubtitle ?? ""
+        }
+        dismissAnimated()
+    }
+}
+
+final class GenericSelectionCell: UITableViewCell {
+    private let backgroundColorView = UIView()
+    private let titleLabel = UILabel()
+    private let subtitleLabel = UILabel()
+    private let checkmarkIcon = UIImageView(image: .checkmarkSearch)
+
+    private var mySelected = false
+
+    override func setHighlighted(_ highlighted: Bool, animated: Bool) {
+        super.setHighlighted(highlighted, animated: animated)
+        backgroundColorView.isHidden = !highlighted && !mySelected
+    }
+
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+
+        selectionStyle = .none
+
+        let vStack = UIStackView(axis: .vertical, spacing: 2, [titleLabel, subtitleLabel])
+        vStack.alignment = .leading
+
+        checkmarkIcon.contentMode = .scaleAspectFit
+        checkmarkIcon.setContentHuggingPriority(.required, for: .horizontal)
+        checkmarkIcon.setContentCompressionResistancePriority(.required, for: .horizontal)
+        checkmarkIcon.tintColor = .foreground
+
+        let hStack = UIStackView(spacing: 12, [vStack, UIView(), checkmarkIcon])
+        hStack.alignment = .center
+
+        contentView.addSubview(backgroundColorView)
+        backgroundColorView.pinToSuperview(edges: .horizontal, padding: 12).pinToSuperview(edges: .vertical, padding: 0)
+
+        contentView.addSubview(hStack)
+        hStack.pinToSuperview(edges: .leading, padding: 24).pinToSuperview(edges: .trailing, padding: 32).centerToSuperview(axis: .vertical)
+
+        backgroundColorView.backgroundColor = .background3
+        backgroundColorView.layer.cornerRadius = 10
+
+        titleLabel.font = .appFont(withSize: 18, weight: .semibold)
+        titleLabel.textColor = .foreground
+
+        subtitleLabel.font = .appFont(withSize: 13, weight: .regular)
+        subtitleLabel.textColor = .foreground3
+
+        backgroundColor = .background4
+        contentView.backgroundColor = .background4
+        backgroundColorView.constrainToSize(height: 64)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    func setup(title: String, subtitle: String?, selected: Bool) {
+        titleLabel.text = title
+        subtitleLabel.text = subtitle
+        subtitleLabel.isHidden = (subtitle ?? "").isEmpty
+
+        mySelected = selected
+        backgroundColorView.isHidden = !selected
+        checkmarkIcon.isHidden = !selected
+    }
+}

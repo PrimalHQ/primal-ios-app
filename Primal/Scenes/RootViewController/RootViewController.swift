@@ -46,24 +46,30 @@ final class RootViewController: UIViewController {
             if VideoPlaybackManager.instance.currentlyPlayingLiveVideo === oldValue?.player && oldValue != liveVideoController {
                 VideoPlaybackManager.instance.currentlyPlaying = nil
             }
-            
+
             if let liveVideoController, let player = liveVideoController.player {
-                livePlayer.setup(player: player)
+                floatingPlayer.mode = .live(player)
             } else {
-                livePlayer.removePlayer()
+                if case .live = floatingPlayer.mode {
+                    floatingPlayer.mode = floatingAudioPlayer.map { .audio($0) } ?? .none
+                }
                 VideoPlaybackManager.instance.currentlyLivePip = nil
             }
-            
+
             if liveVideoController == nil {
-                livePlayer.isHidden = true
+                if floatingAudioPlayer == nil {
+                    floatingPlayer.isHidden = true
+                }
             } else {
-                livePlayer.isHidden = false
-                livePlayer.frame = .init(x: 16, y: view.frame.height - view.safeAreaInsets.bottom - 166, width: 199, height: 112)
+                floatingPlayer.isHidden = false
+                floatingPlayer.frame = .init(x: 16, y: view.frame.height - view.safeAreaInsets.bottom - 166, width: 199, height: 112)
             }
         }
     }
-    
-    var livePlayer = LiveVideoEmbeddedView()
+
+    var floatingPlayer = FloatingPlayerView()
+    var floatingAudioPlayer: AudioPlayer?
+    var audioErrorCancellable: AnyCancellable?
     
     let smoothScrollButton = UIView()
     var smoothScrollingDisplayLink: CADisplayLink?
@@ -76,93 +82,9 @@ final class RootViewController: UIViewController {
     @Published var navigateTo: DeeplinkNavigation?
     
     var myPip: AVPictureInPictureController? {
-        guard AVPictureInPictureController.isPictureInPictureSupported() else { return nil }
-        return AVPictureInPictureController(playerLayer: livePlayer.playerView.playerLayer)
-    }
-    
-    private init() {
-        super.init(nibName: nil, bundle: nil)
-        quickReset(isFirstTime: true)
-        addIntro()
-        
-        view.addSubview(smoothScrollButton)
-        smoothScrollButton
-            .constrainToSize(44)
-            .pinToSuperview(edges: .trailing, padding: 16)
-            .pinToSuperview(edges: .bottom, padding: 120)
-        
-        smoothScrollButton.layer.cornerRadius = 22
-        smoothScrollButton.clipsToBounds = true
-        let blur = UIVisualEffectView(effect: UIBlurEffect(style: .light))
-        smoothScrollButton.insertSubview(blur, at: 0)
-        blur.pinToSuperview()
-        
-        let smoothButton = UIButton()
-        smoothButton.setImage(UIImage(systemName: "restart"), for: .normal)
-        smoothButton.tintColor = .white
-        smoothScrollButton.addSubview(smoothButton)
-        smoothButton.pinToSuperview()
-        smoothButton.addAction(.init(handler: { [weak self] _ in
-            self?.beginScrollAnimation()
-        }), for: .touchUpInside)
-        
-        view.addSubview(livePlayer)
-        livePlayer.frame = .init(x: 16, y: 500, width: 178, height: 100)
-        livePlayer.isHidden = true
-        smoothScrollButton.isHidden = true
-        
-        _ = WalletManager.instance
-        
-        IdentityManager.instance.requestUserProfile()
-        Connection.regular.isConnectedPublisher.debounce(for: .seconds(0.5), scheduler: RunLoop.main).sink { connected in
-            if connected {
-                IdentityManager.instance.requestUserSettings()
-                IdentityManager.instance.requestUserContactsAndRelays()
-
-                MuteManager.instance.requestMuteList()
-            }
-        }.store(in: &cancellables)
-        
-        didFinishInit = true        
-        
-        let notesDeeplink = NotificationCenter.default.publisher(for: .primalNoteLink)
-            .compactMap { $0.object as? String }
-            .map { DeeplinkNavigation.note($0) }
-        
-        let profileDeeplink = NotificationCenter.default.publisher(for: .primalProfileLink)
-            .compactMap { $0.object as? String }
-            .map { DeeplinkNavigation.profile(HexKeypair.npubToHexPubkey($0) ?? $0) }
-        
-        Publishers.Merge(notesDeeplink, profileDeeplink)
-            .receive(on: DispatchQueue.main)
-            .sink(receiveValue: { [weak self] in
-                self?.navigateTo = $0
-            })
-            .store(in: &cancellables)
-        
-        let liveTap = BindableTapGestureRecognizer(action: { [weak self] in
-            guard let livePlayer = self?.livePlayer else { return }
-            if livePlayer.showChevron {
-                UIView.animate(withDuration: 0.2) {
-                    livePlayer.showChevron = false
-                    if livePlayer.center.x < 0 {
-                        livePlayer.center.x += LivePlayerMoveGesture.hideAdjustment
-                    } else {
-                        livePlayer.center.x -= LivePlayerMoveGesture.hideAdjustment
-                    }
-                }
-                return
-            }
-            guard let live = self?.liveVideoController else { return }
-            self?.present(live, animated: true)
-        })
-        let move = LivePlayerMoveGesture()
-        
-        [move, liveTap].forEach { livePlayer.addGestureRecognizer($0) }
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        guard AVPictureInPictureController.isPictureInPictureSupported(),
+              let layer = floatingPlayer.livePlayerLayer else { return nil }
+        return AVPictureInPictureController(playerLayer: layer)
     }
     
     override var prefersStatusBarHidden: Bool {
@@ -189,6 +111,94 @@ final class RootViewController: UIViewController {
             return .allButUpsideDown
         }
         return .portrait
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+    
+        quickReset(isFirstTime: true)
+        addIntro()
+        
+        view.addSubview(smoothScrollButton)
+        smoothScrollButton
+            .constrainToSize(44)
+            .pinToSuperview(edges: .trailing, padding: 16)
+            .pinToSuperview(edges: .bottom, padding: 120)
+        
+        smoothScrollButton.layer.cornerRadius = 22
+        smoothScrollButton.clipsToBounds = true
+        let blur = UIVisualEffectView(effect: UIBlurEffect(style: .light))
+        smoothScrollButton.insertSubview(blur, at: 0)
+        blur.pinToSuperview()
+        
+        let smoothButton = UIButton()
+        smoothButton.setImage(UIImage(systemName: "restart"), for: .normal)
+        smoothButton.tintColor = .white
+        smoothScrollButton.addSubview(smoothButton)
+        smoothButton.pinToSuperview()
+        smoothButton.addAction(.init(handler: { [weak self] _ in
+            self?.beginScrollAnimation()
+        }), for: .touchUpInside)
+        
+        view.addSubview(floatingPlayer)
+        floatingPlayer.frame = .init(x: 16, y: 500, width: 178, height: 100)
+        floatingPlayer.isHidden = true
+        smoothScrollButton.isHidden = true
+
+        observeAudioPlayer()
+        
+        _ = WalletManager.instance
+        
+        IdentityManager.instance.requestUserProfile()
+        Connection.regular.isConnectedPublisher.debounce(for: .seconds(0.5), scheduler: RunLoop.main).sink { connected in
+            if connected {
+                IdentityManager.instance.requestUserSettings()
+                IdentityManager.instance.requestUserContactsAndRelays()
+
+                MuteManager.instance.requestMuteList()
+            }
+        }.store(in: &cancellables)
+        
+        didFinishInit = true
+        
+        let notesDeeplink = NotificationCenter.default.publisher(for: .primalNoteLink)
+            .compactMap { $0.object as? String }
+            .map { DeeplinkNavigation.note($0) }
+        
+        let profileDeeplink = NotificationCenter.default.publisher(for: .primalProfileLink)
+            .compactMap { $0.object as? String }
+            .map { DeeplinkNavigation.profile(HexKeypair.npubToHexPubkey($0) ?? $0) }
+        
+        Publishers.Merge(notesDeeplink, profileDeeplink)
+            .receive(on: DispatchQueue.main)
+            .sink(receiveValue: { [weak self] in
+                self?.navigateTo = $0
+            })
+            .store(in: &cancellables)
+        
+        let liveTap = BindableTapGestureRecognizer(action: { [weak self] in
+            guard let floatingPlayer = self?.floatingPlayer else { return }
+            if floatingPlayer.showChevron {
+                UIView.animate(withDuration: 0.2) {
+                    floatingPlayer.showChevron = false
+                    if floatingPlayer.center.x < 0 {
+                        floatingPlayer.center.x += FloatingPlayerMoveGesture.hideAdjustment
+                    } else {
+                        floatingPlayer.center.x -= FloatingPlayerMoveGesture.hideAdjustment
+                    }
+                }
+                return
+            }
+            if let audioPlayer = self?.floatingAudioPlayer {
+                self?.present(FullscreenAudioPlayerController(audio: audioPlayer), animated: true)
+                return
+            }
+            guard let live = self?.liveVideoController else { return }
+            self?.present(live, animated: true)
+        })
+        let move = FloatingPlayerMoveGesture()
+
+        [move, liveTap].forEach { floatingPlayer.addGestureRecognizer($0) }
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -279,7 +289,7 @@ final class RootViewController: UIViewController {
     
     func showToast(_ message: String, icon: UIImage? = UIImage(named: "toastCheckmark")) {
         if let presentedViewController {
-            presentedViewController.view.showToast(message, icon: icon, extraPadding: 0)
+            presentedViewController.view.showToast(message, icon: icon)
         } else if let mainTab: MainTabBarController = findInChildren() {
             mainTab.showToast(message, icon: icon)
         } else {
@@ -361,7 +371,79 @@ extension WalletHomeViewController: AnimatableFirstViewController {
     }
 }
 
+extension RootViewController {
+    func dismissFloatingAudio(clearRegistry: Bool) {
+        audioErrorCancellable = nil
+        if let url = floatingAudioPlayer?.url, clearRegistry {
+            AudioPlayerRegistry.instance.drop(url: url)
+        }
+        if let active = floatingAudioPlayer, VideoPlaybackManager.instance.currentlyPlaying === active {
+            VideoPlaybackManager.instance.currentlyPlaying = nil
+        }
+        floatingAudioPlayer = nil
+        if case .audio = floatingPlayer.mode {
+            floatingPlayer.mode = .none
+        }
+        if liveVideoController == nil {
+            floatingPlayer.isHidden = true
+        }
+    }
+}
+
 private extension RootViewController {
+    func observeAudioPlayer() {
+        VideoPlaybackManager.instance.$currentlyPlaying
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] player in
+                self?.handlePlayerChange(player)
+            }
+            .store(in: &cancellables)
+    }
+
+    func handlePlayerChange(_ player: PlayerProtocol?) {
+        if let audio = player as? AudioPlayer {
+            attachFloatingAudio(audio)
+            return
+        }
+
+        if player is LiveVideoPlayer {
+            dismissFloatingAudio(clearRegistry: false)
+            return
+        }
+
+        // Feed video or nil: keep the audio bar visible if one is active.
+        if floatingAudioPlayer != nil {
+            return
+        }
+
+        if case .audio = floatingPlayer.mode {
+            floatingPlayer.mode = .none
+        }
+        if liveVideoController == nil {
+            floatingPlayer.isHidden = true
+        }
+    }
+
+    func attachFloatingAudio(_ audio: AudioPlayer) {
+        if liveVideoController != nil {
+            liveVideoController = nil
+        }
+        floatingAudioPlayer = audio
+        floatingPlayer.mode = .audio(audio)
+        floatingPlayer.isHidden = false
+        if floatingPlayer.frame.size != CGSize(width: 199, height: 64) {
+            floatingPlayer.frame = .init(x: 16, y: view.frame.height - view.safeAreaInsets.bottom - 134, width: 199, height: 64)
+        }
+
+        audioErrorCancellable = audio.$didError
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] didError in
+                guard didError else { return }
+                self?.showToast("Failed to play audio", icon: nil)
+                self?.dismissFloatingAudio(clearRegistry: true)
+            }
+    }
+
     func animateFromIntro() {
         DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) {
             if self.introVC != nil {

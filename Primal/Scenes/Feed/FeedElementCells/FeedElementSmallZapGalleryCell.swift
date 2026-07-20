@@ -19,11 +19,12 @@ class FeedElementSmallZapGalleryCell: FeedElementBaseCell, RegularFeedElementCel
         gallery.singleLine = true
         gallery.delegate = self
         
-        contentView.addSubview(gallery)
+        contentContainer.addSubview(gallery)
+        let topPadding: CGFloat = threadLayout?.position == .main ? 12 : 4
         gallery
-            .pinToSuperview(edges: .top, padding: 4)
+            .pinToSuperview(edges: .top, padding: topPadding)
             .pinToSuperview(edges: .bottom, padding: 1)
-            .pinToSuperview(edges: .horizontal, padding: 16)
+            .pinToSuperview(edges: .leading, padding: leadingPadding).pinToSuperview(edges: .trailing, padding: horizontalPadding)
         
         gallery.addGestureRecognizer(BindableTapGestureRecognizer(action: { [unowned self] in
             delegate?.postCellDidTap(self, .zapDetails)

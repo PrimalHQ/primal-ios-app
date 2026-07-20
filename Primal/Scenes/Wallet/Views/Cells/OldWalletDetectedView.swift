@@ -47,7 +47,7 @@ final class OldWalletDetectedView: UIView, Themeable {
 
         let title = isDiscontinued ? "Wallet Discontinued" : "Wallet Detected"
         let description = isDiscontinued
-            ? "Your custodial Primal wallet has been discontinued. To continue using the Primal wallet, please restore your non-custodial wallet via the recovery phrase, or create a new wallet."
+            ? "The custodial wallet service has been discontinued. To recover your funds, please contact us at support@primal.net."
             : "We detected that you already have a non-custodial Primal wallet associated with this Nostr account. To use it on this device, please restore it via the recovery phrase. Alternatively, you can create a new wallet which will be associated with your account."
 
         let descText = NSMutableAttributedString(string: "\(title)\n", attributes: [

@@ -23,8 +23,9 @@ extension LargeWalletButton: WalletHomeTransitionButton {
     var imageView: UIImageView? { iconView }
 }
 
-final class WalletHomeViewController: UIViewController, Themeable {
-    lazy var navTitleView = DropdownNavigationView(title: "Wallet")
+final class WalletHomeViewController: UIViewController, Themeable, PrimalNavigationBarController {
+    var primalNavigationBar: PrimalNavigationBar { walletActionBar.primalNavigationBar }
+
     enum Cell {
         case loading
         case upgradeWallet
@@ -48,7 +49,7 @@ final class WalletHomeViewController: UIViewController, Themeable {
         var transactions: [PrimalShared.Transaction] { cells.compactMap { $0.transaction } }
     }
     
-    private let navBar = WalletNavView()
+    private let walletActionBar = WalletNavView()
     let table = UITableView()
     private let walletDetectedView = OldWalletDetectedView()
     
@@ -67,7 +68,7 @@ final class WalletHomeViewController: UIViewController, Themeable {
     
     private var tableData: [Section] = [] {
         didSet {
-            guard navigationController?.topViewController == parent, view.window != nil else { return }
+            guard navigationController?.topViewController == self, view.window != nil else { return }
             
             table.reloadData()
         }
@@ -84,9 +85,8 @@ final class WalletHomeViewController: UIViewController, Themeable {
 
         table.reloadData()
         mainTabBarController?.setTabBarHidden(false, animated: animated)
-        navigationController?.setNavigationBarHidden(false, animated: animated)
+        navigationController?.setNavigationBarHidden(true, animated: animated)
         (navigationController as? MainNavigationController)?.isTransparent = false
-        updateNavigationTitleView()
     }
     
     var monitorTask: Task<(), Error>?
@@ -122,7 +122,9 @@ final class WalletHomeViewController: UIViewController, Themeable {
         view.backgroundColor = .background
         table.backgroundColor = .background
         table.reloadData()
-        
+
+        primalNavigationBar.updateTheme()
+
         updateBuySatsButton()
     }
     
@@ -227,12 +229,12 @@ extension WalletHomeViewController: UITableViewDelegate {
     }
     
     func scrollViewDidScrollToTop(_ scrollView: UIScrollView) {
-        navBar.shouldExpand = true
+        walletActionBar.shouldExpand = true
     }
     
     func scrollViewShouldScrollToTop(_ scrollView: UIScrollView) -> Bool {
         forceNavbarOpen = true
-        navBar.shouldExpand = true
+        walletActionBar.shouldExpand = true
         
         DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) {
             self.forceNavbarOpen = false
@@ -243,24 +245,24 @@ extension WalletHomeViewController: UITableViewDelegate {
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if forceNavbarOpen {
-            navBar.shouldExpand = true
+            walletActionBar.shouldExpand = true
             if scrollView.contentOffset.y < 5 {
                 forceNavbarOpen = false
             }
             return
         }
         
-        if navBar.shouldExpand {
-            navBar.shouldExpand = scrollView.contentOffset.y < 5
+        if walletActionBar.shouldExpand {
+            walletActionBar.shouldExpand = scrollView.contentOffset.y < 5
             
-            if !navBar.shouldExpand {
-                extraOffset = navBar.expandedHeight - navBar.tightenedHeight - scrollView.contentOffset.y
+            if !walletActionBar.shouldExpand {
+                extraOffset = walletActionBar.expandedHeight - walletActionBar.tightenedHeight - scrollView.contentOffset.y
                 scrollView.contentOffset.y = 1
             }
         } else {
             if scrollView.contentOffset.y <= 0 {
-                navBar.shouldExpand = true
-            } else if navBar.isAnimating && extraOffset > 0 {
+                walletActionBar.shouldExpand = true
+            } else if walletActionBar.isAnimating && extraOffset > 0 {
                 extraOffset -= scrollView.contentOffset.y
                 scrollView.contentOffset.y = 1
             }
@@ -309,34 +311,34 @@ extension WalletHomeViewController: UIGestureRecognizerDelegate {
 
 // MARK: - Private
 private extension WalletHomeViewController {
-    func updateNavigationTitleView() {
-        if DevModeSettings.walletSwitcherEnabled {
-            navigationItem.titleView = navTitleView
-        } else {
-            navigationItem.titleView = nil
-        }
-    }
-
     func setup() {
         title = "Wallet"
 
-        navTitleView.button.addAction(.init(handler: { [weak self] _ in
-            guard let self else { return }
-            let picker = WalletPickerController { [weak self] wallet in
-                self?.switchToWallet(wallet)
-            }
-            present(picker, animated: true)
-        }), for: .touchUpInside)
-        updateNavigationTitleView()
-
-        let stack = UIStackView(axis: .vertical, [navBar, table])
+        let stack = UIStackView(axis: .vertical, [walletActionBar, table])
         view.addSubview(stack)
         // It's necessary to keep the table longer than the view itself, so when the navbar expands and table shortens, we don't see any empty parts of the table
         stack.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .top, safeArea: true).pinToSuperview(edges: .bottom, padding: -100)
+
+        primalNavigationBar.title = "Wallet"
+        primalNavigationBar.subtitle = "All transactions"
+        primalNavigationBar.showChevron = DevModeSettings.walletSwitcherEnabled
+        primalNavigationBar.onAvatarTapped = { [weak self] in
+            guard let self else { return }
+            MenuController().present(from: self)
+        }
+        if DevModeSettings.walletSwitcherEnabled {
+            primalNavigationBar.onTitleTapped = { [weak self] in
+                guard let self else { return }
+                let picker = WalletPickerController { [weak self] wallet in
+                    self?.switchToWallet(wallet)
+                }
+                present(picker, animated: true)
+            }
+        }
         
         let pan = UIPanGestureRecognizer(target: self, action: #selector(headerPanned))
         pan.delegate = self
-        navBar.largeView.addGestureRecognizer(pan)
+        walletActionBar.largeView.addGestureRecognizer(pan)
         
         table.separatorStyle = .none
         table.dataSource = self
@@ -367,8 +369,9 @@ private extension WalletHomeViewController {
             self?.show(RestoreWalletController(), sender: nil)
         }), for: .touchUpInside)
 
-        walletDetectedView.createButton.addAction(.init(handler: { _ in
+        walletDetectedView.createButton.addAction(.init(handler: { [weak self] _ in
             WalletManager.instance.newWalletSpark(IdentityManager.instance.userHexPubkey)
+            self?.walletDetectedView.createButton.isEnabled = false
         }), for: .touchUpInside)
 
         updateTheme()
@@ -380,8 +383,9 @@ private extension WalletHomeViewController {
                 guard let self, userWallet.userId == userId else { return }
                 let name = userWallet.wallet is Wallet.Primal ? "Legacy Wallet" : "Wallet"
                 title = name
+                self.primalNavigationBar.title = name
                 if DevModeSettings.walletSwitcherEnabled {
-                    navTitleView.title = userWallet.wallet.displayName
+                    primalNavigationBar.title = userWallet.wallet.displayName
                 }
             }
             .store(in: &cancellables)
@@ -442,7 +446,7 @@ private extension WalletHomeViewController {
         .store(in: &cancellables)
         
         if LoginManager.instance.method() == .nsec {
-            navBar.receivePressedEvent.sink { [weak self] button in
+            walletActionBar.receivePressedEvent.sink { [weak self] button in
                 self?.transitionButton = button as? WalletHomeTransitionButton
                 
                 self?.heavyImpact.impactOccurred()
@@ -450,7 +454,7 @@ private extension WalletHomeViewController {
             }
             .store(in: &cancellables)
             
-            navBar.sendPressedEvent.sink { [weak self] button in
+            walletActionBar.sendPressedEvent.sink { [weak self] button in
                 self?.transitionButton = button as? WalletHomeTransitionButton
                 
                 self?.heavyImpact.impactOccurred()
@@ -458,7 +462,7 @@ private extension WalletHomeViewController {
             }
             .store(in: &cancellables)
             
-            navBar.scanPressedEvent.sink { [weak self] button in
+            walletActionBar.scanPressedEvent.sink { [weak self] button in
                 self?.transitionButton = button as? WalletHomeTransitionButton
                 
                 self?.heavyImpact.impactOccurred()
@@ -470,7 +474,7 @@ private extension WalletHomeViewController {
             .store(in: &cancellables)
         }
         
-        navBar.balanceConversionView.$isBitcoinPrimary.dropFirst().sink { isBitcoinPrimary in
+        walletActionBar.balanceConversionView.$isBitcoinPrimary.dropFirst().sink { isBitcoinPrimary in
             WalletManager.instance.isBitcoinPrimary = isBitcoinPrimary
         }
         .store(in: &cancellables)
@@ -486,7 +490,7 @@ private extension WalletHomeViewController {
 //        WalletManager.instance.$userHasWallet
 //            .map { $0 ?? false }
 //            .receive(on: DispatchQueue.main)
-//            .assign(to: \.isHidden, onWeak: navBar.blockerView)
+//            .assign(to: \.isHidden, onWeak: walletActionBar.blockerView)
 //            .store(in: &cancellables)
     }
     

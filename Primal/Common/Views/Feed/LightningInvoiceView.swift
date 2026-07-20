@@ -107,8 +107,8 @@ private extension LightningInvoiceView {
         mainStack.pinToSuperview(padding: 12)
         mainStack.spacing = 8
         
-        layer.cornerRadius = 8
-        
+        layer.cornerRadius = 12
+
         updateTheme()
     }
 }

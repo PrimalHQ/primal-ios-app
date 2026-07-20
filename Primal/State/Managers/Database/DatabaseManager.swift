@@ -55,7 +55,7 @@ class DatabaseManager {
             
             // Open or create the database
             let databaseURL = directoryURL.appendingPathComponent("db.sqlite")
-            NSLog("Database stored at \(databaseURL.path)")
+            print("Database stored at \(databaseURL.path)")
             let dbPool = try DatabasePool(
                 path: databaseURL.path,
                 // Use default AppDatabase configuration
@@ -196,7 +196,16 @@ private extension DatabaseManager {
                 t.add(column: "customTags", .text)
             }
         }
-        
+
+        migrator.registerMigration("addPremiumProfileTable") { db in
+            try db.create(table: PremiumProfile.databaseTableName) { t in
+                t.primaryKey("pubkey", .text, onConflict: .replace)
+                t.column("legendCustomization", .text)
+                t.column("premiumInfo", .text)
+                t.column("premiumName", .text)
+            }
+        }
+
         return migrator
     }
 

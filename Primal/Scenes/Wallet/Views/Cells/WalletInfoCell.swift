@@ -15,31 +15,36 @@ protocol WalletInfoCellDelegate: AnyObject {
 }
 
 final class WalletInfoLargeView: UIView {
+    let primalNavigationBar = PrimalNavigationBar()
     let balanceConversionView = LargeBalanceConversionView()
     let extraSizeView = UIView()
-    
+
     let send = LargeWalletButton(.send)
     let receive = LargeWalletButton(.receive)
     let scan = LargeWalletButton(.scan)
-    
+
     lazy var actionStack = UIStackView([send, scan, receive])
-           
+
     init() {
         super.init(frame: .zero)
-        
+
+        addSubview(primalNavigationBar)
+        primalNavigationBar.pinToSuperview(edges: [.horizontal, .top])
+
         let balanceParent = UIView()
         balanceParent.addSubview(balanceConversionView)
         balanceConversionView.pinToSuperview()
         balanceConversionView.largeAmountLabel.centerToView(balanceParent, axis: .horizontal)
         balanceConversionView.roundingStyle = .twoDecimals
-        
+
         actionStack.spacing = 24
         let centerHStack = UIStackView(axis: .vertical, [actionStack])
         centerHStack.alignment = .center
-        
+
         let stack = UIStackView(axis: .vertical, [balanceParent, SpacerView(height: 60), centerHStack])
         addSubview(stack)
-        stack.pinToSuperview(edges: .horizontal, padding: 0).pinToSuperview(edges: .top, padding: 40).pinToSuperview(edges: .bottom, padding: 20)
+        stack.pinToSuperview(edges: .horizontal, padding: 0).pinToSuperview(edges: .bottom, padding: 20)
+        stack.topAnchor.constraint(equalTo: primalNavigationBar.bottomAnchor, constant: 40).isActive = true
     }
     
     required init?(coder: NSCoder) {

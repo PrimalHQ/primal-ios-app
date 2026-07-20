@@ -12,11 +12,6 @@ import Kingfisher
 
 protocol ProfileNavigationViewDelegate: AnyObject {
     func tappedSearch()
-    func tappedAddUserFeed()
-    func tappedShareProfile()
-    func tappedReportUser()
-    func tappedMuteUser()
-    func tappedFollowUsersMuteList()
 }
 
 class ProfileNavigationView: UIView, Themeable {
@@ -24,7 +19,6 @@ class ProfileNavigationView: UIView, Themeable {
     let bannerViewBig = UIImageView()
     let backButton = UIButton()
     let searchButton = UIButton()
-    let menuButton = UIButton()
     let primaryLabel = UILabel()
     let checkboxIcon = VerifiedView().constrainToSize(20)
     lazy var titleStack = UIStackView(arrangedSubviews: [primaryLabel, checkboxIcon, UIView()])
@@ -58,7 +52,7 @@ class ProfileNavigationView: UIView, Themeable {
     }
     
     var oldImageUrl: String?
-    func updateInfo(_ parsed: ParsedUser, isMuted: Bool) {
+    func updateInfo(_ parsed: ParsedUser) {
         let user = parsed.data
         
         if let bannerUrl = URL(string: user.banner) {
@@ -84,10 +78,6 @@ class ProfileNavigationView: UIView, Themeable {
         
         primaryLabel.text = user.firstIdentifier
         checkboxIcon.user = user
-        
-        menuButton.isHidden = user.isCurrentUser
-        
-        updateMenuButton(isMuted: isMuted)
     }
     
     private var oldSize: CGFloat = 0
@@ -211,23 +201,19 @@ private extension ProfileNavigationView {
         
         addSubview(backButton)
         backButton.pinToSuperview(edges: .leading, padding: 12).pinToSuperview(edges: .top, padding: 44)
-        backButton.setImage(UIImage(named: "roundBack"), for: .normal)
+        backButton.setImage(.roundBack, for: .normal)
         
-        let topStack = UIStackView(arrangedSubviews: [searchButton, menuButton])
-        topStack.spacing = 12
+        addSubview(searchButton)
+        searchButton.pinToSuperview(edges: .trailing, padding: 12).pinToSuperview(edges: .top, padding: 44)
         
-        addSubview(topStack)
-        topStack.pinToSuperview(edges: .trailing, padding: 12).pinToSuperview(edges: .top, padding: 44)
-        
-        menuButton.setImage(UIImage(named: "roundThreeDots"), for: .normal)
-        searchButton.setImage(UIImage(named: "roundSearch"), for: .normal)
+        searchButton.setImage(.roundSearch, for: .normal)
         
         titleStack.spacing = 4
         titleStack.alignment = .center
         titleStack.alpha = 0
         
         addSubview(titleStack)
-        titleStack.centerToView(menuButton, axis: .vertical).pinToSuperview(edges: .horizontal, padding: 60)
+        titleStack.centerToView(searchButton, axis: .vertical).pinToSuperview(edges: .horizontal, padding: 60)
         
         primaryLabel.font = .appFont(withSize: 20, weight: .bold)
         primaryLabel.adjustsFontSizeToFitWidth = true
@@ -240,36 +226,5 @@ private extension ProfileNavigationView {
         searchButton.addAction(.init(handler: { [weak self] _ in
             self?.delegate?.tappedSearch()
         }), for: .touchUpInside)
-    }
-    
-    func updateMenuButton(isMuted: Bool) {
-        menuButton.menu = UIMenu(children: [
-            UIDeferredMenuElement.uncached { [weak self] completion in
-                if let self {
-                    let muteTitle = isMuted ? "Unmute user" : "Mute user"
-
-                    let actions = [
-                        UIAction(title: "Add user feed", image: UIImage(named: "addFeedIcon")) { [weak self] _ in
-                            self?.delegate?.tappedAddUserFeed()
-                        },
-                        UIAction(title: "Follow user's mute list", image: UIImage(named: "blockIcon"), handler: { [weak self] _ in
-                            self?.delegate?.tappedFollowUsersMuteList()
-                        }),
-                        
-                        UIAction(title: "Share user profile", image: UIImage(named: "MenuShare")) { [weak self] _ in
-                            self?.delegate?.tappedShareProfile()
-                        },
-                        UIAction(title: "Report user", image: UIImage(named: "warningIcon"), attributes: .destructive) { [weak self] _ in
-                            self?.delegate?.tappedReportUser()
-                        },
-                        UIAction(title: muteTitle, image: UIImage(named: "blockIcon"), attributes: .destructive) { [weak self] _ in
-                            self?.delegate?.tappedMuteUser()
-                        }
-                    ]
-                    completion(actions)
-                }
-            }
-        ])
-        menuButton.showsMenuAsPrimaryAction = true
     }
 }

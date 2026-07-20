@@ -6,78 +6,168 @@
 //
 
 import UIKit
-import Combine
 
-final class ExploreViewController: PrimalPageController {
-    private let searchView = SearchHeaderView()
-    
-    private var cancellables: Set<AnyCancellable> = []
-    
-    private let configButton = UIButton(configuration: .simpleImage(.searchConfig))
-    
+final class ExploreViewController: UIViewController, Themeable, TitleSwipeController, SearchBarButtonController {
+    let primalNavigationBar = PrimalNavigationBar()
+    let pageVC = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal)
+
+    let searchBarButton = SearchBarButton()
+    let separator = SpacerView(height: 1)
+
     let postButtonParent = UIView()
     let postButton = NewPostButton()
-    
-    init() {
-        super.init(tabs: [
-            ("PEOPLE", { ExplorePeopleViewController() }),
-            ("FEEDS", { ExploreFeedsViewController() }),
-            ("ZAPS", { ExploreZapsViewController() }),
-            ("MEDIA", { ExploreMediaController() }),
-            ("TOPICS", { ExploreTopicsViewController() })
-        ])
+
+    private var currentCategory: ExploreCategory = .people
+
+    private var cachedTabVCs: [ExploreCategory: UIViewController] = [:]
+
+    private func categoryVC(_ category: ExploreCategory) -> UIViewController {
+        if let cached = cachedTabVCs[category] { return cached }
+        let new: UIViewController
+        switch category {
+        case .people: new = ExplorePeopleViewController()
+        case .feeds:  new = ExploreFeedsViewController()
+        case .followPacks: new = ExploreFollowPacksViewController()
+        case .zaps:   new = ExploreZapsViewController()
+        case .media:  new = ExploreMediaController()
+        }
+        cachedTabVCs[category] = new
+        return new
     }
-    
-    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
-    
+
+    private func category(of vc: UIViewController) -> ExploreCategory? {
+        cachedTabVCs.first(where: { $0.value === vc })?.key
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         setup()
     }
-    
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
-        navigationItem.rightBarButtonItem = .init(customView: configButton)
-        
-        navigationController?.setNavigationBarHidden(false, animated: animated)
+
+        navigationController?.setNavigationBarHidden(true, animated: animated)
         mainTabBarController?.setTabBarHidden(false, animated: animated)
     }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        
-        navigationController?.setNavigationBarHidden(false, animated: animated)
+
+    func updateTheme() {
+        view.backgroundColor = .background
+
+        primalNavigationBar.updateTheme()
+        searchBarButton.updateTheme()
+        separator.backgroundColor = .background3
+
+        cachedTabVCs.values.forEach {
+            ($0 as? Themeable)?.updateTheme()
+            let views: [Themeable] = $0.view.findAllSubviews()
+            for view in views { view.updateTheme() }
+        }
     }
-    
-    override func updateTheme() {
-        super.updateTheme()
-        
-        searchView.updateTheme()
-        
-        configButton.tintColor = .foreground
+
+    func titleSubtitleToLeftOfCurrent() -> (title: String, subtitle: String)? {
+        guard let prev = ExploreCategory(rawValue: currentCategory.rawValue - 1) else { return nil }
+        return (prev.selectionTitle, prev.selectionSubtitle ?? "")
+    }
+
+    func titleSubtitleToRightOfCurrent() -> (title: String, subtitle: String)? {
+        guard let next = ExploreCategory(rawValue: currentCategory.rawValue + 1) else { return nil }
+        return (next.selectionTitle, next.selectionSubtitle ?? "")
+    }
+}
+
+extension ExploreViewController: UIPageViewControllerDataSource {
+    func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
+        guard
+            let current = category(of: viewController),
+            let prev = ExploreCategory(rawValue: current.rawValue - 1)
+        else { return nil }
+        return categoryVC(prev)
+    }
+
+    func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
+        guard
+            let current = category(of: viewController),
+            let next = ExploreCategory(rawValue: current.rawValue + 1)
+        else { return nil }
+        return categoryVC(next)
+    }
+}
+
+extension ExploreViewController: UIPageViewControllerDelegate {
+    func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {
+        guard completed else {
+            primalNavigationBar.cancelTransition()
+            return
+        }
+
+        guard let finishedVC = pageViewController.viewControllers?.first, let newCategory = category(of: finishedVC) else { return }
+        currentCategory = newCategory
+        primalNavigationBar.completeTransition(newTitle: newCategory.selectionTitle, newSubtitle: newCategory.selectionSubtitle ?? "")
     }
 }
 
 private extension ExploreViewController {
     func setup() {
-        navigationItem.titleView = searchView
-        searchView.addTarget(self, action: #selector(searchTapped), for: .touchDown)
-        configButton.addAction(.init(handler: { [weak self] _ in
-            self?.present(AdvancedSearchController(), animated: true)
-        }), for: .touchUpInside)
-        
+        updateTheme()
+
+        pageVC.willMove(toParent: self)
+        view.addSubview(pageVC.view)
+        pageVC.view.pinToSuperview(edges: [.horizontal, .bottom])
+        addChild(pageVC)
+        pageVC.didMove(toParent: self)
+
+        pageVC.dataSource = self
+        pageVC.delegate = self
+        pageVC.setViewControllers([categoryVC(currentCategory)], direction: .forward, animated: false)
+
+        view.addGestureRecognizer(TitleSwipeGesture(vc: self))
+
+        addNavigationBar()
+        primalNavigationBar.title = currentCategory.selectionTitle
+        primalNavigationBar.subtitle = currentCategory.selectionSubtitle ?? ""
+        primalNavigationBar.showChevron = true
+        primalNavigationBar.showBorder = false
+        primalNavigationBar.onAvatarTapped = { [weak self] in
+            guard let self else { return }
+            MenuController().present(from: self)
+        }
+        primalNavigationBar.onTitleTapped = { [weak self] in
+            guard let self else { return }
+            GenericSelectionController(
+                items: ExploreCategory.allCases,
+                selectedItem: currentCategory
+            ) { [weak self] cat in
+                self?.setCategory(cat)
+            }.present(from: self)
+        }
+
+        view.addSubview(searchBarButton)
+        searchBarButton.topAnchor.constraint(equalTo: primalNavigationBar.bottomAnchor, constant: 8).isActive = true
+        searchBarButton.pinToSuperview(edges: .horizontal, padding: 16)
+
+        view.addSubview(separator)
+        separator.topAnchor.constraint(equalTo: searchBarButton.bottomAnchor, constant: 12).isActive = true
+        separator.pinToSuperview(edges: .horizontal)
+
+        pageVC.view.topAnchor.constraint(equalTo: separator.bottomAnchor).isActive = true
+
+        setupSearchBarActions()
+
         postButton.addAction(.init(handler: { [weak self] _ in
             self?.present(AdvancedEmbedPostViewController(), animated: true)
         }), for: .touchUpInside)
         view.addSubview(postButtonParent)
         postButtonParent.addSubview(postButton)
         postButton.constrainToSize(56).pinToSuperview(padding: 8)
-        postButtonParent.pinToSuperview(edges: .trailing).pinToSuperview(edges: .bottom, padding: 56, safeArea: true)
+        postButtonParent.pinToSuperview(edges: .trailing, padding: 13).pinToSuperview(edges: .bottom, padding: 48, safeArea: true)
     }
-    
-    @objc func searchTapped() {
-        navigationController?.fadeTo(SearchViewController())
+
+    func setCategory(_ category: ExploreCategory) {
+        guard category != currentCategory else { return }
+        pageVC.setViewControllers([categoryVC(category)], direction: .forward, animated: false)
+        currentCategory = category
+        primalNavigationBar.completeTransition(newTitle: category.selectionTitle, newSubtitle: category.selectionSubtitle ?? "")
     }
 }

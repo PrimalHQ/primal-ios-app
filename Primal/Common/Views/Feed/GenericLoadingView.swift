@@ -15,7 +15,7 @@ class GenericLoadingView: LottieAnimationView, Themeable {
         loopMode = .loop
         contentMode = .scaleAspectFill
         clipsToBounds = true
-        layer.cornerRadius = 8
+        layer.cornerRadius = 12
         updateTheme()
     }
     

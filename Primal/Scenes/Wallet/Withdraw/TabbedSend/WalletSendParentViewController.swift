@@ -195,6 +195,7 @@ final class WalletSendParentViewController: UIViewController, WalletSearchContro
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         mainTabBarController?.setTabBarHidden(true, animated: animated)
+        navigationController?.setNavigationBarHidden(false, animated: animated)
         updateBars(oldTab ?? .nostr)
     }
     

@@ -20,13 +20,13 @@ class FeedElementSystemWebPreviewCell: FeedElementBaseCell, RegularFeedElementCe
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
-        contentView.addSubview(linkPresentation)
+        contentContainer.addSubview(linkPresentation)
         linkPresentation
             .pinToSuperview(edges: .top, padding: 8)
             .pinToSuperview(edges: .bottom, padding: 0)
-            .pinToSuperview(edges: .horizontal, padding: 16)
+            .pinToSuperview(edges: .leading, padding: leadingPadding).pinToSuperview(edges: .trailing, padding: horizontalPadding)
         
-        contentView.addSubview(loadingSpinner)
+        contentContainer.addSubview(loadingSpinner)
         loadingSpinner.constrainToSize(70).centerToSuperview()
         
         heightC = linkPresentation.heightAnchor.constraint(equalToConstant: 300)

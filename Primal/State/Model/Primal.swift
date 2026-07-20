@@ -194,7 +194,7 @@ struct PrimalUser: Codable, Identifiable, Hashable {
         let tempId = nostrUser?.id ?? ""
         let tempPubkey = nostrUser?.pubkey ?? nostrPost?.pubkey ?? ""
         let tempNpub = bech32_pubkey(tempPubkey) ?? ""
-        let tempName = userMeta.objectValue?["name"]?.stringValue ?? tempPubkey
+        let tempName = userMeta.objectValue?["name"]?.stringValue ?? ""
         let tempTags = nostrUser?.tags ?? [[]]
         let tempDeleted = userMeta.objectValue?["deleted"]?.boolValue ?? false
         

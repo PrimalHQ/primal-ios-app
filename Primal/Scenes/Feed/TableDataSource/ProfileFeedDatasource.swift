@@ -10,6 +10,7 @@ import UIKit
 import GenericJSON
 
 enum ProfileFeedItem: Hashable {
+    case feedHeader(ParsedContent, NoteFeedElement)
     case feedElement(ParsedContent, NoteFeedElement)
     case article(Article)
     case media([ParsedContent])
@@ -75,25 +76,12 @@ class ProfileFeedDatasource: UITableViewDiffableDataSource<TwoSectionFeed, Profi
             let cell: UITableViewCell
             
             switch item {
+            case .feedHeader(let content, let element):
+                cell = tableView.dequeueReusableCell(withIdentifier: element.headerCellID, for: indexPath)
+                HomeFeedDatasource.configureNoteCell(cell, content: content, element: element, delegate: delegate)
             case .feedElement(let content, let element):
                 cell = tableView.dequeueReusableCell(withIdentifier: element.cellID, for: indexPath)
-                switch element {
-                case .webPreview(_, let metadata):
-                    (cell as? WebPreviewCell)?.updateWebPreview(metadata)
-                case .postPreview(let embedded):
-                    if let cell = cell as? RegularFeedElementCell {
-                        cell.update(embedded)
-                        cell.delegate = delegate
-                    }
-                    return cell
-                default:
-                    break
-                }
-                
-                if let cell = cell as? RegularFeedElementCell {
-                    cell.update(content)
-                    cell.delegate = delegate
-                }
+                HomeFeedDatasource.configureNoteCell(cell, content: content, element: element, delegate: delegate)
             case .article(let article):
                 cell = tableView.dequeueReusableCell(withIdentifier: "article", for: indexPath)
                 (cell as? ArticleCell)?.setUp(article, delegate: delegate)
@@ -138,6 +126,7 @@ class ProfileFeedDatasource: UITableViewDiffableDataSource<TwoSectionFeed, Profi
         }
         
         registerCells(tableView)
+        registerHeaderCells(tableView)
         registerProfileCells(tableView)
         parseDescription()
         requestUserProfile()
@@ -148,19 +137,23 @@ class ProfileFeedDatasource: UITableViewDiffableDataSource<TwoSectionFeed, Profi
     }
     
     func elementForIndexPath(_ indexPath: IndexPath) -> NoteFeedElement? {
-        guard indexPath.section == 1, let data = cells[safe: indexPath.row], case .feedElement(_, let element) = data else { return nil }
-        return element
+        guard indexPath.section == 1, let data = cells[safe: indexPath.row] else { return nil }
+        switch data {
+        case .feedElement(_, let element), .feedHeader(_, let element):
+            return element
+        default:
+            return nil
+        }
     }
-    
+
     func postForIndexPath(_ indexPath: IndexPath) -> ParsedContent? {
         guard indexPath.section == 1, let data = cells[safe: indexPath.row] else { return nil }
         switch data {
-        case .feedElement(let content, _):
+        case .feedElement(let content, _), .feedHeader(let content, _):
             return content
         default:
-            break
+            return nil
         }
-        return nil
     }
     
     private func registerProfileCells(_ tableView: UITableView) {
@@ -176,9 +169,11 @@ class ProfileFeedDatasource: UITableViewDiffableDataSource<TwoSectionFeed, Profi
     
     func setPosts(_ posts: [ParsedContent]) {
         guard selectedTab == 0 || selectedTab == 1 else { return }
-        
-        cells = convertPostsToCells(posts).flatMap { post, elements in
-            elements.map { .feedElement(post, $0) }
+
+        cells = convertPostsToHeaderCells(posts).flatMap { content, header, elements in
+            var items: [ProfileFeedItem] = [.feedHeader(content, header)]
+            items += elements.map { .feedElement(content, $0) }
+            return items
         }
     }
     

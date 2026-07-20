@@ -34,24 +34,31 @@ final class PopupMenuViewController: UIViewController {
 
 private extension PopupMenuViewController {
     func setup() {
-        view.backgroundColor = .background4
+        if #available(iOS 26.0, *) {
+            // Liquid Glass — no opaque background
+        } else {
+            view.backgroundColor = .background4
+        }
         let messageLabel = UILabel()
         if let pc = presentationController as? UISheetPresentationController {
             pc.detents = [
                 .custom(resolver: { [weak self] _ in
                     guard let self else { return 285 }
-                    
+
                     if self.actions.count > 1 {
                         let buttonsCount = CGFloat(self.actions.count)
                         let buttonHeight = buttonsCount * 58
                         let buttonSpace = buttonsCount > 1.1 ? (buttonsCount - 1) * 28 : 0
-                        
+
                         return buttonHeight + buttonSpace + 24 + 89 + messageLabel.sizeThatFits(.init(width: self.view.frame.width - 64, height: .infinity)).height
                     }
-                    
+
                     return 98 + 24 + 89 + messageLabel.sizeThatFits(.init(width: self.view.frame.width - 64, height: .infinity)).height
                 })
             ]
+            if #available(iOS 17.0, *) {
+                pc.traitOverrides.userInterfaceStyle = Theme.current.userInterfaceStyle
+            }
         }
         
         let pullBarParent = UIView()
@@ -123,7 +130,7 @@ final class PopupMenuIconButton: MyButton {
         iconView.image = action.image
         label.text = action.title
         
-        label.font = .appFont(withSize: 20, weight: .regular)
+        label.font = .appFont(withSize: 18, weight: .regular)
         
         if action.attributes.contains(.destructive) {
             label.textColor = .red
@@ -131,19 +138,21 @@ final class PopupMenuIconButton: MyButton {
             label.textColor = .foreground
         }
         
-        iconView.constrainToSize(24)
+        iconView.constrainToSize(22)
         iconView.contentMode = .center
         iconView.tintColor = .foreground
         
         let backgroundView = UIView()
         addSubview(backgroundView)
-        backgroundView.pinToSuperview(edges: .vertical).constrainToSize(width: 240, height: 56).centerToSuperview(axis: .horizontal)
-        backgroundView.layer.cornerRadius = 28
-        backgroundView.backgroundColor = .background3
+        backgroundView.pinToSuperview(edges: .vertical).constrainToSize(width: 240, height: 50).centerToSuperview(axis: .horizontal)
+        backgroundView.layer.cornerRadius = 25
+        backgroundView.backgroundColor = .background.withAlphaComponent(0.7)
+        backgroundView.layer.borderColor = UIColor.foreground.withAlphaComponent(0.2).cgColor
+        backgroundView.layer.borderWidth = 1
         
         let stack = UIStackView(arrangedSubviews: [iconView, label])
         stack.alignment = .center
-        stack.spacing = 8
+        stack.spacing = 6
         addSubview(stack)
         stack.centerToSuperview()
     }

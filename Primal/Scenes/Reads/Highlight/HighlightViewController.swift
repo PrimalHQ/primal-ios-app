@@ -95,17 +95,24 @@ class HighlightViewController: UIViewController {
 
 private extension HighlightViewController {
     func setup() {
-        view.backgroundColor = .background4
+        if #available(iOS 26.0, *) {
+            // Liquid Glass — no opaque background
+        } else {
+            view.backgroundColor = .background4
+        }
         if let pc = presentationController as? UISheetPresentationController {
             pc.detents = [
                 .custom(resolver: { [weak self] _ in
                     guard let self else { return 295 }
-                    
+
                     let base: CGFloat = highlights.isEmpty ? 215 : 275
-                    
+
                     return base + commentsVC.viewHeight
                 })
             ]
+            if #available(iOS 17.0, *) {
+                pc.traitOverrides.userInterfaceStyle = Theme.current.userInterfaceStyle
+            }
         }
         
         commentsVC.$viewHeight.debounce(for: 0.1, scheduler: DispatchQueue.main).sink { [weak self] _ in

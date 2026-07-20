@@ -154,7 +154,7 @@ extension PrimalUser {
 class MediaCacher: CachingMediaCacher {
     static let instance = MediaCacher()
     
-    func preCacheFeedMedia(urls: [String]) { }
+    func preCacheFeedMedia(urls: [String], scope: Kotlinx_coroutines_coreCoroutineScope?) { }
         
     func preCacheUserAvatars(urls: [String]) { }
 }
@@ -219,12 +219,19 @@ final class WalletManager {
         nostrEventSignatureHandler: SigningManager.instance,
         profileRepository: profileRepo
     )
+    private let eventRepo: EventRepository
     private var transactionsSnapshot: IosPagingSnapshot<Transaction>?
-    
+
+    lazy var transactionFeeRepo = WalletRepositoryFactory.shared.createTransactionFeeRepository(
+        primalWalletApiClient: walletConnection,
+        nostrEventSignatureHandler: SigningManager.instance,
+        eventRepository: eventRepo
+    )
+
     private init() {
-        let eventRepo = PrimalRepositoryFactory.shared.createEventRepository(cachingPrimalApiClient: regConnection, mediaCacher: MediaCacher.instance)
+        eventRepo = PrimalRepositoryFactory.shared.createEventRepository(cachingPrimalApiClient: regConnection, mediaCacher: MediaCacher.instance)
         
-        profileRepo = PrimalRepositoryFactory.shared.createProfileRepository(cachingPrimalApiClient: regConnection, primalPublisher: SigningManager.instance, mediaCacher: MediaCacher.instance)
+        profileRepo = PrimalRepositoryFactory.shared.createProfileRepository(cachingPrimalApiClient: regConnection, primalPublisher: SigningManager.instance, mediaCacher: MediaCacher.instance, nip05VerificationService: nil)
         
         // WalletRepo wallet info by id (balance, transactions, etc.)
         walletRepo = WalletRepositoryFactory.shared.createWalletRepository(
@@ -245,8 +252,6 @@ final class WalletManager {
     }
     
     func reset(_ pubkey: String) {
-        guard oldPubkey != pubkey else { return }
-
         self.oldPubkey = pubkey
         userZapped = [:]
         premiumState = nil
@@ -288,10 +293,15 @@ final class WalletManager {
         walletSessionProvider.setActiveUserId(userId: pubkey)
 
         Task {
-            // call ensure primal wallet exists will have no action if it shouldn't do anything
-            _ = try? await EnsurePrimalWalletExistsUseCase(primalWalletAccountRepository: primalWalletRepo, walletAccountRepository: walletAccountRepo)
-                .invoke(userId: pubkey, setAsActive: false)
-            await detectWalletSetupState(pubkey: pubkey)
+            guard let activeWallet = try? await walletAccountRepo.getActiveWallet(userId: pubkey) else {
+                _ = try? await EnsurePrimalWalletExistsUseCase(primalWalletAccountRepository: primalWalletRepo, walletAccountRepository: walletAccountRepo)
+                    .invoke(userId: pubkey, setAsActive: true)
+                await detectWalletSetupState(pubkey: pubkey)
+                return
+            }
+            if activeWallet.wallet is Wallet.Primal {
+                walletSetupState = .walletDiscontinued
+            }
         }
 
         DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
@@ -301,8 +311,10 @@ final class WalletManager {
     }
     
     func newWalletSpark(_ pubkey: String) {
-        walletSetupState = .normal
-        Task { await createSparkWallet(pubkey) }
+        Task { @MainActor in
+            await createSparkWallet(pubkey)
+            reset(pubkey)
+        }
     }
 
     func createSparkWallet(_ pubkey: String) async -> String? {
@@ -311,7 +323,9 @@ final class WalletManager {
         let res = try? await ensureSpark.invoke(userId: pubkey, register: true)
 
         guard let walletId = res?.getOrNull() as? String else { return nil }
-
+        
+        try? await walletAccountRepo.setActiveWallet(userId: pubkey, walletId: walletId)
+        
         await saveSeedToKeychain(walletId: walletId, pubkey: pubkey)
 
         return try? await sparkWalletAccountRepository.getLightningAddress(userId: pubkey, walletId: walletId)
@@ -497,8 +511,10 @@ final class WalletManager {
         guard let walletID else { throw WalletError.noWallet }
 
         let res = try await walletRepo.pay(walletId: walletID, request: request)
-        
-        if let error = res.exceptionOrNull()?.description() { throw WalletError.serverError(error.split(separator: ":").last?.string ?? "") }
+
+        if let error = res.exceptionOrNull()?.description() {
+            throw WalletError.serverError(error.split(separator: ":").last?.string ?? "")
+        }
         if res.getOrNull() == nil { throw WalletError.serverError("Unable to pay invoice") }
     }
     

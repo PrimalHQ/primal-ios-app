@@ -62,11 +62,70 @@ private extension SettingsDevModeController {
             clearCacheButton?.isEnabled = false
             CachingManager.instance.clearImageCaches {
                 clearCacheButton?.isEnabled = true
-                RootViewController.instance.view.showToast("Image cache cleared", extraPadding: 0)
+                RootViewController.instance.view.showToast("Image cache cleared")
             }
         }), for: .touchUpInside)
 
         walletListStack.spacing = 8
+
+        // MARK: - NWC Audit Logs
+
+        let exportNwcLogsButton = SettingsInfoView(name: "Export NWC audit logs", desc: "", showIcon: .menuImageSave)
+        exportNwcLogsButton.addAction(.init(handler: { [weak self, weak exportNwcLogsButton] _ in
+            exportNwcLogsButton?.isEnabled = false
+            Task { @MainActor in
+                do {
+                    let repo = WalletRepositoryFactory.shared.createNwcLogRepository()
+                    let logs = try await repo.getNwcLogs()
+
+                    guard let self else { return }
+
+                    if logs.isEmpty {
+                        RootViewController.instance.view.showToast("No NWC logs found")
+                    } else {
+                        CSVExporter.exportNwcLogs(logs, from: self)
+                    }
+                } catch {
+                    RootViewController.instance.view.showToast("Failed to export NWC logs")
+                }
+                exportNwcLogsButton?.isEnabled = true
+            }
+        }), for: .touchUpInside)
+
+        // MARK: - Wallet Log Recording
+
+        let walletLogToggle = SettingsSwitchView("Record wallet logs")
+        walletLogToggle.switchView.isOn = WalletLogRecorder.instance.isRecording
+
+        walletLogToggle.switchView.addAction(.init(handler: { [weak walletLogToggle] _ in
+            guard let isOn = walletLogToggle?.switchView.isOn else { return }
+            if isOn {
+                WalletLogRecorder.instance.startRecording()
+            } else {
+                WalletLogRecorder.instance.stopRecording()
+            }
+        }), for: .valueChanged)
+
+        let exportWalletLogsButton = SettingsInfoView(name: "Export wallet logs", desc: "", showIcon: .menuImageSave)
+        exportWalletLogsButton.addAction(.init(handler: { [weak self] _ in
+            let urls = WalletLogRecorder.instance.logFileURLs()
+            guard !urls.isEmpty else {
+                RootViewController.instance.view.showToast("No wallet logs to export")
+                return
+            }
+            guard let self else { return }
+            let activityVC = UIActivityViewController(activityItems: urls, applicationActivities: nil)
+            self.present(activityVC, animated: true)
+        }), for: .touchUpInside)
+
+        let clearWalletLogsButton = UIButton(configuration: .accentPill(text: "Clear Wallet Logs", font: .appFont(withSize: 16, weight: .semibold))).constrainToSize(height: 40)
+        clearWalletLogsButton.addAction(.init(handler: { [weak clearWalletLogsButton, weak walletLogToggle] _ in
+            clearWalletLogsButton?.isEnabled = false
+            WalletLogRecorder.instance.clearLogs()
+            walletLogToggle?.switchView.setOn(false, animated: true)
+            clearWalletLogsButton?.isEnabled = true
+            RootViewController.instance.view.showToast("Wallet logs cleared")
+        }), for: .touchUpInside)
 
         let stack = UIStackView(axis: .vertical, [
             walletSwitcher, SpacerView(height: 10),
@@ -75,6 +134,15 @@ private extension SettingsDevModeController {
             SettingsBorder(), SpacerView(height: 20),
             cacheBreakdownView, SpacerView(height: 12),
             clearCacheButton, SpacerView(height: 20),
+            SettingsBorder(), SpacerView(height: 20),
+            exportNwcLogsButton, SpacerView(height: 10),
+            descLabel("Export NWC request/response audit logs as CSV"), SpacerView(height: 20),
+            SettingsBorder(), SpacerView(height: 20),
+            walletLogToggle, SpacerView(height: 10),
+            descLabel("Record wallet SDK logs to disk for debugging"), SpacerView(height: 20),
+            exportWalletLogsButton, SpacerView(height: 10),
+            descLabel("Share recorded wallet log files"), SpacerView(height: 12),
+            clearWalletLogsButton, SpacerView(height: 20),
         ])
 
         let scroll = UIScrollView()

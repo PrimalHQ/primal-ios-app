@@ -80,8 +80,8 @@ private extension ExploreFeedsViewController {
         table.delegate = self
         table.separatorStyle = .none
         table.contentInsetAdjustmentBehavior = .never
-        table.contentInset = .init(top: 169, left: 0, bottom: 80, right: 0)
-        table.scrollIndicatorInsets = .init(top: 60, left: 0, bottom: 50, right: 0)
+        table.contentInset = .init(top: 12, left: 0, bottom: 150, right: 0)
+        table.scrollIndicatorInsets = .init(top: 12, left: 0, bottom: 50, right: 0)
         table.refreshControl = UIRefreshControl(frame: .zero, primaryAction: .init(handler: { [weak self] _ in
             self?.refresh()
         }))
@@ -90,7 +90,7 @@ private extension ExploreFeedsViewController {
         table.pinToSuperview()
         
         view.addSubview(loadingView)
-        loadingView.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .top, padding: 60, safeArea: true)
+        loadingView.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .top, padding: 12, safeArea: true)
     }
 }
 

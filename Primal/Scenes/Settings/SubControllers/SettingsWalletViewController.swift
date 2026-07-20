@@ -44,7 +44,6 @@ final class SettingsWalletViewController: UIViewController, SettingsController, 
         super.viewWillAppear(animated)
         
         navigationController?.setNavigationBarHidden(false, animated: animated)
-        mainTabBarController?.setTabBarHidden(false, animated: animated)
         
         minTransaction.descLabel.text = "\(UserDefaults.standard.minimumZapValue) sats"
         
@@ -220,12 +219,12 @@ private extension SettingsWalletViewController {
         
         externalWallet.switchView.addAction(.init(handler: { [weak self, weak externalWallet] _ in
             guard let externalWallet else { return }
-            let usePrimalWallet = !externalWallet.switchView.isOn
-            
+            let useNWC = externalWallet.switchView.isOn
+
             Task { @MainActor in
-                try await WalletManager.instance.setUsePrimalWallet(usePrimalWallet)
+                try await WalletManager.instance.setUsePrimalWallet(!useNWC)
                 try await self?.updateNWCStack()
-                self?.useNWCWallet = usePrimalWallet
+                self?.useNWCWallet = useNWC
             }
         }), for: .valueChanged)
         

@@ -16,19 +16,37 @@ struct GroupedNotification: Hashable {
 }
 
 final class NotificationFeedViewController: NoteViewController {
-    enum Tab: Int {
+    enum Tab: Int, CaseIterable, SelectionItem {
         case all = 0
         case zaps = 1
         case replies = 2
         case mentions = 3
-        
+
         var apiName: String {
             switch self {
-                
+
             case .all:      return "all"
             case .zaps:     return "zaps"
             case .replies:  return "replies"
             case .mentions: return "mentions"
+            }
+        }
+
+        var selectionTitle: String {
+            switch self {
+            case .all:      return "All Notifications"
+            case .zaps:     return "Zaps"
+            case .replies:  return "Replies"
+            case .mentions: return "Mentions"
+            }
+        }
+
+        var selectionSubtitle: String? {
+            switch self {
+            case .all:      return "Based on your notification settings"
+            case .zaps:     return "Show incoming zaps"
+            case .replies:  return "Show replies in your threads"
+            case .mentions: return "Show mentions of you or your content"
             }
         }
     }
@@ -60,7 +78,7 @@ final class NotificationFeedViewController: NoteViewController {
     let idJsonID: JSON = .string(IdentityManager.instance.userHexPubkey)
     
     var parentNotificatonVC: NotificationsViewController? {
-        parent?.parent as? NotificationsViewController
+        parent as? NotificationsViewController
     }
     
     init(tab: Tab) {
@@ -101,9 +119,6 @@ final class NotificationFeedViewController: NoteViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override var adjustedTopBarHeight: CGFloat { topBarHeight + 60 }
-    override var barsMaxTransform: CGFloat { adjustedTopBarHeight }
-    
     func setup() {
         title = "Notifications"
         
@@ -113,7 +128,13 @@ final class NotificationFeedViewController: NoteViewController {
         
         view.addSubview(skeletonLoaderView)
         skeletonLoaderView.pinToSuperview(edges: .horizontal)
-        skeletonLoaderView.topAnchor.constraint(equalTo: table.topAnchor, constant: 15).isActive = true
+        let skeletonTop = skeletonLoaderView.topAnchor.constraint(equalTo: table.topAnchor, constant: 15 + adjustedTopBarHeight)
+        skeletonTop.isActive = true
+
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            skeletonTop.constant = 15 + adjustedTopBarHeight
+        }
         
         refreshControl.addAction(.init(handler: { [weak self] _ in
             self?.refresh()
@@ -121,17 +142,13 @@ final class NotificationFeedViewController: NoteViewController {
     }
     
     var lastRefresh = Date.distantPast
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
-        navigationController?.setNavigationBarHidden(false, animated: animated)
-        mainTabBarController?.setTabBarHidden(false, animated: animated)
-    }
-    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        if notifications.isEmpty || mainTabBarController?.newNotifications ?? 0 > 0 || lastRefresh.timeIntervalSinceNow < -600 {
+        parentHomeVC = parentHomeVC ?? findParent()
+        tabController = tabController ?? findParent()
+        
+        if notifications.isEmpty || tabController?.newNotifications ?? 0 > 0 || lastRefresh.timeIntervalSinceNow < -600 {
             refresh()
         }
     }
@@ -256,20 +273,72 @@ final class NotificationFeedViewController: NoteViewController {
             .store(in: &cancellables)
     }
     
-    override func setBarsToTransform(_ transform: CGFloat) {
-        super.setBarsToTransform(transform)
+    weak var parentHomeVC: NotificationsViewController?
+    weak var tabController: MainTabBarController?
+    override func setBarsHidden(_ hidden: Bool, animated: Bool) {
+        super.setBarsHidden(hidden, animated: animated)
         
-        if let mainVC = parentNotificatonVC {
-            mainVC.tabSelectionView.transform = .init(translationX: 0, y: transform)
-            mainVC.border.transform = .init(translationX: 0, y: transform)
+        let percent: CGFloat = hidden ? 1 : 0
 
-            let percent = abs(transform / barsMaxTransform)
-            let scale = 0.1 + ((1 - percent) * 0.9)  // when percent is 0 scale is 1, when percent is 1 scale is 0.1
+        let apply = { [self] in
+            tabController?.indicatorStack.alpha = 1 - percent
+            tabController?.indicatorStack.transform = hidden ? .init(translationX: 0, y: -barsMaxTransform) : .identity
+        }
 
-            mainVC.postButton.alpha = 1 - percent
-            mainVC.postButton.transform = .init(scaleX: scale, y: scale).rotated(by: percent * .pi / 2)
-            mainVC.postButtonParent.transform = .init(translationX: 0, y: -transform)
-        }        
+        if animated {
+            UIView.animate(withDuration: 0.3, animations: apply)
+        } else {
+            apply()
+        }
+
+        parentHomeVC?.setNavigationBarHidden(hidden, animated: animated)
+        parentHomeVC?.postButton.setHidden(hidden, animated: animated)
+    }
+    
+    override func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let newPosition = scrollView.contentOffset.y
+        let delta = newPosition - prevPosition
+        let prevDelta = prevDelta
+        
+        parentHomeVC = parentHomeVC ?? findParent()
+        tabController = tabController ?? findParent()
+        
+        super.scrollViewDidScroll(scrollView)
+        
+        if newPosition > scrollView.contentSize.height - 2000 {
+            didReachEnd = true
+        } else {
+            didReachEnd = false
+        }
+        
+        if abs(delta) > 100 || (delta.sign != prevDelta.sign && prevDelta != 0) {
+            return
+        }
+
+        if !barsHidden {
+            parentHomeVC?.postButton.setIsExcited(delta > 0)
+            parentHomeVC?.setNavigationBarExcited(excited: accumulatedDelta, animated: accumulatedDelta == 0)
+        }
+        if delta != 0 {
+            tabController?.setIsExcited(barsHidden ? delta < 0 : delta > 0)
+        }
+    }
+    
+    override func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        super.scrollViewDidEndDragging(scrollView, willDecelerate: decelerate)
+        
+        guard !decelerate else { return }
+        parentHomeVC?.postButton.setIsExcited(false)
+        tabController?.setIsExcited(false)
+        parentHomeVC?.setNavigationBarExcited(excited: 0, animated: true)
+    }
+    
+    override func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        super.scrollViewDidEndDecelerating(scrollView)
+        
+        parentHomeVC?.postButton.setIsExcited(false)
+        tabController?.setIsExcited(false)
+        parentHomeVC?.setNavigationBarExcited(excited: 0, animated: true)
     }
     
     override func performEvent(_ event: PostCellEvent, withPost post: ParsedContent, inCell cell: UITableViewCell?) {

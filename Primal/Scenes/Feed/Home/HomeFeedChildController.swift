@@ -17,13 +17,16 @@ class HomeFeedChildController: PostFeedViewController {
     @Published var cachedPosts: [ParsedContent] = []
     @Published var isScrolling = false
     @Published var didReachEnd = false
+
+    private var hasNewContent = false
     
-    weak var menuContainer: MenuContainerController?
+    weak var parentHomeVC: HomeFeedViewController?
     weak var tabController: MainTabBarController?
 
     override init(feed: FeedManager) {
         super.init(feed: feed)
-        
+
+//        dataSource = GalleryFeedDatasource(tableView: table, delegate: self)
         dataSource = HomeFeedDatasource(tableView: table, delegate: self)
     }
     
@@ -36,12 +39,12 @@ class HomeFeedChildController: PostFeedViewController {
         
         view.addSubview(newPostsViewParent)
         newPostsViewParent.addSubview(newPostsView)
-        newPostsViewParent.pinToSuperview(edges: .top, padding: 130).centerToSuperview(axis: .horizontal)
-        newPostsViewParent.alpha = 0
+        newPostsViewParent.pinToSuperview(edges: .top, padding: 110).centerToSuperview(axis: .horizontal)
         
+        table.scrollIndicatorInsets = .init(top: PrimalNavigationBar.height, left: 0, bottom: 0, right: 0)
+
         newPostsView.pinToSuperview(edges: .vertical).pinToSuperview(edges: .horizontal)
-        newPostsView.alpha = 0
-        newPostsViewParent.isHidden = true
+        newPostsView.setHidden(true, animated: false)
         
         newPostsView.addAction(.init(handler: { [weak self] _ in
             guard let self, !self.posts.isEmpty else { return }
@@ -70,10 +73,10 @@ class HomeFeedChildController: PostFeedViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        menuContainer = findParent()
         tabController = findParent()
+        parentHomeVC = findParent()
         
-        navigationController?.setNavigationBarHidden(false, animated: animated)
+        navigationController?.setNavigationBarHidden(true, animated: animated)
     }
     
     func callOnLoad() {
@@ -85,28 +88,16 @@ class HomeFeedChildController: PostFeedViewController {
         }
     }
     
-    func updateNewPosts(notes: Int, noteUsers: [ParsedUser], live: Int, liveUsers: [ParsedUser], wasInvisible: Bool) {
-        guard notes > 0 || live > 0 else {
-            UIView.animate(withDuration: 0.3) {
-                self.newPostsView.alpha = 0
-            } completion: { finished in
-                if finished {
-                    self.newPostsViewParent.isHidden = true
-                }
-            }
-            return
+    func updateNewPosts(notes: Int, noteUsers: [ParsedUser], live: Int, liveUsers: [ParsedUser]) {
+        hasNewContent = notes > 0 || live > 0
+        if hasNewContent {
+            newPostsView.setCounts(noteCount: notes, noteUsers: noteUsers, liveCount: live, liveUsers: liveUsers)
         }
-        
-        newPostsView.setCounts(noteCount: notes, noteUsers: noteUsers, liveCount: live, liveUsers: liveUsers)
-        
-        if wasInvisible {
-            newPostsViewParent.isHidden = false
-            newPostsView.transform = .init(translationX: 0, y: -30)
-            UIView.animate(withDuration: 12 / 30, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 0) {
-                self.newPostsView.alpha = 1
-                self.newPostsView.transform = .identity
-            }
-        }
+        updatePillVisibility(animated: true)
+    }
+
+    private func updatePillVisibility(animated: Bool) {
+        newPostsView.setHidden(!hasNewContent || barsHidden, animated: animated)
     }
     
     override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
@@ -118,9 +109,21 @@ class HomeFeedChildController: PostFeedViewController {
     }
     
     override func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let newPosition = scrollView.contentOffset.y
+        let delta = newPosition - prevPosition
+        let prevDelta = prevDelta
+        
         super.scrollViewDidScroll(scrollView)
         
-        if scrollView.contentOffset.y > scrollView.contentSize.height - 2000 {
+        if newPostsViewParent.alpha != 0 {
+            if newPosition < 0 {
+                newPostsViewParent.alpha = 1 - (min(99.9, -2 * newPosition) / 100)
+            } else {
+                newPostsViewParent.alpha = 1
+            }
+        }
+        
+        if newPosition > scrollView.contentSize.height - 2000 {
             didReachEnd = true
         } else {
             didReachEnd = false
@@ -128,35 +131,64 @@ class HomeFeedChildController: PostFeedViewController {
         
         isScrolling = true
         
-        if scrollView.contentOffset.y < 100 {
+        if newPosition < 100 {
             feed.didShowPost(0)
         }
+        
+        if abs(delta) > 100 || (delta.sign != prevDelta.sign && prevDelta != 0) {
+            return
+        }
+
+        if !barsHidden {
+            parentHomeVC?.postButton.setIsExcited(delta > 0)
+            parentHomeVC?.setNavigationBarExcited(excited: accumulatedDelta, animated: accumulatedDelta == 0)
+            newPostsView.setHidden(barsHidden || delta > 0 || accumulatedDelta > 0, animated: true)
+        }
+        if delta != 0 {
+            tabController?.setIsExcited(barsHidden ? delta < 0 : delta > 0)
+        }
+    }
+
+    override func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        super.scrollViewDidEndDragging(scrollView, willDecelerate: decelerate)
+        
+        guard !decelerate else { return }
+        parentHomeVC?.postButton.setIsExcited(false)
+        tabController?.setIsExcited(false)
+        parentHomeVC?.setNavigationBarExcited(excited: 0, animated: true)
+        newPostsView.setHidden(barsHidden, animated: true)
     }
     
-    weak var parentHomeVC: HomeFeedViewController?
-    override func setBarsToTransform(_ transform: CGFloat) {
-        guard menuContainer?.isOpen != true, view.window != nil else { return }
+    override func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        super.scrollViewDidEndDecelerating(scrollView)
         
-        super.setBarsToTransform(transform)
-        
-        let percent = abs(transform / barsMaxTransform)
-        let scale = 0.1 + ((1 - percent) * 0.9)  // when percent is 0 scale is 1, when percent is 1 scale is 0.1
+        parentHomeVC?.postButton.setIsExcited(false)
+        parentHomeVC?.setNavigationBarExcited(excited: 0, animated: true)
+        tabController?.setIsExcited(false)
+        newPostsView.setHidden(barsHidden, animated: true)
+    }
+    
+    override func setBarsHidden(_ hidden: Bool, animated: Bool) {
+        guard view.window != nil else { return }
 
-        parentHomeVC = parentHomeVC ?? findParent()
-        parentHomeVC?.postButton.alpha = 1 - percent
-        parentHomeVC?.postButton.transform = .init(scaleX: scale, y: scale).rotated(by: percent * .pi / 2)
-        parentHomeVC?.postButtonParent.transform = .init(translationX: 0, y: -transform)
-        
-        newPostsViewParent.transform = .init(translationX: 0, y: transform)
-        
-        tabController?.indicatorStack.alpha = 1 - percent
-        tabController?.indicatorStack.transform = .init(translationX: 0, y: transform)
-        
-        if /*feed.newPosts.0 == 0 &&*/ table.contentOffset.y < 0 {
-            newPostsViewParent.alpha = min((1 - (percent * 4)).clamped(to: 0...1), 1 - min(100, -2 * table.contentOffset.y) / 100)
-        } else {
-            newPostsViewParent.alpha = (1 - (percent * 4)).clamped(to: 0...1)
+        super.setBarsHidden(hidden, animated: animated)
+
+        let percent: CGFloat = hidden ? 1 : 0
+
+        let apply = { [self] in
+            tabController?.indicatorStack.alpha = 1 - percent
+            tabController?.indicatorStack.transform = hidden ? .init(translationX: 0, y: -barsMaxTransform) : .identity
         }
+
+        if animated {
+            UIView.animate(withDuration: 0.3, animations: apply)
+        } else {
+            apply()
+        }
+
+        parentHomeVC?.setNavigationBarHidden(hidden, animated: animated)
+        parentHomeVC?.postButton.setHidden(hidden, animated: animated)
+        updatePillVisibility(animated: animated)
     }
     
     override func updateTheme() {
@@ -175,12 +207,10 @@ extension HomeFeedChildController: LivePreviewFeedCellDelegate {
 private extension HomeFeedChildController {
     func setupPublishers() {
         Publishers.CombineLatest(feed.$newPosts, LiveEventManager.instance.currentlyLiveFollowingPublisher)
-            .prepend(((0, []), []))
-            .withPrevious()
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] old, new in
-                self?.updateNewPosts(notes: new.0.0, noteUsers: new.0.1, live: new.1.count, liveUsers: new.1, wasInvisible: old.0.0 + old.1.count == 0)
-                if new.0.0 == 0 && !new.1.isEmpty && self?.table.contentOffset.y ?? 0 < 0 {
+            .sink { [weak self] newPosts, live in
+                self?.updateNewPosts(notes: newPosts.0, noteUsers: newPosts.1, live: live.count, liveUsers: live)
+                if newPosts.0 == 0 && live.isEmpty {
                     self?.newPostsViewParent.alpha = 0
                 }
             }

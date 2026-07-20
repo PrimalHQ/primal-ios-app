@@ -77,6 +77,7 @@ final class PostPreviewView: UIView, Themeable {
         mainImages.resources = content.mediaResources
         mainImages.thumbnails = content.videoThumbnails
         mainImages.isHidden = content.mediaResources.isEmpty
+        mainImages.updateTheme()
         
         if let data = content.linkPreviews.first {
             linkPreview.data = data
@@ -152,7 +153,7 @@ final class PostPreviewView: UIView, Themeable {
             $0.textColor = .foreground3
         }
         
-        backgroundColor = .background4
+        backgroundColor = .background2
         layer.borderColor = UIColor.background3.cgColor
         
         nameLabel.textColor = .foreground
@@ -170,7 +171,7 @@ final class PostPreviewView: UIView, Themeable {
 
 private extension PostPreviewView {
     func setup() {
-        layer.cornerRadius = 8
+        layer.cornerRadius = 12
         layer.borderWidth = 1
         
         separatorLabel.text = "·"
@@ -194,7 +195,7 @@ private extension PostPreviewView {
         seeMoreLabel.setContentCompressionResistancePriority(.required, for: .vertical)
         
         mainImages.layer.masksToBounds = true
-        mainImages.layer.cornerRadius = 8
+        mainImages.layer.cornerRadius = 12
         mainImages.isHidden = true
         mainImages.heightAnchor.constraint(lessThanOrEqualToConstant: 500).isActive = true
         

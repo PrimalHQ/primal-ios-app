@@ -22,7 +22,7 @@ struct UserToken {
     var user: PrimalUser
 }
 
-enum PollType {
+enum PollType: Equatable {
     case user, zap(min: Int, max: Int)
     
     var name: String {
@@ -35,7 +35,11 @@ enum PollType {
     static var defaultZap = PollType.zap(min: 21, max: 21000)
 }
 
-struct PollData {
+struct PollData: Equatable {
+    static func == (lhs: PollData, rhs: PollData) -> Bool {
+        lhs.options == rhs.options && lhs.type == rhs.type && lhs.length == rhs.length
+    }
+    
     var type: PollType = .user
     var length: (Int, Int, Int) = (1, 0, 0)  // Hours, minutes, seconds
 
@@ -69,7 +73,7 @@ struct PollData {
         }
 
         if forPosting {
-            tags.append(["client", "Primal iOS"])
+            tags.append(NostrObject.clientTag)
         } else {
             tags.append(["draft_poll_length", "\(days)", "\(hours)", "\(minutes)"])
         }
@@ -117,6 +121,16 @@ struct PollData {
         guard !options.isEmpty else { return nil }
 
         return PollData(type: pollType, length: length, options: options)
+    }
+}
+
+extension PollData {
+    var isValid: Bool {
+        guard options.count >= 2 else { return false }
+        if case .zap(let min, let max) = type {
+            return min <= max && min >= 0 && max >= 0
+        }
+        return true
     }
 }
 
@@ -526,6 +540,8 @@ final class PostingTextViewManager: TextViewManager, MetadataCoding {
             return NostrObject.create(content: postingText, kind: kind, tags: allTags)
         }
 
+        allTags.append(NostrObject.clientTag)
+
         return NostrObject.create(content: postingText, kind: 1, tags: allTags)
     }
 }
@@ -804,7 +820,7 @@ private extension PostingTextViewManager {
         DatabaseManager.instance.findDraft(replyingTo: replyId)
             .receive(on: DispatchQueue.main)
             .sink { [weak self] draft in
-                guard let self, let draft else { return }
+                guard let self, let draft, oldDraft == nil else { return }
                 
                 if let text = textView.text, !text.isEmpty, !draft.isPosting, text != draft.text {
                     textView.text = draft.text + text

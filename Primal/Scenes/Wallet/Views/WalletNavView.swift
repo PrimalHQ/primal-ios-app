@@ -14,9 +14,18 @@ final class WalletNavView: UIView, Themeable {
     var scanPressedEvent = PassthroughSubject<UIControl, Never>()
     var receivePressedEvent = PassthroughSubject<UIControl, Never>()
     
-    @Published var shouldExpand: Bool = true
+    var shouldExpandFinalPublisher: AnyPublisher<Bool, Never> {
+        Publishers.CombineLatest3($shouldExpand, $isExpanded, $isAnimating)
+            .filter { shouldE, isE, isAnimating in !isAnimating && shouldE != isE }
+            .map { shouldE, _, _ in shouldE }
+            .eraseToAnyPublisher()
+    }
     
-    let expandedHeight: CGFloat = 295
+    @Published var shouldExpand: Bool = true
+
+    var primalNavigationBar: PrimalNavigationBar { largeView.primalNavigationBar }
+
+    let expandedHeight: CGFloat = 295 + PrimalNavigationBar.height
     let tightenedHeight: CGFloat = 82
     
     let blockerView = UIView()
@@ -48,13 +57,15 @@ final class WalletNavView: UIView, Themeable {
     private var oldAnimViews: [UIView?] = []
     
     @Published private(set) var isAnimating = false
-    @Published private var isExpanded: Bool = true
+    @Published private(set) var isExpanded: Bool = true
     
     init() {
         super.init(frame: .zero)
-        
+
+        clipsToBounds = true
+
         updateTheme()
-        
+
         send.setImage(LargeWalletButton.Variant.send.smallIcon, for: .normal)
         scan.setImage(LargeWalletButton.Variant.scan.smallIcon, for: .normal)
         receive.setImage(LargeWalletButton.Variant.receive.smallIcon, for: .normal)
@@ -91,13 +102,10 @@ final class WalletNavView: UIView, Themeable {
         }
         .store(in: &cancellables)
         
-        Publishers.CombineLatest3($shouldExpand, $isExpanded, $isAnimating)
-            .filter { shouldE, isE, isAnimating in !isAnimating && shouldE != isE }
-            .map { shouldE, _, _ in shouldE }
-            .sink { [weak self] shouldE in
-                self?.animateExpansion(shouldE)
-            }
-            .store(in: &cancellables)
+        shouldExpandFinalPublisher.sink { [weak self] shouldE in
+            self?.animateExpansion(shouldE)
+        }
+        .store(in: &cancellables)
         
         [send, largeView.send].forEach { button in
             button.addAction(.init(handler: { [weak self] _ in
@@ -188,9 +196,13 @@ final class WalletNavView: UIView, Themeable {
         
         UIView.animate(withDuration: 13 / 30) {
             let scale: CGFloat = 45 / 80
-            
+
             self.largeView.actionStack.transform = shouldExpand ? .identity : .init(translationX: actionTranslation.x, y: actionTranslation.y - 7).scaledBy(x: scale, y: scale)
-            
+
+            self.largeView.primalNavigationBar.transform = shouldExpand
+                ? .identity
+                : CGAffineTransform(translationX: 0, y: -PrimalNavigationBar.height)
+
             self.superview?.layoutIfNeeded()
         } completion: { _ in
             self.smallView.isHidden = shouldExpand

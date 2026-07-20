@@ -70,7 +70,7 @@ class SettingsNewNwcQRController: UIViewController {
         
         copyButton.addAction(.init(handler: { _ in
             UIPasteboard.general.string = uri
-            RootViewController.instance.view.showToast("Copied!", extraPadding: 0)
+            RootViewController.instance.view.showToast("Copied!")
         }), for: .touchUpInside)
         
         doneButton.addAction(.init(handler: { [weak self] _ in

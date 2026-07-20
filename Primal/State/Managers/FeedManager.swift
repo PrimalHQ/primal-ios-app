@@ -135,18 +135,16 @@ final class FeedManager {
         sendNewPageRequest()
     }
         
-    func requestThread(postId: String, limit: Int32 = 100, includeParent: Bool) {
+    func requestThread(postId: String, limit: Int32 = 100) {
         if parsedPosts.isEmpty {
             DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(3)) { [weak self] in
                 guard let self, parsedPosts.isEmpty else { return }
-                requestThread(postId: postId, limit: limit, includeParent: includeParent)
+                requestThread(postId: postId, limit: limit)
             }
         }
-        
-        if includeParent {
-            parsedPosts.removeAll()
-        }
-        
+
+        parsedPosts.removeAll()
+
         SocketRequest(
             name: "multi_kind_thread_view",
             payload: .object([
@@ -159,7 +157,7 @@ final class FeedManager {
                 ],
                 "limit": .number(Double(limit)),
                 "user_pubkey": .string(IdentityManager.instance.userHexPubkey),
-                "include_parent_posts": .bool(includeParent)
+                "include_parent_posts": .bool(true)
             ])
         )
         .publisher()

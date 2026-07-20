@@ -8,6 +8,7 @@
 import UIKit
 
 enum ArticleCommentsFeedItem: Hashable {
+    case noteHeader(content: ParsedContent, element: NoteFeedElement)
     case note(content: ParsedContent, element: NoteFeedElement)
     case header
     case empty
@@ -28,43 +29,41 @@ class ArticleCommentsDatasource: UITableViewDiffableDataSource<TwoSectionFeed, A
             case .empty:
                 cell = tableView.dequeueReusableCell(withIdentifier: "empty", for: indexPath)
                 (cell as? GenericEmptyTableCell)?.text = "This article has no comments yet"
+            case let .noteHeader(content, element):
+                cell = tableView.dequeueReusableCell(withIdentifier: element.headerCellID, for: indexPath)
+                HomeFeedDatasource.configureNoteCell(cell, content: content, element: element, delegate: delegate)
             case let .note(content, element):
                 cell = tableView.dequeueReusableCell(withIdentifier: element.cellID, for: indexPath)
-                switch element {
-                case .webPreview(_, let metadata):
-                    (cell as? WebPreviewCell)?.updateWebPreview(metadata)
-                case .postPreview(let embedded):
-                    if let cell = cell as? RegularFeedElementCell {
-                        cell.update(embedded)
-                        cell.delegate = delegate
-                    }
-                    return cell
-                default:
-                    break
-                }
-                
-                if let cell = cell as? RegularFeedElementCell {
-                    cell.update(content)
-                    cell.delegate = delegate
-                }
+                HomeFeedDatasource.configureNoteCell(cell, content: content, element: element, delegate: delegate)
             }
             return cell
         }
         
         registerCells(tableView)
+        registerHeaderCells(tableView)
         registerCustomCells(tableView)
         
         defaultRowAnimation = .none
     }
     
     func elementForIndexPath(_ indexPath: IndexPath) -> NoteFeedElement? {
-        guard indexPath.section == 1, let data = cells[safe: indexPath.row], case .note(_, let element) = data else { return nil }
-        return element
+        guard indexPath.section == 1, let data = cells[safe: indexPath.row] else { return nil }
+        switch data {
+        case .note(_, let element), .noteHeader(_, let element):
+            return element
+        default:
+            return nil
+        }
     }
-    
+
     func postForIndexPath(_ indexPath: IndexPath) -> ParsedContent? {
-        guard indexPath.section == 1, let data = cells[safe: indexPath.row], case .note(let content, _) = data else { return nil }
-        return content
+        guard indexPath.section == 1, let data = cells[safe: indexPath.row] else { return nil }
+        switch data {
+        case .note(let content, _), .noteHeader(let content, _):
+            return content
+        default:
+            return nil
+        }
     }
     
     private func registerCustomCells(_ tableView: UITableView) {
@@ -73,8 +72,10 @@ class ArticleCommentsDatasource: UITableViewDiffableDataSource<TwoSectionFeed, A
     }
     
     func setPosts(_ posts: [ParsedContent]) {
-        cells = convertPostsToCells(posts).flatMap { post, elements in
-            elements.map { .note(content: post, element: $0) }
+        cells = convertPostsToHeaderCells(posts).flatMap { content, header, elements in
+            var items: [ArticleCommentsFeedItem] = [.noteHeader(content: content, element: header)]
+            items += elements.map { .note(content: content, element: $0) }
+            return items
         }
         
         var snapshot = NSDiffableDataSourceSnapshot<TwoSectionFeed, ArticleCommentsFeedItem>()

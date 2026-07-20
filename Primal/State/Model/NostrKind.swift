@@ -98,6 +98,7 @@ enum NostrKind: Int {
     case nip19DecodeResult = 10_000_173
     case blossomSuggestions = 10_000_175
     case pollStats = 10_000_179
+    case parsedAdvancedSearch = 10_000_180
     case premiumLegendPurchase = 10_000_601
     case premiumState = 10_000_603
     case premiumSubscriptionHistory = 10_000_605

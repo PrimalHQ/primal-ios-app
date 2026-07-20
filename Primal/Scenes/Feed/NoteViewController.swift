@@ -49,10 +49,10 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
     
     @Published var posts: [ParsedContent] = [] {
         didSet {
-            if view.window == nil { return }
-            
             dataSource.setPosts(posts)
-            
+
+            guard view.window != nil else { return }
+
             DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
                 self.playVideoOnScroll()
             }
@@ -81,7 +81,9 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
     var firstRun = true
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
+
+        adjustTopBarHeightIfNeeded()
+
         DispatchQueue.main.async { [self] in
             if !firstRun || !posts.isEmpty {
                 dataSource.setPosts(posts)
@@ -101,27 +103,41 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        
+
         if VideoPlaybackManager.instance.autoPlay {
             VideoPlaybackManager.instance.currentlyPlaying?.delayedPause()
         }
-        
-        if animated {
-            if prevTransform != 0 {
-                animateBarsToVisible()
-            }
-        } else {
-            if prevTransform != 0 {
-                setBarsToTransform(0)
-            }
-        }
+
+        updateBarsHidden(false, animated: animated)
     }
     
     var topBarHeight: CGFloat = 100
     var adjustedTopBarHeight: CGFloat { topBarHeight }
     var barsMaxTransform: CGFloat { topBarHeight }
+    private var didAdjustTopBarHeight = false
+
+    // Computed once on first appearance — not at init time — so findParent() reliably
+    // sees the PrimalNavigationBar owner. Computing this in an init-scheduled async raced
+    // the parent chain being wired up, leaving a stale top inset (the gap above live banners).
+    func adjustTopBarHeightIfNeeded() {
+        guard !didAdjustTopBarHeight else { return }
+        didAdjustTopBarHeight = true
+
+        let hasPrimalNavBar: Bool = (findParent() as (any PrimalNavigationBarController)?) != nil
+        if hasPrimalNavBar {
+            topBarHeight = PrimalNavigationBar.height - 4 // table starts at safe area, only need PrimalNavigationBar height
+        } else {
+            topBarHeight = RootViewController.instance.view.safeAreaInsets.top + 50 // 50 is nav bar height without safe area
+        }
+        table.contentInset = .init(top: adjustedTopBarHeight, left: 0, bottom: 150, right: 0)
+        if table.contentOffset.y <= 0 { // only snap to top on first setup, never yank an already-scrolled feed
+            table.contentOffset = .init(x: 0, y: -adjustedTopBarHeight)
+        }
+    }
     var prevPosition: CGFloat = 0
-    var prevTransform: CGFloat = 0
+    var prevDelta: CGFloat = 0
+    var accumulatedDelta: CGFloat = 0
+    var barsHidden: Bool = false
 
     var isVisibleOnScreen: Bool {
         guard UIApplication.shared.applicationState == .active else { return false }
@@ -157,14 +173,14 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
         }
     }
     
+    var startIgnoreAreaSize: CGFloat { PrimalNavigationBar.maxTranslation + 4 }
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         let newPosition = scrollView.contentOffset.y
         let delta = newPosition - prevPosition
-        prevPosition = newPosition
-        
-        // System sometimes updates table contentOffset without moving the cells
-        // so if delta is larger than 300 we ignore it
-        if abs(delta) > 300 { return }
+        defer {
+            prevPosition = newPosition
+            prevDelta = delta
+        }
         
         if FullScreenVideoPlayerController.instance == nil && VideoPlaybackManager.instance.autoPlay {
             if abs(delta) > 50 {
@@ -173,58 +189,81 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
                 playVideoOnScroll()
             }
         }
+
+        // Ignore large system-driven jumps (layout changes, inset adjustments).
+        if abs(delta) > 100 || (delta.sign != prevDelta.sign && prevDelta != 0) {
+            return
+        }
+
+        // Only react to user-driven scrolls — content insertions / programmatic scrolls fire
+        // scrollViewDidScroll with deltas that would otherwise toggle the chrome incorrectly.
+        guard scrollView.isDragging || scrollView.isDecelerating else { return }
+
+        if newPosition < startIgnoreAreaSize && delta > 0 {
+            // NO OP because we don't want to hide the header if we over-scrolled on top
+        } else {
+            accumulatedDelta += delta
+        }
         
-        let theoreticalNewTransform = (prevTransform - delta).clamped(to: -barsMaxTransform...0)
-        let newTransform = newPosition <= -topBarHeight ? 0 : theoreticalNewTransform
-        
-        setBarsToTransform(newTransform)
+        if !barsHidden && accumulatedDelta < 0 {
+            accumulatedDelta = 0
+        }
+
+        let threshold: CGFloat = 80
+        if accumulatedDelta < -threshold {
+            updateBarsHidden(false)
+            accumulatedDelta = 0
+        } else if accumulatedDelta > threshold {
+            updateBarsHidden(true)
+            accumulatedDelta = 0
+        }
     }
     
     func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
-        if decelerate { return }
-        setBarsDependingOnPosition()
+        guard !decelerate else { return }
+        accumulatedDelta = 0
+        
+        if scrollView.contentOffset.distance(to: .zero) < scrollView.adjustedContentInset.top {
+            updateBarsHidden(false)
+        }
     }
     
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        setBarsDependingOnPosition()
+        accumulatedDelta = 0
+        
+        if scrollView.contentOffset.distance(to: .zero) < scrollView.adjustedContentInset.top {
+            updateBarsHidden(false)
+        }
     }
-    
-    func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
-        setBarsDependingOnPosition()
-    }
-    
+
     func scrollViewShouldScrollToTop(_ scrollView: UIScrollView) -> Bool {
-        animateBarsToVisible()
+        updateBarsHidden(false)
         return true
     }
-    
-    func setBarsToTransform(_ transform: CGFloat) {        
-        prevTransform = transform
-        navigationController?.navigationBar.transform = .init(translationX: 0, y: transform)
-        navigationBorder.transform = .init(translationX: 0, y: transform)
-        mainTabBarController?.vStack.transform = .init(translationX: 0, y: -transform)
-    }
-    
-    func animateBarsToTransform(_ transform: CGFloat) {
-        UIView.animate(withDuration: 0.2) {
-            self.setBarsToTransform(transform)
+
+    /// Override point for subclasses. Applies the hidden/shown state to bars.
+    func setBarsHidden(_ hidden: Bool, animated: Bool) {
+        mainTabBarController?.setTabBarHidden(hidden, animated: animated)
+        
+        guard primalNavBarController == nil else { return }
+        
+        navigationController?.setNavigationBarHidden(hidden, animated: animated)
+        
+        let apply = { [self] in
+            self.navigationBorder.transform = hidden ? .init(translationX: 0, y: -barsMaxTransform) : .identity
         }
-    }
-    
-    func animateBarsToVisible() {
-        animateBarsToTransform(0)
-    }
-    
-    func animateBarsToInvisible() {
-        animateBarsToTransform(-barsMaxTransform)
-    }
-    
-    func setBarsDependingOnPosition() {
-        if prevTransform < -(barsMaxTransform / 2) && table.contentOffset.y > 0 {
-            animateBarsToInvisible()
+        
+        if animated {
+            UIView.animate(withDuration: 0.3) { apply() }
         } else {
-            animateBarsToVisible()
+            apply()
         }
+    }
+
+    func updateBarsHidden(_ hidden: Bool, animated: Bool = true) {
+        guard barsHidden != hidden else { return }
+        barsHidden = hidden
+        setBarsHidden(hidden, animated: animated)
     }
     
     @discardableResult
@@ -412,7 +451,7 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
             guard let thread = open(post: post) as? ThreadViewController else { return }
         
             DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(200)) {
-                thread.replyBoxTapped()
+                thread.openReplyComposer()
             }
         case .embeddedPost:
             guard
@@ -531,13 +570,7 @@ private extension NoteViewController {
         table.separatorStyle = .none
         table.contentInsetAdjustmentBehavior = .never
         table.contentInset = .init(top: 100, left: 0, bottom: 150, right: 0)
-        
-        DispatchQueue.main.async {
-            self.topBarHeight = RootViewController.instance.view.safeAreaInsets.top + 50 - 12 // 50 is nav bar height without safe area
-            self.table.contentInset = .init(top: self.adjustedTopBarHeight, left: 0, bottom: 150, right: 0)
-            self.table.contentOffset = .init(x: 0, y: -self.adjustedTopBarHeight)
-        }
-        
+
         view.addSubview(navigationBorder)
         navigationBorder.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .top, safeArea: true)
         
@@ -550,10 +583,9 @@ private extension NoteViewController {
             DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
                 guard let self else { return }
                 
-                if let menu: MenuContainerController = self.findParent(), menu.isOpen { return }
                 if self.navigationController?.topViewController?.isParent(self) != true { return }
                     
-                self.animateBarsToVisible()
+                self.updateBarsHidden(false)
             }
         }
         
@@ -733,7 +765,7 @@ extension NoteViewController: PostCellDelegate {
             cell.repostButton.animateTo(post.reposts + 1, filled: true)
         }))
         
-        popup.addAction(.init(title: "Quote", image: .init(named: "quoteIconLarge"), handler: { [weak self] _ in
+        popup.addAction(.init(title: "Quote", image: .quoteIconLarge, handler: { [weak self] _ in
             guard let self else { return }
             
             let new = AdvancedEmbedPostViewController()

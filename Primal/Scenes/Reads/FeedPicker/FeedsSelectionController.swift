@@ -125,8 +125,8 @@ extension PrimalFeed {
         getAllFeeds(type).filter { $0.enabled }
     }
     
-    static let defaultReadsFeed = PrimalFeed(name: "Nostr Reads", spec: "{\"scope\":\"follows\"}")
-    static let defaultNotesFeed = PrimalFeed(name: "Latest", spec: "{\"id\":\"latest\"}")
+    static let defaultReadsFeed = PrimalFeed(name: "Nostr Reads", spec: "{\"id\":\"nostr-reads-feed\",\"kind\":\"reads\"}", description: "Latest reads from your network", feedkind: "primal", enabled: true)
+    static let defaultNotesFeed = PrimalFeed(name: "Latest", spec: "{\"id\":\"latest\",\"kind\":\"notes\"}", description: "Latest notes by your follows", feedkind: "primal", enabled: true)
     
     static func fetchPublisher(type: PrimalFeedType) -> AnyPublisher<[PrimalFeed], Never> {
         guard let ev = NostrObject.create(content: "{\"subkey\":\"\(type.subkey)\"}", kind: 30078)?.toJSON() else {
@@ -149,18 +149,19 @@ extension PrimalFeed {
     }
 }
 
-final class FeedsSelectionController: UIViewController {
+final class FeedsSelectionController: SlideDownShellViewController {
     var cancellables: Set<AnyCancellable> = []
-    
+
     let table = UITableView()
-    
+
     var callback: (PrimalFeed) -> Void
-    
+
     lazy var feeds = PrimalFeed.getActiveFeeds(type)
-    
+
     let addFeedButton = UIButton(configuration: .accent18("Add Custom Feed"))
-    let editButton = UIButton(configuration: .accent18("Edit"))
+    let editButton = UIButton(configuration: .accent18("Edit Feeds"))
     let doneButton = UIButton(configuration: .accent18("Done"))
+    let closeButton = UIButton(configuration: .accent18("Close"))
 
     lazy var restoreDefaultsFooter: UIView = {
         let button = UIButton(configuration: .accent18("Restore Default Feeds"))
@@ -175,16 +176,15 @@ final class FeedsSelectionController: UIViewController {
         container.frame = CGRect(x: 0, y: 0, width: 0, height: 110)
         return container
     }()
-    
+
     var currentFeed: PrimalFeed
     let type: PrimalFeedType
     init(currentFeed: PrimalFeed, type: PrimalFeedType, _ callback: @escaping (PrimalFeed) -> Void) {
         self.callback = callback
         self.currentFeed = currentFeed
         self.type = type
-        super.init(nibName: nil, bundle: nil)
-        setup()
-        
+        super.init()
+
         if let lastFetch = PrimalFeed.lastTimeFeedsFetched[type], abs(lastFetch.timeIntervalSinceNow) < 30 {
             // Do nothing
         } else {
@@ -232,20 +232,25 @@ final class FeedsSelectionController: UIViewController {
         
     }
     
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        setup()
+    }
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
+
         updateTable(animate: false)
-        
+
         DispatchQueue.main.async { [self] in
             if let index = feeds.firstIndex(where: { $0.spec == currentFeed.spec }) {
                 table.scrollToRow(at: IndexPath(row: index, section: 0), at: .middle, animated: false)
             }
         }
-        
+
         table.reloadData()
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -264,6 +269,7 @@ private extension FeedsSelectionController {
         editButton.isHidden = true
         doneButton.isHidden = false
         addFeedButton.isHidden = false
+        closeButton.isHidden = true
 
         isEditing = true
         table.dragDelegate = self
@@ -276,6 +282,7 @@ private extension FeedsSelectionController {
         editButton.isHidden = LoginManager.instance.method() == .nsec ? false : true
         doneButton.isHidden = true
         addFeedButton.isHidden = true
+        closeButton.isHidden = false
 
         isEditing = false
         table.dragDelegate = nil
@@ -316,60 +323,51 @@ private extension FeedsSelectionController {
     }
     
     func setup() {
-        view.backgroundColor = .background2
-        
-        let pullBarParent = UIView()
-        let pullBar = UIView()
-        pullBarParent.addSubview(pullBar)
-        pullBar.pinToSuperview(edges: .vertical).centerToSuperview(axis: .horizontal)
-        
-        let title = UILabel()
-        switch type {
-        case .note:
-            title.text = "Home Feeds"
-        case .article:
-            title.text = "Reads Feeds"
-        }
-        title.font = .appFont(withSize: 20, weight: .bold)
-        title.textColor = .foreground
-        title.setContentCompressionResistancePriority(.required, for: .vertical)
-        title.textAlignment = .center
-        
         table.showsVerticalScrollIndicator = false
         table.register(FeedSelectionCell.self, forCellReuseIdentifier: "cell")
         table.dataSource = self
         table.delegate = self
         table.separatorStyle = .none
         table.backgroundColor = .background2
-        
-        let botMenu = UIStackView([addFeedButton, UIView(), editButton, doneButton])
+
+        let botMenu = UIStackView([editButton, addFeedButton, UIView(), doneButton, closeButton])
         botMenu.isLayoutMarginsRelativeArrangement = true
         botMenu.layoutMargins = .init(top: 5, left: 16, bottom: 0, right: 16)
-        
-        let stack = UIStackView(arrangedSubviews: [
-            pullBarParent, SpacerView(height: 20, priority: .required),
-            title, SpacerView(height: 14, priority: .required),
+
+        let contentStack = UIStackView(arrangedSubviews: [
             table, SpacerView(height: 1, color: .background3, priority: .required),
             botMenu
         ])
-        table.pinToSuperview(edges: .horizontal)
-        
-        view.addSubview(stack)
-        stack.pinToSuperview(edges: .top, padding: 16).pinToSuperview(edges: .bottom, safeArea: true).pinToSuperview(edges: .horizontal)
-        stack.axis = .vertical
-        
-        pullBar.constrainToSize(width: 60, height: 5)
-        pullBar.backgroundColor = .foreground.withAlphaComponent(0.8)
-        pullBar.layer.cornerRadius = 2.5
-        
+        contentStack.axis = .vertical
+
+        contentView.addSubview(contentStack)
+        contentStack.pinToSuperview()
+
+        primalNavigationBar.title = currentFeed.name
+        primalNavigationBar.subtitle = currentFeed.description
+        primalNavigationBar.showChevron = true
+        primalNavigationBar.onTitleTapped = { [weak self] in
+            self?.dismissAnimated()
+        }
+
+        primalNavigationBar.onAvatarTapped = { [weak self] in
+            guard let primalNavBarController: PrimalNavigationBarController = self?.presentingViewController?.findInChildren() else { return }
+            self?.animateOut {
+                self?.dismiss(animated: false) {
+                    MenuController().present(from: primalNavBarController)
+                }
+            }
+        }
+
         addFeedButton.addAction(.init(handler: { [weak self] _ in
             guard let self else { return }
             show(FeedMarketplaceController(type: type), sender: nil)
         }), for: .touchUpInside)
-        
+
         editButton.addAction(.init(handler: { [weak self] _ in self?.startEditing() }), for: .touchUpInside)
         doneButton.addAction(.init(handler: { [weak self] _ in self?.endEditing() }), for: .touchUpInside)
-        
+        closeButton.addAction(.init(handler: { [weak self] _ in self?.dismissAnimated() }), for: .touchUpInside)
+
         endEditing()
     }
 }
@@ -398,6 +396,21 @@ extension FeedsSelectionController: UITableViewDragDelegate {
 }
 
 extension FeedsSelectionController: FeedSelectionCellDelegate {
+    func editTappedInCell(_ cell: FeedSelectionCell) {
+        guard
+            let indexPath = table.indexPath(for: cell),
+            let feed = feeds[safe: indexPath.row],
+            feed.isFromAdvancedSearchScreen,
+            let presenter = presentingViewController
+        else { return }
+
+        animateOut { [weak self] in
+            self?.dismiss(animated: false) {
+                SearchViewController.presentForEditing(from: presenter, feed: feed)
+            }
+        }
+    }
+
     func switchToggledInCell(_ cell: FeedSelectionCell) {
         guard let indexPath = table.indexPath(for: cell) else { return }
         
@@ -445,13 +458,21 @@ extension FeedsSelectionController: UITableViewDelegate {
 
         currentFeed = feeds[indexPath.row]
         table.reloadData()
-        dismiss(animated: true)
         callback(currentFeed)
+
+        UIView.transition(with: primalNavigationBar.titleLabel, duration: 0.25, options: .transitionCrossDissolve) { [self] in
+            primalNavigationBar.title = currentFeed.name
+        }
+        UIView.transition(with: primalNavigationBar.subtitleLabel, duration: 0.25, options: .transitionCrossDissolve) { [self] in
+            primalNavigationBar.subtitle = currentFeed.description
+        }
+        dismissAnimated()
     }
 }
 
 protocol FeedSelectionCellDelegate: AnyObject {
     func switchToggledInCell(_ cell: FeedSelectionCell)
+    func editTappedInCell(_ cell: FeedSelectionCell)
 }
 
 class FeedSelectionCell: UITableViewCell {
@@ -459,33 +480,39 @@ class FeedSelectionCell: UITableViewCell {
     let titleLabel = UILabel()
     let subtitleLabel = UILabel()
     let enableSwitch = UISwitch()
+    let editButton = UIButton()
     let dragIcon = UIImageView(image: UIImage(named: "dragGrabIcon"))
-    
+
     weak var delegate: FeedSelectionCellDelegate?
-    
+
     var myEditing = false
     var mySelected = false
-    
+
     override func setHighlighted(_ highlighted: Bool, animated: Bool) {
         super.setHighlighted(highlighted, animated: animated)
         backgroundColorView.isHidden = myEditing || (!highlighted && !mySelected)
     }
-    
+
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        
+
         selectionStyle = .none
-        
+
         let switchParent = UIView().constrainToSize(42)
         switchParent.addSubview(enableSwitch)
         enableSwitch.centerToSuperview()
         enableSwitch.transform = .init(scaleX: 42 / 51, y: 42 / 51)
-        
+
+        editButton.setImage(UIImage(named: "pencilUnderline")?.withRenderingMode(.alwaysTemplate), for: .normal)
+        editButton.tintColor = .foreground6
+        editButton.constrainToSize(width: 32, height: 32)
+        editButton.contentEdgeInsets = .init(top: 4, left: 4, bottom: 4, right: 4)
+
         let vStack = UIStackView(axis: .vertical, [titleLabel, subtitleLabel])
         vStack.alignment = .leading
-        
-        let mainStack = UIStackView([vStack, switchParent, dragIcon])
-        mainStack.spacing = 20
+
+        let mainStack = UIStackView([vStack, editButton, switchParent, dragIcon])
+        mainStack.spacing = 12
         mainStack.alignment = .center
         
         contentView.addSubview(backgroundColorView)
@@ -519,6 +546,11 @@ class FeedSelectionCell: UITableViewCell {
                 self.delegate?.switchToggledInCell(self)
             }
         }), for: .valueChanged)
+
+        editButton.addAction(.init(handler: { [weak self] _ in
+            guard let self else { return }
+            self.delegate?.editTappedInCell(self)
+        }), for: .touchUpInside)
     }
     
     required init?(coder: NSCoder) {
@@ -527,17 +559,18 @@ class FeedSelectionCell: UITableViewCell {
     
     func setup(_ feed: PrimalFeed, selected: Bool, editing: Bool, delegate: FeedSelectionCellDelegate) {
         self.delegate = delegate
-        
+
         titleLabel.text = feed.name
         subtitleLabel.text = feed.description
-        
+
         enableSwitch.superview?.isHidden = !editing
         dragIcon.isHidden = !editing
-        
+        editButton.isHidden = !(editing && feed.isFromAdvancedSearchScreen)
+
         myEditing = editing
         mySelected = selected
         backgroundColorView.isHidden = selected && !editing
-        
+
         if editing && feed.isFromBackend {
             enableSwitch.isOn = feed.enabled
         } else {

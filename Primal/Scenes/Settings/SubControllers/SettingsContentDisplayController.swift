@@ -12,7 +12,6 @@ extension String {
     static let animatedAvatarsKey = "animatedAvatarsKey"
     static let fullScreenFeedKey = "fullScreenFeedKey"
     static let autoDarkModeKey = "autoDarkModeKey"
-    static let hugeFontKey = "hugeFontKey"
 }
 
 struct ContentDisplaySettings {
@@ -29,11 +28,6 @@ struct ContentDisplaySettings {
     static var autoDarkMode: Bool {
         get { UserDefaults.standard.bool(forKey: .autoDarkModeKey) }
         set { UserDefaults.standard.set(newValue, forKey: .autoDarkModeKey) }
-    }
-    
-    static var hugeFonts: Bool {
-        get { UserDefaults.standard.bool(forKey: .hugeFontKey) }
-        set { UserDefaults.standard.setValue(newValue, forKey: .hugeFontKey) }
     }
 }
 
@@ -55,15 +49,12 @@ private extension SettingsContentDisplayController {
         
         let autoplay = SettingsSwitchView("Auto play videos")
         let animatedAvatars = SettingsSwitchView("Show animated avatars")
-        let hugeFont = SettingsSwitchView("Use huge font for short notes")
-        
+
         let stack = UIStackView(axis: .vertical, [
             autoplay, SpacerView(height: 10),
             descLabel("Start playing videos automatically as you scroll the feed. Turn this off to use less network data."), SpacerView(height: 32),
             animatedAvatars, SpacerView(height: 10),
-            descLabel("Switch off to disable animated avatars in feeds. Profile will continue to show the full version."), SpacerView(height: 32),
-            hugeFont, SpacerView(height: 10),
-            descLabel("Display short notes of up to 42 characters using an unreasonably large font."), SpacerView(height: 32)
+            descLabel("Switch off to disable animated avatars in feeds. Profile will continue to show the full version."), SpacerView(height: 32)
         ])
         
         let scroll = UIScrollView()
@@ -81,22 +72,15 @@ private extension SettingsContentDisplayController {
         
         autoplay.switchView.isOn = ContentDisplaySettings.autoPlayVideos
         animatedAvatars.switchView.isOn = ContentDisplaySettings.animatedAvatars
-        hugeFont.switchView.isOn = ContentDisplaySettings.hugeFonts
-        
+
         autoplay.switchView.addAction(.init(handler: { [weak autoplay] _ in
             guard let value = autoplay?.switchView.isOn else { return }
             ContentDisplaySettings.autoPlayVideos = value
         }), for: .valueChanged)
-        
+
         animatedAvatars.switchView.addAction(.init(handler: { [weak animatedAvatars] _ in
             guard let value = animatedAvatars?.switchView.isOn else { return }
             ContentDisplaySettings.animatedAvatars = value
-            ThemingManager.instance.themeDidChange()
-        }), for: .valueChanged)
-        
-        hugeFont.switchView.addAction(.init(handler: { [weak hugeFont] _ in
-            guard let value = hugeFont?.switchView.isOn else { return }
-            ContentDisplaySettings.hugeFonts = value
             ThemingManager.instance.themeDidChange()
         }), for: .valueChanged)
     }

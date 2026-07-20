@@ -209,6 +209,7 @@ class PostCell: UITableViewCell {
         mainLabel.attributedText = useShortText ? content.attributedTextShort : content.attributedText
         mainImages.resources = content.mediaResources
         mainImages.thumbnails = content.videoThumbnails
+        mainImages.updateTheme()
         
         let postInfo = content.postInfo
         

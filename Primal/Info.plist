@@ -4,6 +4,8 @@
 <dict>
 	<key>NSSupportsLiveActivities</key>
 	<true/>
+	<key>PHPhotoLibraryPreventAutomaticLimitedAccessAlert</key>
+	<true/>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -102,7 +104,5 @@
 	<array>
 		<string>audio</string>
 	</array>
-	<key>UIDesignRequiresCompatibility</key>
-	<true/>
 </dict>
 </plist>

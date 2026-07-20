@@ -16,8 +16,8 @@ class SettingsMutedFeedController: NoteFeedViewController {
     
     @MainActor required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
-    override func setBarsToTransform(_ transform: CGFloat) {
-        super.setBarsToTransform(0)
+    override func setBarsHidden(_ hidden: Bool, animated: Bool) {
+        super.setBarsHidden(false, animated: animated)
     }
 }
 
@@ -42,6 +42,13 @@ class SettingsMutedViewController: PrimalPageController {
         title = "Muted"
         
         updateTheme()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        navigationController?.setNavigationBarHidden(false, animated: animated)
+        mainTabBarController?.setTabBarHidden(false, animated: animated)
     }
     
     override func updateTheme() {

@@ -56,9 +56,16 @@ private extension WalletOnchainTierPickController {
             presentationController.detents = [.custom(resolver: { _ in
                 350
             })]
+            if #available(iOS 17.0, *) {
+                presentationController.traitOverrides.userInterfaceStyle = Theme.current.userInterfaceStyle
+            }
         }
-        
-        view.backgroundColor = .background4
+
+        if #available(iOS 26.0, *) {
+            // Liquid Glass — no opaque background
+        } else {
+            view.backgroundColor = .background4
+        }
         
         let miningFeeLabel = UILabel()
         miningFeeLabel.text = "Mining fee"

@@ -7,134 +7,103 @@
 
 import Combine
 import UIKit
-import Lottie
 import SafariServices
 import GenericJSON
 import AVFoundation
 import PrimalShared
 
-extension UIViewController {
-    var mainTabBarController: MainTabBarController? {
-        parent as? MainTabBarController ?? parent?.mainTabBarController
-    }
-    
-    func smartPresent(_ vc: UIViewController) {
-        if let presentedViewController {
-            presentedViewController.smartPresent(vc)
-            return
-        }
-        present(vc, animated: true)
-    }
-}
-
 enum MainTab: String {
     case home, reads, wallet, notifications, explore
-    
-    var tabImage: UIImage? {
-        UIImage(named: "tabIcon-\(rawValue)")
+
+    var tabTitle: String {
+        switch self {
+        case .home:             return "Feeds"
+        case .reads:            return "Reads"
+        case .wallet:           return "Wallet"
+        case .notifications:    return "Alerts"
+        case .explore:          return "Explore"
+        }
     }
-    
+
+    var tabImage: UIImage? {
+        if #available(iOS 26.0, *) { return UIImage(named: "tabIcon2-\(rawValue)") }
+
+        return UIImage(named: "tabIcon-\(rawValue)")
+    }
+
     var selectedTabImage: UIImage? {
-        UIImage(named: "selectedTabIcon-\(rawValue)")
+        if #available(iOS 26.0, *) { return UIImage(named: "tabIcon2-\(rawValue)") }
+
+        return UIImage(named: "selectedTabIcon-\(rawValue)")
     }
 }
 
 final class MainTabBarController: UIViewController, Themeable {
-    lazy var home = MainNavigationController(rootViewController: MenuContainerController(child: HomeFeedViewController()))
-    lazy var reads = MainNavigationController(rootViewController: MenuContainerController(child: ReadsViewController()))
-    lazy var wallet = MainNavigationController(rootViewController: MenuContainerController(child: WalletHomeViewController()))
-    lazy var notifications = MainNavigationController(rootViewController: MenuContainerController(child: NotificationsViewController()))
-    lazy var explore = MainNavigationController(rootViewController: MenuContainerController(child: ExploreViewController()))
+    lazy var home = MainNavigationController(rootViewController: HomeFeedViewController(), hideNavigationBar: true)
+    lazy var reads = MainNavigationController(rootViewController: ReadsViewController(), hideNavigationBar: true)
+    lazy var wallet = MainNavigationController(rootViewController: WalletHomeViewController(), hideNavigationBar: true)
+    lazy var notifications = MainNavigationController(rootViewController: NotificationsViewController(), hideNavigationBar: true)
+    lazy var explore = MainNavigationController(rootViewController: ExploreViewController(), hideNavigationBar: true)
 
     let vcParentView = UIView()
     let noConnectionView = NoConnectionView().constrainToSize(height: 44)
     let remoteSignerView = RemoteSignerPillView().constrainToSize(height: 44)
     lazy var indicatorStack = UIStackView(axis: .vertical, [noConnectionView, remoteSignerView])
-    
-    lazy var buttons = tabs.map { _ in UIButton() }
-    let notificationIndicator = NotificationsIndicator()
-    
-    private let buttonStackParent = UIView()
-    private(set) lazy var vStack = UIStackView(arrangedSubviews: [navigationBorder, buttonStackParent, safeAreaSpacer])
-    private let safeAreaSpacer = UIView()
-    private let circleBorderView = ThemeableView().constrainToSize(64).setTheme {
-        $0.backgroundColor = .background
-        $0.layer.borderColor = UIColor.background3.cgColor
-    }
-    private let navigationBorder = UIView().constrainToSize(height: 1)
-    private lazy var circleWalletButton = ThemeableButton().constrainToSize(52).setTheme { [weak self] in
-        let isWalletSelected = (self?.currentPageIndex ?? 0) == 2
-        
-        $0.backgroundColor = isWalletSelected ? .foreground : .background3
-        $0.tintColor = isWalletSelected ? .background : .foreground3
-        
-        $0.setImage(isWalletSelected ? UIImage(named: "walletSpecialButtonPressed") : UIImage(named: "walletSpecialButton"), for: .normal)
-    }
-    
+
     override var preferredStatusBarStyle: UIStatusBarStyle {
         guard let tab = tabs[safe: currentPageIndex] else { return super.preferredStatusBarStyle }
         return navForTab(tab).preferredStatusBarStyle
     }
 
-    private var animationView = LottieAnimationView(animation: AnimationType.walletLightning.animation)
-    
-    lazy var buttonStack = UIStackView(arrangedSubviews: buttons)
-
     var cancellables: Set<AnyCancellable> = []
-    
+
     var childSafeAreaInsets = UIEdgeInsets.zero { didSet { children.forEach { $0.additionalSafeAreaInsets = childSafeAreaInsets } } }
-    
+
     @Published var oldRemoteSignerPopup: RemoteSignerPendingEventsController?
-    
-    private let tabs: [MainTab] = [.home, .reads, .wallet, .notifications, .explore]
-    
+
+    let tabs: [MainTab] = [.home, .reads, .wallet, .notifications, .explore]
+
+    lazy var viewOrchestrator = MainTabBarViewOrchestrator(controller: self)
+
     var continousConnection: ContinuousConnection?
     var deeplinkCancellable: AnyCancellable?
     
     let chatManager = ChatManager()
-    var newMessageCount = 0 {
-        didSet {
-            for tab in tabs {
-                (navForTab(tab).viewControllers.first as? MenuContainerController)?.newMessageCount = newMessageCount
-            }
-        }
-    }
-    
+
     var newNotifications: Int = 0 {
         didSet {
             if newNotifications == oldValue { return }
-            
-            notificationIndicator.isHidden = newNotifications < 1
+            viewOrchestrator.refreshNotificationsBadge()
         }
     }
 
     var currentPageIndex = WalletSettings.startInWallet ? 2 : 0 {
         didSet {
-            updateButtons()
+            viewOrchestrator.updateButtons()
         }
     }
-    
+
     var currentTab: MainTab { tabs[safe: currentPageIndex] ?? .home }
-    
+
     var showTabBarBorder: Bool {
-        get { navigationBorder.alpha > 0.1 }
-        set {
-            navigationBorder.alpha = newValue ? 1 : 0
-            circleBorderView.alpha = newValue ? 1 : 0
-        }
+        get { viewOrchestrator.showTabBarBorder }
+        set { viewOrchestrator.showTabBarBorder = newValue }
     }
-    
+
+    var isExcited: Bool { viewOrchestrator.isExcited }
+
+    var tabBarContainerView: UIView { viewOrchestrator.tabBarContainerView }
+
+    func targetTransformForTabBarState(hidden: Bool, excited: Bool) -> CGAffineTransform {
+        viewOrchestrator.targetTransformForTabBarState(hidden: hidden, excited: excited)
+    }
+
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     init() {
         super.init(nibName: nil, bundle: nil)
         setup()
         
         chatManager.updateChatCount()
-        chatManager.$newMessagesCount.removeDuplicates().receive(on: DispatchQueue.main)
-            .sink { [weak self] newMessages in
-                self?.newMessageCount = newMessages
-            }
-            .store(in: &cancellables)
     }
     
     deinit {
@@ -144,13 +113,19 @@ final class MainTabBarController: UIViewController, Themeable {
     var runOnce = true
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
+
         guard runOnce else { return }
         runOnce = false
+
+        if #available(iOS 26.0, *) {
+            viewOrchestrator.refreshNativeTabBarItems()
+        }
+
         let userId = IdentityManager.instance.userHexPubkey
+        
         let migratePublisher = WalletManager.instance.$activeWallet
             .filter({ $0?.wallet is Wallet.Primal && $0?.userId == userId })
-            .map { _ in MigrateWalletPopupController() as UIViewController }
+            .map { _ in WalletDetectedPopupController(isDiscontinued: true) as UIViewController }
 
         let detectedPublisher = WalletManager.instance.$walletSetupState
             .filter({ $0 != .normal && IdentityManager.instance.userHexPubkey == userId })
@@ -165,48 +140,32 @@ final class MainTabBarController: UIViewController, Themeable {
             .store(in: &cancellables)
     }
 
-    func hideForMenu() {
-        UIView.animate(withDuration: 0.3) {
-            self.buttonStack.alpha = 0
-            self.circleWalletButton.alpha = 0
-            self.showTabBarBorder = false
-        }
-    }
-
-    func showButtons() {
-        UIView.animate(withDuration: 0.3) {
-            self.buttonStack.alpha = 1
-            self.circleWalletButton.alpha = 1
-            self.showTabBarBorder = true
-        }
-    }
 
     var updateChildren = false
     func updateTheme() {
         view.backgroundColor = .background
 
-        updateButtons()
+        viewOrchestrator.updateTheme()
 
         if updateChildren {
             [home, reads, wallet, notifications, explore].forEach {
                 $0.updateThemeIfThemeable()
             }
         }
-        
-        navigationBorder.backgroundColor = .background3
     }
-    
+
     func setTabBarHidden(_ hidden: Bool, animated: Bool) {
-        if !animated {
-            vStack.transform = hidden ? .init(translationX: 0, y: vStack.bounds.height + 10) : .identity
-            return
-        }
-        
-        UIView.animate(withDuration: 0.3) {
-            self.vStack.transform = hidden ? .init(translationX: 0, y: self.vStack.bounds.height + 10) : .identity
-        }
+        viewOrchestrator.setTabBarHidden(hidden, animated: animated)
     }
-    
+
+    func setIsExcited(_ excited: Bool) {
+        viewOrchestrator.setIsExcited(excited)
+    }
+
+    func freezeNotificationCount() {
+        viewOrchestrator.freezeNotificationCount()
+    }
+
     func navForTab(_ tab: MainTab) -> UINavigationController {
         switch tab {
         case .home:
@@ -223,13 +182,7 @@ final class MainTabBarController: UIViewController, Themeable {
     }
     
     func showToast(_ message: String, icon: UIImage? = UIImage(named: "toastCheckmark")) {
-        let isTabBarHidden = vStack.transform != .identity
-        
-        if isTabBarHidden {
-            view.showToast(message, icon: icon, extraPadding: 0)
-        } else {
-            vStack.showToast(message, icon: icon, extraPadding: 95)
-        }
+        viewOrchestrator.showToast(message, icon: icon)
     }
     
     func switchToTab(_ tab: MainTab, open vc: UIViewController? = nil) {
@@ -279,11 +232,6 @@ final class MainTabBarController: UIViewController, Themeable {
             nav.endAppearanceTransition()
         }
     }
-    
-    func playThunderAnimation() {
-        animationView.isHidden = false
-        animationView.play(fromProgress: 0, toProgress: 1)
-    }
 }
 
 private extension MainTabBarController {
@@ -295,9 +243,6 @@ private extension MainTabBarController {
             userDefaults.synchronize()
         }
         
-        updateTheme()
-        updateChildren = true
-        
         view.addSubview(vcParentView)
         vcParentView.pinToSuperview()
         
@@ -308,46 +253,25 @@ private extension MainTabBarController {
         nav.view.pinToSuperview()
         nav.didMove(toParent: self)
         
-        view.addSubview(vStack)
-        vStack.pinToSuperview(edges: [.bottom, .horizontal])
-        safeAreaSpacer.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
-        
+        viewOrchestrator.setup()
+
         indicatorStack.spacing = 8
         indicatorStack.isUserInteractionEnabled = false
         view.addSubview(indicatorStack)
         indicatorStack
             .pinToSuperview(edges: .horizontal, padding: 12)
-            .pinToSuperview(edges: .top, padding: 60, safeArea: true)
+            .pinToSuperview(edges: .top, padding: PrimalNavigationBar.height + 20, safeArea: true)
         
-        let background = ThemeableView().setTheme { $0.backgroundColor = .background }
-        buttonStackParent.addSubview(background)
-        background.pinToSuperview(edges: [.top, .horizontal]).pinToSuperview(edges: .bottom, padding: -100)
-        
-        buttonStackParent.addSubview(buttonStack)
-        buttonStack
-            .pinToSuperview(edges: [.horizontal, .top])
-            .pinToSuperview(edges: .bottom, padding: -8)
-            .constrainToSize(height: 56)
-        buttonStack.distribution = .fillEqually
-        
-        buttonStack.addSubview(notificationIndicator)
-        
-        if let imageView = buttons.dropLast().last?.imageView {
-            notificationIndicator.pin(to: imageView, edges: [.top, .trailing], padding: -4)
-        }
-        notificationIndicator.isHidden = true
-        
-        vStack.axis = .vertical
+        updateTheme()
+        updateChildren = true
         
         NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)
             .dropFirst()
             .sink { _ in
                 PrimalEndpointsManager.instance.checkIfNecessary()
+                Connection.reconnect()
                 DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
-                    Connection.reconnect()
-                    DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
-                        RelaysPostbox.instance.reconnect()
-                    }
+                    RelaysPostbox.instance.reconnect()
                 }
             }
             .store(in: &cancellables)
@@ -511,20 +435,6 @@ private extension MainTabBarController {
                 .store(in: &cancellables)
         }
         
-        updateButtons()
-        addCircleWalletButton()
-        
-        view.addSubview(animationView)
-        animationView.isHidden = true
-        animationView.isUserInteractionEnabled = false
-        animationView.constrainToSize(width: 375, height: 100).centerToView(circleWalletButton)
-        
-        zip(buttons, tabs).forEach { button, tab in
-            button.addAction(.init(handler: { [weak self] _ in
-                self?.menuButtonPressedForTab(tab)
-            }), for: .touchUpInside)
-        }
-        
         Connection.regular.continuousConnectionCancellable(name: "live_events_from_follows", request: ["user_pubkey": .string(IdentityManager.instance.userHexPubkey)]) { event in
             LiveEventManager.instance.addLiveEvent(event)
         }
@@ -532,51 +442,28 @@ private extension MainTabBarController {
 
         LiveEventManager.instance.startPeriodicRefresh()
     }
-    
-    func addCircleWalletButton() {
-        buttonStackParent.insertSubview(circleBorderView, at: 0)
-        circleBorderView.pinToSuperview(edges: .top, padding: -7).centerToSuperview(axis: .horizontal)
-        circleBorderView.layer.borderWidth = 1
-        circleBorderView.layer.cornerRadius = 32
-        
-        let frontCover = ThemeableView().constrainToSize(62).setTheme { $0.backgroundColor = .background }
-        frontCover.layer.cornerRadius = 31
-        buttonStackParent.addSubview(frontCover)
-        frontCover.pinToSuperview(edges: .top, padding: -6).centerToSuperview(axis: .horizontal)
-        
-        circleWalletButton.layer.cornerRadius = 26
-        buttonStackParent.addSubview(circleWalletButton)
-        circleWalletButton.pinToSuperview(edges: .top, padding: -1).centerToSuperview(axis: .horizontal)
-        
-        circleWalletButton.addAction(.init(handler: { [weak self] _ in
-            guard let self else { return }
-            self.menuButtonPressedForTab(.wallet)
-        }), for: .touchUpInside)
-    }
-    
-    func updateButtons() {
-        circleWalletButton.updateTheme()
-        for (index, button) in buttons.enumerated() {
-            button.tintColor = index == currentPageIndex ? .foreground : .foreground3
-            
-            button.setImage(index == currentPageIndex ? tabs[index].selectedTabImage : tabs[index].tabImage, for: .normal)
-        }
-    }
+}
 
+extension MainTabBarController {
     func menuButtonPressedForTab(_ tab: MainTab) {
         guard currentTab == tab else {
             switchToTab(tab)
             return
         }
-        
+
         let nav = navForTab(tab)
         if nav.viewControllers.count > 1 {
             nav.popToRootViewController(animated: true)
             return
         }
-        
+
         if tab == .home, let child: HomeFeedChildController = nav.viewControllers.first?.findInChildren() {
             child.feed.addAllFuturePosts()
+        }
+        
+        if tab == .explore {
+            SearchViewController.present(from: nav, advanced: false)
+            return
         }
 
         if let tableViews: [UITableView] = nav.topViewController?.view.findAllSubviews(), !tableViews.isEmpty {
@@ -601,88 +488,5 @@ private extension MainTabBarController {
                 $0.setContentOffset(.zero, animated: true)
             }
         }
-    }
-}
-
-final class NumberedNotificationIndicator: UIView, Themeable {
-    var number: Int {
-        didSet {
-            update()
-        }
-    }
-    
-    var color: () -> UIColor = { .accent } {
-        didSet {
-            updateTheme()
-        }
-    }
-    
-    private let label = UILabel()
-    
-    init(number: Int = 0) {
-        self.number = number
-        super.init(frame: .zero)
-        
-        addSubview(label)
-        label.centerToSuperview().pinToSuperview(edges: .leading, padding: 3.5)
-        label.font = .appFont(withSize: 12, weight: .medium)
-        label.textColor = .white
-        label.textAlignment = .center
-
-        constrainToSize(height: 16)
-        widthAnchor.constraint(greaterThanOrEqualToConstant: 16).isActive = true
-        layer.cornerRadius = 8
-        
-        updateTheme()
-        update()
-    }
-    
-    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
-    
-    private func update() {
-        if number <= 0 {
-            isHidden = true
-            return
-        }
-        
-        isHidden = false
-        
-        if number > 99 {
-            label.text = "99+"
-            return
-        }
-        
-        label.text = "\(number)"
-    }
-    
-    func updateTheme() {
-        backgroundColor = color()
-    }
-}
-
-final class NotificationsIndicator: UIView, Themeable {
-    private let innerCircleView = UIView()
-    
-    init() {
-        super.init(frame: .zero)
-     
-        constrainToSize(11)
-        
-        addSubview(innerCircleView)
-        innerCircleView.constrainToSize(8).centerToSuperview()
-        
-        layer.cornerRadius = 5.5
-        innerCircleView.layer.cornerRadius = 4
-        
-        updateTheme()
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    func updateTheme() {
-        backgroundColor = .background
-        innerCircleView.backgroundColor = .accent
     }
 }

@@ -74,11 +74,11 @@ private extension ExploreZapsViewController {
             self?.feedManager.refresh()
         }))
         
-        table.contentInset = .init(top: 157 + 16, left: 0, bottom: 80, right: 0)
-        table.scrollIndicatorInsets = .init(top: 60, left: 0, bottom: 50, right: 0)
-        
+        table.contentInset = .init(top: 12, left: 0, bottom: 150, right: 0)
+        table.scrollIndicatorInsets = .init(top: 12, left: 0, bottom: 50, right: 0)
+
         view.addSubview(loadingView)
-        loadingView.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .top, padding: 60, safeArea: true)
+        loadingView.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .top, padding: 12, safeArea: true)
     }
 }
 

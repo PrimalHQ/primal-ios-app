@@ -157,29 +157,31 @@ final class ImagePickerManager: NSObject {
     var cancellables: Set<AnyCancellable> = []
     
     enum Mode {
-        case gallery, camera, dialog
+        case gallery, camera, cameraVideo, dialog
     }
-    
+
     @discardableResult
     init(_ vc: UIViewController, mode: Mode = .dialog, allowVideo: Bool = false, selectionLimit: Int = 1, _ callback: @escaping (ImagePickerResult) -> Void) {
         viewController = vc
         pickImageCallback = callback
         self.selectionLimit = selectionLimit
         super.init()
-        
+
         // Configure UIImagePickerController for camera mode.
         imagePicker.delegate = self
-        
+
         switch mode {
         case .camera:
-            openCamera()
+            openCamera(videoMode: false)
+        case .cameraVideo:
+            openCamera(videoMode: true)
         case .gallery:
             openGallery(allowVideo: allowVideo)
         case .dialog:
             let alert = UIAlertController(title: "Choose Image", message: nil, preferredStyle: .actionSheet)
             alert.popoverPresentationController?.sourceView = vc.view
             alert.addAction(UIAlertAction(title: "Camera", style: .default) { _ in
-                self.openCamera()
+                self.openCamera(videoMode: false)
             })
             alert.addAction(UIAlertAction(title: "Gallery", style: .default) { _ in
                 self.openGallery(allowVideo: allowVideo)
@@ -188,10 +190,12 @@ final class ImagePickerManager: NSObject {
             viewController?.present(alert, animated: true, completion: nil)
         }
     }
-    
-    func openCamera() {
+
+    func openCamera(videoMode: Bool = false) {
         if UIImagePickerController.isSourceTypeAvailable(.camera) {
             imagePicker.sourceType = .camera
+//            imagePicker.mediaTypes = videoMode ? ["public.movie"] : ["public.image"]
+//            if videoMode { imagePicker.cameraCaptureMode = .video }
             strongSelf = self
             viewController?.present(imagePicker, animated: true, completion: nil)
         } else {
@@ -244,14 +248,16 @@ extension ImagePickerManager: UIImagePickerControllerDelegate, UINavigationContr
                                didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
         picker.dismiss(animated: true, completion: nil)
         strongSelf = nil
-        
-        // Handle camera capture; for simplicity we assume image capture.
+
+        if let videoURL = info[.mediaURL] as? URL {
+            guard let thumbnail = getThumbnailImage(forUrl: videoURL) else { return }
+            pickImageCallback(VideoMediaPickerResult(thumbnail: thumbnail, url: videoURL))
+            return
+        }
+
         if let image = info[.originalImage] as? UIImage {
-            // When captured from camera, treat as JPEG.
             pickImageCallback(ImageMediaPickerResult(image: image.updateImageOrientationUp(), type: .jpeg))
         }
-        
-        // (Additional video capture from camera could be added similarly.)
     }
 }
 
@@ -390,6 +396,99 @@ extension ImagePickerManager: PHPickerViewControllerDelegate {
                     print("Error reading image data: \(error)")
                 }
             }
+        }
+    }
+}
+
+enum PHAssetPickerLoader {
+    enum LoadError: Error {
+        case unsupportedAsset
+        case fetchFailed
+        case thumbnailFailed
+    }
+
+    static func load(asset: PHAsset) async throws -> ImagePickerResult {
+        switch asset.mediaType {
+        case .image:
+            return try await loadImage(asset)
+        case .video:
+            return try await loadVideo(asset)
+        default:
+            throw LoadError.unsupportedAsset
+        }
+    }
+
+    private static func loadImage(_ asset: PHAsset) async throws -> ImagePickerResult {
+        let options = PHImageRequestOptions()
+        options.isNetworkAccessAllowed = true
+        options.deliveryMode = .highQualityFormat
+        options.version = .current
+        options.isSynchronous = false
+
+        return try await withCheckedThrowingContinuation { continuation in
+            PHImageManager.default().requestImageDataAndOrientation(for: asset, options: options) { data, uti, _, _ in
+                guard let data, let image = UIImage(data: data) else {
+                    continuation.resume(throwing: LoadError.fetchFailed)
+                    return
+                }
+
+                let type: ImageType
+                if uti == UTType.gif.identifier {
+                    type = .gif(data)
+                } else if uti == UTType.png.identifier {
+                    type = .png
+                } else {
+                    type = .jpeg
+                }
+
+                let result = ImageMediaPickerResult(image: image.updateImageOrientationUp(), type: type)
+                continuation.resume(returning: result)
+            }
+        }
+    }
+
+    private static func loadVideo(_ asset: PHAsset) async throws -> ImagePickerResult {
+        let options = PHVideoRequestOptions()
+        options.isNetworkAccessAllowed = true
+        options.deliveryMode = .highQualityFormat
+        options.version = .current
+
+        let avAsset: AVAsset = try await withCheckedThrowingContinuation { continuation in
+            PHImageManager.default().requestAVAsset(forVideo: asset, options: options) { avAsset, _, _ in
+                if let avAsset {
+                    continuation.resume(returning: avAsset)
+                } else {
+                    continuation.resume(throwing: LoadError.fetchFailed)
+                }
+            }
+        }
+
+        guard let urlAsset = avAsset as? AVURLAsset else {
+            throw LoadError.unsupportedAsset
+        }
+
+        let sourceURL = urlAsset.url
+        let tempDirectory = FileManager.default.temporaryDirectory
+        let fileName = UUID().uuidString + "." + sourceURL.pathExtension
+        let tempURL = tempDirectory.appendingPathComponent(fileName)
+        try FileManager.default.copyItem(at: sourceURL, to: tempURL)
+
+        guard let thumbnail = generateThumbnail(forUrl: tempURL) else {
+            throw LoadError.thumbnailFailed
+        }
+
+        return VideoMediaPickerResult(thumbnail: thumbnail, url: tempURL)
+    }
+
+    private static func generateThumbnail(forUrl url: URL) -> UIImage? {
+        let asset = AVAsset(url: url)
+        let imageGenerator = AVAssetImageGenerator(asset: asset)
+        imageGenerator.appliesPreferredTrackTransform = true
+        do {
+            let cgImage = try imageGenerator.copyCGImage(at: CMTimeMake(value: 1, timescale: 60), actualTime: nil)
+            return UIImage(cgImage: cgImage)
+        } catch {
+            return nil
         }
     }
 }

@@ -10,45 +10,42 @@ import UIKit
 import SafariServices
 import GenericJSON
 
-final class ReadsViewController: UIViewController, Themeable {
+final class ReadsViewController: UIViewController, Themeable, TitleSwipeController {
+    let primalNavigationBar = PrimalNavigationBar()
+
     var cancellables: Set<AnyCancellable> = []
-    
-    lazy var navTitleView = DropdownNavigationView(title: "Nostr Reads")
+
     let border = UIView().constrainToSize(height: 1)
     let pageVC = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal)
-    
-    var oldTransition: (left: Bool, String)?
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         setup()
-        
+
         let first = PrimalFeed.getActiveFeeds(.article).first ?? PrimalFeed.getAllFeeds(.article).first ?? .defaultReadsFeed
         setFeed(first)
-        
+
         pageVC.dataSource = self
         pageVC.delegate = self
-        
-        view.addGestureRecognizer(DropdownNavigationViewGesture(vc: self))
+
+        view.addGestureRecognizer(TitleSwipeGesture(vc: self))
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
-        navigationController?.setNavigationBarHidden(false, animated: animated)
+
+        navigationController?.setNavigationBarHidden(true, animated: animated)
         mainTabBarController?.setTabBarHidden(false, animated: animated)
     }
     
     func updateTheme() {
         view.backgroundColor = .background
-        
-        navigationItem.rightBarButtonItem = customSearchButton(type: .reads)
-        
-        navTitleView.updateTheme()
-        
+
+        primalNavigationBar.updateTheme()
+
         border.backgroundColor = .background3
-        
+
         pageVC.children.forEach {
             ($0 as? Themeable)?.updateTheme()
             let views: [Themeable] = $0.view.findAllSubviews()
@@ -66,35 +63,39 @@ final class ReadsViewController: UIViewController, Themeable {
     private var cachedFeedToRight: PrimalFeed?
     func setFeed(_ feed: PrimalFeed) {
         currentFeed = feed
-        navTitleView.title = feed.name
+        primalNavigationBar.completeTransition(newTitle: feed.name, newSubtitle: feed.description)
         pageVC.setViewControllers([ArticleFeedViewController(feed: feed)], direction: .forward, animated: false)
     }
     
-    func feedToLeftOfCurrentFeed() -> PrimalFeed? {
-        if let cachedFeedToLeft { return cachedFeedToLeft }
-        guard let currentFeed else { return nil }
-        cachedFeedToLeft = feedToLeftOfFeed(currentFeed)
-        return cachedFeedToLeft
+    func titleSubtitleToLeftOfCurrent() -> (title: String, subtitle: String)? {
+        if cachedFeedToLeft == nil {
+            guard let currentFeed else { return nil }
+            cachedFeedToLeft = feedToLeftOfFeed(currentFeed)
+        }
+        guard let feed = cachedFeedToLeft else { return nil }
+        return (feed.name, feed.description)
     }
     func feedToLeftOfFeed(_ feed: PrimalFeed) -> PrimalFeed? {
         let allFeeds = PrimalFeed.getActiveFeeds(.article)
-        
+
         guard let index = allFeeds.firstIndex(where: { $0.spec == feed.spec }) else { return nil }
-        
+
         return allFeeds[safe: (allFeeds.count + index - 1) % allFeeds.count]
     }
-    
-    func feedToRightOfCurrentFeed() -> PrimalFeed? {
-        if let cachedFeedToRight { return cachedFeedToRight }
-        guard let currentFeed else { return nil }
-        cachedFeedToRight = feedToRightOfFeed(currentFeed)
-        return cachedFeedToRight
+
+    func titleSubtitleToRightOfCurrent() -> (title: String, subtitle: String)? {
+        if cachedFeedToRight == nil {
+            guard let currentFeed else { return nil }
+            cachedFeedToRight = feedToRightOfFeed(currentFeed)
+        }
+        guard let feed = cachedFeedToRight else { return nil }
+        return (feed.name, feed.description)
     }
     func feedToRightOfFeed(_ feed: PrimalFeed) -> PrimalFeed? {
         let allFeeds = PrimalFeed.getActiveFeeds(.article)
-        
+
         guard let index = allFeeds.firstIndex(where: { $0.spec == feed.spec }) else { return nil }
-        
+
         return allFeeds[safe: (index + 1) % allFeeds.count]
     }
 }
@@ -122,56 +123,49 @@ extension ReadsViewController: UIPageViewControllerDataSource {
 extension ReadsViewController: UIPageViewControllerDelegate {
     func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {
         guard completed else {
-            navTitleView.cancelTransition()
-            oldTransition = nil
+            primalNavigationBar.cancelTransition()
             return
         }
-        
+
         let allFeeds = PrimalFeed.getActiveFeeds(.article)
-        
+
         guard
             let articleFeed = pageViewController.viewControllers?.first as? ArticleFeedViewController,
             let feed = allFeeds.first(where: { $0.spec == articleFeed.manager.feed.spec })
         else { return }
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
-            self.navTitleView.completeTransition(newTitle: feed.name)
-        }
+
         currentFeed = feed
+        primalNavigationBar.completeTransition(newTitle: feed.name, newSubtitle: feed.description)
     }
 }
 
 private extension ReadsViewController {
     func setup() {
         updateTheme()
-        navigationItem.titleView = navTitleView
-        
+
         pageVC.willMove(toParent: self)
-        
+
         view.addSubview(pageVC.view)
         pageVC.view.pinToSuperview()
-        
+
         addChild(pageVC)
         pageVC.didMove(toParent: self)
-        
-        navTitleView.button.addAction(.init(handler: { [weak self] _ in
-            guard let currentFeed = self?.currentFeed else { return }
-            self?.present(FeedPickerController(currentFeed: currentFeed, type: .article) { feed in
-                self?.setFeed(feed)
-            }, animated: true)
-        }), for: .touchUpInside)
-        
+
         view.addSubview(border)
         border.pinToSuperview(edges: .horizontal).pinToSuperview(edges: .top, safeArea: true)
+
+        addNavigationBar()
+        primalNavigationBar.showChevron = true
+        primalNavigationBar.onTitleTapped = { [weak self] in
+            guard let self, let currentFeed else { return }
+            FeedsSelectionController(currentFeed: currentFeed, type: .article) { [weak self] feed in
+                self?.setFeed(feed)
+            }.present(from: self)
+        }
+        primalNavigationBar.onAvatarTapped = { [weak self] in
+            guard let self else { return }
+            MenuController().present(from: self)
+        }
     }
 }
 
-extension ReadsViewController: DropdownNavigationViewGestureController {
-    func feedNameLeftOfCurrentFeed() -> String? {
-        feedToLeftOfCurrentFeed()?.name
-    }
-    
-    func feedNameRightOfCurrentFeed() -> String? {
-        feedToRightOfCurrentFeed()?.name
-    }
-}

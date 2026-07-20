@@ -68,8 +68,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             .autoPlayVideosKey: true,
             .animatedAvatarsKey: true,
             .fullScreenFeedKey: false,
-            .autoDarkModeKey: true,
-            .hugeFontKey: true
+            .autoDarkModeKey: true
         ])
         
         // Delete in 2027
@@ -85,11 +84,16 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         PrimalEndpointsManager.instance.checkIfNecessary()
         
         _ = SmartContactsManager.instance
+        _ = PremiumCustomizationManager.instance
         ArticleWebViewCache.setup()
         
-        WalletRepositoryFactory.shared.doInit(enableDbEncryption: true, enableLogs: true, breezApiKey: SecretsManager.instance.breezApiKey)
-        AccountRepositoryFactory.shared.doInit(enableDbEncryption: true, enableLogs: true)
-        
+        WalletRepositoryFactory.shared.doInit(enableDbEncryption: true, enableConsoleLogs: false, breezApiKey: SecretsManager.instance.breezApiKey)
+        AccountRepositoryFactory.shared.doInit(enableDbEncryption: true, enableConsoleLogs: false)
+
+        if WalletLogRecorder.instance.isRecording {
+            WalletLogRecorder.instance.startRecording()
+        }
+
         _ = RemoteSignerManager.instance
         
         UNUserNotificationCenter.current().delegate = self

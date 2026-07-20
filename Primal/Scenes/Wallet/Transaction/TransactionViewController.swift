@@ -119,9 +119,7 @@ final class TransactionViewController: NoteViewController {
         }
     }
     
-    override func setBarsToTransform(_ transform: CGFloat) {
-        return
-    }
+    override func setBarsHidden(_ hidden: Bool, animated: Bool) { }
     
     override func updateTheme() {
         super.updateTheme()

@@ -23,7 +23,7 @@ extension ImageMenuHandler {
                 UIAction(title: "Copy Video URL", image: UIImage(named: "MenuCopyLink")) { [weak self] _ in
                     guard let self else { return }
                     UIPasteboard.general.string = url
-                    viewController.view?.showToast("Copied!", extraPadding: 0)
+                    viewController.view?.showToast("Copied!")
                 }
             ]
         }
@@ -32,7 +32,7 @@ extension ImageMenuHandler {
             UIAction(title: "Save Image", image: UIImage(named: "MenuImageSave"), handler: { [weak self] _ in
                 guard let self, let image = image else { return }
                 UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
-                viewController.view?.showToast("Saved!", extraPadding: 0)
+                viewController.view?.showToast("Saved!")
             }),
             UIAction(title: "Share Image", image: UIImage(named: "MenuImageShare"), handler: { [weak self] _ in
                 guard let self, let image = image else { return }
@@ -42,12 +42,12 @@ extension ImageMenuHandler {
             UIAction(title: "Copy Image", image: UIImage(named: "MenuImageCopy"), handler: { [weak self] _ in
                 guard let self, let image = image else { return }
                 UIPasteboard.general.image = image
-                viewController.view?.showToast("Copied!", extraPadding: 0)
+                viewController.view?.showToast("Copied!")
             }),
             UIAction(title: "Copy Image URL", image: UIImage(named: "MenuCopyLink")) { [weak self] _ in
                 guard let self else { return }
                 UIPasteboard.general.string = url
-                viewController.view?.showToast("Copied!", extraPadding: 0)
+                viewController.view?.showToast("Copied!")
             }
         ]
     }
@@ -220,27 +220,28 @@ private extension ImageFullScreenViewController {
         imageView.kf.indicatorType = .activity
         
         let cache = ImageCache.default
+        let highResURL = media.url(for: .large)
+        let highResKey = highResURL?.absoluteString ?? media.url
         guard
-            !cache.isCached(forKey: media.url), // If we don't already have the original try to load small version first
+            !cache.isCached(forKey: highResKey), // If we don't already have the high-res try to load small version first
             let small = media.url(for: .small)?.absoluteString,
             cache.isCached(forKey: small)
         else {
-            imageView.kf.setImage(with: URL(string: media.url)) { [weak self] res in
+            imageView.kf.setImage(with: highResURL) { [weak self] res in
                 guard case .success(let result) = res else { return }
                 self?.setLoadedImage(result.image)
             }
             return
         }
-        
+
         cache.retrieveImage(forKey: small) { [weak self] result in
             guard let self else { return }
-            
+
             if case .success(let value) = result, imageView.image == nil, let smallImage = value.image {
                 setLoadedImage(smallImage)
-                return
             }
-            
-            imageView.kf.setImage(with: URL(string: media.url), placeholder: imageView.image) { [weak self] res in
+
+            imageView.kf.setImage(with: highResURL, placeholder: imageView.image) { [weak self] res in
                 guard case .success(let result) = res else { return }
                 self?.setLoadedImage(result.image)
             }

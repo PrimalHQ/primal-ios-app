@@ -8,15 +8,14 @@
 import UIKit
 
 extension UIView {
-    func showToast(_ text: String, icon: UIImage? = UIImage(named: "toastCheckmark"), durationSeconds: Int = 3, extraPadding: CGFloat = 90) {
-        let view = ToastMessageView(text: text, image: icon)
+    func showToast(_ text: String, icon: UIImage? = .toastCheckmark, durationSeconds: Int = 1) {
+        let view = ToastMessageView(text: text, image: icon, theme: Theme.iceWave.theme)
+
         addSubview(view)
-        
-        view.centerToSuperview(axis: .horizontal).pinToSuperview(edges: .bottom, padding: 18 + extraPadding)
-        
+        view.centerToSuperview(axis: .horizontal).pinToSuperview(edges: .top, padding: 30, safeArea: true)
         view.alpha = 0
-        view.transform = .init(translationX: 0, y: 50)
-        
+        view.transform = .init(translationX: 0, y: -50)
+
         UIView.animate(withDuration: 0.3) {
             view.alpha = 1
             view.transform = .identity
@@ -24,7 +23,7 @@ extension UIView {
             DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(durationSeconds)) {
                 UIView.animate(withDuration: 0.3) {
                     view.alpha = 0
-                    view.transform = .init(translationX: 0, y: 50)
+                    view.transform = .init(translationX: 0, y: -50)
                 } completion: { _ in
                     view.removeFromSuperview()
                 }
@@ -64,29 +63,6 @@ extension UIView {
                     } completion: { _ in
                         background.removeFromSuperview()
                     }
-                }
-            }
-        }
-    }
-    
-    func showToastTop(_ text: String, image: UIImage? = .toastCheckmark, durationSeconds: Int = 1) {
-        let view = ToastMessageView(text: text, image: image, theme: Theme.iceWave.theme)
-        
-        addSubview(view)
-        view.centerToSuperview(axis: .horizontal).pinToSuperview(edges: .top, padding: 30, safeArea: true)
-        view.alpha = 0
-        view.transform = .init(translationX: 0, y: -50)
-        
-        UIView.animate(withDuration: 0.3) {
-            view.alpha = 1
-            view.transform = .identity
-        } completion: { _ in
-            DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(durationSeconds)) {
-                UIView.animate(withDuration: 0.3) {
-                    view.alpha = 0
-                    view.transform = .init(translationX: 0, y: -50)
-                } completion: { _ in
-                    view.removeFromSuperview()
                 }
             }
         }

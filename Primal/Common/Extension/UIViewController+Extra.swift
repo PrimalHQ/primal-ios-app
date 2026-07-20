@@ -7,13 +7,31 @@
 
 import UIKit
 
+extension UIBarButtonItem {
+    @discardableResult
+    func hidingGlassBackground() -> UIBarButtonItem {
+        if #available(iOS 26.0, *) {
+            hidesSharedBackground = true
+        }
+        return self
+    }
+}
+
 extension UIViewController {
-    var topSafeAreaSpacer: UIView {
-        let spacer = UIView()
-        view.insertSubview(spacer, at: 0)
-        spacer.pinToSuperview(edges: [.horizontal, .top])
-        spacer.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
-        return spacer
+    var mainTabBarController: MainTabBarController? {
+        parent as? MainTabBarController ?? parent?.mainTabBarController
+    }
+    
+    var primalNavBarController: PrimalNavigationBarController? { self as? PrimalNavigationBarController ?? findParent() }
+
+    var searchBarButtonController: SearchBarButtonController? { self as? SearchBarButtonController ?? findParent() }
+    
+    func smartPresent(_ vc: UIViewController) {
+        if let presentedViewController {
+            presentedViewController.smartPresent(vc)
+            return
+        }
+        present(vc, animated: true)
     }
 }
 
@@ -50,7 +68,7 @@ extension UIViewController {
             }
             nav.popViewController(animated: true)
         }), for: .touchUpInside)
-        return UIBarButtonItem(customView: button)
+        return UIBarButtonItem(customView: button).hidingGlassBackground()
     }
     
     func customSearchButton(scope: SearchScope = .global, type: SearchType = .notes) -> UIBarButtonItem {
@@ -63,15 +81,16 @@ extension UIViewController {
         view.addSubview(button)
         button.pinToSuperview()
         button.addAction(.init(handler: { [weak self] _ in
-            self?.navigationController?.fadeTo(SearchViewController(scope: scope, type: type))
+            guard let self else { return }
+            SearchViewController.present(from: self, scope: scope, type: type, advanced: false)
         }), for: .touchUpInside)
-        return .init(customView: view)
+        return UIBarButtonItem(customView: view).hidingGlassBackground()
     }
-    
+
     func backButtonWithColor(_ color: UIColor) -> UIBarButtonItem {
         let button = backButtonWithColorNoAction(color)
         button.addTarget(self, action: #selector(backButtonPressed), for: .touchUpInside)
-        return UIBarButtonItem(customView: button)
+        return UIBarButtonItem(customView: button).hidingGlassBackground()
     }
     
     func backButtonWithColorNoAction(_ color: UIColor) -> UIButton {
@@ -88,7 +107,7 @@ extension UIViewController {
         button.setImage(image, for: .normal)
         button.addTarget(self, action: #selector(backButtonPressed), for: .touchUpInside)
         button.constrainToSize(44)
-        return UIBarButtonItem(customView: button)
+        return UIBarButtonItem(customView: button).hidingGlassBackground()
     }
     
     var finalChild: UIViewController {

@@ -69,6 +69,7 @@ enum TransactionCellType: Hashable {
 
 enum TransactionFeedItem: Hashable {
     case infoCell(TransactionCellType, PrimalShared.Transaction, isLast: Bool)
+    case noteHeader(content: ParsedContent, element: NoteFeedElement)
     case noteElement(content: ParsedContent, element: NoteFeedElement)
 }
 
@@ -98,25 +99,12 @@ class TransactionViewDatasource: UITableViewDiffableDataSource<TwoSectionFeed, T
                 (cell as? TransactionInfoCell)?.setIsLastInSection(isLast)
                 (cell as? TransactionAmountCell)?.setIsPending(transaction.state != .succeeded)
                 return cell
+            case .noteHeader(let content, let element):
+                cell = tableView.dequeueReusableCell(withIdentifier: element.headerCellID, for: indexPath)
+                HomeFeedDatasource.configureNoteCell(cell, content: content, element: element, delegate: delegate)
             case .noteElement(let content, let element):
                 cell = tableView.dequeueReusableCell(withIdentifier: element.cellID, for: indexPath)
-                switch element {
-                case .webPreview(_, let metadata):
-                    (cell as? WebPreviewCell)?.updateWebPreview(metadata)
-                case .postPreview(let embedded):
-                    if let cell = cell as? RegularFeedElementCell {
-                        cell.update(embedded)
-                        cell.delegate = delegate
-                    }
-                    return cell
-                default:
-                    break
-                }
-                
-                if let cell = cell as? RegularFeedElementCell {
-                    cell.update(content)
-                    cell.delegate = delegate
-                }
+                HomeFeedDatasource.configureNoteCell(cell, content: content, element: element, delegate: delegate)
             }
             
             return cell
@@ -124,6 +112,7 @@ class TransactionViewDatasource: UITableViewDiffableDataSource<TwoSectionFeed, T
         
         defaultRowAnimation = .fade
         registerCells(tableView)
+        registerHeaderCells(tableView)
         registerTransactionCells(tableView)
         setInfoCells()
             
@@ -162,13 +151,23 @@ class TransactionViewDatasource: UITableViewDiffableDataSource<TwoSectionFeed, T
     }
 
     func elementForIndexPath(_ indexPath: IndexPath) -> NoteFeedElement? {
-        guard indexPath.section == 1, let data = noteSectionCells[safe: indexPath.row], case .noteElement(_, let element) = data else { return nil }
-        return element
+        guard indexPath.section == 1, let data = noteSectionCells[safe: indexPath.row] else { return nil }
+        switch data {
+        case .noteElement(_, let element), .noteHeader(_, let element):
+            return element
+        default:
+            return nil
+        }
     }
-    
+
     func postForIndexPath(_ indexPath: IndexPath) -> ParsedContent? {
-        guard indexPath.section == 1, let data = noteSectionCells[safe: indexPath.row], case .noteElement(let content, _) = data else { return nil }
-        return content
+        guard indexPath.section == 1, let data = noteSectionCells[safe: indexPath.row] else { return nil }
+        switch data {
+        case .noteElement(let content, _), .noteHeader(let content, _):
+            return content
+        default:
+            return nil
+        }
     }
     
     private func registerTransactionCells(_ tableView: UITableView) {

@@ -33,7 +33,7 @@ final class ProfileViewController: PostFeedViewController, ArticleCellController
             if profileDataSource?.profile.data != profile.data {
                 profileDataSource?.profile = profile
             }
-            navigationBar.updateInfo(profile, isMuted: MuteManager.instance.isMutedUser(profile.data.pubkey))
+            navigationBar.updateInfo(profile)
         }
     }
     
@@ -186,6 +186,7 @@ final class ProfileViewController: PostFeedViewController, ArticleCellController
         }
     }
     
+    override var startIgnoreAreaSize: CGFloat { navigationBar.maxSize - navigationBar.minSize }
     override func scrollViewDidScroll(_ scrollView: UIScrollView) {
         super.scrollViewDidScroll(scrollView)
         
@@ -193,17 +194,19 @@ final class ProfileViewController: PostFeedViewController, ArticleCellController
         navigationBar.updateSize(offest - navigationBar.maxSize)
     }
     
-    override func setBarsToTransform(_ transform: CGFloat) {
-        super.setBarsToTransform(transform)
-        
-        navigationBar.transform = .init(translationX: 0, y: transform)
-        
-        let percent = abs(transform / barsMaxTransform)
-        let scale = 0.1 + ((1 - percent) * 0.9)  // when percent is 0 scale is 1, when percent is 1 scale is 0.1
+    override func setBarsHidden(_ hidden: Bool, animated: Bool) {
+        mainTabBarController?.setTabBarHidden(hidden, animated: animated)
+        postButton.setHidden(hidden, animated: animated)
 
-        postButton.alpha = 1 - percent
-        postButton.transform = .init(scaleX: scale, y: scale).rotated(by: percent * .pi / 2)
-        postButtonParent.transform = .init(translationX: 0, y: -transform)
+        let apply = { [self] in
+            navigationBar.transform = hidden ? .init(translationX: 0, y: -barsMaxTransform) : .identity
+        }
+
+        if animated {
+            UIView.animate(withDuration: 0.3, animations: apply)
+        } else {
+            apply()
+        }
     }
 }
 
@@ -244,6 +247,8 @@ private extension ProfileViewController {
         title = ""
         navigationItem.hidesBackButton = true
         
+        navigationBorder.removeFromSuperview()
+        
         refreshControl = ProfileRefreshControl()
         table.refreshControl = refreshControl
         
@@ -274,7 +279,7 @@ private extension ProfileViewController {
         
         view.addSubview(navigationBar)
         navigationBar.pinToSuperview(edges: [.horizontal, .top])
-        navigationBar.updateInfo(profile, isMuted: MuteManager.instance.isMutedUser(profile.data.pubkey))
+        navigationBar.updateInfo(profile)
         navigationBar.delegate = self
         
         navigationBar.backButton.addTarget(self, action: #selector(backButtonPressed), for: .touchUpInside)
@@ -287,7 +292,7 @@ private extension ProfileViewController {
         view.addSubview(postButtonParent)
         postButtonParent.addSubview(postButton)
         postButton.constrainToSize(56).pinToSuperview(padding: 8)
-        postButtonParent.pinToSuperview(edges: .trailing).pinToSuperview(edges: .bottom, padding: 56, safeArea: true)
+        postButtonParent.pinToSuperview(edges: .trailing, padding: 13).pinToSuperview(edges: .bottom, padding: 48, safeArea: true)
         
         let profileOverlay1 = UIView()
         let profileOverlay2 = UIView()
@@ -327,7 +332,7 @@ extension ProfileViewController: ProfileNavigationViewDelegate {
     }
     
     func tappedSearch() {
-        present(AdvancedSearchController(manager: advancedSearchManager), animated: true)
+        SearchViewController.present(from: self, manager: advancedSearchManager)
     }
     
     func tappedMuteUser() {

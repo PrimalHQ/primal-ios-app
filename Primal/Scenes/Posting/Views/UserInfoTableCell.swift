@@ -48,7 +48,8 @@ final class UserInfoTableCell: UITableViewCell, Themeable {
     }
     
     func updateTheme() {
-        contentView.backgroundColor = .background
+        contentView.backgroundColor = .clear
+        backgroundColor = .clear
         nameLabel.textColor = .foreground
         followersLabel.textColor = .foreground
         secondaryLabel.textColor = .foreground5
@@ -58,6 +59,8 @@ final class UserInfoTableCell: UITableViewCell, Themeable {
 
 private extension UserInfoTableCell {
     func setup() {
+        selectionStyle = .none
+        
         let nameStack = UIStackView(arrangedSubviews: [nameLabel, secondaryLabel])
         nameStack.alignment = .leading
         nameStack.axis = .vertical

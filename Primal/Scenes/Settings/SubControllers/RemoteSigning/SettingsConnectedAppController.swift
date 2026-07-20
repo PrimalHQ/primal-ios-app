@@ -123,7 +123,12 @@ class SettingsConnectedAppController: UIViewController {
             self?.dataSource.apply(snapshot, animatingDifferences: false)
         }
         .store(in: &cancellables)
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         
+        navigationController?.setNavigationBarHidden(false, animated: animated)
     }
     
     required init?(coder: NSCoder) {

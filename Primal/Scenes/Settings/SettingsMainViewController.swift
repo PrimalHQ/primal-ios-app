@@ -61,6 +61,13 @@ class SettingsMainViewController: UIViewController, Themeable {
         updateTheme()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        navigationController?.setNavigationBarHidden(false, animated: animated)
+        mainTabBarController?.setTabBarHidden(true, animated: animated)
+    }
+    
     func updateTheme() {
         view.backgroundColor = .background
         

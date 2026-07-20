@@ -37,19 +37,6 @@ class PrimalPageController: UIViewController, Themeable {
         setup()
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
-        navigationController?.setNavigationBarHidden(false, animated: animated)
-        mainTabBarController?.setTabBarHidden(false, animated: animated)
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        
-        navigationController?.setNavigationBarHidden(false, animated: animated)
-    }
-    
     private var updateSubcontrollerThemes = false
     func updateTheme() {
         border.backgroundColor = .background3

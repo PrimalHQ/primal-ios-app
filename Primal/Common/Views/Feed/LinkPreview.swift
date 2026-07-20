@@ -78,7 +78,7 @@ private extension LinkPreview {
         imageView.contentMode = .scaleAspectFill
         imageView.image = UIImage(named: "webPreviewIcon")
                 
-        layer.cornerRadius = 8
+        layer.cornerRadius = 12
         layer.masksToBounds = true
         layer.borderWidth = 1
         
@@ -114,7 +114,7 @@ extension LinkPreview: UIContextMenuInteractionDelegate {
                 if let mainTabVC: MainTabBarController = RootViewController.instance.findInChildren() {
                     mainTabVC.showToast("Copied!")
                 } else {
-                    RootViewController.instance.view.showToast("Copied!", extraPadding: 0)
+                    RootViewController.instance.view.showToast("Copied!")
                 }
             }
             // Create and return a UIMenu with the share action

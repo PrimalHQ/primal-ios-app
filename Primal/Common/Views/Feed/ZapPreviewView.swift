@@ -58,7 +58,7 @@ final class ZapPreviewView: UIView, Themeable {
             desc.text = parsedZap.zappedObject.description.trimmingCharacters(in: .whitespacesAndNewlines)
             desc.isHidden = desc.text?.isEmpty != false
             
-            background.layer.cornerRadius = 8
+            background.layer.cornerRadius = 12
             backupSpacer.isHidden = false
             extraSpacers.forEach { $0.isHidden = true }
         } else {

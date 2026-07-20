@@ -39,7 +39,7 @@ final class WalletSendAmountController: UIViewController, Themeable, KeyboardInp
         }
         
         var name: String {
-            user?.data.name ?? (address.count <= 30 ? address : (address.isBitcoinAddress ? "Bitcoin Address" : "Lightning Invoice"))
+            user?.data.firstIdentifier ?? (address.count <= 30 ? address : (address.isBitcoinAddress ? "Bitcoin Address" : "Lightning Invoice"))
         }
         
         var startingAmount: Int {
@@ -226,7 +226,7 @@ extension KeyboardInputConnector {
     func numberKeyboardNumberPressed(_ number: Int) {
         if input.isBitcoinPrimary {
             if input.balance ?? 0 > maxInputAmountSats / 10 {
-                RootViewController.instance.view.showToast("Over maximum amount", extraPadding: 0)
+                RootViewController.instance.view.showToast("Over maximum amount")
                 return
             }
             
@@ -249,7 +249,7 @@ extension KeyboardInputConnector {
         }
         
         guard let doubleAmount = Double(text), doubleAmount <= maxInputAmountUSD else {
-            RootViewController.instance.view.showToast("Over maximum amount", extraPadding: 0)
+            RootViewController.instance.view.showToast("Over maximum amount")
             return
         }
         
