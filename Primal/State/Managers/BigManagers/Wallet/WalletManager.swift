@@ -154,7 +154,7 @@ extension PrimalUser {
 class MediaCacher: CachingMediaCacher {
     static let instance = MediaCacher()
     
-    func preCacheFeedMedia(urls: [String]) { }
+    func preCacheFeedMedia(urls: [String], scope: Kotlinx_coroutines_coreCoroutineScope?) { }
         
     func preCacheUserAvatars(urls: [String]) { }
 }
