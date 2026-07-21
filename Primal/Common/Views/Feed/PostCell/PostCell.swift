@@ -230,6 +230,7 @@ class PostCell: UITableViewCell {
         
         let actionsData: [(String, String, PostCellEvent, UIMenuElement.Attributes)] = [
             ("Share Note", "MenuShare", .share, []),
+            ("Translate Note", "MenuCopyText", .translate, []),
             ("Copy Note Link", "MenuCopyLink", .copy(.link), []),
             postInfo.isBookmarked ? unbookmarkAction : bookmarkAction,
             ("Copy Note Text", "MenuCopyText", .copy(.content), []),

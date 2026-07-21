@@ -105,6 +105,8 @@ extension ArticleListController: ArticleCellDelegate {
     
     func performEvent(_ event: PostCellEvent, withPost post: ParsedContent) {
         switch event {
+        case .translate:
+            break
         case .share:
             let activityViewController = UIActivityViewController(activityItems: [post.webURL()], applicationActivities: nil)
             present(activityViewController, animated: true, completion: nil)
