@@ -36,4 +36,13 @@ final class NoteTranslationServiceTests: XCTestCase {
         XCTAssertFalse(NoteTranslationService.shared.shouldOfferTranslation(for: "hi"))
         XCTAssertTrue(NoteTranslationService.shared.shouldOfferTranslation(for: "This note is long enough to translate."))
     }
+
+    func testBc1AndInvoiceProtected() {
+        let input = "pay lnbc1testinvoice to bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh please"
+        let protected = NoteTranslationService.protect(input)
+        XCTAssertFalse(protected.text.contains("lnbc1testinvoice"))
+        XCTAssertFalse(protected.text.contains("bc1qxy"))
+        let restored = NoteTranslationService.restore(protected.text, tokens: protected.tokens)
+        XCTAssertEqual(restored, input)
+    }
 }
