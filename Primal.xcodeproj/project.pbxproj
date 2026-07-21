@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		6D67EEADBE9DA2E06E175378 /* NoteTranslationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AB2F1A4AC1736F487C0652E /* NoteTranslationView.swift */; };
+		A7C41E90F12B44D0A9E1C2D3 /* SettingsTranslationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8D52F01A23C55E1B0F2D3E4 /* SettingsTranslationViewController.swift */; };
 		0C27121E8B68E378B23A920A /* NoteTranslationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3FBFD2E0E7F4424E40DAD2A /* NoteTranslationService.swift */; };
 		3B1B14A1364E2DBEAD2D3F36 /* NoteTranslationServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95EB2DE0EA5EFB22B61F2CE2 /* NoteTranslationServiceTests.swift */; };
 		024790235F8243AC95A947C7 /* PollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 254BECF85EE9411B88FDCEFA /* PollView.swift */; };
@@ -847,6 +848,7 @@
 
 /* Begin PBXFileReference section */
 		0AB2F1A4AC1736F487C0652E /* NoteTranslationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteTranslationView.swift; sourceTree = "<group>"; };
+		B8D52F01A23C55E1B0F2D3E4 /* SettingsTranslationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsTranslationViewController.swift; sourceTree = "<group>"; };
 		D3FBFD2E0E7F4424E40DAD2A /* NoteTranslationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteTranslationService.swift; sourceTree = "<group>"; };
 		95EB2DE0EA5EFB22B61F2CE2 /* NoteTranslationServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteTranslationServiceTests.swift; sourceTree = "<group>"; };
 		11014EF06E484DF7AE794F7D /* FeedElementPollCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedElementPollCell.swift; sourceTree = "<group>"; };
@@ -2229,6 +2231,7 @@
 				9EF4BFC52A8BEEA3003396AA /* SettingsAppearanceViewController.swift */,
 				B94F2C032AEFD9310041181B /* SettingsNetworkViewController.swift */,
 				B90EF0F02B03F7AF00A7CD65 /* SettingsContentDisplayController.swift */,
+				B8D52F01A23C55E1B0F2D3E4 /* SettingsTranslationViewController.swift */,
 				B9B290562B4DB2950069C87F /* SettingsWalletViewController.swift */,
 				B9658AC22D9EADA60037E5DB /* SettingsMediaUploadsController.swift */,
 				B90585372C9DDFD600FC4108 /* SettingsDevModeController.swift */,
@@ -4496,6 +4499,7 @@
 				B98DD8D32C62547300E8369A /* ArticleFeedViewController.swift in Sources */,
 				B9C5A0E82F44ACD3007CB5D3 /* SecretsManager.swift in Sources */,
 				B90EF0F12B03F7AF00A7CD65 /* SettingsContentDisplayController.swift in Sources */,
+				A7C41E90F12B44D0A9E1C2D3 /* SettingsTranslationViewController.swift in Sources */,
 				B91EF0E42CECDE1600299ECF /* UserImageView.swift in Sources */,
 				F8E7A8239A9F7E466C01EBF5 /* FeedVideoPlayer.swift in Sources */,
 				ED696C5B32C51E1E05C1EADD /* LiveVideoPlayer.swift in Sources */,
