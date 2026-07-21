@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0C27121E8B68E378B23A920A /* NoteTranslationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3FBFD2E0E7F4424E40DAD2A /* NoteTranslationService.swift */; };
+		3B1B14A1364E2DBEAD2D3F36 /* NoteTranslationServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95EB2DE0EA5EFB22B61F2CE2 /* NoteTranslationServiceTests.swift */; };
 		024790235F8243AC95A947C7 /* PollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 254BECF85EE9411B88FDCEFA /* PollView.swift */; };
 		2D7F552B70900BC23221F4AC /* PollVoteOptionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC1B50E71AC4CB3BACD02E0A /* PollVoteOptionCell.swift */; };
 		2F98EB1DCC624734794395F1 /* PollVoteUserCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 251E11AFC9FB66D804B5217F /* PollVoteUserCell.swift */; };
@@ -843,6 +845,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		D3FBFD2E0E7F4424E40DAD2A /* NoteTranslationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteTranslationService.swift; sourceTree = "<group>"; };
+		95EB2DE0EA5EFB22B61F2CE2 /* NoteTranslationServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteTranslationServiceTests.swift; sourceTree = "<group>"; };
 		11014EF06E484DF7AE794F7D /* FeedElementPollCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedElementPollCell.swift; sourceTree = "<group>"; };
 		251E11AFC9FB66D804B5217F /* PollVoteUserCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollVoteUserCell.swift; sourceTree = "<group>"; };
 		254BECF85EE9411B88FDCEFA /* PollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollView.swift; sourceTree = "<group>"; };
@@ -1864,6 +1868,7 @@
 				BD61E893F7939D2AC33A6A4C /* GenerateAmountsTests.swift */,
 				D1E2F3A4B5C6D7E8F9A0B1C3 /* PostingPreviewEmbedsViewTests.swift */,
 				9393310629A3E370003954C2 /* PrimalTests.swift */,
+				95EB2DE0EA5EFB22B61F2CE2 /* NoteTranslationServiceTests.swift */,
 			);
 			path = PrimalTests;
 			sourceTree = "<group>";
@@ -2351,6 +2356,7 @@
 			children = (
 				9E83DF762A573F2E00F2C379 /* ImagePickerManager.swift */,
 				B94F2BEC2AE6C7BA0041181B /* BindableTapGestureRecognizer.swift */,
+				D3FBFD2E0E7F4424E40DAD2A /* NoteTranslationService.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -4205,6 +4211,7 @@
 				B968CE002D5B784F00515D51 /* PremiumListFeedManager.swift in Sources */,
 				9E5BD93C2A1E3133008DFFBE /* NewPostViewController.swift in Sources */,
 				B94F2BED2AE6C7BA0041181B /* BindableTapGestureRecognizer.swift in Sources */,
+				0C27121E8B68E378B23A920A /* NoteTranslationService.swift in Sources */,
 				93F27DA62A27EA6D004ADA55 /* IdentityManager.swift in Sources */,
 				B91E57142CCBC31500C14809 /* DatabaseManager+NoteDraft.swift in Sources */,
 				9E9F2F9029F6AB8A00A9CDF3 /* Color.swift in Sources */,
@@ -4883,6 +4890,7 @@
 				B94B18A02D5E233600A932CE /* RegexTests.swift in Sources */,
 				AA9CF3DB44709B5BC13CA5A8 /* GenerateAmountsTests.swift in Sources */,
 				D1E2F3A4B5C6D7E8F9A0B1C2 /* PostingPreviewEmbedsViewTests.swift in Sources */,
+				3B1B14A1364E2DBEAD2D3F36 /* NoteTranslationServiceTests.swift in Sources */,
 				9393310729A3E370003954C2 /* PrimalTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
