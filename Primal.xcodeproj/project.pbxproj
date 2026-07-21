@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		6D67EEADBE9DA2E06E175378 /* NoteTranslationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AB2F1A4AC1736F487C0652E /* NoteTranslationView.swift */; };
 		0C27121E8B68E378B23A920A /* NoteTranslationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3FBFD2E0E7F4424E40DAD2A /* NoteTranslationService.swift */; };
 		3B1B14A1364E2DBEAD2D3F36 /* NoteTranslationServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95EB2DE0EA5EFB22B61F2CE2 /* NoteTranslationServiceTests.swift */; };
 		024790235F8243AC95A947C7 /* PollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 254BECF85EE9411B88FDCEFA /* PollView.swift */; };
@@ -845,6 +846,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0AB2F1A4AC1736F487C0652E /* NoteTranslationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteTranslationView.swift; sourceTree = "<group>"; };
 		D3FBFD2E0E7F4424E40DAD2A /* NoteTranslationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteTranslationService.swift; sourceTree = "<group>"; };
 		95EB2DE0EA5EFB22B61F2CE2 /* NoteTranslationServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteTranslationServiceTests.swift; sourceTree = "<group>"; };
 		11014EF06E484DF7AE794F7D /* FeedElementPollCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedElementPollCell.swift; sourceTree = "<group>"; };
@@ -2431,6 +2433,7 @@
 				9E9D46F72A0A72B900D4837B /* PostCell.swift */,
 				B99E03882BF7B10C006CCECB /* PostFeedCell.swift */,
 				9E9D46F42A0A717400D4837B /* ThreadCell.swift */,
+				0AB2F1A4AC1736F487C0652E /* NoteTranslationView.swift */,
 			);
 			path = PostCell;
 			sourceTree = "<group>";
@@ -4761,6 +4764,7 @@
 				B91E56F92CC1383300C14809 /* NoteFeedViewController.swift in Sources */,
 				B9C672EB2E315F5D00243B45 /* LiveVideoChatInputView.swift in Sources */,
 				B99E03892BF7B10C006CCECB /* PostFeedCell.swift in Sources */,
+				6D67EEADBE9DA2E06E175378 /* NoteTranslationView.swift in Sources */,
 				B9E36BE22EE7786900213CA0 /* RemoteSignerConnectionCell.swift in Sources */,
 				B9A2009A2B5AB1FE003B6C6B /* FadeTransition.swift in Sources */,
 				93E0A81F2A43AA0800C33A08 /* NWCRelayConnectionEvent.swift in Sources */,

@@ -32,8 +32,8 @@ final class NoteTranslationServiceTests: XCTestCase {
         XCTAssertEqual(restored, input)
     }
 
-    func testDetectLanguageEnglish() {
-        let code = NoteTranslationService.detectLanguageCode("This is a long enough English sentence for language detection to work reliably.")
-        XCTAssertEqual(code, "en")
+    func testShouldOfferTranslation() {
+        XCTAssertFalse(NoteTranslationService.shared.shouldOfferTranslation(for: "hi"))
+        XCTAssertTrue(NoteTranslationService.shared.shouldOfferTranslation(for: "This note is long enough to translate."))
     }
 }
