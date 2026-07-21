@@ -45,4 +45,21 @@ final class NoteTranslationServiceTests: XCTestCase {
         let restored = NoteTranslationService.restore(protected.text, tokens: protected.tokens)
         XCTAssertEqual(restored, input)
     }
+
+    func testNrelayAndMentionsProtected() {
+        let input = "relay nrelay1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq for @bob #tag"
+        let protected = NoteTranslationService.protect(input)
+        XCTAssertFalse(protected.text.contains("nrelay1"))
+        XCTAssertFalse(protected.text.contains("@bob"))
+        XCTAssertFalse(protected.text.contains("#tag"))
+        let restored = NoteTranslationService.restore(protected.text, tokens: protected.tokens)
+        XCTAssertEqual(restored, input)
+    }
+
+    func testRestoreToleratesBracketMangling() {
+        let tokens = ["https://example.com", "bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh"]
+        let mangled = "send [T0] to [T1] please"
+        let restored = NoteTranslationService.restore(mangled, tokens: tokens)
+        XCTAssertEqual(restored, "send https://example.com to bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh please")
+    }
 }
