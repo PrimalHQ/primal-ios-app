@@ -496,17 +496,23 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
             NoteTranslationService.translate(text: source) { [weak self] result in
                 loading.dismiss(animated: true) {
                     switch result {
-                    case .success(let text):
-                        let alert = UIAlertController(title: "Translation", message: text, preferredStyle: .alert)
+                    case .success(let translation):
+                        let message: String
+                        if let caption = translation.caption {
+                            message = "\(translation.text)\n\n(\(caption))"
+                        } else {
+                            message = translation.text
+                        }
+                        let alert = UIAlertController(title: "Translation", message: message, preferredStyle: .alert)
                         alert.addAction(UIAlertAction(title: "OK", style: .default))
                         alert.addAction(UIAlertAction(title: "Copy", style: .default) { _ in
-                            UIPasteboard.general.string = text
+                            UIPasteboard.general.string = translation.text
                         })
                         self?.present(alert, animated: true)
-                    case .failure:
+                    case .failure(let error):
                         let alert = UIAlertController(
                             title: "Translation failed",
-                            message: "Could not translate this note. Try again later.",
+                            message: error.localizedDescription,
                             preferredStyle: .alert
                         )
                         alert.addAction(UIAlertAction(title: "OK", style: .default))

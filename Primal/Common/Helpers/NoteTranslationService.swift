@@ -2,80 +2,80 @@
 //  NoteTranslationService.swift
 //  Primal
 //
-//  LibreTranslate-backed note translation with token sanitization + cache (issue #206).
+//  LibreTranslate-backed note translation with token sanitization (issue #206).
+//  Supports configurable endpoint/API key and source-language short-circuit.
 //
 
 import Foundation
+import NaturalLanguage
 
-struct NoteTranslationSettings {
-    private static let defaults = UserDefaults.standard
-
-    static var isEnabled: Bool {
-        get {
-            guard defaults.object(forKey: "noteTranslationEnabled") != nil else { return true }
-            return defaults.bool(forKey: "noteTranslationEnabled")
-        }
-        set { defaults.set(newValue, forKey: "noteTranslationEnabled") }
-    }
-
-    static var endpointURL: URL {
-        get {
-            if let string = defaults.string(forKey: "noteTranslationEndpointURL"), let url = URL(string: string) {
-                return url
-            }
-            return URL(string: "https://libretranslate.com/translate")!
-        }
-        set { defaults.set(newValue.absoluteString, forKey: "noteTranslationEndpointURL") }
-    }
-
-    static var apiKey: String {
-        get { defaults.string(forKey: "noteTranslationAPIKey") ?? "" }
-        set { defaults.set(newValue, forKey: "noteTranslationAPIKey") }
-    }
-
-    static var targetLanguage: String {
-        get {
-            if let language = defaults.string(forKey: "noteTranslationTargetLanguage"), !language.isEmpty {
-                return language
-            }
-            return Locale.preferredLanguages.first?
-                .split(separator: "-")
-                .first
-                .map(String.init) ?? "en"
-        }
-        set { defaults.set(newValue, forKey: "noteTranslationTargetLanguage") }
-    }
-}
-
-final class NoteTranslationService {
-    struct TranslationResult {
-        let translatedText: String
-        let detectedLanguage: String?
-    }
-
+enum NoteTranslationService {
     struct ProtectedText {
         let text: String
         let tokens: [String]
     }
 
-    enum TranslationError: Error {
-        case disabled
-        case emptyText
-        case badResponse
-        case noTranslation
+    struct TranslationResult {
+        let text: String
+        /// e.g. "via LibreTranslate" or "already in English"
+        let caption: String?
     }
 
-    static let shared = NoteTranslationService()
+    enum TranslationError: LocalizedError {
+        case badURL
+        case alreadyInTargetLanguage(String)
+        case network(Error)
+        case parse
+        case empty
 
-    private let cache = NSCache<NSString, CachedTranslation>()
-    private let minimumTextLength = 12
+        var errorDescription: String? {
+            switch self {
+            case .badURL:
+                return "Invalid translation endpoint URL."
+            case .alreadyInTargetLanguage(let lang):
+                return "Note already appears to be in \(lang)."
+            case .network(let err):
+                return err.localizedDescription
+            case .parse:
+                return "Could not parse translation response."
+            case .empty:
+                return "Note has no text to translate."
+            }
+        }
+    }
 
-    private init() {}
+    static let baseURLDefaultsKey = "primal.noteTranslation.libreTranslateBaseURL"
+    static let apiKeyDefaultsKey = "primal.noteTranslation.libreTranslateAPIKey"
 
-    // MARK: - Static helpers (unit-tested)
+    private static let tokenPatterns: [NSRegularExpression] = {
+        let patterns = [
+            #"nostr:[a-z0-9]+1[a-z0-9]{6,}"#,
+            #"\b(npub|nprofile|note|nevent|naddr|nrelay)1[a-z0-9]{6,}\b"#,
+            #"https?://\S+"#,
+            #"lnbc[a-z0-9]+"#,
+            #"#[\w_]+"#,
+            #":[a-z0-9_+-]+:"#
+        ]
+        return patterns.compactMap {
+            try? NSRegularExpression(pattern: $0, options: [.caseInsensitive])
+        }
+    }()
 
     static func protect(_ input: String) -> ProtectedText {
-        shared.protectEntities(in: input)
+        var text = input
+        var tokens: [String] = []
+        for regex in tokenPatterns {
+            let range = NSRange(text.startIndex..<text.endIndex, in: text)
+            let matches = regex.matches(in: text, options: [], range: range).reversed()
+            for match in matches {
+                guard let r = Range(match.range, in: text) else { continue }
+                let value = String(text[r])
+                let idx = tokens.count
+                tokens.append(value)
+                text.replaceSubrange(r, with: "[[T\(idx)]]")
+            }
+        }
+        return ProtectedText(text: text, tokens: tokens)
     }
 
     static func restore(_ translated: String, tokens: [String]) -> String {
@@ -83,154 +83,104 @@ final class NoteTranslationService {
         for (idx, token) in tokens.enumerated() {
             out = out.replacingOccurrences(of: "[[T\(idx)]]", with: token)
             out = out.replacingOccurrences(of: "[T\(idx)]", with: token)
-            out = out.replacingOccurrences(of: "PRIMALENTITY_\(idx)_TOKEN", with: token)
         }
         return out
     }
 
-    static func translate(
-        text: String,
-        completion: @escaping (Result<String, Error>) -> Void
-    ) {
-        shared.translate(text) { result in
-            switch result {
-            case .success(let r): completion(.success(r.translatedText))
-            case .failure(let e): completion(.failure(e))
-            }
-        }
+    static func deviceLanguageCode() -> String {
+        Locale.current.language.languageCode?.identifier ?? Locale.current.languageCode ?? "en"
     }
 
-    // MARK: - Instance API
-
-    func shouldOfferTranslation(for text: String) -> Bool {
-        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard NoteTranslationSettings.isEnabled, trimmed.count >= minimumTextLength else { return false }
-        return trimmed.rangeOfCharacter(from: .letters) != nil
+    /// Detect dominant language of free text (ignoring protected tokens).
+    static func detectLanguageCode(_ text: String) -> String? {
+        let recognizer = NLLanguageRecognizer()
+        recognizer.processString(text)
+        guard let lang = recognizer.dominantLanguage else { return nil }
+        return lang.rawValue
     }
 
-    func translate(_ text: String, completion: @escaping (Result<TranslationResult, Error>) -> Void) {
-        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
-
-        guard NoteTranslationSettings.isEnabled else {
-            completion(.failure(TranslationError.disabled))
-            return
-        }
-
-        guard shouldOfferTranslation(for: trimmed) else {
-            completion(.failure(TranslationError.emptyText))
-            return
-        }
-
-        let targetLanguage = NoteTranslationSettings.targetLanguage
-        let cacheKey = "\(targetLanguage)|\(NoteTranslationSettings.endpointURL.absoluteString)|\(trimmed)" as NSString
-
-        if let cached = cache.object(forKey: cacheKey) {
-            completion(.success(.init(translatedText: cached.translatedText, detectedLanguage: cached.detectedLanguage)))
-            return
-        }
-
-        let protectedText = protectEntities(in: trimmed)
-        var request = URLRequest(url: NoteTranslationSettings.endpointURL)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.timeoutInterval = 45
-
-        var payload: [String: Any] = [
-            "q": protectedText.text,
-            "source": "auto",
-            "target": targetLanguage,
-            "format": "text"
-        ]
-        let apiKey = NoteTranslationSettings.apiKey
-        if !apiKey.isEmpty {
-            payload["api_key"] = apiKey
-        }
-        request.httpBody = try? JSONSerialization.data(withJSONObject: payload)
-
-        URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
-            guard let self else { return }
-
-            if let error {
-                DispatchQueue.main.async { completion(.failure(error)) }
-                return
-            }
-
-            guard
-                let httpResponse = response as? HTTPURLResponse,
-                (200..<300).contains(httpResponse.statusCode),
-                let data
-            else {
-                DispatchQueue.main.async { completion(.failure(TranslationError.badResponse)) }
-                return
-            }
-
-            do {
-                let decoded = try JSONSerialization.jsonObject(with: data) as? [String: Any]
-                guard let translated = decoded?["translatedText"] as? String else {
-                    DispatchQueue.main.async { completion(.failure(TranslationError.noTranslation)) }
-                    return
-                }
-
-                let restored = Self.restore(translated, tokens: protectedText.tokens)
-                let result = TranslationResult(
-                    translatedText: restored,
-                    detectedLanguage: self.detectedLanguage(from: decoded?["detectedLanguage"])
-                )
-                self.cache.setObject(
-                    CachedTranslation(translatedText: result.translatedText, detectedLanguage: result.detectedLanguage),
-                    forKey: cacheKey
-                )
-                DispatchQueue.main.async { completion(.success(result)) }
-            } catch {
-                DispatchQueue.main.async { completion(.failure(error)) }
-            }
-        }.resume()
+    static func configuredBaseURL() -> String {
+        let raw = UserDefaults.standard.string(forKey: baseURLDefaultsKey)?
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        if let raw, !raw.isEmpty { return raw }
+        return "https://libretranslate.com"
     }
 
-    // MARK: - Sanitizer
-
-    func protectEntities(in text: String) -> ProtectedText {
-        let patterns = [
-            #"https?://[^\s]+"#,
-            #"nostr:[^\s]+"#,
-            #"\b(?:npub1|nprofile1|note1|nevent1|naddr1|nrelay1)[023456789acdefghjklmnpqrstuvwxyz]+"#,
-            #"\blnbc[0-9a-z]+"#,
-            #"\bbc1[0-9a-z]+"#,
-            #"(?<!\w)#[\p{L}\p{N}_]+"#,
-            #"(?<!\w)@[\p{L}\p{N}_.-]+"#,
-            #":[a-z0-9_+-]+:"#
-        ]
-
-        var working = text
-        var tokens: [String] = []
-
-        for pattern in patterns {
-            guard let regex = try? NSRegularExpression(pattern: pattern, options: [.caseInsensitive]) else { continue }
-            let ns = working as NSString
-            let matches = regex.matches(in: working, range: NSRange(location: 0, length: ns.length)).reversed()
-            for match in matches {
-                let value = ns.substring(with: match.range)
-                let idx = tokens.count
-                tokens.append(value)
-                working = (working as NSString).replacingCharacters(in: match.range, with: "[[T\(idx)]]")
-            }
-        }
-        return ProtectedText(text: working, tokens: tokens)
-    }
-
-    private func detectedLanguage(from value: Any?) -> String? {
-        if let string = value as? String { return string }
-        if let dictionary = value as? [String: Any] { return dictionary["language"] as? String }
+    static func configuredAPIKey() -> String? {
+        let raw = UserDefaults.standard.string(forKey: apiKeyDefaultsKey)?
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        if let raw, !raw.isEmpty { return raw }
         return nil
     }
-}
 
-private final class CachedTranslation {
-    let translatedText: String
-    let detectedLanguage: String?
+    static func translate(
+        text: String,
+        baseURL: String? = nil,
+        apiKey: String? = nil,
+        completion: @escaping (Result<TranslationResult, Error>) -> Void
+    ) {
+        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else {
+            completion(.failure(TranslationError.empty))
+            return
+        }
 
-    init(translatedText: String, detectedLanguage: String?) {
-        self.translatedText = translatedText
-        self.detectedLanguage = detectedLanguage
+        let protected = protect(trimmed)
+        let target = deviceLanguageCode()
+
+        if let detected = detectLanguageCode(protected.text),
+           detected.caseInsensitiveCompare(target) == .orderedSame {
+            let display = Locale.current.localizedString(forLanguageCode: target) ?? target
+            completion(.failure(TranslationError.alreadyInTargetLanguage(display)))
+            return
+        }
+
+        let endpointBase = (baseURL ?? configuredBaseURL())
+            .trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+        guard let url = URL(string: endpointBase + "/translate") else {
+            completion(.failure(TranslationError.badURL))
+            return
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        var body: [String: Any] = [
+            "q": protected.text,
+            "source": "auto",
+            "target": target,
+            "format": "text"
+        ]
+        if let key = apiKey ?? configuredAPIKey() {
+            body["api_key"] = key
+        }
+        request.httpBody = try? JSONSerialization.data(withJSONObject: body)
+
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error {
+                DispatchQueue.main.async {
+                    completion(.failure(TranslationError.network(error)))
+                }
+                return
+            }
+            guard
+                let data,
+                let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+                let translated = json["translatedText"] as? String
+            else {
+                DispatchQueue.main.async {
+                    completion(.failure(TranslationError.parse))
+                }
+                return
+            }
+            let restored = restore(translated, tokens: protected.tokens)
+            let host = url.host ?? "LibreTranslate"
+            DispatchQueue.main.async {
+                completion(.success(TranslationResult(
+                    text: restored,
+                    caption: "via \(host) → \(target)"
+                )))
+            }
+        }.resume()
     }
 }

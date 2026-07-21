@@ -23,4 +23,17 @@ final class NoteTranslationServiceTests: XCTestCase {
         XCTAssertEqual(protected.tokens[0], "https://a.test")
         XCTAssertEqual(protected.tokens[1], "https://b.test")
     }
+
+    func testNostrEntitiesPreserved() {
+        let input = "hi nostr:npub1abcdefghijklmnopqrstuvwxyzabcdefghijk #tag"
+        let protected = NoteTranslationService.protect(input)
+        XCTAssertFalse(protected.text.contains("npub1"))
+        let restored = NoteTranslationService.restore(protected.text, tokens: protected.tokens)
+        XCTAssertEqual(restored, input)
+    }
+
+    func testDetectLanguageEnglish() {
+        let code = NoteTranslationService.detectLanguageCode("This is a long enough English sentence for language detection to work reliably.")
+        XCTAssertEqual(code, "en")
+    }
 }
