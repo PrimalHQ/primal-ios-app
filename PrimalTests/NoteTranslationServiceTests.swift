@@ -73,4 +73,25 @@ final class NoteTranslationServiceTests: XCTestCase {
         let restored = NoteTranslationService.restore(protected.text, tokens: protected.tokens)
         XCTAssertEqual(restored, input)
     }
+
+    func testNormalizeEndpointAppendsTranslatePath() {
+        let base = URL(string: "https://libretranslate.example")!
+        let normalized = NoteTranslationSettings.normalizeEndpoint(base)
+        XCTAssertEqual(normalized.absoluteString, "https://libretranslate.example/translate")
+
+        let full = URL(string: "https://libretranslate.example/translate")!
+        XCTAssertEqual(NoteTranslationSettings.normalizeEndpoint(full).absoluteString, full.absoluteString)
+
+        let trailing = URL(string: "https://libretranslate.example/")!
+        XCTAssertEqual(
+            NoteTranslationSettings.normalizeEndpoint(trailing).absoluteString,
+            "https://libretranslate.example/translate"
+        )
+    }
+
+    func testPrimaryLanguageCodeFromBCP47() {
+        XCTAssertEqual(NoteTranslationSettings.primaryLanguageCode("en-US"), "en")
+        XCTAssertEqual(NoteTranslationSettings.primaryLanguageCode("zh_CN"), "zh")
+        XCTAssertEqual(NoteTranslationSettings.primaryLanguageCode("  ES  "), "es")
+    }
 }

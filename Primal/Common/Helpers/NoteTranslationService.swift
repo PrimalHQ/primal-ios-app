@@ -9,6 +9,7 @@ import Foundation
 
 struct NoteTranslationSettings {
     private static let defaults = UserDefaults.standard
+    static let defaultEndpoint = URL(string: "https://libretranslate.com/translate")!
 
     static var isEnabled: Bool {
         get {
@@ -21,11 +22,11 @@ struct NoteTranslationSettings {
     static var endpointURL: URL {
         get {
             if let string = defaults.string(forKey: "noteTranslationEndpointURL"), let url = URL(string: string) {
-                return url
+                return normalizeEndpoint(url)
             }
-            return URL(string: "https://libretranslate.com/translate")!
+            return defaultEndpoint
         }
-        set { defaults.set(newValue.absoluteString, forKey: "noteTranslationEndpointURL") }
+        set { defaults.set(normalizeEndpoint(newValue).absoluteString, forKey: "noteTranslationEndpointURL") }
     }
 
     static var apiKey: String {
@@ -36,14 +37,43 @@ struct NoteTranslationSettings {
     static var targetLanguage: String {
         get {
             if let language = defaults.string(forKey: "noteTranslationTargetLanguage"), !language.isEmpty {
-                return language
+                return primaryLanguageCode(language)
             }
-            return Locale.preferredLanguages.first?
-                .split(separator: "-")
-                .first
-                .map(String.init) ?? "en"
+            return Locale.preferredLanguages.first
+                .map(primaryLanguageCode) ?? "en"
         }
-        set { defaults.set(newValue, forKey: "noteTranslationTargetLanguage") }
+        set { defaults.set(primaryLanguageCode(newValue), forKey: "noteTranslationTargetLanguage") }
+    }
+
+    /// Accept either a LibreTranslate base URL or a full `/translate` path.
+    static func normalizeEndpoint(_ url: URL) -> URL {
+        var components = URLComponents(url: url, resolvingAgainstBaseURL: false)
+        let scheme = (components?.scheme ?? "").lowercased()
+        guard scheme == "http" || scheme == "https" else { return defaultEndpoint }
+
+        var path = components?.path ?? ""
+        if path.hasSuffix("/") {
+            path = String(path.dropLast())
+        }
+        if path.isEmpty || path == "/" {
+            components?.path = "/translate"
+        } else if !path.lowercased().hasSuffix("/translate") {
+            components?.path = path + "/translate"
+        } else {
+            components?.path = path
+        }
+        // Drop query/fragment; LibreTranslate uses the request body.
+        components?.query = nil
+        components?.fragment = nil
+        return components?.url ?? defaultEndpoint
+    }
+
+    static func primaryLanguageCode(_ raw: String) -> String {
+        let trimmed = raw.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return "en" }
+        let primary = trimmed.split(whereSeparator: { $0 == "-" || $0 == "_" }).first.map(String.init) ?? trimmed
+        let letters = primary.lowercased().filter { $0.isLetter }
+        return letters.isEmpty ? "en" : String(letters.prefix(8))
     }
 }
 

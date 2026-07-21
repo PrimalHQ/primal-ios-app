@@ -33,7 +33,7 @@ private extension SettingsTranslationViewController {
 
         let endpointTitle = SettingsTitleViewVibrant(title: "TRANSLATION ENDPOINT")
         let endpointFieldContainer = createFieldContainer(endpointField)
-        endpointField.placeholder = "https://libretranslate.com/translate"
+        endpointField.placeholder = "https://libretranslate.com"
         endpointField.text = NoteTranslationSettings.endpointURL.absoluteString
         endpointField.autocapitalizationType = .none
         endpointField.autocorrectionType = .no
@@ -44,7 +44,7 @@ private extension SettingsTranslationViewController {
         }), for: .editingDidEnd)
 
         let endpointDesc = descLabel(
-            "A LibreTranslate-compatible endpoint URL. Defaults to libretranslate.com. Self-hosted instances are recommended for privacy."
+            "LibreTranslate base URL or full /translate path. Defaults to libretranslate.com. Self-hosted instances are recommended for privacy."
         )
 
         let apiKeyTitle = SettingsTitleViewVibrant(title: "API KEY (OPTIONAL)")
@@ -74,9 +74,9 @@ private extension SettingsTranslationViewController {
             guard let text = self?.languageField.text?.trimmingCharacters(in: .whitespacesAndNewlines),
                   !text.isEmpty else { return }
             // Normalize BCP-47 to ISO 639-1 when possible (en-US -> en).
-            let code = text.split(separator: "-").first.map(String.init) ?? text
-            NoteTranslationSettings.targetLanguage = code.lowercased()
-            self?.languageField.text = code.lowercased()
+            let code = NoteTranslationSettings.primaryLanguageCode(text)
+            NoteTranslationSettings.targetLanguage = code
+            self?.languageField.text = code
         }), for: .editingDidEnd)
 
         let langDesc = descLabel(
