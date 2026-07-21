@@ -37,6 +37,12 @@ final class NoteTranslationServiceTests: XCTestCase {
         XCTAssertTrue(NoteTranslationService.shared.shouldOfferTranslation(for: "This note is long enough to translate."))
     }
 
+    func testShouldOfferTranslationHidesTokenOnlyNotes() {
+        let tokenOnly =
+            "https://example.com/a/b/c/d/e/f npub1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq"
+        XCTAssertFalse(NoteTranslationService.shared.shouldOfferTranslation(for: tokenOnly))
+    }
+
     func testBc1AndInvoiceProtected() {
         let input = "pay lnbc1testinvoice to bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh please"
         let protected = NoteTranslationService.protect(input)

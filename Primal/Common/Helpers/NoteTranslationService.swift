@@ -108,6 +108,8 @@ final class NoteTranslationService {
 
     private let cache = NSCache<NSString, CachedTranslation>()
     private let minimumTextLength = 12
+    private let taskLock = NSLock()
+    private var inflightTasks: [UUID: URLSessionDataTask] = [:]
 
     private init() {}
 
@@ -144,20 +146,39 @@ final class NoteTranslationService {
     func shouldOfferTranslation(for text: String) -> Bool {
         let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
         guard NoteTranslationSettings.isEnabled, trimmed.count >= minimumTextLength else { return false }
-        return trimmed.rangeOfCharacter(from: .letters) != nil
+        guard trimmed.rangeOfCharacter(from: .letters) != nil else { return false }
+        // Require real prose after stripping protected identifiers.
+        let protected = protectEntities(in: trimmed)
+        let prose = protected.text
+            .replacingOccurrences(of: #"\[\[T\d+\]\]"#, with: " ", options: .regularExpression)
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        return prose.count >= 4 && prose.rangeOfCharacter(from: .letters) != nil
     }
 
-    func translate(_ text: String, completion: @escaping (Result<TranslationResult, Error>) -> Void) {
+    /// Cancel an in-flight request started with a request ID (cell reuse).
+    func cancelRequest(_ requestID: UUID) {
+        taskLock.lock()
+        let task = inflightTasks.removeValue(forKey: requestID)
+        taskLock.unlock()
+        task?.cancel()
+    }
+
+    @discardableResult
+    func translate(
+        _ text: String,
+        requestID: UUID = UUID(),
+        completion: @escaping (Result<TranslationResult, Error>) -> Void
+    ) -> UUID {
         let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
 
         guard NoteTranslationSettings.isEnabled else {
             completion(.failure(TranslationError.disabled))
-            return
+            return requestID
         }
 
         guard shouldOfferTranslation(for: trimmed) else {
             completion(.failure(TranslationError.emptyText))
-            return
+            return requestID
         }
 
         let targetLanguage = NoteTranslationSettings.targetLanguage
@@ -165,10 +186,18 @@ final class NoteTranslationService {
 
         if let cached = cache.object(forKey: cacheKey) {
             completion(.success(.init(translatedText: cached.translatedText, detectedLanguage: cached.detectedLanguage)))
-            return
+            return requestID
         }
 
         let protectedText = protectEntities(in: trimmed)
+        let prose = protectedText.text
+            .replacingOccurrences(of: #"\[\[T\d+\]\]"#, with: " ", options: .regularExpression)
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        if prose.count < 4 || prose.rangeOfCharacter(from: .letters) == nil {
+            completion(.failure(TranslationError.emptyText))
+            return requestID
+        }
+
         var request = URLRequest(url: NoteTranslationSettings.endpointURL)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -186,10 +215,14 @@ final class NoteTranslationService {
         }
         request.httpBody = try? JSONSerialization.data(withJSONObject: payload)
 
-        URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
+        let task = URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
             guard let self else { return }
+            self.taskLock.lock()
+            self.inflightTasks.removeValue(forKey: requestID)
+            self.taskLock.unlock()
 
             if let error {
+                if (error as NSError).code == NSURLErrorCancelled { return }
                 DispatchQueue.main.async { completion(.failure(error)) }
                 return
             }
@@ -205,15 +238,22 @@ final class NoteTranslationService {
 
             do {
                 let decoded = try JSONSerialization.jsonObject(with: data) as? [String: Any]
-                guard let translated = decoded?["translatedText"] as? String else {
+                let translated =
+                    (decoded?["translatedText"] as? String)
+                    ?? (decoded?["translation"] as? String)
+                    ?? (decoded?["text"] as? String)
+                guard let translated, !translated.isEmpty else {
                     DispatchQueue.main.async { completion(.failure(TranslationError.noTranslation)) }
                     return
                 }
 
                 let restored = Self.restore(translated, tokens: protectedText.tokens)
+                let detected =
+                    self.detectedLanguage(from: decoded?["detectedLanguage"])
+                    ?? self.detectedLanguage(from: decoded?["detected_language"])
                 let result = TranslationResult(
                     translatedText: restored,
-                    detectedLanguage: self.detectedLanguage(from: decoded?["detectedLanguage"])
+                    detectedLanguage: detected
                 )
                 self.cache.setObject(
                     CachedTranslation(translatedText: result.translatedText, detectedLanguage: result.detectedLanguage),
@@ -223,7 +263,13 @@ final class NoteTranslationService {
             } catch {
                 DispatchQueue.main.async { completion(.failure(error)) }
             }
-        }.resume()
+        }
+
+        taskLock.lock()
+        inflightTasks[requestID] = task
+        taskLock.unlock()
+        task.resume()
+        return requestID
     }
 
     // MARK: - Sanitizer

@@ -27,6 +27,9 @@ final class NoteTranslationView: UIStackView {
     }
 
     func configure(with text: String) {
+        // Cancel any in-flight request from a previous cell reuse.
+        NoteTranslationService.shared.cancelRequest(currentRequestID)
+
         currentText = text.trimmingCharacters(in: .whitespacesAndNewlines)
         currentRequestID = UUID()
         translationResult = nil
@@ -83,7 +86,7 @@ private extension NoteTranslationView {
         translateButton.isEnabled = false
         translateButton.setTitle("Translating...", for: .normal)
 
-        NoteTranslationService.shared.translate(currentText) { [weak self] result in
+        NoteTranslationService.shared.translate(currentText, requestID: requestID) { [weak self] result in
             guard let self, self.currentRequestID == requestID else { return }
 
             self.translateButton.isEnabled = true
