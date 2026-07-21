@@ -62,4 +62,15 @@ final class NoteTranslationServiceTests: XCTestCase {
         let restored = NoteTranslationService.restore(mangled, tokens: tokens)
         XCTAssertEqual(restored, "send https://example.com to bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh please")
     }
+
+    func testBolt12OfferLnurlCashuAndLightningUriProtected() {
+        let input = "offer lno1offerxyz invoice lightning:lnbc1viauri lnurl1abc cashuAabc123 end"
+        let protected = NoteTranslationService.protect(input)
+        XCTAssertFalse(protected.text.contains("lno1offer"))
+        XCTAssertFalse(protected.text.contains("lightning:"))
+        XCTAssertFalse(protected.text.contains("lnurl1"))
+        XCTAssertFalse(protected.text.contains("cashuA"))
+        let restored = NoteTranslationService.restore(protected.text, tokens: protected.tokens)
+        XCTAssertEqual(restored, input)
+    }
 }
