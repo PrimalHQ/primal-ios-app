@@ -621,7 +621,12 @@ private extension MainTabBarViewOrchestrator {
 
         controller.view.addSubview(tabBar)
         tabBar.pinToSuperview(edges: [.horizontal, .bottom])
-        tabBar.topAnchor.constraint(equalTo: controller.view.safeAreaLayoutGuide.bottomAnchor, constant: 13 - Self.tabBarHeight).isActive = true
+
+        // The system pill keeps a fixed 21pt margin above the bar's bottom edge and fills the rest,
+        // so the bar must be tabBarHeight + 21 tall for the pill to get tabBarHeight on every device
+        // (equivalent to the old `13 - tabBarHeight` constant on notched devices: 34pt inset - 21 = 13)
+        let topConstant = ChromeSize.bottomSafeAreaInset - Self.tabBarHeight - 21
+        tabBar.topAnchor.constraint(equalTo: controller.view.safeAreaLayoutGuide.bottomAnchor, constant: topConstant).isActive = true
 
         nativeTabBar = tabBar
     }

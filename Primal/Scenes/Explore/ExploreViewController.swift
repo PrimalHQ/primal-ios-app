@@ -174,7 +174,7 @@ private extension ExploreViewController {
         view.addSubview(postButtonParent)
         postButtonParent.addSubview(postButton)
         postButton.constrainToSize(56).pinToSuperview(padding: 8)
-        postButtonParent.pinToSuperview(edges: .trailing, padding: 13).pinToSuperview(edges: .bottom, padding: 48, safeArea: true)
+        postButtonParent.pinToSuperview(edges: .trailing, padding: 13).pinToSuperview(edges: .bottom, padding: NewPostButton.bottomPadding, safeArea: true)
     }
 
     func setCategory(_ category: ExploreCategory) {
