@@ -22,20 +22,26 @@ class PopupInfoBubbleView: UIStackView, Themeable {
     
     let onClose: () -> Void
     
-    init(title: String, onClose: @escaping () -> Void) {
+    init(title: String, pointsDown: Bool = false, onClose: @escaping () -> Void) {
         self.title = title
         self.onClose = onClose
         super.init(frame: .zero)
-        
+
         let triangleParent = UIView()
         triangleParent.addSubview(triangleView)
         triangleView.pinToSuperview(edges: .vertical)
         let centerXConstraint = triangleParent.centerXAnchor.constraint(equalTo: triangleView.centerXAnchor)
         centerXConstraint.priority = .defaultLow
         centerXConstraint.isActive = true
-        
-        addArrangedSubview(triangleParent)
-        addArrangedSubview(bubbleBackground)
+
+        if pointsDown {
+            triangleView.transform = CGAffineTransform(scaleX: 1, y: -1)
+            addArrangedSubview(bubbleBackground)
+            addArrangedSubview(triangleParent)
+        } else {
+            addArrangedSubview(triangleParent)
+            addArrangedSubview(bubbleBackground)
+        }
         axis = .vertical
         
         bubbleBackground.layer.cornerRadius = 8

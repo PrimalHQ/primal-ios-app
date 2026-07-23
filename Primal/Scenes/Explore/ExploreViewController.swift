@@ -52,6 +52,19 @@ final class ExploreViewController: UIViewController, Themeable, TitleSwipeContro
         mainTabBarController?.setTabBarHidden(false, animated: animated)
     }
 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        // In viewDidAppear because on tab revisits viewWillAppear fires before this controller is re-attached to the tab bar controller
+        mainTabBarController?.showExploreHintIfNeeded()
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        mainTabBarController?.hideExploreHint()
+    }
+
     func updateTheme() {
         view.backgroundColor = .background
 
