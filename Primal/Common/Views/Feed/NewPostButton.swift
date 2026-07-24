@@ -8,6 +8,10 @@
 import UIKit
 
 class NewPostButton: UIButton, Themeable {
+    // 48pt above the bottom safe area clears the tab bar on notched devices; home-button
+    // devices have no 34pt inset so it goes into the padding instead
+    static let bottomPadding: CGFloat = ChromeSize.bottomSafeAreaInset > 0 ? 48 : 82
+
     private var isExcited = false
     
     init() {

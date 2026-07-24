@@ -48,6 +48,10 @@ extension UIButton.Configuration {
     }
 }
 
+extension String {
+    static let exploreHintShouldHideKey = "exploreHintShouldHideKey"
+}
+
 final class MainTabBarViewOrchestrator: NSObject, Themeable {
     weak var controller: MainTabBarController?
 
@@ -62,6 +66,7 @@ final class MainTabBarViewOrchestrator: NSObject, Themeable {
 
     private var nativeTabBar: UITabBar?
     private var collapsedTabBarButton: UIButton?
+    private var exploreHintView: PopupInfoBubbleView?
 
     private var notificationsFrozen = false
 
@@ -177,6 +182,7 @@ final class MainTabBarViewOrchestrator: NSObject, Themeable {
         guard let controller else { return }
 
         if hidden {
+            hideExploreHint()
             let currentNav = controller.navForTab(controller.currentTab)
             let collapsed = currentNav.viewControllers.count == 1
             if #available(iOS 26.0, *), collapsed {
@@ -194,6 +200,7 @@ final class MainTabBarViewOrchestrator: NSObject, Themeable {
 
     @available(iOS 26.0, *)
     func setTabBarCollapsed(text: String, icon: UIImage?, animated: Bool = true) {
+        hideExploreHint()
         targetState = .collapsed(text: text, icon: icon)
         advanceToTarget(animated: animated)
     }
@@ -263,6 +270,63 @@ final class MainTabBarViewOrchestrator: NSObject, Themeable {
         guard let controller, let nativeTabBar else { return }
         nativeTabBar.items = makeNativeTabBarItems()
         nativeTabBar.selectedItem = nativeTabBar.items?[safe: controller.currentPageIndex]
+    }
+
+    func showExploreHintIfNeeded() {
+        guard let controller,
+              exploreHintView == nil,
+              targetState == .visible,
+              !UserDefaults.standard.bool(forKey: .exploreHintShouldHideKey)
+        else { return }
+
+        let hint = PopupInfoBubbleView(title: "Tap the Explore icon twice to\nimmediately get the quick search UI", pointsDown: true) { [weak self] in
+            UserDefaults.standard.set(true, forKey: .exploreHintShouldHideKey)
+            self?.exploreHintView = nil
+        }
+        exploreHintView = hint
+
+        controller.view.addSubview(hint)
+        hint.pinToSuperview(edges: .trailing, padding: 8)
+        NSLayoutConstraint.activate([
+            hint.bottomAnchor.constraint(equalTo: tabBarContainerView.topAnchor, constant: -2),
+            hint.leadingAnchor.constraint(greaterThanOrEqualTo: controller.view.leadingAnchor, constant: 8)
+        ])
+
+        if #available(iOS 26.0, *), let nativeTabBar, let index = tabs.firstIndex(of: .explore) {
+            // The bar contains two overlapping copies of each item button (selected and unselected content layers) - dedupe by x position
+            let controls: [UIControl] = nativeTabBar.findAllSubviews()
+            let centerX: (UIControl) -> CGFloat = { $0.superview?.convert($0.center, to: nativeTabBar).x ?? 0 }
+            var itemViews: [UIControl] = []
+            for control in controls.sorted(by: { centerX($0) < centerX($1) }) {
+                if let last = itemViews.last, abs(centerX(last) - centerX(control)) < 1 { continue }
+                itemViews.append(control)
+            }
+
+            if itemViews.count == tabs.count, let itemView = itemViews[safe: index] {
+                hint.triangleView.centerXAnchor.constraint(equalTo: itemView.centerXAnchor).isActive = true
+            } else {
+                // Fallback if the item views can't be found - approximate the item center assuming equal distribution over the bar width
+                let multiplier = 2 * (CGFloat(index) + 0.5) / CGFloat(tabs.count)
+                NSLayoutConstraint(item: hint.triangleView, attribute: .centerX, relatedBy: .equal, toItem: nativeTabBar, attribute: .centerX, multiplier: multiplier, constant: 0).isActive = true
+            }
+        } else if let index = tabs.firstIndex(of: .explore), let button = buttons[safe: index] {
+            hint.triangleView.centerXAnchor.constraint(equalTo: button.centerXAnchor).isActive = true
+        }
+
+        hint.alpha = 0
+        UIView.animate(withDuration: 0.3) {
+            hint.alpha = 1
+        }
+    }
+
+    func hideExploreHint() {
+        guard let hint = exploreHintView else { return }
+        exploreHintView = nil
+        UIView.animate(withDuration: 0.3) {
+            hint.alpha = 0
+        } completion: { _ in
+            hint.removeFromSuperview()
+        }
     }
 }
 
@@ -557,7 +621,12 @@ private extension MainTabBarViewOrchestrator {
 
         controller.view.addSubview(tabBar)
         tabBar.pinToSuperview(edges: [.horizontal, .bottom])
-        tabBar.topAnchor.constraint(equalTo: controller.view.safeAreaLayoutGuide.bottomAnchor, constant: 13 - Self.tabBarHeight).isActive = true
+
+        // The system pill keeps a fixed 21pt margin above the bar's bottom edge and fills the rest,
+        // so the bar must be tabBarHeight + 21 tall for the pill to get tabBarHeight on every device
+        // (equivalent to the old `13 - tabBarHeight` constant on notched devices: 34pt inset - 21 = 13)
+        let topConstant = ChromeSize.bottomSafeAreaInset - Self.tabBarHeight - 21
+        tabBar.topAnchor.constraint(equalTo: controller.view.safeAreaLayoutGuide.bottomAnchor, constant: topConstant).isActive = true
 
         nativeTabBar = tabBar
     }

@@ -52,6 +52,19 @@ final class ExploreViewController: UIViewController, Themeable, TitleSwipeContro
         mainTabBarController?.setTabBarHidden(false, animated: animated)
     }
 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        // In viewDidAppear because on tab revisits viewWillAppear fires before this controller is re-attached to the tab bar controller
+        mainTabBarController?.showExploreHintIfNeeded()
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        mainTabBarController?.hideExploreHint()
+    }
+
     func updateTheme() {
         view.backgroundColor = .background
 
@@ -161,7 +174,7 @@ private extension ExploreViewController {
         view.addSubview(postButtonParent)
         postButtonParent.addSubview(postButton)
         postButton.constrainToSize(56).pinToSuperview(padding: 8)
-        postButtonParent.pinToSuperview(edges: .trailing, padding: 13).pinToSuperview(edges: .bottom, padding: 48, safeArea: true)
+        postButtonParent.pinToSuperview(edges: .trailing, padding: 13).pinToSuperview(edges: .bottom, padding: NewPostButton.bottomPadding, safeArea: true)
     }
 
     func setCategory(_ category: ExploreCategory) {

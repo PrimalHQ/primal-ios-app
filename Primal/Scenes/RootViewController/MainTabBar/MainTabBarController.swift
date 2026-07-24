@@ -158,6 +158,14 @@ final class MainTabBarController: UIViewController, Themeable {
         viewOrchestrator.setTabBarHidden(hidden, animated: animated)
     }
 
+    func showExploreHintIfNeeded() {
+        viewOrchestrator.showExploreHintIfNeeded()
+    }
+
+    func hideExploreHint() {
+        viewOrchestrator.hideExploreHint()
+    }
+
     func setIsExcited(_ excited: Bool) {
         viewOrchestrator.setIsExcited(excited)
     }
@@ -462,6 +470,9 @@ extension MainTabBarController {
         }
         
         if tab == .explore {
+            // The user knows the gesture now, no need to keep showing the hint
+            UserDefaults.standard.set(true, forKey: .exploreHintShouldHideKey)
+            hideExploreHint()
             SearchViewController.present(from: nav, advanced: false)
             return
         }

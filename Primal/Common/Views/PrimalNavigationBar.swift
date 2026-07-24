@@ -19,6 +19,11 @@ enum ChromeSize {
         if screenWidth < 430 { return .medium }
         return .large
     }()
+
+    // Read from the window because view safe area insets are still zero during controller setup
+    static let bottomSafeAreaInset: CGFloat = UIApplication.shared.connectedScenes
+        .compactMap { ($0 as? UIWindowScene)?.windows.first }
+        .first?.safeAreaInsets.bottom ?? 0
 }
 
 protocol PrimalNavigationBarController: UIViewController {
