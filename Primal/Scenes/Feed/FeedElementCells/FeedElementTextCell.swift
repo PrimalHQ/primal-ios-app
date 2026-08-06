@@ -28,8 +28,9 @@ class FeedElementTextCell: FeedElementBaseCell, RegularFeedElementCell {
     let nantesDelegate = FeedElementTextCellNantesDelegate()
     
     let mainLabel = NantesLabel()
+    let translateView = NoteTranslateView()
     lazy var seeMoreLabel = UILabel("See more...", color: .accent2, font: .appFont(withSize: FontSizeSelection.current.contentFontSize, weight: .regular))
-    lazy var textStack = UIStackView(arrangedSubviews: [mainLabel, seeMoreLabel])
+    lazy var textStack = UIStackView(arrangedSubviews: [mainLabel, seeMoreLabel, translateView])
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -45,6 +46,8 @@ class FeedElementTextCell: FeedElementBaseCell, RegularFeedElementCell {
         
         seeMoreLabel.isHidden = !(mainLabel.isTruncated() || (mainLabel.attributedText?.length ?? 0) == 500)
         
+        translateView.update(with: parsedContent)
+        
         updateTheme()
     }
     
@@ -56,6 +59,8 @@ class FeedElementTextCell: FeedElementBaseCell, RegularFeedElementCell {
         
         textStack.spacing = FontSizeSelection.current.contentLineSpacing
         mainLabel.font = UIFont.appFont(withSize: FontSizeSelection.current.contentFontSize, weight: .regular)
+        
+        translateView.updateTheme()
     }
 }
 

@@ -67,6 +67,19 @@ private extension SettingsAppearanceViewController {
             ThemingManager.instance.setStartingTheme()
         }), for: .valueChanged)
         
+        let translateRow = SettingsOptionButton(title: "Translation Language: \(NoteTranslation.languages.first(where: { $0.code == NoteTranslation.targetLanguage })?.name ?? "English")")
+        translateRow.addAction(.init(handler: { [weak self] _ in
+            guard let self else { return }
+            let names = NoteTranslation.languages.map(\.name)
+            let startingIndex = NoteTranslation.languages.firstIndex(where: { $0.code == NoteTranslation.targetLanguage }) ?? 0
+            let picker = PopupUIPickerController(options: names, startingIndex: startingIndex) { name in
+                guard let language = NoteTranslation.languages.first(where: { $0.name == name }) else { return }
+                NoteTranslation.targetLanguage = language.code
+                translateRow.label.text = "Translation Language: \(language.name)"
+            }
+            self.present(picker, animated: true)
+        }), for: .touchUpInside)
+        
         previewTable.dataSource = self
         previewTable.isUserInteractionEnabled = false
         previewTable.backgroundColor = .clear
@@ -85,6 +98,9 @@ private extension SettingsAppearanceViewController {
             SettingsTitleViewVibrant(title: "FONT"), SpacerView(height: 22, priority: .defaultLow),
             slider, SpacerView(height: 20, priority: .defaultHigh),
             BorderView(), SpacerView(height: 16, priority: .defaultHigh),
+            SettingsTitleViewVibrant(title: "TRANSLATION"), SpacerView(height: 12, priority: .defaultLow),
+            translateRow, SpacerView(height: 20, priority: .defaultHigh),
+            BorderView(), SpacerView(height: 16, priority: .defaultHigh),
 //            SettingsTitleViewVibrant(title: "LAYOUT"),      SpacerView(height: 12, priority: .defaultLow),
 //            toggle,                                         SpacerView(height: 16, priority: .defaultHigh),
 //            BorderView(),                                   SpacerView(height: 16, priority: .defaultHigh),
@@ -102,7 +118,7 @@ private extension SettingsAppearanceViewController {
         scrollView.addSubview(stack)
         stack.pinToSuperview()
         stack.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
-        stack.heightAnchor.constraint(equalToConstant: 650).isActive = true
+        stack.heightAnchor.constraint(equalToConstant: 760).isActive = true
         
         updateTheme()
     }
