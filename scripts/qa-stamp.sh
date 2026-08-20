@@ -167,8 +167,71 @@ if [ -n "$newest_n" ] && [ "$current" != "$newest_n" ]; then
 fi
 [ -n "$newest_n" ] || say "no previous stamp found; adopting the current numbering (build $current)."
 
-short_version="$(agvtool what-marketing-version -terse1 2>/dev/null | tr -d '[:space:]')"
-[ -n "$short_version" ] || die "could not read the marketing version with 'agvtool what-marketing-version'."
+# ─────────────────────────────────────────────────────────────────────────────
+# The marketing version (CFBundleShortVersionString), read from the APP TARGET
+# by name — never "whichever one comes first".
+#
+# ⛔ THIS DOES NOT USE agvtool, AND THE REASON IS MEASURED RATHER THAN STYLISTIC.
+# `agvtool what-marketing-version` reads CFBundleShortVersionString out of the
+# Info.plist files. In this project all four of them are EMPTY — the version is
+# supplied by the MARKETING_VERSION build setting, which is how modern Xcode
+# projects carry it. So agvtool finds `""` four times and `-terse1` prints
+# NOTHING AT ALL: exit 0, zero bytes. (It also mis-parses its own arguments and
+# reports `Cannot find "Primal.xcodeproj/../YES"`.)
+#
+# An earlier version of this script did `agvtool what-marketing-version -terse1`
+# and refused when the result was empty. That refusal fires on EVERY run, so the
+# script could never have completed a stamp. It had not been run yet, which is
+# the only reason nobody had seen it.
+#
+# ⛔ AND "TAKE THE FIRST" WOULD HAVE BEEN WRONG EVEN IF IT RETURNED SOMETHING.
+# project.pbxproj carries MARKETING_VERSION on twelve build configurations:
+# 3.5.60 on the two belonging to the app target, and 1.0 on the ten belonging to
+# PrimalTests, PrimalUITests, PrimalNotifications, primalShare and
+# RemoteSignerWidget. Which one comes first is an artifact of file ordering, so a
+# positional read is a guess that happens to be right — and a future project edit
+# would flip it to 1.0 silently, putting a wrong version string inside a record
+# whose entire job is identity.
+#
+# So the version is asked of the thing that actually decides it: the build
+# settings for the named app target. Same move as reading a value back rather
+# than asserting it. If the target has been renamed, or the setting cannot be
+# resolved, this REFUSES — it does not fall back to a guess.
+readonly APP_TARGET="Primal"
+readonly APP_BUNDLE_ID="net.primal.iosapp.Primal"
+
+build_settings="$(xcodebuild -showBuildSettings \
+  -project Primal.xcodeproj \
+  -target "$APP_TARGET" \
+  -configuration Release \
+  -onlyUsePackageVersionsFromResolvedFile 2>/dev/null)" || build_settings=""
+
+[ -n "$build_settings" ] || die "could not read build settings for target '$APP_TARGET'.
+
+  This script will not guess a version string. Check that Primal.xcodeproj still
+  has a target called '$APP_TARGET' and that 'xcodebuild -list' works here."
+
+short_version="$(printf '%s\n' "$build_settings" \
+  | awk -F' = ' '/^[[:space:]]*MARKETING_VERSION = /{print $2; exit}' | tr -d '[:space:]')"
+settings_bundle_id="$(printf '%s\n' "$build_settings" \
+  | awk -F' = ' '/^[[:space:]]*PRODUCT_BUNDLE_IDENTIFIER = /{print $2; exit}' | tr -d '[:space:]')"
+
+[ -n "$short_version" ] || die "target '$APP_TARGET' has no MARKETING_VERSION.
+
+  The marketing version is what becomes CFBundleShortVersionString, and the
+  stamp is not worth writing without it. Set MARKETING_VERSION on the app
+  target, or stamp from a checkout where it is set."
+
+# ⛔ THE TARGET NAME IS A LABEL; THE BUNDLE ID IS THE IDENTITY. Checking both
+# means a renamed or re-pointed target cannot quietly hand us another target's
+# version — the failure this whole read exists to prevent, arriving through the
+# target name instead of through file ordering.
+[ "$settings_bundle_id" = "$APP_BUNDLE_ID" ] || die "target '$APP_TARGET' builds
+  $settings_bundle_id, not $APP_BUNDLE_ID.
+
+  Refusing rather than stamping a version string read from the wrong target."
+
+say "marketing version $short_version, read from target $APP_TARGET ($APP_BUNDLE_ID)."
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Bump, record, commit, tag, push.
