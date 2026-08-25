@@ -17,6 +17,9 @@ class NewPostButton: UIButton, Themeable {
     init() {
         super.init(frame: .zero)
         constrainToSize(56)
+        // Stable handle for UI automation. The button is icon-only, so it carries no
+        // title for a test to match on; this is invisible to users and to VoiceOver.
+        accessibilityIdentifier = "newPostButton"
         updateTheme()
     }
 
