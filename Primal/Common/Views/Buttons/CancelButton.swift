@@ -13,6 +13,8 @@ final class CancelButton: UIButton {
         titleLabel?.font = .appFont(withSize: 16, weight: .medium)
         setTitleColor(.foreground4, for: .normal)
         setTitle("Cancel", for: .normal)
+        // Stable handle for UI automation. Invisible to users and to VoiceOver.
+        accessibilityIdentifier = "composerCancelButton"
     }
     
     required init?(coder: NSCoder) {

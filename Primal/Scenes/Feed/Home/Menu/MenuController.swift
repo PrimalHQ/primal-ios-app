@@ -120,6 +120,13 @@ private extension MenuController {
         let settings = MenuItemButton(title: "SETTINGS", image: .menuSidebarSettings)
         let signOut = MenuItemButton(title: "SIGN OUT", image: .menuSidebarSignout)
 
+        // Stable handles for UI automation on the four destinations our UI tests
+        // navigate to. Invisible to users and to VoiceOver.
+        profile.accessibilityIdentifier = "menuProfile"
+        messages.accessibilityIdentifier = "menuMessages"
+        bookmarks.accessibilityIdentifier = "menuBookmarks"
+        settings.accessibilityIdentifier = "menuSettings"
+
         let row1 = UIStackView(axis: .horizontal, spacing: 8 * uiScale, [profile, premium, messages])
         let row2 = UIStackView(axis: .horizontal, spacing: 8 * uiScale, [bookmarks, remoteLogin, redeemCode])
         let row3 = UIStackView(axis: .horizontal, spacing: 8 * uiScale, [settings, signOut, UIView()])

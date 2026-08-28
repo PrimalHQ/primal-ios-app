@@ -22,6 +22,10 @@ final class SmallPostButton: UIButton, Themeable {
         
         setTitle(title, for: .normal)
         titleLabel?.font = .appFont(withSize: 14, weight: .medium)
+
+        // Stable handle for UI automation. The title changes with posting state
+        // ("Post" / "Reply" / "Posting..." / "Uploading..."), so it is not one.
+        accessibilityIdentifier = "composerPostButton"
         
         constrainToSize(height: 28)
         layer.cornerRadius = 14

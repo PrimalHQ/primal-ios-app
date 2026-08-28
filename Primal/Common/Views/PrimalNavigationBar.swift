@@ -228,6 +228,9 @@ private extension PrimalNavigationBar {
 
         addSubview(avatarButton)
         avatarButton.pin(to: userImageView)
+        // Stable handle for UI automation. This button carries no title and no image
+        // of its own; it sits over the avatar and opens the side menu.
+        avatarButton.accessibilityIdentifier = "navBarAvatarButton"
         avatarButton.addAction(.init(handler: { [weak self] _ in
             self?.onAvatarTapped?()
         }), for: .touchUpInside)

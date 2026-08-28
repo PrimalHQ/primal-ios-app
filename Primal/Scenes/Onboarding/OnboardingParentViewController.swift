@@ -200,6 +200,9 @@ extension OnboardingViewController {
     
     func addNavigationBar(_ title: String) {
         backButton.setImage(UIImage(named: "back"), for: .normal)
+        // Stable handle for UI automation; the button is icon-only, so the only
+        // string it contributes today is the image's asset name.
+        backButton.accessibilityIdentifier = "onboardingBackButton"
         backButton.tintColor = UIColor(rgb: 0x111111)
         backButton.constrainToSize(44)
         backButton.backgroundColor = .white.withAlphaComponent(0.01)
