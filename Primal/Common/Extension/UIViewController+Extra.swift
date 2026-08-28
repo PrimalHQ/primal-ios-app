@@ -96,6 +96,9 @@ extension UIViewController {
     func backButtonWithColorNoAction(_ color: UIColor) -> UIButton {
         let button = UIButton()
         button.setImage(UIImage(named: "back"), for: .normal)
+        // Stable handle for UI automation; the button is icon-only, so the only
+        // string it contributes today is the image's asset name.
+        button.accessibilityIdentifier = "navBackButton"
         button.tintColor = color
         button.contentHorizontalAlignment = .leading
         button.constrainToSize(44)

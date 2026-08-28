@@ -113,6 +113,7 @@ final class MainTabBarViewOrchestrator: NSObject, Themeable {
             // NO OP
         } else {
             zip(buttons, tabs).forEach { button, tab in
+                button.accessibilityIdentifier = tab.accessibilityIdentifier
                 button.addAction(.init(handler: { [weak self] _ in
                     self?.controller?.menuButtonPressedForTab(tab)
                 }), for: .touchUpInside)
@@ -650,6 +651,7 @@ private extension MainTabBarViewOrchestrator {
             }
             let item = UITabBarItem(title: tab.tabTitle, image: image, tag: index)
             item.selectedImage = selectedImage
+            item.accessibilityIdentifier = tab.accessibilityIdentifier
             return item
         }
     }

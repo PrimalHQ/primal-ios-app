@@ -151,6 +151,12 @@ private extension OnboardingSigninController {
         }))
         
         confirmButton.addTarget(self, action: #selector(confirmButtonPressed), for: .touchUpInside)
+
+        // Stable handles for UI automation. The confirm button's title changes with
+        // state ("Paste Your Key" / "Paste New Key" / "Sign In"), and in the last of
+        // those it is the same string as this screen's navigation title.
+        input.accessibilityIdentifier = "signInKeyField"
+        confirmButton.accessibilityIdentifier = "signInConfirmButton"
         
         input.didChange = { [weak self] _ in
             self?.validateAndProcessKey(pasteIfMissing: false)

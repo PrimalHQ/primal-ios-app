@@ -96,6 +96,10 @@ private extension OnboardingStartViewController {
         
         signupButton.addTarget(self, action: #selector(signupPressed), for: .touchUpInside)
         signinButton.addTarget(self, action: #selector(signinPressed), for: .touchUpInside)
+
+        // Stable handles for UI automation. Invisible to users and to VoiceOver.
+        signinButton.accessibilityIdentifier = "onboardingSignInButton"
+        signupButton.accessibilityIdentifier = "onboardingCreateAccountButton"
         
         view.constrainToSize(width: 375, height: 800)
         view.centerToSuperview(axis: .horizontal)

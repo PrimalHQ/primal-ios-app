@@ -133,6 +133,10 @@ private extension AdvancedEmbedPostViewController {
         presentationController?.delegate = self
         view.backgroundColor = .background2
         
+        // Stable handle for UI automation. The field has no placeholder and no title,
+        // so it contributes nothing a UI test can select on.
+        textView.accessibilityIdentifier = "composerTextField"
+
         let verticalStack = UIStackView(axis: .vertical, [textView, imagesCollectionView, pollInputView, embeddedPreviewStack])
         verticalStack.spacing = 12
         let scrollView = UIScrollView()

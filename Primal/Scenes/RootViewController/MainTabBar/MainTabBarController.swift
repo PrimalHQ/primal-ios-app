@@ -25,6 +25,18 @@ enum MainTab: String {
         }
     }
 
+    /// Stable handle for UI automation, deliberately NOT derived from `tabTitle`:
+    /// it must not move when the visible label does.
+    var accessibilityIdentifier: String {
+        switch self {
+        case .home:             return "tabBarFeeds"
+        case .reads:            return "tabBarReads"
+        case .wallet:           return "tabBarWallet"
+        case .notifications:    return "tabBarAlerts"
+        case .explore:          return "tabBarExplore"
+        }
+    }
+
     var tabImage: UIImage? {
         if #available(iOS 26.0, *) { return UIImage(named: "tabIcon2-\(rawValue)") }
 

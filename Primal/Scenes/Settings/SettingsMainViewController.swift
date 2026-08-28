@@ -80,6 +80,9 @@ class SettingsMainViewController: UIViewController, Themeable {
 private extension SettingsMainViewController {
     func setupView() {
         title = "Settings"
+        // Stable handle for UI automation, so a test can identify this screen without
+        // matching on the visible title.
+        view.accessibilityIdentifier = "settingsScreen"
         
         let keys = SettingsOptionButton(title: "Account")
         let wallet = SettingsOptionButton(title: "Wallet")
