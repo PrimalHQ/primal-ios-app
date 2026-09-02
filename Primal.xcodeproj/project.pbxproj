@@ -423,7 +423,6 @@
 		B94A0E302ABA22A600DEBFE1 /* ChatTextViewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94A0E2F2ABA22A600DEBFE1 /* ChatTextViewManager.swift */; };
 		B94A0E322ABA30D900DEBFE1 /* TextViewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94A0E312ABA30D900DEBFE1 /* TextViewManager.swift */; };
 		B94B18A02D5E233600A932CE /* RegexTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94B189F2D5E233600A932CE /* RegexTests.swift */; };
-		B9C4A1E02F5F0A1B00D3E7A1 /* HTMLGeneratorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C4A1DF2F5F0A1B00D3E7A1 /* HTMLGeneratorTests.swift */; };
 		B94F2BAF2AD04FE40041181B /* WalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94F2BAE2AD04FE40041181B /* WalletManager.swift */; };
 		B94F2BB12AD053020041181B /* PrimalWalletRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94F2BB02AD053020041181B /* PrimalWalletRequest.swift */; };
 		B94F2BB32AD056D10041181B /* WalletRequestResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = B94F2BB22AD056D10041181B /* WalletRequestResult.swift */; };
@@ -577,6 +576,7 @@
 		B9BCF3C02CDD7F340032BD0D /* PremiumOnboardingHomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9BCF3BF2CDD7F340032BD0D /* PremiumOnboardingHomeViewController.swift */; };
 		B9BCF3C32CDD80020032BD0D /* PremiumHomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9BCF3C22CDD80020032BD0D /* PremiumHomeViewController.swift */; };
 		B9C0DE10000000000000F00D /* Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C0DE20000000000000F00D /* Log.swift */; };
+		B9C4A1E02F5F0A1B00D3E7A1 /* HTMLGeneratorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C4A1DF2F5F0A1B00D3E7A1 /* HTMLGeneratorTests.swift */; };
 		B9C5A07D2F36258E007CB5D3 /* UgradeWalletFaqController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C5A07C2F362586007CB5D3 /* UgradeWalletFaqController.swift */; };
 		B9C5A07F2F362B12007CB5D3 /* UpgradeWalletStartController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C5A07E2F362B0B007CB5D3 /* UpgradeWalletStartController.swift */; };
 		B9C5A0A72F3A3748007CB5D3 /* PrimalShared in Frameworks */ = {isa = PBXBuildFile; productRef = B9C5A0A62F3A3748007CB5D3 /* PrimalShared */; };
@@ -1284,7 +1284,6 @@
 		B94A0E2F2ABA22A600DEBFE1 /* ChatTextViewManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatTextViewManager.swift; sourceTree = "<group>"; };
 		B94A0E312ABA30D900DEBFE1 /* TextViewManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextViewManager.swift; sourceTree = "<group>"; };
 		B94B189F2D5E233600A932CE /* RegexTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegexTests.swift; sourceTree = "<group>"; };
-		B9C4A1DF2F5F0A1B00D3E7A1 /* HTMLGeneratorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTMLGeneratorTests.swift; sourceTree = "<group>"; };
 		B94F2BAE2AD04FE40041181B /* WalletManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletManager.swift; sourceTree = "<group>"; };
 		B94F2BB02AD053020041181B /* PrimalWalletRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimalWalletRequest.swift; sourceTree = "<group>"; };
 		B94F2BB22AD056D10041181B /* WalletRequestResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletRequestResult.swift; sourceTree = "<group>"; };
@@ -1438,6 +1437,7 @@
 		B9BCF3BF2CDD7F340032BD0D /* PremiumOnboardingHomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumOnboardingHomeViewController.swift; sourceTree = "<group>"; };
 		B9BCF3C22CDD80020032BD0D /* PremiumHomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumHomeViewController.swift; sourceTree = "<group>"; };
 		B9C0DE20000000000000F00D /* Log.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Log.swift; sourceTree = "<group>"; };
+		B9C4A1DF2F5F0A1B00D3E7A1 /* HTMLGeneratorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTMLGeneratorTests.swift; sourceTree = "<group>"; };
 		B9C5A07C2F362586007CB5D3 /* UgradeWalletFaqController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UgradeWalletFaqController.swift; sourceTree = "<group>"; };
 		B9C5A07E2F362B0B007CB5D3 /* UpgradeWalletStartController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpgradeWalletStartController.swift; sourceTree = "<group>"; };
 		B9C5A0A92F3A68F8007CB5D3 /* RestoreWalletController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestoreWalletController.swift; sourceTree = "<group>"; };
@@ -5108,7 +5108,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.5.60;
+				MARKETING_VERSION = 3.5.61;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -5157,7 +5157,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.5.60;
+				MARKETING_VERSION = 3.5.61;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
