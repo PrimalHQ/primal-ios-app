@@ -5,6 +5,7 @@
 //  Created by Pavle Stevanović on 23. 1. 2026..
 //
 
+import Foundation
 import Markdown
 
 struct HTMLGenerator: MarkupWalker {
@@ -28,7 +29,9 @@ struct HTMLGenerator: MarkupWalker {
     }
     
     mutating func visitText(_ text: Text) {
-        html += text.string.escapedForHTML
+        // swift-markdown doesn't attach the GFM autolink extension, so bare URLs
+        // arrive as plain text. Linkify them unless we're already inside a link.
+        html += text.isInsideLink ? text.string.escapedForHTML : text.string.linkifyingBareURLs()
     }
     
     mutating func visitStrong(_ strong: Strong) {
@@ -153,5 +156,57 @@ extension String {
             .replacingOccurrences(of: "<", with: "&lt;")
             .replacingOccurrences(of: ">", with: "&gt;")
             .replacingOccurrences(of: "\"", with: "&quot;")
+    }
+}
+
+private extension Markup {
+    var isInsideLink: Bool {
+        var node = parent
+        while let current = node {
+            if current is Link { return true }
+            node = current.parent
+        }
+        return false
+    }
+}
+
+private extension String {
+    static let bareURLRegex = try? NSRegularExpression(pattern: "\\b(?i)https?:\\/\\/[^\\s<]+", options: [])
+    
+    /// HTML-escapes the string, wrapping any bare http(s) URL in an anchor.
+    func linkifyingBareURLs() -> String {
+        guard let regex = Self.bareURLRegex else { return escapedForHTML }
+        
+        let nsString = self as NSString
+        var result = ""
+        var position = 0
+        
+        for match in regex.matches(in: self, options: [], range: NSRange(location: 0, length: nsString.length)) {
+            result += nsString.substring(with: NSRange(location: position, length: match.range.location - position)).escapedForHTML
+            
+            let (url, trailing) = nsString.substring(with: match.range).splittingTrailingPunctuation()
+            let escapedURL = url.escapedForHTML
+            result += "<a href=\"\(escapedURL)\">\(escapedURL)</a>" + trailing.escapedForHTML
+            
+            position = match.range.location + match.range.length
+        }
+        
+        result += nsString.substring(from: position).escapedForHTML
+        return result
+    }
+    
+    /// Mirrors GFM autolink: trailing punctuation and unbalanced closing parens aren't part of the URL.
+    func splittingTrailingPunctuation() -> (url: String, trailing: String) {
+        var url = Substring(self)
+        while let last = url.last {
+            if ".,;:!?*_~".contains(last) {
+                url.removeLast()
+            } else if last == ")", url.filter({ $0 == ")" }).count > url.filter({ $0 == "(" }).count {
+                url.removeLast()
+            } else {
+                break
+            }
+        }
+        return (String(url), String(dropFirst(url.count)))
     }
 }
