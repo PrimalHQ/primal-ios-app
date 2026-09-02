@@ -576,6 +576,7 @@
 		B9BCF3C02CDD7F340032BD0D /* PremiumOnboardingHomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9BCF3BF2CDD7F340032BD0D /* PremiumOnboardingHomeViewController.swift */; };
 		B9BCF3C32CDD80020032BD0D /* PremiumHomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9BCF3C22CDD80020032BD0D /* PremiumHomeViewController.swift */; };
 		B9C0DE10000000000000F00D /* Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C0DE20000000000000F00D /* Log.swift */; };
+		B9C4A1E02F5F0A1B00D3E7A1 /* HTMLGeneratorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C4A1DF2F5F0A1B00D3E7A1 /* HTMLGeneratorTests.swift */; };
 		B9C5A07D2F36258E007CB5D3 /* UgradeWalletFaqController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C5A07C2F362586007CB5D3 /* UgradeWalletFaqController.swift */; };
 		B9C5A07F2F362B12007CB5D3 /* UpgradeWalletStartController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C5A07E2F362B0B007CB5D3 /* UpgradeWalletStartController.swift */; };
 		B9C5A0A72F3A3748007CB5D3 /* PrimalShared in Frameworks */ = {isa = PBXBuildFile; productRef = B9C5A0A62F3A3748007CB5D3 /* PrimalShared */; };
@@ -1436,6 +1437,7 @@
 		B9BCF3BF2CDD7F340032BD0D /* PremiumOnboardingHomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumOnboardingHomeViewController.swift; sourceTree = "<group>"; };
 		B9BCF3C22CDD80020032BD0D /* PremiumHomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumHomeViewController.swift; sourceTree = "<group>"; };
 		B9C0DE20000000000000F00D /* Log.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Log.swift; sourceTree = "<group>"; };
+		B9C4A1DF2F5F0A1B00D3E7A1 /* HTMLGeneratorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTMLGeneratorTests.swift; sourceTree = "<group>"; };
 		B9C5A07C2F362586007CB5D3 /* UgradeWalletFaqController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UgradeWalletFaqController.swift; sourceTree = "<group>"; };
 		B9C5A07E2F362B0B007CB5D3 /* UpgradeWalletStartController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpgradeWalletStartController.swift; sourceTree = "<group>"; };
 		B9C5A0A92F3A68F8007CB5D3 /* RestoreWalletController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestoreWalletController.swift; sourceTree = "<group>"; };
@@ -1757,6 +1759,7 @@
 			children = (
 				9E8834CD2A37BFB9005DB548 /* NSRangeTests.swift */,
 				B94B189F2D5E233600A932CE /* RegexTests.swift */,
+				B9C4A1DF2F5F0A1B00D3E7A1 /* HTMLGeneratorTests.swift */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -4881,6 +4884,7 @@
 			files = (
 				9E8834CE2A37BFB9005DB548 /* NSRangeTests.swift in Sources */,
 				B94B18A02D5E233600A932CE /* RegexTests.swift in Sources */,
+				B9C4A1E02F5F0A1B00D3E7A1 /* HTMLGeneratorTests.swift in Sources */,
 				AA9CF3DB44709B5BC13CA5A8 /* GenerateAmountsTests.swift in Sources */,
 				D1E2F3A4B5C6D7E8F9A0B1C2 /* PostingPreviewEmbedsViewTests.swift in Sources */,
 				9393310729A3E370003954C2 /* PrimalTests.swift in Sources */,
@@ -5104,7 +5108,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.5.60;
+				MARKETING_VERSION = 3.5.61;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -5153,7 +5157,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.5.60;
+				MARKETING_VERSION = 3.5.61;
 				PRODUCT_BUNDLE_IDENTIFIER = net.primal.iosapp.Primal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -5581,7 +5585,7 @@
 			repositoryURL = "https://github.com/breez/breez-sdk-spark-swift.git";
 			requirement = {
 				kind = exactVersion;
-				version = 0.17.1;
+				version = 0.23.1;
 			};
 		};
 		B906AB022C99F3E40089813F /* XCRemoteSwiftPackageReference "GRDB.swift" */ = {
@@ -5613,7 +5617,7 @@
 			repositoryURL = "https://github.com/PrimalHQ/primal-shared-ios";
 			requirement = {
 				kind = exactVersion;
-				version = 0.3.0;
+				version = 0.3.2;
 			};
 		};
 		B9F933162B867D860064B495 /* XCRemoteSwiftPackageReference "qrcode" */ = {
