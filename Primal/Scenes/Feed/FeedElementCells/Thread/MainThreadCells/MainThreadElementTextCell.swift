@@ -16,6 +16,7 @@ class MainThreadElementTextCell: FeedElementBaseCell, RegularFeedElementCell {
     var useShortText: Bool { true }
 
     let selectionTextView = UITextView()
+    let translateView = NoteTranslateView()
 
     var heightC: NSLayoutConstraint?
 
@@ -36,11 +37,15 @@ class MainThreadElementTextCell: FeedElementBaseCell, RegularFeedElementCell {
         heightC?.priority = .defaultHigh
         heightC?.isActive = true
 
+        translateView.update(with: parsedContent)
+        
         updateTheme()
     }
 
     override func updateTheme() {
         super.updateTheme()
+        
+        translateView.updateTheme()
     }
 }
 
@@ -50,7 +55,12 @@ private extension MainThreadElementTextCell {
         selectionTextView
             .pinToSuperview(edges: .horizontal, padding: -5)
             .pinToSuperview(edges: .top, padding: 3)
-            .pinToSuperview(edges: .bottom, padding: -5)
+
+        contentContainer.addSubview(translateView)
+        translateView
+            .pinToSuperview(edges: .horizontal, padding: 4)
+            .pinToSuperview(edges: .bottom)
+        translateView.topAnchor.constraint(equalTo: selectionTextView.bottomAnchor, constant: 2).isActive = true
 
         selectionTextView.backgroundColor = .clear
         selectionTextView.linkTextAttributes = [:]
