@@ -90,6 +90,7 @@ private extension SettingsMainViewController {
         let appearance = SettingsOptionButton(title: "Appearance")
         let connectedApps = SettingsOptionButton(title: "Connected Apps")
         let contentDisplay = SettingsOptionButton(title: "Content Display")
+        let translation = SettingsOptionButton(title: "Note Translation")
         let muted = SettingsOptionButton(title: "Muted Content")
         let mediaUploads = SettingsOptionButton(title: "Media Uploads")
         let notifications = SettingsOptionButton(title: "Notifications")
@@ -99,7 +100,7 @@ private extension SettingsMainViewController {
         let versionTitleLabel = SettingsTitleView(title: "VERSION")
         
         let bottomStack = UIStackView(arrangedSubviews: [versionTitleLabel, versionLabel, UIView()])
-        let stack = UIStackView(arrangedSubviews: [keys, wallet, network, appearance, connectedApps, contentDisplay, muted, mediaUploads, notifications, devMode, zaps, SpacerView(height: 40), bottomStack])
+        let stack = UIStackView(arrangedSubviews: [keys, wallet, network, appearance, connectedApps, contentDisplay, translation, muted, mediaUploads, notifications, devMode, zaps, SpacerView(height: 40), bottomStack])
         
         let scroll = UIScrollView()
         
@@ -156,6 +157,10 @@ private extension SettingsMainViewController {
         
         contentDisplay.addAction(.init(handler: { [weak self] _ in
             self?.navigationController?.pushViewController(SettingsContentDisplayController(), animated: true)
+        }), for: .touchUpInside)
+
+        translation.addAction(.init(handler: { [weak self] _ in
+            self?.navigationController?.pushViewController(SettingsTranslationViewController(), animated: true)
         }), for: .touchUpInside)
         
         muted.addAction(.init(handler: { [weak self] _ in

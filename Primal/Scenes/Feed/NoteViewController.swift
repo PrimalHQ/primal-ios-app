@@ -488,6 +488,32 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
         case .share:
             let activityViewController = UIActivityViewController(activityItems: [post.webURL()], applicationActivities: nil)
             present(activityViewController, animated: true, completion: nil)
+        case .translate:
+            let source = post.post.content
+            guard !source.isEmpty else { return }
+            let loading = UIAlertController(title: "Translating…", message: nil, preferredStyle: .alert)
+            present(loading, animated: true)
+            NoteTranslationService.translate(text: source) { [weak self] result in
+                loading.dismiss(animated: true) {
+                    switch result {
+                    case .success(let text):
+                        let alert = UIAlertController(title: "Translation", message: text, preferredStyle: .alert)
+                        alert.addAction(UIAlertAction(title: "OK", style: .default))
+                        alert.addAction(UIAlertAction(title: "Copy", style: .default) { _ in
+                            UIPasteboard.general.string = text
+                        })
+                        self?.present(alert, animated: true)
+                    case .failure(let error):
+                        let alert = UIAlertController(
+                            title: "Translation failed",
+                            message: error.localizedDescription,
+                            preferredStyle: .alert
+                        )
+                        alert.addAction(UIAlertAction(title: "OK", style: .default))
+                        self?.present(alert, animated: true)
+                    }
+                }
+            }
         case .shareAsImage:
             guard
                 let cell,
