@@ -10,7 +10,7 @@ import Kingfisher
 
 class PostFeedCell: PostCell {
     lazy var seeMoreLabel = UILabel()
-    lazy var textStack = UIStackView(arrangedSubviews: [mainLabel, seeMoreLabel])
+    lazy var textStack = UIStackView(arrangedSubviews: [mainLabel, seeMoreLabel, translationView])
     let threeDotsSpacer = SpacerView(width: 20)
     lazy var mainStack = UIStackView(arrangedSubviews: [repostIndicator])
     
