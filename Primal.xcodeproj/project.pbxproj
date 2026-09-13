@@ -7,6 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C206A101B0E1F206A0000002 /* NoteTranslationPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = C206A101B0E1F206A0000001 /* NoteTranslationPreferences.swift */; };
+		C206A101B0E1F206A0000004 /* NoteTokenShield.swift in Sources */ = {isa = PBXBuildFile; fileRef = C206A101B0E1F206A0000003 /* NoteTokenShield.swift */; };
+		C206A101B0E1F206A0000006 /* NoteTranslationClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = C206A101B0E1F206A0000005 /* NoteTranslationClient.swift */; };
+		C206A101B0E1F206A0000008 /* NoteInlineTranslateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C206A101B0E1F206A0000007 /* NoteInlineTranslateView.swift */; };
+		C206A101B0E1F206A000000A /* SettingsNoteTranslationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C206A101B0E1F206A0000009 /* SettingsNoteTranslationController.swift */; };
+		C206A101B0E1F206A000000C /* NoteTranslationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C206A101B0E1F206A000000B /* NoteTranslationTests.swift */; };
 		024790235F8243AC95A947C7 /* PollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 254BECF85EE9411B88FDCEFA /* PollView.swift */; };
 		2D7F552B70900BC23221F4AC /* PollVoteOptionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC1B50E71AC4CB3BACD02E0A /* PollVoteOptionCell.swift */; };
 		2F98EB1DCC624734794395F1 /* PollVoteUserCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 251E11AFC9FB66D804B5217F /* PollVoteUserCell.swift */; };
@@ -844,6 +850,12 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		C206A101B0E1F206A0000001 /* NoteTranslationPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteTranslationPreferences.swift; sourceTree = "<group>"; };
+		C206A101B0E1F206A0000003 /* NoteTokenShield.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteTokenShield.swift; sourceTree = "<group>"; };
+		C206A101B0E1F206A0000005 /* NoteTranslationClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteTranslationClient.swift; sourceTree = "<group>"; };
+		C206A101B0E1F206A0000007 /* NoteInlineTranslateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteInlineTranslateView.swift; sourceTree = "<group>"; };
+		C206A101B0E1F206A0000009 /* SettingsNoteTranslationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsNoteTranslationController.swift; sourceTree = "<group>"; };
+		C206A101B0E1F206A000000B /* NoteTranslationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteTranslationTests.swift; sourceTree = "<group>"; };
 		11014EF06E484DF7AE794F7D /* FeedElementPollCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedElementPollCell.swift; sourceTree = "<group>"; };
 		251E11AFC9FB66D804B5217F /* PollVoteUserCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollVoteUserCell.swift; sourceTree = "<group>"; };
 		254BECF85EE9411B88FDCEFA /* PollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollView.swift; sourceTree = "<group>"; };
@@ -1750,6 +1762,9 @@
 			isa = PBXGroup;
 			children = (
 				933DBDBE2A11FF87008DCF1F /* ParsedContent.swift */,
+				C206A101B0E1F206A0000001 /* NoteTranslationPreferences.swift */,
+				C206A101B0E1F206A0000003 /* NoteTokenShield.swift */,
+				C206A101B0E1F206A0000005 /* NoteTranslationClient.swift */,
 			);
 			path = Notes;
 			sourceTree = "<group>";
@@ -1867,6 +1882,7 @@
 				BD61E893F7939D2AC33A6A4C /* GenerateAmountsTests.swift */,
 				D1E2F3A4B5C6D7E8F9A0B1C3 /* PostingPreviewEmbedsViewTests.swift */,
 				9393310629A3E370003954C2 /* PrimalTests.swift */,
+				C206A101B0E1F206A000000B /* NoteTranslationTests.swift */,
 			);
 			path = PrimalTests;
 			sourceTree = "<group>";
@@ -2225,6 +2241,7 @@
 				9EF4BFC52A8BEEA3003396AA /* SettingsAppearanceViewController.swift */,
 				B94F2C032AEFD9310041181B /* SettingsNetworkViewController.swift */,
 				B90EF0F02B03F7AF00A7CD65 /* SettingsContentDisplayController.swift */,
+				C206A101B0E1F206A0000009 /* SettingsNoteTranslationController.swift */,
 				B9B290562B4DB2950069C87F /* SettingsWalletViewController.swift */,
 				B9658AC22D9EADA60037E5DB /* SettingsMediaUploadsController.swift */,
 				B90585372C9DDFD600FC4108 /* SettingsDevModeController.swift */,
@@ -3717,6 +3734,7 @@
 				B9E67E972D088BDA006BB397 /* Thread */,
 				B9E67E7C2D075E35006BB397 /* FeedElementUserCell.swift */,
 				B9E67E7E2D0760B6006BB397 /* FeedElementTextCell.swift */,
+				C206A101B0E1F206A0000007 /* NoteInlineTranslateView.swift */,
 				B9E67E802D0762CD006BB397 /* FeedElementSmallZapGalleryCell.swift */,
 				B9E67E822D076303006BB397 /* FeedElementImageGalleryCell.swift */,
 				AAA1110000000000000B000A /* FeedElementAudioCell.swift */,
@@ -4446,6 +4464,11 @@
 				B9DAA4582D4A61D400B00B82 /* NWCScheme.swift in Sources */,
 				B914CD6B2AA20DC400CD0BD1 /* MutedUserCell.swift in Sources */,
 				933DBDBF2A11FF87008DCF1F /* ParsedContent.swift in Sources */,
+				C206A101B0E1F206A0000002 /* NoteTranslationPreferences.swift in Sources */,
+				C206A101B0E1F206A0000004 /* NoteTokenShield.swift in Sources */,
+				C206A101B0E1F206A0000006 /* NoteTranslationClient.swift in Sources */,
+				C206A101B0E1F206A0000008 /* NoteInlineTranslateView.swift in Sources */,
+				C206A101B0E1F206A000000A /* SettingsNoteTranslationController.swift in Sources */,
 				B9E67EAA2D09D8FA006BB397 /* ThreadElementUserCell.swift in Sources */,
 				B91E56E82CB9843A00C14809 /* AdvancedSearchMenuItemView.swift in Sources */,
 				B9E67E7D2D075E35006BB397 /* FeedElementUserCell.swift in Sources */,
@@ -4887,6 +4910,7 @@
 				B9C4A1E02F5F0A1B00D3E7A1 /* HTMLGeneratorTests.swift in Sources */,
 				AA9CF3DB44709B5BC13CA5A8 /* GenerateAmountsTests.swift in Sources */,
 				D1E2F3A4B5C6D7E8F9A0B1C2 /* PostingPreviewEmbedsViewTests.swift in Sources */,
+				C206A101B0E1F206A000000C /* NoteTranslationTests.swift in Sources */,
 				9393310729A3E370003954C2 /* PrimalTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
