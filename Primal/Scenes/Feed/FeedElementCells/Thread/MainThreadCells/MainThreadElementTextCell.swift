@@ -16,6 +16,8 @@ class MainThreadElementTextCell: FeedElementBaseCell, RegularFeedElementCell {
     var useShortText: Bool { true }
 
     let selectionTextView = UITextView()
+    let translateView = NoteInlineTranslateView()
+    lazy var contentStack = UIStackView(axis: .vertical, [selectionTextView, translateView])
 
     var heightC: NSLayoutConstraint?
 
@@ -27,6 +29,11 @@ class MainThreadElementTextCell: FeedElementBaseCell, RegularFeedElementCell {
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        translateView.prepareForReuse()
+    }
+
     override func update(_ parsedContent: ParsedContent) {
         selectionTextView.attributedText = parsedContent.attributedText
 
@@ -36,21 +43,26 @@ class MainThreadElementTextCell: FeedElementBaseCell, RegularFeedElementCell {
         heightC?.priority = .defaultHigh
         heightC?.isActive = true
 
+        translateView.update(with: parsedContent)
         updateTheme()
     }
 
     override func updateTheme() {
         super.updateTheme()
+        translateView.updateTheme()
     }
 }
 
 private extension MainThreadElementTextCell {
     func setup() {
-        contentContainer.addSubview(selectionTextView)
-        selectionTextView
+        contentContainer.addSubview(contentStack)
+        contentStack
             .pinToSuperview(edges: .horizontal, padding: -5)
             .pinToSuperview(edges: .top, padding: 3)
             .pinToSuperview(edges: .bottom, padding: -5)
+        contentStack.spacing = 4
+        translateView.layoutMargins = .init(top: 0, left: 5, bottom: 4, right: 5)
+        translateView.isLayoutMarginsRelativeArrangement = true
 
         selectionTextView.backgroundColor = .clear
         selectionTextView.linkTextAttributes = [:]

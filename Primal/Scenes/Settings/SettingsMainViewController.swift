@@ -88,6 +88,7 @@ private extension SettingsMainViewController {
         let wallet = SettingsOptionButton(title: "Wallet")
         let network = SettingsOptionButton(title: "Network")
         let appearance = SettingsOptionButton(title: "Appearance")
+        let translation = SettingsOptionButton(title: "Note Translation")
         let connectedApps = SettingsOptionButton(title: "Connected Apps")
         let contentDisplay = SettingsOptionButton(title: "Content Display")
         let muted = SettingsOptionButton(title: "Muted Content")
@@ -99,7 +100,7 @@ private extension SettingsMainViewController {
         let versionTitleLabel = SettingsTitleView(title: "VERSION")
         
         let bottomStack = UIStackView(arrangedSubviews: [versionTitleLabel, versionLabel, UIView()])
-        let stack = UIStackView(arrangedSubviews: [keys, wallet, network, appearance, connectedApps, contentDisplay, muted, mediaUploads, notifications, devMode, zaps, SpacerView(height: 40), bottomStack])
+        let stack = UIStackView(arrangedSubviews: [keys, wallet, network, appearance, translation, connectedApps, contentDisplay, muted, mediaUploads, notifications, devMode, zaps, SpacerView(height: 40), bottomStack])
         
         let scroll = UIScrollView()
         
@@ -128,6 +129,10 @@ private extension SettingsMainViewController {
         versionLabel.addGestureRecognizer(BindableTapGestureRecognizer(action: { [weak self] in
             self?.versionLabelTapped()
         }))
+
+        translation.addAction(.init(handler: { [weak self] _ in
+            self?.navigationController?.pushViewController(SettingsNoteTranslationController(), animated: true)
+        }), for: .touchUpInside)
         
         guard LoginManager.instance.method() == .nsec else {
             [keys, appearance, contentDisplay, muted, notifications, zaps, network].forEach { $0.addDisabledNSecWarning(self) }
