@@ -93,13 +93,14 @@ private extension SettingsMainViewController {
         let muted = SettingsOptionButton(title: "Muted Content")
         let mediaUploads = SettingsOptionButton(title: "Media Uploads")
         let notifications = SettingsOptionButton(title: "Notifications")
+        let translation = SettingsOptionButton(title: "Translation")
         devMode.isHidden = !DevModeSettings.devToolsEnabled
         let zaps = SettingsOptionButton(title: "Zaps")
         
         let versionTitleLabel = SettingsTitleView(title: "VERSION")
         
         let bottomStack = UIStackView(arrangedSubviews: [versionTitleLabel, versionLabel, UIView()])
-        let stack = UIStackView(arrangedSubviews: [keys, wallet, network, appearance, connectedApps, contentDisplay, muted, mediaUploads, notifications, devMode, zaps, SpacerView(height: 40), bottomStack])
+        let stack = UIStackView(arrangedSubviews: [keys, wallet, network, appearance, connectedApps, contentDisplay, muted, mediaUploads, notifications, translation, devMode, zaps, SpacerView(height: 40), bottomStack])
         
         let scroll = UIScrollView()
         
@@ -129,6 +130,11 @@ private extension SettingsMainViewController {
             self?.versionLabelTapped()
         }))
         
+        // Translation works without keys, so it stays available in read-only mode.
+        translation.addAction(.init(handler: { [weak self] _ in
+            self?.navigationController?.pushViewController(SettingsTranslationController(), animated: true)
+        }), for: .touchUpInside)
+
         guard LoginManager.instance.method() == .nsec else {
             [keys, appearance, contentDisplay, muted, notifications, zaps, network].forEach { $0.addDisabledNSecWarning(self) }
             return

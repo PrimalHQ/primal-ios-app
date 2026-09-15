@@ -41,6 +41,7 @@ enum PostCellEvent {
     case bookmark
     case unbookmark
     case requestDelete
+    case translate
 }
 
 enum NoteCopiableProperty {

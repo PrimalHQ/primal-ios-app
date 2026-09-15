@@ -16,6 +16,8 @@ class MainThreadElementTextCell: FeedElementBaseCell, RegularFeedElementCell {
     var useShortText: Bool { true }
 
     let selectionTextView = UITextView()
+    let translationView = NoteTranslationView()
+    lazy var textStack = UIStackView(axis: .vertical, [selectionTextView, translationView])
 
     var heightC: NSLayoutConstraint?
 
@@ -36,27 +38,41 @@ class MainThreadElementTextCell: FeedElementBaseCell, RegularFeedElementCell {
         heightC?.priority = .defaultHigh
         heightC?.isActive = true
 
+        translationView.update(parsedContent)
+        if TranslationSettings.autoTranslateNotes, parsedContent.translatedText == nil {
+            TranslationManager.instance.autoTranslate(parsedContent)
+        }
+
         updateTheme()
     }
 
     override func updateTheme() {
         super.updateTheme()
+
+        translationView.updateTheme()
     }
 }
 
 private extension MainThreadElementTextCell {
     func setup() {
-        contentContainer.addSubview(selectionTextView)
-        selectionTextView
+        contentContainer.addSubview(textStack)
+        textStack
             .pinToSuperview(edges: .horizontal, padding: -5)
             .pinToSuperview(edges: .top, padding: 3)
             .pinToSuperview(edges: .bottom, padding: -5)
+
+        textStack.setCustomSpacing(8, after: selectionTextView)
 
         selectionTextView.backgroundColor = .clear
         selectionTextView.linkTextAttributes = [:]
         selectionTextView.isEditable = false
         selectionTextView.isScrollEnabled = false
         selectionTextView.delegate = self
+
+        translationView.onShowOriginal = { [weak self] in
+            guard let self else { return }
+            self.delegate?.postCellDidTap(self, .translate)
+        }
     }
 }
 

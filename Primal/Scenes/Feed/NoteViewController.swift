@@ -536,6 +536,67 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
             showViewController(ArticleFeedViewController(feed: .init(name: "#\(tag)", spec: "{\"topic\":\"\(tag)\"}")))
         case .requestDelete:
             requestDelete(post)
+        case .translate:
+            translateNote(post, inCell: cell)
+        }
+    }
+    
+    /// Translates a note on demand (from the note menu). Tapping again — or the
+    /// "Show original" button — removes the translation.
+    func translateNote(_ post: ParsedContent, inCell cell: UITableViewCell?) {
+        if post.translatedText != nil {
+            post.translatedText = nil
+            post.translationSourceLanguage = nil
+            refreshCells(for: post)
+            return
+        }
+        
+        let text = !post.text.isEmpty ? post.text : post.post.content
+        guard !text.isEmpty else { return }
+        
+        guard TranslationManager.instance.isConfigured else {
+            showErrorMessage(
+                title: "Translation Not Configured",
+                TranslationManager.instance.configurationIssue ?? "Set up a translation provider in Settings → Translation."
+            )
+            return
+        }
+        
+        TranslationManager.instance.translate(text: text) { [weak self] result in
+            DispatchQueue.main.async {
+                guard let self else { return }
+                switch result {
+                case .success(let translation):
+                    post.translatedText = translation.text
+                    post.translationSourceLanguage = translation.sourceLanguage
+                    self.refreshCells(for: post)
+                case .failure:
+                    self.showErrorMessage(
+                        title: "Translation Failed",
+                        "Could not translate this note. Check your internet connection and translation settings."
+                    )
+                }
+            }
+        }
+    }
+    
+    /// Re-renders every visible cell displaying the given post, animating row
+    /// height changes without a visible reload flash.
+    func refreshCells(for post: ParsedContent) {
+        for cell in table.visibleCells {
+            guard
+                let indexPath = table.indexPath(for: cell),
+                let cellPost = dataSource.postForIndexPath(indexPath),
+                cellPost.uniqueID == post.uniqueID
+            else { continue }
+            
+            (cell as? RegularFeedElementCell)?.update(post)
+            (cell as? PostCell)?.update(post)
+        }
+        
+        UIView.performWithoutAnimation {
+            table.beginUpdates()
+            table.endUpdates()
         }
     }
     
@@ -588,6 +649,13 @@ private extension NoteViewController {
                 self.updateBarsHidden(false)
             }
         }
+        
+        TranslationManager.instance.translationDidUpdate
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] content in
+                self?.refreshCells(for: content)
+            }
+            .store(in: &cancellables)
         
         WalletManager.instance.zapEvent.delay(for: 0.3, scheduler: RunLoop.main).sink { [weak self] zap in
             guard

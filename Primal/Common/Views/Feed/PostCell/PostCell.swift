@@ -33,6 +33,7 @@ class PostCell: UITableViewCell {
     let nipLabel = UILabel()
     let replyingToView = ReplyingToView()
     let mainLabel = NantesLabel()
+    let translationView = NoteTranslationView()
     let invoiceView = LightningInvoiceView()
     let mainImages = ImageGalleryView()
     let articleView = ArticleFeedView()
@@ -207,6 +208,10 @@ class PostCell: UITableViewCell {
         }
         
         mainLabel.attributedText = useShortText ? content.attributedTextShort : content.attributedText
+        translationView.update(content)
+        if TranslationSettings.autoTranslateNotes, content.translatedText == nil {
+            TranslationManager.instance.autoTranslate(content)
+        }
         mainImages.resources = content.mediaResources
         mainImages.thumbnails = content.videoThumbnails
         mainImages.updateTheme()
@@ -228,7 +233,7 @@ class PostCell: UITableViewCell {
         let bookmarkAction = ("Add To Bookmarks", "MenuBookmark", PostCellEvent.bookmark, UIMenuElement.Attributes.keepsMenuPresented)
         let unbookmarkAction = ("Remove Bookmark", "MenuBookmarkFilled", PostCellEvent.unbookmark, UIMenuElement.Attributes.keepsMenuPresented)
         
-        let actionsData: [(String, String, PostCellEvent, UIMenuElement.Attributes)] = [
+        var actionsData: [(String, String, PostCellEvent, UIMenuElement.Attributes)] = [
             ("Share Note", "MenuShare", .share, []),
             ("Copy Note Link", "MenuCopyLink", .copy(.link), []),
             postInfo.isBookmarked ? unbookmarkAction : bookmarkAction,
@@ -240,8 +245,14 @@ class PostCell: UITableViewCell {
             ("Report user", "warningIcon", .report, .destructive)
         ]
 
+        if !content.text.isEmpty {
+            let translateTitle = content.translatedText == nil ? "Translate Note" : "Show Original Note"
+            actionsData.insert((translateTitle, "", .translate, []), at: 0)
+        }
+
         threeDotsButton.menu = .init(children: actionsData.map { (title, imageName, action, attributes) in
-            UIAction(title: title, image: UIImage(named: imageName), attributes: attributes) { [weak self] _ in
+            let image = imageName.isEmpty ? UIImage(systemName: "globe") : UIImage(named: imageName)
+            return UIAction(title: title, image: image, attributes: attributes) { [weak self] _ in
                 guard let self = self else { return }
                 delegate?.postCellDidTap(self, action)
             }
@@ -307,6 +318,12 @@ private extension PostCell {
             self.delegate?.postCellDidTap(self, .post)
         }
         mainLabel.setContentCompressionResistancePriority(.required, for: .vertical)
+        
+        translationView.onShowOriginal = { [weak self] in
+            guard let self else { return }
+            self.delegate?.postCellDidTap(self, .translate)
+        }
+        translationView.updateTheme()
         
         mainImages.imageDelegate = self
         
