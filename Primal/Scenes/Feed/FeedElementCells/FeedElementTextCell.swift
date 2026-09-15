@@ -28,8 +28,9 @@ class FeedElementTextCell: FeedElementBaseCell, RegularFeedElementCell {
     let nantesDelegate = FeedElementTextCellNantesDelegate()
     
     let mainLabel = NantesLabel()
+    let translationView = NoteTranslationView()
     lazy var seeMoreLabel = UILabel("See more...", color: .accent2, font: .appFont(withSize: FontSizeSelection.current.contentFontSize, weight: .regular))
-    lazy var textStack = UIStackView(arrangedSubviews: [mainLabel, seeMoreLabel])
+    lazy var textStack = UIStackView(arrangedSubviews: [mainLabel, translationView, seeMoreLabel])
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -45,6 +46,11 @@ class FeedElementTextCell: FeedElementBaseCell, RegularFeedElementCell {
         
         seeMoreLabel.isHidden = !(mainLabel.isTruncated() || (mainLabel.attributedText?.length ?? 0) == 500)
         
+        translationView.update(parsedContent)
+        if TranslationSettings.autoTranslateNotes, parsedContent.translatedText == nil {
+            TranslationManager.instance.autoTranslate(parsedContent)
+        }
+        
         updateTheme()
     }
     
@@ -56,6 +62,8 @@ class FeedElementTextCell: FeedElementBaseCell, RegularFeedElementCell {
         
         textStack.spacing = FontSizeSelection.current.contentLineSpacing
         mainLabel.font = UIFont.appFont(withSize: FontSizeSelection.current.contentFontSize, weight: .regular)
+        
+        translationView.updateTheme()
     }
 }
 
@@ -68,6 +76,7 @@ private extension FeedElementTextCell {
             .pinToSuperview(edges: .top, padding: 4)
         
         textStack.axis = .vertical
+        textStack.setCustomSpacing(8, after: mainLabel)
         
         seeMoreLabel.textAlignment = .natural
         seeMoreLabel.setContentCompressionResistancePriority(.required, for: .vertical)
@@ -82,5 +91,10 @@ private extension FeedElementTextCell {
             self.delegate?.postCellDidTap(self, .post)
         }
         mainLabel.setContentCompressionResistancePriority(.required, for: .vertical)
+        
+        translationView.onShowOriginal = { [weak self] in
+            guard let self else { return }
+            self.delegate?.postCellDidTap(self, .translate)
+        }
     }
 }

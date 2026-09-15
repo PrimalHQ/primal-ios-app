@@ -115,6 +115,11 @@ final class ParsedContent: Hashable {
     var text: String = ""
     var attributedText: NSAttributedString = NSAttributedString(string: "")
     var attributedTextShort: NSAttributedString = NSAttributedString(string: "")
+
+    // On-demand translation of the note text, filled in by TranslationManager.
+    // Not part of the content's identity (hash/equality).
+    var translatedText: String?
+    var translationSourceLanguage: String?
     
     var embeddedPosts: [ParsedContent] = []
     var embeddedZap: ParsedFeedZap?
@@ -375,6 +380,9 @@ extension ParsedContent {
         new.text = text
         new.attributedText = attributedText
         new.attributedTextShort = attributedTextShort
+
+        new.translatedText = translatedText
+        new.translationSourceLanguage = translationSourceLanguage
         
         new.zaps = zaps
         

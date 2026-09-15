@@ -29,8 +29,9 @@ class GalleryFeedElementTextCell: UITableViewCell, RegularFeedElementCell {
     private let nantesDelegate = GalleryTextCellNantesDelegate()
 
     let mainLabel = NantesLabel()
+    let translationView = NoteTranslationView()
     lazy var seeMoreLabel = UILabel("See more...", color: .accent2, font: .appFont(withSize: FontSizeSelection.current.contentFontSize, weight: .regular))
-    lazy var textStack = UIStackView(arrangedSubviews: [mainLabel, seeMoreLabel])
+    lazy var textStack = UIStackView(arrangedSubviews: [mainLabel, translationView, seeMoreLabel])
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -46,6 +47,7 @@ class GalleryFeedElementTextCell: UITableViewCell, RegularFeedElementCell {
             .pinToSuperview(edges: .top, padding: 4)
 
         textStack.axis = .vertical
+        textStack.setCustomSpacing(8, after: mainLabel)
 
         seeMoreLabel.textAlignment = .natural
         seeMoreLabel.setContentCompressionResistancePriority(.required, for: .vertical)
@@ -60,6 +62,11 @@ class GalleryFeedElementTextCell: UITableViewCell, RegularFeedElementCell {
             self.delegate?.postCellDidTap(self, .post)
         }
         mainLabel.setContentCompressionResistancePriority(.required, for: .vertical)
+
+        translationView.onShowOriginal = { [weak self] in
+            guard let self else { return }
+            self.delegate?.postCellDidTap(self, .translate)
+        }
     }
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
@@ -79,6 +86,11 @@ class GalleryFeedElementTextCell: UITableViewCell, RegularFeedElementCell {
 
         seeMoreLabel.isHidden = !(mainLabel.isTruncated() || parsedContent.attributedTextShort.length >= 500)
 
+        translationView.update(parsedContent)
+        if TranslationSettings.autoTranslateNotes, parsedContent.translatedText == nil {
+            TranslationManager.instance.autoTranslate(parsedContent)
+        }
+
         updateTheme()
     }
 
@@ -87,5 +99,6 @@ class GalleryFeedElementTextCell: UITableViewCell, RegularFeedElementCell {
         seeMoreLabel.font = .appFont(withSize: FontSizeSelection.current.contentFontSize, weight: .regular)
         textStack.spacing = FontSizeSelection.current.contentLineSpacing
         mainLabel.font = UIFont.appFont(withSize: FontSizeSelection.current.contentFontSize, weight: .regular)
+        translationView.updateTheme()
     }
 }

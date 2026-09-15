@@ -223,7 +223,14 @@ extension ParsedContent {
             actionsData.append(("Unmute Thread", .menuMuteThread, .toggleMutePost, .destructive))
         }
         
-        let mainData: [(String, UIImage, PostCellEvent, UIMenuElement.Attributes)] = [
+        var mainData: [(String, UIImage, PostCellEvent, UIMenuElement.Attributes)] = []
+
+        if !text.isEmpty {
+            let translateTitle = translatedText == nil ? "Translate Note" : "Show Original Note"
+            mainData.append((translateTitle, UIImage(systemName: "globe") ?? UIImage(), .translate, []))
+        }
+
+        mainData.append(contentsOf: [
             ("Share Note", .menuShare, .share, []),
             postInfo.isBookmarked ? unbookmarkAction : bookmarkAction,
             ("Share as Image", .menuShareAs, .shareAsImage, []),
@@ -231,7 +238,7 @@ extension ParsedContent {
             ("Copy Note Text", .menuCopyText, .copy(.content), []),
             ("Copy Note ID", .menuCopyNoteID, .copy(.noteID), []),
             ("Copy Raw Data", .menuCopyData, .copy(.rawData), [])
-        ]
+        ])
         actionsData.append(contentsOf: mainData)
         
         if user.data.pubkey != IdentityManager.instance.userHexPubkey {
