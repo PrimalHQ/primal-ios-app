@@ -29,7 +29,8 @@ class FeedElementTextCell: FeedElementBaseCell, RegularFeedElementCell {
     
     let mainLabel = NantesLabel()
     lazy var seeMoreLabel = UILabel("See more...", color: .accent2, font: .appFont(withSize: FontSizeSelection.current.contentFontSize, weight: .regular))
-    lazy var textStack = UIStackView(arrangedSubviews: [mainLabel, seeMoreLabel])
+    let translateControl = NoteTranslateControlView()
+    lazy var textStack = UIStackView(arrangedSubviews: [mainLabel, seeMoreLabel, translateControl])
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -45,6 +46,8 @@ class FeedElementTextCell: FeedElementBaseCell, RegularFeedElementCell {
         
         seeMoreLabel.isHidden = !(mainLabel.isTruncated() || (mainLabel.attributedText?.length ?? 0) == 500)
         
+        translateControl.configure(content: parsedContent.post.content)
+        
         updateTheme()
     }
     
@@ -56,6 +59,7 @@ class FeedElementTextCell: FeedElementBaseCell, RegularFeedElementCell {
         
         textStack.spacing = FontSizeSelection.current.contentLineSpacing
         mainLabel.font = UIFont.appFont(withSize: FontSizeSelection.current.contentFontSize, weight: .regular)
+        translateControl.updateTheme()
     }
 }
 
@@ -71,6 +75,10 @@ private extension FeedElementTextCell {
         
         seeMoreLabel.textAlignment = .natural
         seeMoreLabel.setContentCompressionResistancePriority(.required, for: .vertical)
+        
+        translateControl.onHeightChange = { [weak self] in
+            self?.refreshEnclosingTableRowHeight()
+        }
         
         nantesDelegate.cell = self
         

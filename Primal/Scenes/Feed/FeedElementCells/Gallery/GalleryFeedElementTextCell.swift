@@ -30,7 +30,8 @@ class GalleryFeedElementTextCell: UITableViewCell, RegularFeedElementCell {
 
     let mainLabel = NantesLabel()
     lazy var seeMoreLabel = UILabel("See more...", color: .accent2, font: .appFont(withSize: FontSizeSelection.current.contentFontSize, weight: .regular))
-    lazy var textStack = UIStackView(arrangedSubviews: [mainLabel, seeMoreLabel])
+    let translateControl = NoteTranslateControlView()
+    lazy var textStack = UIStackView(arrangedSubviews: [mainLabel, seeMoreLabel, translateControl])
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -46,6 +47,10 @@ class GalleryFeedElementTextCell: UITableViewCell, RegularFeedElementCell {
             .pinToSuperview(edges: .top, padding: 4)
 
         textStack.axis = .vertical
+
+        translateControl.onHeightChange = { [weak self] in
+            self?.refreshEnclosingTableRowHeight()
+        }
 
         seeMoreLabel.textAlignment = .natural
         seeMoreLabel.setContentCompressionResistancePriority(.required, for: .vertical)
@@ -79,6 +84,8 @@ class GalleryFeedElementTextCell: UITableViewCell, RegularFeedElementCell {
 
         seeMoreLabel.isHidden = !(mainLabel.isTruncated() || parsedContent.attributedTextShort.length >= 500)
 
+        translateControl.configure(content: parsedContent.post.content)
+
         updateTheme()
     }
 
@@ -87,5 +94,6 @@ class GalleryFeedElementTextCell: UITableViewCell, RegularFeedElementCell {
         seeMoreLabel.font = .appFont(withSize: FontSizeSelection.current.contentFontSize, weight: .regular)
         textStack.spacing = FontSizeSelection.current.contentLineSpacing
         mainLabel.font = UIFont.appFont(withSize: FontSizeSelection.current.contentFontSize, weight: .regular)
+        translateControl.updateTheme()
     }
 }

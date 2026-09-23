@@ -232,6 +232,7 @@ class PostCell: UITableViewCell {
             ("Share Note", "MenuShare", .share, []),
             ("Copy Note Link", "MenuCopyLink", .copy(.link), []),
             postInfo.isBookmarked ? unbookmarkAction : bookmarkAction,
+            ("Translate Note", "globe", .translate, []),
             ("Copy Note Text", "MenuCopyText", .copy(.content), []),
             ("Copy Raw Data", "MenuCopyData", .copy(.rawData), []),
             ("Copy Note ID", "MenuCopyNoteID", .copy(.noteID), []),
@@ -241,7 +242,8 @@ class PostCell: UITableViewCell {
         ]
 
         threeDotsButton.menu = .init(children: actionsData.map { (title, imageName, action, attributes) in
-            UIAction(title: title, image: UIImage(named: imageName), attributes: attributes) { [weak self] _ in
+            let image = UIImage(named: imageName) ?? UIImage(systemName: imageName)
+            return UIAction(title: title, image: image, attributes: attributes) { [weak self] _ in
                 guard let self = self else { return }
                 delegate?.postCellDidTap(self, action)
             }
