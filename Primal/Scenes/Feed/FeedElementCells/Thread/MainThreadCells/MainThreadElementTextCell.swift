@@ -16,6 +16,7 @@ class MainThreadElementTextCell: FeedElementBaseCell, RegularFeedElementCell {
     var useShortText: Bool { true }
 
     let selectionTextView = UITextView()
+    let translateControl = NoteTranslateControlView()
 
     var heightC: NSLayoutConstraint?
 
@@ -36,21 +37,31 @@ class MainThreadElementTextCell: FeedElementBaseCell, RegularFeedElementCell {
         heightC?.priority = .defaultHigh
         heightC?.isActive = true
 
+        translateControl.configure(content: parsedContent.post.content)
+
         updateTheme()
     }
 
     override func updateTheme() {
         super.updateTheme()
+        translateControl.updateTheme()
     }
 }
 
 private extension MainThreadElementTextCell {
     func setup() {
-        contentContainer.addSubview(selectionTextView)
-        selectionTextView
+        let stack = UIStackView(arrangedSubviews: [selectionTextView, translateControl])
+        stack.axis = .vertical
+        stack.spacing = 0
+        contentContainer.addSubview(stack)
+        stack
             .pinToSuperview(edges: .horizontal, padding: -5)
             .pinToSuperview(edges: .top, padding: 3)
-            .pinToSuperview(edges: .bottom, padding: -5)
+            .pinToSuperview(edges: .bottom, padding: 0)
+
+        translateControl.onHeightChange = { [weak self] in
+            self?.refreshEnclosingTableRowHeight()
+        }
 
         selectionTextView.backgroundColor = .clear
         selectionTextView.linkTextAttributes = [:]

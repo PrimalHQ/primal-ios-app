@@ -224,6 +224,7 @@
 		A1B2C3D4E5F6A7B8C9D0E1F5 /* HeaderCells.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6A7B8C9D0E1F6 /* HeaderCells.swift */; };
 		A1F2B3C4D5E6F7A8B9C0D1E2 /* MenuController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F2B3C4D5E6F7A8B9C0D1E3 /* MenuController.swift */; };
 		AA9CF3DB44709B5BC13CA5A8 /* GenerateAmountsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD61E893F7939D2AC33A6A4C /* GenerateAmountsTests.swift */; };
+		A2060003A1B2C3D4E5F60002 /* NoteTranslateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2060003A1B2C3D4E5F60001 /* NoteTranslateTests.swift */; };
 		AAA1110000000000000B0001 /* AudioPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAA1110000000000000B0002 /* AudioPlayer.swift */; };
 		AAA1110000000000000B0003 /* AudioPlayerRegistry.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAA1110000000000000B0004 /* AudioPlayerRegistry.swift */; };
 		AAA1110000000000000B0005 /* AudioWaveformView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAA1110000000000000B0006 /* AudioWaveformView.swift */; };
@@ -698,6 +699,8 @@
 		B9E67E262EFC1106002D7952 /* PushNotificationsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E67E252EFC1100002D7952 /* PushNotificationsManager.swift */; };
 		B9E67E7D2D075E35006BB397 /* FeedElementUserCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E67E7C2D075E35006BB397 /* FeedElementUserCell.swift */; };
 		B9E67E7F2D0760B6006BB397 /* FeedElementTextCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E67E7E2D0760B6006BB397 /* FeedElementTextCell.swift */; };
+		A2060001A1B2C3D4E5F60002 /* NoteTranslate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2060001A1B2C3D4E5F60001 /* NoteTranslate.swift */; };
+		A2060002A1B2C3D4E5F60002 /* NoteTranslateControlView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2060002A1B2C3D4E5F60001 /* NoteTranslateControlView.swift */; };
 		B9E67E812D0762CD006BB397 /* FeedElementSmallZapGalleryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E67E802D0762CD006BB397 /* FeedElementSmallZapGalleryCell.swift */; };
 		B9E67E832D076303006BB397 /* FeedElementImageGalleryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E67E822D076303006BB397 /* FeedElementImageGalleryCell.swift */; };
 		B9E67E852D076327006BB397 /* FeedElementWebPreviewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E67E842D076327006BB397 /* FeedElementWebPreviewCell.swift */; };
@@ -1556,6 +1559,9 @@
 		B9E67E252EFC1100002D7952 /* PushNotificationsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushNotificationsManager.swift; sourceTree = "<group>"; };
 		B9E67E7C2D075E35006BB397 /* FeedElementUserCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedElementUserCell.swift; sourceTree = "<group>"; };
 		B9E67E7E2D0760B6006BB397 /* FeedElementTextCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedElementTextCell.swift; sourceTree = "<group>"; };
+		A2060001A1B2C3D4E5F60001 /* NoteTranslate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteTranslate.swift; sourceTree = "<group>"; };
+		A2060002A1B2C3D4E5F60001 /* NoteTranslateControlView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteTranslateControlView.swift; sourceTree = "<group>"; };
+		A2060003A1B2C3D4E5F60001 /* NoteTranslateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteTranslateTests.swift; sourceTree = "<group>"; };
 		B9E67E802D0762CD006BB397 /* FeedElementSmallZapGalleryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedElementSmallZapGalleryCell.swift; sourceTree = "<group>"; };
 		B9E67E822D076303006BB397 /* FeedElementImageGalleryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedElementImageGalleryCell.swift; sourceTree = "<group>"; };
 		B9E67E842D076327006BB397 /* FeedElementWebPreviewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedElementWebPreviewCell.swift; sourceTree = "<group>"; };
@@ -1750,6 +1756,7 @@
 			isa = PBXGroup;
 			children = (
 				933DBDBE2A11FF87008DCF1F /* ParsedContent.swift */,
+				A2060001A1B2C3D4E5F60001 /* NoteTranslate.swift */,
 			);
 			path = Notes;
 			sourceTree = "<group>";
@@ -1865,6 +1872,7 @@
 			children = (
 				933DBDAD2A112593008DCF1F /* Common */,
 				BD61E893F7939D2AC33A6A4C /* GenerateAmountsTests.swift */,
+				A2060003A1B2C3D4E5F60001 /* NoteTranslateTests.swift */,
 				D1E2F3A4B5C6D7E8F9A0B1C3 /* PostingPreviewEmbedsViewTests.swift */,
 				9393310629A3E370003954C2 /* PrimalTests.swift */,
 			);
@@ -2297,6 +2305,7 @@
 				B91E57172CD93C7100C14809 /* ZapPreviewView.swift */,
 				B91EF0E32CECDE1600299ECF /* UserImageView.swift */,
 				A1B2C3D4E5F6A7B8C9D0E1F4 /* NoteUserHeaderView.swift */,
+				A2060002A1B2C3D4E5F60001 /* NoteTranslateControlView.swift */,
 			);
 			path = Feed;
 			sourceTree = "<group>";
@@ -4471,6 +4480,8 @@
 				9E9F2F8029F6AB6400A9CDF3 /* IntroVideoController.swift in Sources */,
 				B91EF0CF2CEA1B6F00299ECF /* PremiumManageContentDataCell.swift in Sources */,
 				B9E67E7F2D0760B6006BB397 /* FeedElementTextCell.swift in Sources */,
+				A2060001A1B2C3D4E5F60002 /* NoteTranslate.swift in Sources */,
+				A2060002A1B2C3D4E5F60002 /* NoteTranslateControlView.swift in Sources */,
 				B91EF0DD2CEBA30400299ECF /* LegendTheme.swift in Sources */,
 				B906AB0B2C9A10DE0089813F /* ProfileCounts.swift in Sources */,
 				93EAED182ABB25B300B4A1CD /* Collection+Extra.swift in Sources */,
@@ -4886,6 +4897,7 @@
 				B94B18A02D5E233600A932CE /* RegexTests.swift in Sources */,
 				B9C4A1E02F5F0A1B00D3E7A1 /* HTMLGeneratorTests.swift in Sources */,
 				AA9CF3DB44709B5BC13CA5A8 /* GenerateAmountsTests.swift in Sources */,
+				A2060003A1B2C3D4E5F60002 /* NoteTranslateTests.swift in Sources */,
 				D1E2F3A4B5C6D7E8F9A0B1C2 /* PostingPreviewEmbedsViewTests.swift in Sources */,
 				9393310729A3E370003954C2 /* PrimalTests.swift in Sources */,
 			);

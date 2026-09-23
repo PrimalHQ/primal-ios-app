@@ -227,6 +227,7 @@ extension ParsedContent {
             ("Share Note", .menuShare, .share, []),
             postInfo.isBookmarked ? unbookmarkAction : bookmarkAction,
             ("Share as Image", .menuShareAs, .shareAsImage, []),
+            ("Translate Note", UIImage(systemName: "globe") ?? .menuCopyText, .translate, []),
             ("Copy Note Link", .menuCopyLink, .copy(.link), []),
             ("Copy Note Text", .menuCopyText, .copy(.content), []),
             ("Copy Note ID", .menuCopyNoteID, .copy(.noteID), []),

@@ -514,6 +514,13 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
             
             let activityViewController = UIActivityViewController(activityItems: [image], applicationActivities: nil)
             present(activityViewController, animated: true, completion: nil)
+        case .translate:
+            let text = post.post.content.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !text.isEmpty else { return }
+            let target = NoteTranslate.resolveTargetLanguage()
+            let urlString = NoteTranslate.buildGoogleTranslateWebUrl(text: text, targetLang: target)
+            guard let url = URL(string: urlString) else { return }
+            present(SFSafariViewController(url: url), animated: true)
         case .copy(let property):
             UIPasteboard.general.string = post.propertyText(property)
             showToast("Copied!")
