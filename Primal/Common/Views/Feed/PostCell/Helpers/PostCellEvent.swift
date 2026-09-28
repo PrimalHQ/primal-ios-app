@@ -34,6 +34,7 @@ enum PostCellEvent {
     
     case share
     case shareAsImage
+    case translate
     case copy(NoteCopiableProperty)
     case report
     case muteUser

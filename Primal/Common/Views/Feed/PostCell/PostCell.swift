@@ -233,6 +233,7 @@ class PostCell: UITableViewCell {
             ("Copy Note Link", "MenuCopyLink", .copy(.link), []),
             postInfo.isBookmarked ? unbookmarkAction : bookmarkAction,
             ("Copy Note Text", "MenuCopyText", .copy(.content), []),
+            ("Translate Note", "MenuCopyText", .translate, []),
             ("Copy Raw Data", "MenuCopyData", .copy(.rawData), []),
             ("Copy Note ID", "MenuCopyNoteID", .copy(.noteID), []),
             ("Copy User Public Key", "MenuCopyUserPubkey", .copy(.userPubkey), []),

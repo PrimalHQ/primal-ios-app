@@ -229,6 +229,7 @@ extension ParsedContent {
             ("Share as Image", .menuShareAs, .shareAsImage, []),
             ("Copy Note Link", .menuCopyLink, .copy(.link), []),
             ("Copy Note Text", .menuCopyText, .copy(.content), []),
+            ("Translate Note", .menuCopyText, .translate, []),
             ("Copy Note ID", .menuCopyNoteID, .copy(.noteID), []),
             ("Copy Raw Data", .menuCopyData, .copy(.rawData), [])
         ]
