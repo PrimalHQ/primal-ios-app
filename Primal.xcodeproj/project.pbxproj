@@ -290,6 +290,10 @@
 		B90DB06F2E5E10CC00A67D4A /* LiveVideoZapsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90DB06E2E5E10C400A67D4A /* LiveVideoZapsController.swift */; };
 		B90EF0ED2AFC08E000A7CD65 /* ProfileTabSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90EF0EC2AFC08E000A7CD65 /* ProfileTabSelectionView.swift */; };
 		B90EF0EF2AFC41CB00A7CD65 /* ProfileFollowCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90EF0EE2AFC41CB00A7CD65 /* ProfileFollowCell.swift */; };
+		E1FC01A11A2B3C4D5E6F7002 /* NoteTranslationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1FC01A11A2B3C4D5E6F7001 /* NoteTranslationService.swift */; };
+		E1FC01A11A2B3C4D5E6F7004 /* SettingsTranslationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1FC01A11A2B3C4D5E6F7003 /* SettingsTranslationViewController.swift */; };
+		E1FC01A11A2B3C4D5E6F7006 /* NoteTranslationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1FC01A11A2B3C4D5E6F7005 /* NoteTranslationView.swift */; };
+		E1FC01A11A2B3C4D5E6F7008 /* NoteTranslationServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1FC01A11A2B3C4D5E6F7007 /* NoteTranslationServiceTests.swift */; };
 		B90EF0F12B03F7AF00A7CD65 /* SettingsContentDisplayController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90EF0F02B03F7AF00A7CD65 /* SettingsContentDisplayController.swift */; };
 		B914CD692A9E6B4A00CD0BD1 /* VideoPlaybackManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B914CD682A9E6B4A00CD0BD1 /* VideoPlaybackManager.swift */; };
 		B914CD6B2AA20DC400CD0BD1 /* MutedUserCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B914CD6A2AA20DC400CD0BD1 /* MutedUserCell.swift */; };
@@ -1155,6 +1159,10 @@
 		B90DB06E2E5E10C400A67D4A /* LiveVideoZapsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveVideoZapsController.swift; sourceTree = "<group>"; };
 		B90EF0EC2AFC08E000A7CD65 /* ProfileTabSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileTabSelectionView.swift; sourceTree = "<group>"; };
 		B90EF0EE2AFC41CB00A7CD65 /* ProfileFollowCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileFollowCell.swift; sourceTree = "<group>"; };
+		E1FC01A11A2B3C4D5E6F7001 /* NoteTranslationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteTranslationService.swift; sourceTree = "<group>"; };
+		E1FC01A11A2B3C4D5E6F7003 /* SettingsTranslationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsTranslationViewController.swift; sourceTree = "<group>"; };
+		E1FC01A11A2B3C4D5E6F7005 /* NoteTranslationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteTranslationView.swift; sourceTree = "<group>"; };
+		E1FC01A11A2B3C4D5E6F7007 /* NoteTranslationServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteTranslationServiceTests.swift; sourceTree = "<group>"; };
 		B90EF0F02B03F7AF00A7CD65 /* SettingsContentDisplayController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsContentDisplayController.swift; sourceTree = "<group>"; };
 		B914CD682A9E6B4A00CD0BD1 /* VideoPlaybackManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPlaybackManager.swift; sourceTree = "<group>"; };
 		B914CD6A2AA20DC400CD0BD1 /* MutedUserCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MutedUserCell.swift; sourceTree = "<group>"; };
@@ -1867,6 +1875,7 @@
 				BD61E893F7939D2AC33A6A4C /* GenerateAmountsTests.swift */,
 				D1E2F3A4B5C6D7E8F9A0B1C3 /* PostingPreviewEmbedsViewTests.swift */,
 				9393310629A3E370003954C2 /* PrimalTests.swift */,
+				E1FC01A11A2B3C4D5E6F7007 /* NoteTranslationServiceTests.swift */,
 			);
 			path = PrimalTests;
 			sourceTree = "<group>";
@@ -2225,6 +2234,7 @@
 				9EF4BFC52A8BEEA3003396AA /* SettingsAppearanceViewController.swift */,
 				B94F2C032AEFD9310041181B /* SettingsNetworkViewController.swift */,
 				B90EF0F02B03F7AF00A7CD65 /* SettingsContentDisplayController.swift */,
+				E1FC01A11A2B3C4D5E6F7003 /* SettingsTranslationViewController.swift */,
 				B9B290562B4DB2950069C87F /* SettingsWalletViewController.swift */,
 				B9658AC22D9EADA60037E5DB /* SettingsMediaUploadsController.swift */,
 				B90585372C9DDFD600FC4108 /* SettingsDevModeController.swift */,
@@ -2354,6 +2364,7 @@
 			children = (
 				9E83DF762A573F2E00F2C379 /* ImagePickerManager.swift */,
 				B94F2BEC2AE6C7BA0041181B /* BindableTapGestureRecognizer.swift */,
+				E1FC01A11A2B3C4D5E6F7001 /* NoteTranslationService.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -2426,6 +2437,7 @@
 			children = (
 				B99E037F2BF75FDE006CCECB /* Helpers */,
 				9E9D46F72A0A72B900D4837B /* PostCell.swift */,
+				E1FC01A11A2B3C4D5E6F7005 /* NoteTranslationView.swift */,
 				B99E03882BF7B10C006CCECB /* PostFeedCell.swift */,
 				9E9D46F42A0A717400D4837B /* ThreadCell.swift */,
 			);
@@ -4489,6 +4501,9 @@
 				B98DD8D32C62547300E8369A /* ArticleFeedViewController.swift in Sources */,
 				B9C5A0E82F44ACD3007CB5D3 /* SecretsManager.swift in Sources */,
 				B90EF0F12B03F7AF00A7CD65 /* SettingsContentDisplayController.swift in Sources */,
+				E1FC01A11A2B3C4D5E6F7002 /* NoteTranslationService.swift in Sources */,
+				E1FC01A11A2B3C4D5E6F7004 /* SettingsTranslationViewController.swift in Sources */,
+				E1FC01A11A2B3C4D5E6F7006 /* NoteTranslationView.swift in Sources */,
 				B91EF0E42CECDE1600299ECF /* UserImageView.swift in Sources */,
 				F8E7A8239A9F7E466C01EBF5 /* FeedVideoPlayer.swift in Sources */,
 				ED696C5B32C51E1E05C1EADD /* LiveVideoPlayer.swift in Sources */,
@@ -4888,6 +4903,7 @@
 				AA9CF3DB44709B5BC13CA5A8 /* GenerateAmountsTests.swift in Sources */,
 				D1E2F3A4B5C6D7E8F9A0B1C2 /* PostingPreviewEmbedsViewTests.swift in Sources */,
 				9393310729A3E370003954C2 /* PrimalTests.swift in Sources */,
+				E1FC01A11A2B3C4D5E6F7008 /* NoteTranslationServiceTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

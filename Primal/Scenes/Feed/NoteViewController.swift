@@ -514,6 +514,20 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
             
             let activityViewController = UIActivityViewController(activityItems: [image], applicationActivities: nil)
             present(activityViewController, animated: true, completion: nil)
+        case .translate:
+            NoteTranslationService.shared.translate(
+                noteId: post.post.id,
+                content: post.post.content,
+                prefs: NoteTranslationPrefsStore.read()
+            ) { [weak self] result in
+                switch result {
+                case .success:
+                    self?.showToast("Translated")
+                    self?.table.reloadData()
+                case .failure(let error):
+                    self?.showToast(error.localizedDescription)
+                }
+            }
         case .copy(let property):
             UIPasteboard.general.string = post.propertyText(property)
             showToast("Copied!")

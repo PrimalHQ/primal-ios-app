@@ -10,6 +10,7 @@ import Kingfisher
 import SwiftUI
 
 class ThreadCell: PostCell {
+    let translationView = NoteTranslationView()
     enum ThreadPosition {
         case parent, main, child
     }
@@ -27,6 +28,7 @@ class ThreadCell: PostCell {
     
     func update(_ parsedContent: ParsedContent, position: ThreadPosition) {
         super.update(parsedContent)
+        translationView.bind(noteId: parsedContent.post.id, content: parsedContent.post.content)
         
         mainLabel.isHidden = parsedContent.text.isEmpty
         mainImages.isHidden = parsedContent.mediaResources.isEmpty
@@ -150,7 +152,7 @@ final class PostThreadCell: ThreadCell {
         
         let actionButtonStandin = UIView()
         let contentStack = UIStackView(arrangedSubviews: [
-            mainLabel, invoiceView, articleView, mainImages, linkPresentation, postPreview, zapPreview, infoView, smallGallery, SpacerView(height: 0), actionButtonStandin
+            mainLabel, translationView, invoiceView, articleView, mainImages, linkPresentation, postPreview, zapPreview, infoView, smallGallery, SpacerView(height: 0), actionButtonStandin
         ])
         
         let horizontalContentStack = UIStackView(arrangedSubviews: [contentSpacer, contentStack])

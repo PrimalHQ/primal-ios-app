@@ -10,7 +10,8 @@ import Kingfisher
 
 class PostFeedCell: PostCell {
     lazy var seeMoreLabel = UILabel()
-    lazy var textStack = UIStackView(arrangedSubviews: [mainLabel, seeMoreLabel])
+    lazy var translationView = NoteTranslationView()
+    lazy var textStack = UIStackView(arrangedSubviews: [mainLabel, seeMoreLabel, translationView])
     let threeDotsSpacer = SpacerView(width: 20)
     lazy var mainStack = UIStackView(arrangedSubviews: [repostIndicator])
     
@@ -45,6 +46,7 @@ class PostFeedCell: PostCell {
         mainLabel.numberOfLines = (parsedContent.mediaResources.isEmpty && parsedContent.linkPreviews.isEmpty && parsedContent.embeddedPosts.isEmpty) ? 12 : 6
         
         seeMoreLabel.isHidden = !(mainLabel.isTruncated() || (mainLabel.attributedText?.length ?? 0) == 1000)
+        translationView.bind(noteId: parsedContent.post.id, content: parsedContent.post.content)
         
         threeDotsSpacer.isHidden = parsedContent.reposted != nil
         threeDotsButton.transform = parsedContent.reposted == nil ? .identity : .init(translationX: 0, y: -6)
