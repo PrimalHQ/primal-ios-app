@@ -237,7 +237,7 @@ say "marketing version $short_version, read from target $APP_TARGET ($APP_BUNDLE
 # Bump, record, commit, tag, push.
 # ─────────────────────────────────────────────────────────────────────────────
 
-say "bumping all targets from build $current…"
+say "bumping all targets from build ${current}…"
 agvtool next-version -all >/dev/null 2>&1 || die "'agvtool next-version -all' failed. Nothing has been committed."
 
 new_version="$(agvtool what-version -terse 2>/dev/null | tr -d '[:space:]')"
@@ -291,7 +291,7 @@ git commit --quiet -m "qa: stamp build $new_version ($short_version)" \
 commit_sha="$(git rev-parse HEAD)"
 git tag "$new_tag" "$commit_sha" || die "could not create tag $new_tag. The commit is made but not tagged."
 
-say "pushing branch '$branch' and tag $new_tag…"
+say "pushing branch '$branch' and tag ${new_tag}…"
 # NOTE: this pushes the current branch, so any other commits you have made and
 # not pushed will go up with it. If that is a surprise, stop here and push them
 # deliberately first — everything so far is local and can be undone.
