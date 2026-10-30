@@ -1,9 +1,9 @@
-//
-//  AppDelegate.swift
-//  Primal
-//
-//  Created by Pavle D Stevanović on 22.4.23..
-//
+
+
+
+
+
+
 
 import Combine
 import UIKit
@@ -147,11 +147,11 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 
 private extension AppDelegate {
     func registerNotificationCategory() {
-//        let actions = [
-//            UNNotificationAction(identifier: "REPLY", title: "Reply", options: []),
-//            UNNotificationAction(identifier: "MUTE", title: "Mute", options: [.destructive])
-//        ]
-//
+
+
+
+
+
         let category = UNNotificationCategory(
             identifier: "MESSAGE_CATEGORY",
             actions: [],

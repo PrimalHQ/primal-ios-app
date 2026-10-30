@@ -1,9 +1,9 @@
-//
-//  GradientBorderView.swift
-//  Primal
-//
-//  Created by Pavle D Stevanović on 14.5.23..
-//
+
+
+
+
+
+
 
 import UIKit
 

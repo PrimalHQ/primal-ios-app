@@ -1,9 +1,9 @@
-//
-//  ThemingManager.swift
-//  Primal
-//
-//  Created by Pavle D Stevanović on 23.5.23..
-//
+
+
+
+
+
+
 
 import UIKit
 
@@ -41,8 +41,8 @@ final class ThemingManager {
         let style = UIScreen.main.traitCollection.userInterfaceStyle
         
         switch Theme.current.kind {
-//        case .sunriseWave, .sunsetWave:
-//            Theme.current = style == .light ? SunriseWave.instance : SunsetWave.instance
+
+
         case .midnightWave, .iceWave:
             Theme.current = style == .light ? IceWave.instance : MidnightWave.instance
         }

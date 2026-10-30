@@ -1,9 +1,9 @@
-//
-//  HighlightViewController.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 18.7.24..
-//
+
+
+
+
+
+
 
 import Combine
 import UIKit

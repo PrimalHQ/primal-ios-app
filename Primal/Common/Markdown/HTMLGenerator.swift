@@ -1,9 +1,9 @@
-//
-//  HTMLGenerator.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 23. 1. 2026..
-//
+
+
+
+
+
+
 
 import Foundation
 import Markdown

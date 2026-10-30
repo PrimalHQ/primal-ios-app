@@ -1,9 +1,9 @@
-//
-//  ScanAnythingController.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 30. 12. 2025..
-//
+
+
+
+
+
+
 
 import AVKit
 import Combine

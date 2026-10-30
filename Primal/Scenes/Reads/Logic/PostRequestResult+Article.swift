@@ -1,9 +1,9 @@
-//
-//  PostRequestResult+Article.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 18.7.24..
-//
+
+
+
+
+
+
 
 import Foundation
 

@@ -1,9 +1,9 @@
-//
-//  LinkableLabel.swift
-//  Primal
-//
-//  Created by Pavle D Stevanović on 26.4.23..
-//
+
+
+
+
+
+
 
 import UIKit
 
@@ -19,7 +19,7 @@ final class LinkableLabel: UILabel {
     
     override var text: String? {
         didSet {
-//            updateLinks()
+
         }
     }
     

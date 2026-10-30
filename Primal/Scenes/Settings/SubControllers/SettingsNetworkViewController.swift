@@ -1,9 +1,9 @@
-//
-//  SettingsNetworkViewController.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 30.10.23..
-//
+
+
+
+
+
+
 
 import Combine
 import UIKit
@@ -83,18 +83,18 @@ final class SettingsNetworkViewController: UIViewController, SettingsController,
 }
 
 extension SettingsNetworkViewController: UITextFieldDelegate {
-//    func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
-//        if (textField.text ?? "").isEmpty {
-//            textField.text = "wss://"
-//        }
-//        return true
-//    }
-//    
-//    func textFieldDidEndEditing(_ textField: UITextField) {
-//        if textField.text == "wss://" {
-//            textField.text = ""
-//        }
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         guard

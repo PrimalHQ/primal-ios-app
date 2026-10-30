@@ -1,9 +1,9 @@
-//
-//  LargeZapGalleryView.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 21.6.24..
-//
+
+
+
+
+
+
 
 import UIKit
 import Lottie
@@ -129,7 +129,7 @@ class LargeZapGalleryView: UIView, ZapGallery {
         var currentWidth: CGFloat = 0
         for zap in zaps.dropFirst() {
             let view = zapView(zap, text: false)
-//            view.layoutIfNeeded()
+
             
             currentWidth += view.width() + 6
             

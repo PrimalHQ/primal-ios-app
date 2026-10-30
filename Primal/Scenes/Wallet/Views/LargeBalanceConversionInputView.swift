@@ -1,9 +1,9 @@
-//
-//  LargeBalanceConversionInputView.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 9.10.23..
-//
+
+
+
+
+
+
 
 import Combine
 import UIKit
@@ -154,7 +154,7 @@ private extension LargeBalanceConversionInputView {
         spacing = 2
         alignment = .center
         
-//        addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tapped)))
+
         
         Publishers.CombineLatest($isBitcoinPrimary, $balance).sink { [weak self] _, _ in
             self?.updateLabels()

@@ -1,9 +1,9 @@
-//
-//  SocketRequest.swift
-//  Primal
-//
-//  Created by Pavle D Stevanović on 12.6.23..
-//
+
+
+
+
+
+
 
 import Combine
 import Foundation
@@ -73,7 +73,7 @@ struct SocketRequest {
                     
                     DatabaseManager.instance.saveProfiles(Array(pendingResult.users.values))
                     DatabaseManager.instance.saveMediaResources(pendingResult.mediaMetadata.flatMap { $0.resources })
-//                    DatabaseManager.instance.saveProfileFollowers(pendingResult.userScore) Not sure if this is good
+
                     DatabaseManager.instance.saveProfileFollowers(pendingResult.userFollowers)
                     
                     promise(.success(pendingResult))
@@ -161,16 +161,16 @@ extension PostRequestResult {
                 await LiveEventManager.instance.addLiveEvent(payload)
             }
             return
-//        case .shortenedArticle:
-//            let longFormEvent = NostrContent(jsonData: payload)
-//
-//            longFormPosts.append(.init(
-//                title: longFormEvent.tags.first(where: { $0.first == "title" })?[safe: 1],
-//                image: longFormEvent.tags.first(where: { $0.first == "image" })?[safe: 1],
-//                summary: longFormEvent.tags.first(where: { $0.first == "summary" })?[safe: 1],
-//                event: longFormEvent
-//            ))               
-//            return
+
+
+
+
+
+
+
+
+
+
         default: break
         }
         

@@ -1,9 +1,9 @@
-//
-//  ArticleViewController.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 28.5.24..
-//
+
+
+
+
+
+
 
 import Combine
 import UIKit
@@ -369,7 +369,7 @@ private extension ArticleViewController {
         
         let parts = parts
         
-//        let parser = MarkdownParser()
+
         for part in parts {
             switch part {
             case .image(let url):
@@ -395,10 +395,10 @@ private extension ArticleViewController {
                 webView.pinToSuperview(edges: .vertical).pinToSuperview(edges: .horizontal, padding: 13)
                 contentStack.addArrangedSubview(webViewParent)
                 
-//                webViewParent.addGestureRecognizer(BindableTapGestureRecognizer(action: {
-//                    UIPasteboard.general.string = webView.content
-//                    RootViewController.instance.showToast("Copied!")
-//                }))
+
+
+
+
         
                 webView.updateContent(HTMLGenerator.fromMarkdown(updateText(text)))
             }

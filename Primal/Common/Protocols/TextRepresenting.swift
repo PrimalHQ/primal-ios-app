@@ -1,9 +1,9 @@
-//
-//  TextRepresenting.swift
-//  Primal
-//
-//  Created by Pavle D Stevanović on 6.7.23..
-//
+
+
+
+
+
+
 
 import UIKit
 

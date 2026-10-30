@@ -1,9 +1,9 @@
-//
-//  ArticleFeedView.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 10.7.24..
-//
+
+
+
+
+
+
 
 import UIKit
 import FLAnimatedImage

@@ -1,9 +1,9 @@
-//
-//  LiveVideoChatController.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 22. 7. 2025..
-//
+
+
+
+
+
+
 
 import Combine
 import UIKit
@@ -189,8 +189,8 @@ class LiveVideoChatController: UIViewController, Themeable {
         spacer.updateHeightCancellable().store(in: &cancellables)
         
         KeyboardManager.instance.isShowingKeyboard.sink { [weak self] isShowing in
-//            self?.header.small = isShowing
-//            self?.zapsInfoVC.view.superview?.isHidden = isShowing
+
+
             
             if isShowing {
                 self?.videoController?.chatControllerRequestsMoreSpace()

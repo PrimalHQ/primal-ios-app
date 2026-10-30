@@ -1,9 +1,9 @@
-//
-//  SettingsToggleCell.swift
-//  Primal
-//
-//  Created by Pavle D Stevanović on 30.6.23..
-//
+
+
+
+
+
+
 
 import UIKit
 

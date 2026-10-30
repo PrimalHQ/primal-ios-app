@@ -1,9 +1,9 @@
-//
-//  UserPickerCollectionViewCell.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 14.10.24..
-//
+
+
+
+
+
+
 
 import UIKit
 import FLAnimatedImage

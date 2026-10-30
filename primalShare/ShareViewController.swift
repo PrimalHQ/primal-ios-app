@@ -1,9 +1,9 @@
-//
-//  ShareViewController.swift
-//  primalShare
-//
-//  Created by Pavle Stevanović on 10.3.25..
-//
+
+
+
+
+
+
 
 import MobileCoreServices
 import UIKit

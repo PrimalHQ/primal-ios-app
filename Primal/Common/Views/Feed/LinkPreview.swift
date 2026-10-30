@@ -1,9 +1,9 @@
-//
-//  LinkPreview.swift
-//  Primal
-//
-//  Created by Pavle D Stevanović on 2.6.23..
-//
+
+
+
+
+
+
 
 import UIKit
 import SafariServices
@@ -94,7 +94,7 @@ private extension LinkPreview {
     }
 }
 
-// MARK: - Link Preview context menu
+
 
 extension LinkPreview: UIContextMenuInteractionDelegate {
     func contextMenuInteraction(_ interaction: UIContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> UIContextMenuConfiguration? {

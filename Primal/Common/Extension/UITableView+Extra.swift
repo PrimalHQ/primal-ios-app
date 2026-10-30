@@ -1,9 +1,9 @@
-//
-//  UITableView+Extra.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 1.11.24..
-//
+
+
+
+
+
+
 
 import UIKit
 

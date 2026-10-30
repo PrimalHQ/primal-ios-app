@@ -1,14 +1,14 @@
-//
-//  PostReactionsCell.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 3.6.24..
-//
+
+
+
+
+
+
 
 import Combine
 import UIKit
 
-// This is a cell that only contains the reactions bar
+
 class PostReactionsCell: FeedElementBaseCell, RegularFeedElementCell, ElementReactionsCell {
     static var cellID: String { "FeedElementSmallZapGalleryCell" }
     

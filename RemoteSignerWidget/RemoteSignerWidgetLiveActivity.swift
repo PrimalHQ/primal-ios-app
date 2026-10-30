@@ -1,9 +1,9 @@
-//
-//  RemoteSignerWidgetLiveActivity.swift
-//  RemoteSignerWidget
-//
-//  Created by Pavle Stevanović on 15. 12. 2025..
-//
+
+
+
+
+
+
 
 import ActivityKit
 import WidgetKit

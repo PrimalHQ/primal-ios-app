@@ -1,9 +1,9 @@
-//
-//  PollResultsViewController.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 6.3.26..
-//
+
+
+
+
+
+
 
 import Combine
 import UIKit
@@ -47,7 +47,7 @@ class PollResultsViewController: UIViewController, Themeable {
     }
 }
 
-// MARK: - PollVotesDatasourceDelegate
+
 
 extension PollResultsViewController: PollVotesDatasourceDelegate {
     var total: Int { poll.isZapPoll ? (pollStats?.totalSatsZapped ?? 0) : (pollStats?.totalVotes ?? 0) }
@@ -57,7 +57,7 @@ extension PollResultsViewController: PollVotesDatasourceDelegate {
     var didEnd: Bool { poll.didEnd }
 }
 
-// MARK: - Private
+
 
 private extension PollResultsViewController {
     func setup() {
@@ -129,7 +129,7 @@ private extension PollResultsViewController {
     }
 }
 
-// MARK: - UITableViewDelegate
+
 
 extension PollResultsViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {

@@ -1,9 +1,9 @@
-//
-//  FollowSectionHeader.swift
-//  Primal
-//
-//  Created by Pavle D Stevanović on 29.4.23..
-//
+
+
+
+
+
+
 
 import UIKit
 

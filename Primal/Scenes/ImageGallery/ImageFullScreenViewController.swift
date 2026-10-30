@@ -1,9 +1,9 @@
-//
-//  ImageFullScreenViewController.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 8.12.23..
-//
+
+
+
+
+
+
 
 import UIKit
 import FLAnimatedImage
@@ -390,7 +390,7 @@ extension ImageFullScreenViewController: UIScrollViewDelegate {
     }
 }
 
-// MARK: - UIGestureRecognizerDelegate for panning exit gesture
+
 extension ImageFullScreenViewController: UIGestureRecognizerDelegate {
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         guard let pan = gestureRecognizer as? UIPanGestureRecognizer else { return true }

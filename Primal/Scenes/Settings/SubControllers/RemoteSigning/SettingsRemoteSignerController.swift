@@ -1,9 +1,9 @@
-//
-//  SettingsRemoteSignerController.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 8. 12. 2025..
-//
+
+
+
+
+
+
 
 import Combine
 import UIKit

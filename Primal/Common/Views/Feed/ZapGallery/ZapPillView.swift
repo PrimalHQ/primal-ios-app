@@ -1,9 +1,9 @@
-//
-//  ZapPillView.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 23.4.24..
-//
+
+
+
+
+
+
 
 import UIKit
 import FLAnimatedImage

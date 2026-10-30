@@ -1,9 +1,9 @@
-//
-//  NostrObject+Extra.swift
-//  Primal
-//
-//  Created by Nikola Lukovic on 6.7.23..
-//
+
+
+
+
+
+
 
 import Foundation
 import secp256k1

@@ -1,9 +1,9 @@
-//
-//  UpgradeWalletFailedController.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 11. 2. 2026..
-//
+
+
+
+
+
+
 
 import Nantes
 import UIKit

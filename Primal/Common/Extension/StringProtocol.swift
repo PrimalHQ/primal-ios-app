@@ -1,9 +1,9 @@
-//
-//  StringProtocol.swift
-//  Primal
-//
-//  Created by Nikola Lukovic on 14.5.23..
-//
+
+
+
+
+
+
 
 import Foundation
 

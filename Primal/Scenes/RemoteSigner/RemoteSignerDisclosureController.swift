@@ -1,9 +1,9 @@
-//
-//  RemoteSignerDisclosureController.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 18. 12. 2025..
-//
+
+
+
+
+
+
 
 import UIKit
 import Combine
@@ -85,8 +85,8 @@ class RemoteSignerDisclosureController: UIViewController {
         topStackParent.addSubview(topStack)
         topStack.pinToSuperview()
         
-//        let contentScroll = UIScrollView()
-//        contentScroll.showsVerticalScrollIndicator = false
+
+
         
         let switchView = SettingsSwitchView("Enable Ambient Sound")
         switchView.backgroundColor = .background5

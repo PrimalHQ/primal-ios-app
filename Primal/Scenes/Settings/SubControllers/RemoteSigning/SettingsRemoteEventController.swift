@@ -1,9 +1,9 @@
-//
-//  SettingsRemoteEventController.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 29. 12. 2025..
-//
+
+
+
+
+
+
 
 import PrimalShared
 import UIKit
@@ -75,7 +75,7 @@ class SettingsRemoteEventController: UIViewController {
     }
 }
 
-// MARK: - Theme
+
 extension SettingsRemoteEventController: Themeable {
     func updateTheme() {
         navigationItem.leftBarButtonItem = customBackButton

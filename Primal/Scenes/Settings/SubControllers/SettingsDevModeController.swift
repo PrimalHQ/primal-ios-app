@@ -1,9 +1,9 @@
-//
-//  SettingsDevModeController.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 20.9.24..
-//
+
+
+
+
+
+
 
 import Combine
 import UIKit
@@ -288,7 +288,7 @@ private extension SettingsEditSmoothScrollSpeedController {
     }
 }
 
-// MARK: - DevToolsWalletItemView
+
 
 private final class DevToolsWalletItemView: UIView, Themeable {
     private let nameLabel = UILabel()

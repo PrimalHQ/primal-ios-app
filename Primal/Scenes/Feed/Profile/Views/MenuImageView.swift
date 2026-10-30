@@ -1,9 +1,9 @@
-//
-//  MenuImageView.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 8.10.24..
-//
+
+
+
+
+
+
 
 import FLAnimatedImage
 import UIKit

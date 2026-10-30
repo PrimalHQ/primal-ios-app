@@ -1,9 +1,9 @@
-//
-//  SearchTermTableCell.swift
-//  Primal
-//
-//  Created by Pavle D Stevanović on 20.6.23..
-//
+
+
+
+
+
+
 
 import UIKit
 

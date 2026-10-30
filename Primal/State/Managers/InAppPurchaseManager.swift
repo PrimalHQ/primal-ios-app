@@ -1,9 +1,9 @@
-//
-//  InAppPurchaseManager.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 16.10.23..
-//
+
+
+
+
+
+
 
 import Foundation
 import StoreKit
@@ -43,7 +43,7 @@ final class InAppPurchaseManager: NSObject {
                 switch result {
                 case .verified(let transaction):
                     print(transaction)
-// Deliver the purchased content
+
                                     case .unverified(let transaction, let error):
                     print(transaction)
                     print(error)
@@ -130,17 +130,17 @@ final class InAppPurchaseManager: NSObject {
         productsRequest.delegate = self
         productsRequest.start()
         
-//        let productIds = productIds
-//        Task { @MainActor in
-//            do {
-//                let products = try await Product.products(for: productIds)
-//                for product in products {
-//                    print("Product: \(product.displayName), Price: \(product.displayPrice)")
-//                }
-//            } catch {
-//                print("Failed to fetch products: \(error)")
-//            }
-//        }
+
+
+
+
+
+
+
+
+
+
+
     }
     
     func fetchPremiumSubscriptions(completion: @escaping (([StoreKit.Product]) -> Void)) {

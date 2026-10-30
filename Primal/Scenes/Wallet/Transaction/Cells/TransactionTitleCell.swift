@@ -1,9 +1,9 @@
-//
-//  TransactionTitleCell.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 20.12.23..
-//
+
+
+
+
+
+
 
 import UIKit
 

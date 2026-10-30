@@ -1,9 +1,9 @@
-//
-//  ErrorMessageCell.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 26.12.23..
-//
+
+
+
+
+
+
 
 import UIKit
 

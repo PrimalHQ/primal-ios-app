@@ -1,9 +1,9 @@
-//
-//  DoubleImageGalleryCell.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 26.2.25..
-//
+
+
+
+
+
+
 
 import UIKit
 import FLAnimatedImage

@@ -1,9 +1,9 @@
-//
-//  SettingsNsecViewController.swift
-//  Primal
-//
-//  Created by Pavle D Stevanović on 25.5.23..
-//
+
+
+
+
+
+
 
 import UIKit
 import Kingfisher

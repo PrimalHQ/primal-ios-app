@@ -1,9 +1,9 @@
-//
-//  RootAnimatorToSignIn.swift
-//  Primal
-//
-//  Created by Pavle D Stevanović on 26.5.23..
-//
+
+
+
+
+
+
 
 import Combine
 import UIKit
@@ -71,10 +71,10 @@ struct RootAnimatorToSignIn {
                     promise(.success(()))
                 }
                 
-//                UIView.animate(withDuration: 17 / speed, delay: 8 / speed) {
-//                    onboarding.redeemCodeButton.alpha = 1
-//                    onboarding.redeemCodeButton.transform = .identity
-//                }
+
+
+
+
                 
                 UIView.animate(withDuration: 17 / speed, delay: 12 / speed) {
                     onboarding.termsBothLines.alpha = 1

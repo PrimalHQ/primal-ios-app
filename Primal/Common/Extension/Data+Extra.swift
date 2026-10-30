@@ -1,9 +1,9 @@
-//
-//  Data+Extra.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 14.2.24..
-//
+
+
+
+
+
+
 
 import Foundation
 import CryptoKit

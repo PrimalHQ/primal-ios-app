@@ -1,9 +1,9 @@
-//
-//  ReplyAttachmentInputView.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 11.5.26..
-//
+
+
+
+
+
+
 
 import UIKit
 
@@ -46,9 +46,9 @@ private extension ReplyAttachmentInputView {
             cornerConfiguration = .uniformTopRadius(24)
             
         } else {
-//            backgroundColor = .background
-//            layer.cornerRadius = 24
-//            layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+
+
+
         }
 
         let mediaButton = LabeledIconButton(icon: .mediaIcon24, title: "Media") { [weak self] in

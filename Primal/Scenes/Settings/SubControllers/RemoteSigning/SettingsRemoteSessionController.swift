@@ -1,9 +1,9 @@
-//
-//  SettingsRemoteSessionController.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 29. 12. 2025..
-//
+
+
+
+
+
+
 
 import Combine
 import UIKit
@@ -73,7 +73,7 @@ final class SettingsRemoteSessionController: UIViewController {
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 }
 
-// MARK: - UI
+
 private extension SettingsRemoteSessionController {
     func setupUI() {
         updateTheme()
@@ -106,7 +106,7 @@ private extension SettingsRemoteSessionController {
     }
 }
 
-// MARK: - Data
+
 private extension SettingsRemoteSessionController {
     func bindData() {
         // Observe updates to the specific session
@@ -131,7 +131,7 @@ private extension SettingsRemoteSessionController {
     }
 }
 
-// MARK: - Theme
+
 extension SettingsRemoteSessionController: Themeable {
     func updateTheme() {
         navigationItem.leftBarButtonItem = customBackButton
@@ -140,7 +140,7 @@ extension SettingsRemoteSessionController: Themeable {
     }
 }
 
-// MARK: - Delegate
+
 extension SettingsRemoteSessionController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let snapshot = dataSource.snapshot()

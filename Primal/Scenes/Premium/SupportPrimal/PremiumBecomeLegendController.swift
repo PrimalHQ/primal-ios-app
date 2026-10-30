@@ -1,9 +1,9 @@
-//
-//  PremiumBecomeLegendController.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 12.11.24..
-//
+
+
+
+
+
+
 
 import UIKit
 

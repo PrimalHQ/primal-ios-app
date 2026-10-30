@@ -1,9 +1,9 @@
-//
-//  OnboardingPreviewController.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 20.3.24..
-//
+
+
+
+
+
+
 
 import Combine
 import UIKit

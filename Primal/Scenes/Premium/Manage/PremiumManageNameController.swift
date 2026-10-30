@@ -1,9 +1,9 @@
-//
-//  PremiumManageNameController.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 17.11.24..
-//
+
+
+
+
+
+
 
 import Combine
 import UIKit

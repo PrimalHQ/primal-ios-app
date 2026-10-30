@@ -1,9 +1,9 @@
-//
-//  RoundedCornersView.swift
-//  Primal
-//
-//  Created by Pavle D Stevanović on 30.6.23..
-//
+
+
+
+
+
+
 
 import UIKit
 
@@ -57,10 +57,10 @@ final class RoundedCornersView: UIView {
     var borderWidth: CGFloat {
         get { leftBorderWidthC.constant }
         set {
-//            leftBorderWidthC.constant = newValue
-//            rightBorderWidthC.constant = newValue
-//            topView.layer.borderWidth = newValue
-//            bottomView.layer.borderWidth = newValue
+
+
+
+
         }
     }
     

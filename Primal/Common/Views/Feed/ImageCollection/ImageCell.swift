@@ -1,9 +1,9 @@
-//
-//  ImageCell.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 27.12.23..
-//
+
+
+
+
+
+
 
 import UIKit
 import FLAnimatedImage

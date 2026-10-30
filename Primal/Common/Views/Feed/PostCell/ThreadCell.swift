@@ -1,9 +1,9 @@
-//
-//  ThreadCell.swift
-//  Primal
-//
-//  Created by Pavle D Stevanović on 9.5.23..
-//
+
+
+
+
+
+
 
 import UIKit
 import Kingfisher
@@ -122,7 +122,7 @@ class HashtagPreviewView: UIView {
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 }
 
-// MARK: - PostThreadCell
+
 
 final class PostThreadCell: ThreadCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {

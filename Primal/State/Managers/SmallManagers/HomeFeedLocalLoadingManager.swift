@@ -1,9 +1,9 @@
-//
-//  HomeFeedLocalLoadingManager.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 4.12.23..
-//
+
+
+
+
+
+
 
 import Foundation
 
@@ -17,19 +17,19 @@ private extension UserDefaults {
         get { value(forKey: "homeFeedLocalDate1" + IdentityManager.instance.userHexPubkey) as? Date }
         set { setValue(newValue, forKey: "homeFeedLocalDate1" + IdentityManager.instance.userHexPubkey) }
     }
-//    func getHomeFeedResultString(pubkey: String) -> String? {
-//        return string(forKey: "homeFeedLocalKey" + pubkey)
-//    }
-//    func setHomeFeedResultString(pubkey: String, feedString: String) {
-//        setValue(feedString, forKey: "homeFeedLocalKey" + pubkey)
-//    }
-//    
-//    func getHomeFeedSaveDate(pubkey: String) -> Date? {
-//        value(forKey: "homeFeedLocalDate" + pubkey) as? Date
-//    }
-//    func setHomeFeedSaveDate(pubkey: String) {
-//        setValue(Date(), forKey: "homeFeedLocalDate" + pubkey)
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
 
 class HomeFeedLocalLoadingManager {

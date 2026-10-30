@@ -1,9 +1,9 @@
-//
-//  ProfileScanQRController.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 23.11.23..
-//
+
+
+
+
+
+
 
 import AVKit
 import Combine

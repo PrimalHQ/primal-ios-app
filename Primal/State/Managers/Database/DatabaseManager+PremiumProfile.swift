@@ -1,9 +1,9 @@
-//
-//  DatabaseManager+PremiumProfile.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 30.4.26..
-//
+
+
+
+
+
+
 
 import GRDB
 import Combine

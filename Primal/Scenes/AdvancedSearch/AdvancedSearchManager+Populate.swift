@@ -1,11 +1,11 @@
-//
-//  AdvancedSearchManager+Populate.swift
-//  Primal
-//
-//  Reverse-mapping from a saved advanced-search feed spec back into
-//  AdvancedSearchManager state. Mirrors Android's parseEditingFeedSpec /
-//  applyParsedQuery (AdvancedSearchViewModel.kt).
-//
+
+
+
+
+
+
+
+
 
 import Combine
 import Foundation

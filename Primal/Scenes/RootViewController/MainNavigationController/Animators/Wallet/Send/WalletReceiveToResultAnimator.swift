@@ -1,9 +1,9 @@
-//
-//  WalletReceiveToResultAnimator.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 24.2.26..
-//
+
+
+
+
+
+
 
 import UIKit
 

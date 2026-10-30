@@ -1,9 +1,9 @@
-//
-//  RemoteSignerRootController.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 27. 11. 2025..
-//
+
+
+
+
+
+
 
 import UIKit
 

@@ -1,9 +1,9 @@
-//
-//  AudioPlayer.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 18. 5. 2026..
-//
+
+
+
+
+
+
 
 import AVFoundation
 import Combine
@@ -141,7 +141,7 @@ final class AudioPlayer: NSObject, PlayerProtocol {
     }
 }
 
-// MARK: - Now Playing / Remote Commands
+
 
 private extension AudioPlayer {
     func setupNowPlayingInfo() {

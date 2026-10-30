@@ -1,9 +1,9 @@
-//
-//  LoadingSpinnerView.swift
-//  Primal
-//
-//  Created by Pavle D Stevanović on 25.4.23..
-//
+
+
+
+
+
+
 
 import Lottie
 import UIKit

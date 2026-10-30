@@ -1,9 +1,9 @@
-//
-//  FeedArticlePreviewController.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 9.8.24..
-//
+
+
+
+
+
+
 
 import UIKit
 import Kingfisher

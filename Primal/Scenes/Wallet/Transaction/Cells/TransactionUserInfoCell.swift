@@ -1,9 +1,9 @@
-//
-//  TransactionUserInfoCell.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 20.12.23..
-//
+
+
+
+
+
+
 
 import UIKit
 import FLAnimatedImage
@@ -92,7 +92,7 @@ extension TransactionUserInfoCell: TransactionPartialCell {
             }
             subtitleLabel.text = user.address
             subtitleLabel.isHidden = subtitleLabel.text?.isEmpty != false
-//            checkbox.user = user.data
+
         } else {
             avatar.image = .nonZapPayment
             mainLabel.text = "Lightning payment"
@@ -146,32 +146,32 @@ private extension TransactionUserInfoCell {
         messageLabel.tintColor = .accent2
     }
     
-//    func createAttributedTextWithLinks(from text: String) -> NSAttributedString {
-//        let attributedString = NSMutableAttributedString(string: text, attributes: [
-//            .font: UIFont.appFont(withSize: 16, weight: .regular),
-//            .foregroundColor: UIColor.foreground
-//        ])
-//
-//        do {
-//            let detector = try NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue)
-//
-//            let matches = detector.matches(in: text, options: [], range: NSRange(location: 0, length: text.count))
-//
-//            for match in matches {
-//                let range = match.range(at: 0)
-//                
-//                if let url = match.url {
-//                    attributedString.addAttributes([
-//                        .link: url
-//                    ], range: range)
-//                }
-//            }
-//        } catch {
-//            print("Error creating data detector: \(error)")
-//        }
-//
-//        return attributedString
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
 
 extension TransactionUserInfoCell: NantesLabelDelegate {

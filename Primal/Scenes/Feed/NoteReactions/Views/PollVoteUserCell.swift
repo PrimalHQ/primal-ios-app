@@ -1,9 +1,9 @@
-//
-//  PollVoteUserCell.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 6.3.26..
-//
+
+
+
+
+
+
 
 import UIKit
 

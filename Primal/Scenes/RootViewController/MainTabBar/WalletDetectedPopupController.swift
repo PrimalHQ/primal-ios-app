@@ -1,9 +1,9 @@
-//
-//  WalletDetectedPopupController.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 10. 3. 2026..
-//
+
+
+
+
+
+
 
 import Combine
 import UIKit

@@ -1,9 +1,9 @@
-//
-//  UserGalleryView.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 5.6.24..
-//
+
+
+
+
+
+
 
 import FLAnimatedImage
 import UIKit

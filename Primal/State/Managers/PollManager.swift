@@ -1,9 +1,9 @@
-//
-//  PollManager.swift
-//  Primal
-//
-//  Created on 5.3.26..
-//
+
+
+
+
+
+
 
 import Combine
 import Foundation

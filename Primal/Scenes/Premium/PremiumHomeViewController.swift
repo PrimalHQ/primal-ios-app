@@ -1,9 +1,9 @@
-//
-//  PremiumHomeViewController.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 8.11.24..
-//
+
+
+
+
+
+
 
 import Combine
 import UIKit
@@ -357,7 +357,7 @@ class PremiumEditTableRowView: UIStackView {
         titleLabel.textColor = .foreground3
         titleLabel.text = title
         titleLabel.numberOfLines = 2
-//        titleLabel.constrainToSize(width: 70)
+
         addArrangedSubview(titleLabel)
         
         let rightStack = UIStackView(axis: .vertical, [infoLabel, applyStack])

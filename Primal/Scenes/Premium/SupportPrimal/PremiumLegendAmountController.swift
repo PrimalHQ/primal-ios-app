@@ -1,9 +1,9 @@
-//
-//  PremiumLegendAmountController.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 12.11.24..
-//
+
+
+
+
+
+
 
 import FLAnimatedImage
 import UIKit
@@ -93,7 +93,7 @@ class PremiumLegendAmountController: UIViewController {
         nameStack.alignment = .center
         nameStack.spacing = 6
         
-//        let avatarButton = UIButton(configuration: .accent("Customize avatar", font: .appFont(withSize: 14, weight: .regular)))
+
         
         let titleView = PremiumUserTitleView()
         titleView.titleLabel.text = "Legend"
@@ -103,7 +103,7 @@ class PremiumLegendAmountController: UIViewController {
             image, SpacerView(height: 16),
             nameStack, SpacerView(height: 20),
             titleView // SpacerView(height: 20),
-//            avatarButton, UILabel("(you can always do this later)", color: .foreground4, font: .appFont(withSize: 14, weight: .regular))
+
         ])
         
         userStack.alignment = .center

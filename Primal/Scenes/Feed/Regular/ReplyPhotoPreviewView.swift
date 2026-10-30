@@ -1,9 +1,9 @@
-//
-//  ReplyPhotoPreviewView.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 12.5.26..
-//
+
+
+
+
+
+
 
 import UIKit
 import Photos

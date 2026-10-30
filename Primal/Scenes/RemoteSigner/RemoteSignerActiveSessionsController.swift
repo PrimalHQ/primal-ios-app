@@ -1,9 +1,9 @@
-//
-//  RemoteSignerActiveSessionsController.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 5. 12. 2025..
-//
+
+
+
+
+
+
 
 import Combine
 import UIKit

@@ -1,9 +1,9 @@
-//
-//  RemoteSigningManager.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 7. 11. 2025..
-//
+
+
+
+
+
+
 
 import Combine
 import Foundation
@@ -142,11 +142,11 @@ class RemoteSignerManager {
                 Task {
                     do {
                         for eventPubkey in eventPubkeys {
-//                            if let active = try await sessionRepo.fin//findActiveSessionForConnection(clientPubKey: eventPubkey).getOrNull() {
-//                                print("NO ACTION")
-//                            } else {
-//                                _ = try await sessionRepo.startSession(clientPubKey: eventPubkey)
-//                            }
+
+
+
+
+
                         }
                         
                         let result = try await sessionEventRepo.notifyMissedNostrEvents(signerKeyPair: signerKeypair, eventIds: eventIds)

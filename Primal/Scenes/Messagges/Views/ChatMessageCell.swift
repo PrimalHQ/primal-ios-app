@@ -1,9 +1,9 @@
-//
-//  ChatMessageCell.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 8.9.23..
-//
+
+
+
+
+
+
 
 import UIKit
 import Nantes

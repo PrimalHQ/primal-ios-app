@@ -1,9 +1,9 @@
-//
-//  TextViewManager.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 19.9.23..
-//
+
+
+
+
+
+
 
 import Combine
 import Foundation

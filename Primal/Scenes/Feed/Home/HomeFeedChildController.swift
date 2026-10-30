@@ -1,9 +1,9 @@
-//
-//  HomeFeedChildController.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 5.9.24..
-//
+
+
+
+
+
+
 
 import Combine
 import UIKit
@@ -26,7 +26,7 @@ class HomeFeedChildController: PostFeedViewController {
     override init(feed: FeedManager) {
         super.init(feed: feed)
 
-//        dataSource = GalleryFeedDatasource(tableView: table, delegate: self)
+
         dataSource = HomeFeedDatasource(tableView: table, delegate: self)
     }
     

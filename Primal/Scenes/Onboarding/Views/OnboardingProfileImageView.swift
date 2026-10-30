@@ -1,9 +1,9 @@
-//
-//  OnboardingProfileImageView.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 16.11.23..
-//
+
+
+
+
+
+
 
 import UIKit
 import FLAnimatedImage

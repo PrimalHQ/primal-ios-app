@@ -1,9 +1,9 @@
-//
-//  TermsAndConditionsView.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 21.2.24..
-//
+
+
+
+
+
+
 
 import UIKit
 import SafariServices

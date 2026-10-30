@@ -1,9 +1,9 @@
-//
-//  Notification.swift
-//  Primal
-//
-//  Created by Pavle D Stevanović on 27.6.23..
-//
+
+
+
+
+
+
 
 import Foundation
 import GenericJSON

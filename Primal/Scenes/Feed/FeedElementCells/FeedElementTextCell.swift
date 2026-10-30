@@ -1,14 +1,14 @@
-//
-//  FeedElementTextCell.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 9.12.24..
-//
+
+
+
+
+
+
 
 import UIKit
 import Nantes
 
-// This is a helper class necessary to prevent retain cycle because delegate in Nantes isn't defined as "weak"
+
 class FeedElementTextCellNantesDelegate {
     weak var cell: FeedElementBaseCell?
 }

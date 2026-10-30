@@ -1,10 +1,10 @@
-//
-//  AdvancedSearchQueryResponse.swift
-//  Primal
-//
-//  Mirrors Android's AdvancedSearchQueryResponse — the decoded payload
-//  returned by the cache server's `parse_advanced_search_query` verb.
-//
+
+
+
+
+
+
+
 
 import Foundation
 

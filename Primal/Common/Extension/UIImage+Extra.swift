@@ -1,9 +1,9 @@
-//
-//  UIImage+Extra.swift
-//  Primal
-//
-//  Created by Pavle D Stevanović on 25.8.23..
-//
+
+
+
+
+
+
 
 import UIKit
 import QRCode

@@ -1,9 +1,9 @@
-//
-//  SettingsExternalNwcController.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 29.1.25..
-//
+
+
+
+
+
+
 
 import PrimalShared
 import UIKit

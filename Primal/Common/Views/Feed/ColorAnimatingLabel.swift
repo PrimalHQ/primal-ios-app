@@ -1,9 +1,9 @@
-//
-//  ColorAnimatingLabel.swift
-//  Primal
-//
-//  Created by Pavle D Stevanović on 4.5.23..
-//
+
+
+
+
+
+
 
 import UIKit
 

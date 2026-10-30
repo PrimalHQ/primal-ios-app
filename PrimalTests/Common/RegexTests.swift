@@ -1,9 +1,9 @@
-//
-//  RegexTests.swift
-//  PrimalTests
-//
-//  Created by Pavle Stevanović on 13.2.25..
-//
+
+
+
+
+
+
 
 import XCTest
 import Foundation
@@ -53,7 +53,7 @@ final class RegexTests: XCTestCase {
     }
     
     func testNip08() throws {
-//        try testRegex(pattern: .nip08MentionPattern, data: tagTests)
+
     }
     
     func testNip27() throws {

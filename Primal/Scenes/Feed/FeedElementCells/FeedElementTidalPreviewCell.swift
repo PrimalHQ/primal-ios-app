@@ -1,9 +1,9 @@
-//
-//  FeedElementTidalPreviewCell.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 5.2.25..
-//
+
+
+
+
+
+
 
 import UIKit
 import WebKit

@@ -1,9 +1,9 @@
-//
-//  OnboardingParentViewController.swift
-//  Primal
-//
-//  Created by Pavle D Stevanović on 22.4.23..
-//
+
+
+
+
+
+
 
 import UIKit
 import SwiftUI
@@ -121,7 +121,7 @@ class OnboardingParentViewController: UIPageViewController, UIPageViewController
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? { nil }
 }
 
-// MARK: - Onboarding Gradient Background
+
 
 class OnboardingBaseGradientView: UIView {
     override class var layerClass: AnyClass { CAGradientLayer.self }
@@ -177,7 +177,7 @@ class OnboardingOverlayGradientView: UIView {
     }
 }
 
-// MARK: - OnboardingViewController helpers
+
 
 extension OnboardingViewController {
     var onboardingParent: OnboardingParentViewController? {

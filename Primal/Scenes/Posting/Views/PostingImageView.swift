@@ -1,9 +1,9 @@
-//
-//  PostingImageView.swift
-//  Primal
-//
-//  Created by Pavle D Stevanović on 24.7.23..
-//
+
+
+
+
+
+
 
 import UIKit
 import AVFoundation

@@ -1,9 +1,9 @@
-//
-//  WalletSpinnerToResultAnimator.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 29.1.24..
-//
+
+
+
+
+
+
 
 import UIKit
 
@@ -86,11 +86,11 @@ final class WalletSpinnerToResultAnimator: NSObject, UIViewControllerAnimatedTra
         let staggeredViews: [UIView] = (result.titleLabel.isHidden ? [] : [result.titleLabel]) + result.subtitleStack.arrangedSubviews + [result.closeButton]
         
         staggeredViews.enumerated().forEach { (index, view) in
-//            view.transform = .init(translationX: 50, y: 0)
+
             view.alpha = 0.01
             
             UIView.animate(withDuration: 4 / 30, delay: 6 / 30 + TimeInterval(2 * index) / 30) {
-//                view.transform = .identity
+
                 view.alpha = 1
             }
         }

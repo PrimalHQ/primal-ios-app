@@ -1,13 +1,13 @@
-//
-//  PremiumCustomizationManager.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 19.11.24..
-//
+
+
+
+
+
+
 
 import Combine
 import Foundation
-// {"style":"PURPLEHAZE","custom_badge":true,"avatar_glow":true}
+
 
 struct LegendCustomization: Codable {
     var style: String?

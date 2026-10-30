@@ -1,9 +1,9 @@
-//
-//  ZapGallery.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 23.4.24..
-//
+
+
+
+
+
+
 
 import UIKit
 import Lottie
@@ -16,7 +16,7 @@ protocol ZapGalleryViewDelegate: AnyObject {
 
 protocol ZapGallery: UIView {
     var delegate: ZapGalleryViewDelegate? { get set }
-//    var zaps: [ParsedZap] { get set }
+
     var singleLine: Bool { get set }
     func setZaps(_ zaps: [ParsedZap])
 }

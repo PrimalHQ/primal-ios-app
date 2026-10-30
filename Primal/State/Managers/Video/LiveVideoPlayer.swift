@@ -1,9 +1,9 @@
-//
-//  LiveVideoPlayer.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 22. 8. 2025..
-//
+
+
+
+
+
+
 
 import AVKit
 import Combine
@@ -70,7 +70,7 @@ class LiveVideoPlayer: NSObject, PlayerProtocol {
     
 }
 
-// MARK: - Private
+
 private extension LiveVideoPlayer {
     func makeLivePlayer(url: String) -> AVPlayer {
         guard let url = URL(string: url) else { return AVPlayer() }

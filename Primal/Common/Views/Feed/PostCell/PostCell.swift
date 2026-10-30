@@ -1,9 +1,9 @@
-//
-//  PostCell.swift
-//  Primal
-//
-//  Created by Pavle D Stevanović on 9.5.23..
-//
+
+
+
+
+
+
 
 import Combine
 import UIKit
@@ -18,7 +18,7 @@ protocol PostCellDelegate: AnyObject {
     func mainActionForZap(_ zap: ParsedZap)
 }
 
-/// Base class, not meant to be instantiated as is, use child classes like FeedCell
+
 class PostCell: UITableViewCell {
     class var cellID: String { "PostCell" }
     

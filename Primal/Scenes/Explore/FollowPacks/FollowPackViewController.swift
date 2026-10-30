@@ -1,9 +1,9 @@
-//
-//  FollowPackViewController.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 9.6.25..
-//
+
+
+
+
+
+
 
 import Combine
 import GenericJSON

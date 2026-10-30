@@ -1,9 +1,9 @@
-//
-//  ParsedContent+NoteInfo.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 17.5.24..
-//
+
+
+
+
+
+
 
 struct PostInfo {
     var isBookmarked: Bool

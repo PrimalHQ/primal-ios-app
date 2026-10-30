@@ -1,9 +1,9 @@
-//
-//  DatabaseManager+ProfileCounts.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 23.9.24..
-//
+
+
+
+
+
+
 
 import Foundation
 import GRDB

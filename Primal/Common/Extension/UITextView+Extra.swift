@@ -1,9 +1,9 @@
-//
-//  UITextView+Extra.swift
-//  Primal
-//
-//  Created by Pavle D Stevanović on 15.6.23..
-//
+
+
+
+
+
+
 
 import UIKit
 

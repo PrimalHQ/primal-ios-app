@@ -1,9 +1,9 @@
-//
-//  SigningManager.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 7. 11. 2025..
-//
+
+
+
+
+
+
 
 import PrimalShared
 import NostrSDK

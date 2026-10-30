@@ -1,9 +1,9 @@
-//
-//  PollView.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 4.3.26..
-//
+
+
+
+
+
+
 
 import Combine
 import UIKit
@@ -71,7 +71,7 @@ final class PollView: UIView, Themeable {
     }
 }
 
-// MARK: - Private
+
 
 private extension PollView {
     var isExpired: Bool {
@@ -215,7 +215,7 @@ private extension PollView {
     }
 }
 
-// MARK: - PollVotingOptionView
+
 
 final class PollVotingOptionView: UIButton, Themeable {
     var text: String = ""
@@ -248,7 +248,7 @@ final class PollVotingOptionView: UIButton, Themeable {
     }
 }
 
-// MARK: - PollResultOptionView
+
 
 final class PollResultOptionView: UIView, Themeable {
     private let progressParent = UIView()

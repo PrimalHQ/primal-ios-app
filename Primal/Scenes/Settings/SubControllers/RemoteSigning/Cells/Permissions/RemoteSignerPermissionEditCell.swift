@@ -1,9 +1,9 @@
-//
-//  RemoteSignerPermissionEditCell.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 9. 12. 2025..
-//
+
+
+
+
+
+
 
 import UIKit
 import PrimalShared

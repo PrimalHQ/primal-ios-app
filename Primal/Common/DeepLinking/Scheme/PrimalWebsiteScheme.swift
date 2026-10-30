@@ -1,9 +1,9 @@
-//
-//  PrimalWebsiteScheme.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 19.2.25..
-//
+
+
+
+
+
+
 
 import Combine
 import Foundation
@@ -76,7 +76,7 @@ final class PrimalWebsiteScheme: DeeplinkHandlerProtocol, MetadataCoding {
         }
         
         if pathL.hasPrefix("/rc/") {
-//            RootViewController.instance.navigateTo = .promoCode(id)
+
             return
         }
         

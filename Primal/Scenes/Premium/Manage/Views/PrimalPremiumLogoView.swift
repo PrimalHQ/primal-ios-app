@@ -1,9 +1,9 @@
-//
-//  PrimalPremiumLogoView.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 12.3.25..
-//
+
+
+
+
+
+
 
 import UIKit
 

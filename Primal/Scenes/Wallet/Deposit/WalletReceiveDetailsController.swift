@@ -1,9 +1,9 @@
-//
-//  WalletReceiveDetailsController.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 15.10.23..
-//
+
+
+
+
+
+
 
 import Combine
 import UIKit

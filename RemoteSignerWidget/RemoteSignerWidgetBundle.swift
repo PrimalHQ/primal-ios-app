@@ -1,9 +1,9 @@
-//
-//  RemoteSignerWidgetBundle.swift
-//  RemoteSignerWidget
-//
-//  Created by Pavle Stevanović on 15. 12. 2025..
-//
+
+
+
+
+
+
 
 import WidgetKit
 import SwiftUI

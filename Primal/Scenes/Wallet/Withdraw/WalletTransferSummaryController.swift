@@ -1,9 +1,9 @@
-//
-//  WalletTransferSummaryController.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 12.10.23..
-//
+
+
+
+
+
+
 
 import UIKit
 import Lottie

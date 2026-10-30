@@ -1,9 +1,9 @@
-//
-//  ProcessingNotes.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 4.11.24..
-//
+
+
+
+
+
+
 
 import Foundation
 import NostrSDK
@@ -469,7 +469,7 @@ class NoteProcessor: MetadataCoding {
         }
         p.hashtags = hashtags.flatMap { nsText.positions(of: $0, reference: $0) }
         p.mentions = markedMentions.flatMap { nsText.positions(of: $0.0, reference: $0.ref) }
-//        p.notes = referencedPosts.flatMap { nsText.positions(of: $0.0, reference: $0.1.post.id) }
+
         p.httpUrls = shortenedUrls.flatMap { nsText.positions(of: $0.0, reference: $0.1) }
         p.highlights = highlights.flatMap { nsText.positions(of: $0.replacement, reference: $0.highlight.post.id)}
         p.highlightEvents = highlights.map { $0.highlight }

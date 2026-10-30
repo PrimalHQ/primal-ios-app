@@ -1,9 +1,9 @@
-//
-//  RemoteSignerSignInController.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 28. 11. 2025..
-//
+
+
+
+
+
+
 
 import Combine
 import UIKit

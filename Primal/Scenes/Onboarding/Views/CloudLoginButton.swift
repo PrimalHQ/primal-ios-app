@@ -1,9 +1,9 @@
-//
-//  CloudLoginButton.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 10. 11. 2025..
-//
+
+
+
+
+
+
 
 import UIKit
 

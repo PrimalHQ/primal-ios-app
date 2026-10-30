@@ -1,9 +1,9 @@
-//
-//  PublicBookmarksViewController.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 10.4.24..
-//
+
+
+
+
+
+
 
 import Combine
 import UIKit

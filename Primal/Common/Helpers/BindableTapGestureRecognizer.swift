@@ -1,9 +1,9 @@
-//
-//  BindableTapGestureRecognizer.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 23.10.23..
-//
+
+
+
+
+
+
 
 import UIKit
 

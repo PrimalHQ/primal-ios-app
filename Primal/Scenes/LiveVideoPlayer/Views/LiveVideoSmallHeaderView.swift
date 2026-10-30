@@ -1,9 +1,9 @@
-//
-//  LiveVideoSmallHeaderView 2.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 2. 10. 2025..
-//
+
+
+
+
+
+
 
 import UIKit
 

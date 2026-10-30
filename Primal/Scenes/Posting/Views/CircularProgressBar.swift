@@ -1,9 +1,9 @@
-//
-//  CircularProgressBar.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 16.2.24..
-//
+
+
+
+
+
+
 
 import UIKit
 import QuartzCore
@@ -61,7 +61,7 @@ class CircularProgressView: UIView {
     
     private func configureProgressViewToBeCircular() {
         backgroundColor = UIColor.clear
-//        layer.cornerRadius = frame.size.width / 2.0
+
         
         tracklayer.path = trackPath
         progressLayer.path = progressPath

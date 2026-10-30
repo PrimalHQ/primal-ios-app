@@ -1,9 +1,9 @@
-//
-//  PostRequestResult+FeedPicker.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 9.8.24..
-//
+
+
+
+
+
+
 
 import Foundation
 import GenericJSON

@@ -1,9 +1,9 @@
-//
-//  UILabel+Extra.swift
-//  Primal
-//
-//  Created by Pavle D Stevanović on 15.5.23..
-//
+
+
+
+
+
+
 
 import UIKit
 

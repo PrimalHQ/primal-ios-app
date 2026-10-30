@@ -1,9 +1,9 @@
-//
-//  KlipyGifController.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 23. 2. 2026..
-//
+
+
+
+
+
+
 
 import Combine
 import Kingfisher
@@ -83,7 +83,7 @@ class KlipyGifController: UIViewController, Themeable {
     }
 }
 
-// MARK: - Setup
+
 
 private extension KlipyGifController {
     func setup() {
@@ -203,7 +203,7 @@ private extension KlipyGifController {
     }
 }
 
-// MARK: - Actions
+
 
 private extension KlipyGifController {
     @objc func searchTextChanged() {
@@ -225,7 +225,7 @@ private extension KlipyGifController {
     }
 }
 
-// MARK: - UITextFieldDelegate
+
 
 extension KlipyGifController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
@@ -238,7 +238,7 @@ extension KlipyGifController: UITextFieldDelegate {
     }
 }
 
-// MARK: - Category CollectionView
+
 
 extension KlipyGifController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
 
@@ -298,7 +298,7 @@ extension KlipyGifController: UICollectionViewDataSource, UICollectionViewDelega
     }
 }
 
-// MARK: - Category Cell
+
 
 final class KlipyCategoryCell: UICollectionViewCell, Themeable {
     private let label = UILabel()
@@ -335,7 +335,7 @@ final class KlipyCategoryCell: UICollectionViewCell, Themeable {
     }
 }
 
-// MARK: - GIF Cell
+
 
 final class KlipyGIFCell: UICollectionViewCell {
     private let imageView = FLAnimatedImageView()

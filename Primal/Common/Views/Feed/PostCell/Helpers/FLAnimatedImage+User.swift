@@ -1,9 +1,9 @@
-//
-//  FLAnimatedImage+User.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 17.5.24..
-//
+
+
+
+
+
+
 
 import Foundation
 import FLAnimatedImage

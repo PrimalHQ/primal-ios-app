@@ -1,9 +1,9 @@
-//
-//  PremiumListController.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 5.2.25..
-//
+
+
+
+
+
+
 
 import Combine
 import UIKit
@@ -77,33 +77,33 @@ class PremiumListTableController: UITableViewController, Themeable {
         tableView.separatorStyle = .none
         
         manager.$users.assign(to: \.legends, onWeak: self).store(in: &cancellables)
-//
-//        SocketRequest(name: "membership_premium_leaderboard", payload: [
-//            "limit": 1000,
-//        ])
-//        .publisher()
-//        .receive(on: DispatchQueue.main)
-//        .sink { [weak self] res in
-//            guard
-//                let listResponse = res.events.first(where: { Int($0["kind"]?.doubleValue ?? 0) == NostrKind.primalPremiumInfoList.rawValue }),
-//                let items: [PremiumListServerResponse] = listResponse["content"]?.stringValue?.decode()
-//            else {
-//                return
-//            }
-//            
-//            let users = res.getSortedUsers()
-//            
-//            let premiumUsers: [PremiumListItem] = items.enumerated().map { (index, item) in
-//                .init(
-//                    index: Int(item.index),
-//                    user: users.first(where: { $0.data.pubkey == item.pubkey }) ?? .init(data: .init(pubkey: item.pubkey)),
-//                    since: Date(timeIntervalSince1970: item.premium_since)
-//                )
-//            }
-//            
-//            self?.legends = premiumUsers
-//        }
-//        .store(in: &cancellables)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {

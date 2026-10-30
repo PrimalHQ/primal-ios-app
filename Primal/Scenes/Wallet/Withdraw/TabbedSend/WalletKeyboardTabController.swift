@@ -1,9 +1,9 @@
-//
-//  WalletKeyboardTabController.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 28.12.23..
-//
+
+
+
+
+
+
 
 import UIKit
 import Combine
@@ -126,15 +126,15 @@ final class WalletSendSmallActionBlackButton: UIButton {
         config.titleLineBreakMode = .byTruncatingTail
 
         configuration = config
-//        titleLabel?.font = .appFont(withSize: 16, weight: .regular)
-//        setTitle(title, for: .normal)
-//        setTitleColor(.init(rgb: 0xAAAAAA), for: .normal)
-//        setImage(icon, for: .normal)
-//        tintColor = .init(rgb: 0xAAAAAA)
-//        backgroundColor = .black
-//        layer.cornerRadius = 20
-//        imageEdgeInsets = .init(top: 0, left: -16, bottom: 0, right: 0)
-//        titleEdgeInsets = .init(top: 0, left: 8, bottom: 0, right: 0)
+
+
+
+
+
+
+
+
+
         
         constrainToSize(height: 40)
     }

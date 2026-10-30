@@ -1,9 +1,9 @@
-//
-//  LargeWalletButton.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 9.10.23..
-//
+
+
+
+
+
+
 
 import UIKit
 
@@ -34,9 +34,9 @@ class LargeWalletButton: MyButton, Themeable {
     
     var useSmallIcon = false {
         didSet {
-//            UIView.transition(with: self, duration: 13 / 30, options: .transitionCrossDissolve) {
-//                self.iconView.image = self.useSmallIcon ? self.variant.smallIcon : self.variant.icon
-//            }
+
+
+
         }
     }
     

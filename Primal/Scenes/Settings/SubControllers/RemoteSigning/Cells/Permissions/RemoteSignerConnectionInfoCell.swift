@@ -1,9 +1,9 @@
-//
-//  RemoteSignerConnectionInfoCell.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 8. 12. 2025..
-//
+
+
+
+
+
+
 
 import UIKit
 import PrimalShared

@@ -1,9 +1,9 @@
-//
-//  FeedElementWebkitLinkPreviewCell.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 15.1.25..
-//
+
+
+
+
+
+
 
 import UIKit
 import WebKit

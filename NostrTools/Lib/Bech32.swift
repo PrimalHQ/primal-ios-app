@@ -1,20 +1,20 @@
-//
-//  Bech32.swift
-//
-//  Modified by William Casarin in 2022
-//  Created by Evolution Group Ltd on 12.02.2018.
-//  Copyright © 2018 Evolution Group Ltd. All rights reserved.
-//
-//  Base32 address format for native v0-16 witness outputs implementation
-//  https://github.com/bitcoin/bips/blob/master/bip-0173.mediawiki
-//  Inspired by Pieter Wuille C++ implementation
+
+
+
+
+
+
+
+
+
+
 import Foundation
 
-/// Bech32 checksum implementation
+
 fileprivate let gen: [UInt32] = [0x3b6a57b2, 0x26508e6d, 0x1ea119fa, 0x3d4233dd, 0x2a1462b3]
-/// Bech32 checksum delimiter
+
 fileprivate let checksumMarker: String = "1"
-/// Bech32 character set for decoding
+
 fileprivate let decCharset: [Int8] = [
     -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
      -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -26,7 +26,7 @@ fileprivate let decCharset: [Int8] = [
      1,  0,  3, 16, 11, 28, 12, 14,  6,  4,  2, -1, -1, -1, -1, -1
 ]
 
-/// Find the polynomial with value coefficients mod the generator as 30-bit.
+
 func bech32_polymod(_ values: Data) -> UInt32 {
     var chk: UInt32 = 1
     for v in values {
@@ -40,7 +40,7 @@ func bech32_polymod(_ values: Data) -> UInt32 {
 }
 
 
-/// Expand a HRP for use in checksum computation.
+
 func bech32_expand_hrp(_ s: String) -> Data {
     var left: [UInt8] = []
     var right: [UInt8] = []
@@ -52,7 +52,7 @@ func bech32_expand_hrp(_ s: String) -> Data {
     return Data(left + [0] + right)
 }
 
-/// Verify checksum
+
 func bech32_verify(hrp: String, checksum: Data) -> Bool {
     var data = bech32_expand_hrp(hrp)
     data.append(checksum)
@@ -127,7 +127,7 @@ func eightToFiveBits(_ input: [UInt8]) -> [UInt8] {
     return outputArray
 }
 
-/// Decode Bech32 string
+
 @discardableResult
 func bech32_decode(_ str: String) throws -> (hrp: String, data: Data)? {
     guard let strBytes = str.data(using: .utf8) else {

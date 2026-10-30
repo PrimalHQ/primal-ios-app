@@ -1,9 +1,9 @@
-//
-//  NWCScheme.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 29.1.25..
-//
+
+
+
+
+
+
 
 import Foundation
 import UIKit
@@ -39,20 +39,20 @@ final class NWCSchemeDeeplinkHandler: DeeplinkHandlerProtocol {
         
         nav.pushViewController(SettingsExternalNwcController(params: params), animated: true)
         
-//        if url.absoluteString.starts(with: nwcDeeplinkPrefix) {
-//            let npub: String = url.absoluteString.replacingOccurrences(of: profileDeeplinkPrefix, with: "")
-//
-//            notify(.primalProfileLink, npub)
-//        } else if url.absoluteString.starts(with: nwcPrimalDeeplinkPrefix) {
-//            let note: String = url.absoluteString.replacingOccurrences(of: noteDeeplinkPrefix, with: "")
-//            
-//            guard let decoded = try? bech32_decode(note) else {
-//                notify(.primalNoteLink, note)
-//                return
-//            }
-//            let eventId = hex_encode(decoded.data)
-//                
-//            notify(.primalNoteLink, eventId)
-//        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
 }

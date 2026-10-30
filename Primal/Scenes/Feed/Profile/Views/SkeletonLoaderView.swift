@@ -1,9 +1,9 @@
-//
-//  SkeletonLoaderView.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 16.9.24..
-//
+
+
+
+
+
+
 
 import UIKit
 import Lottie
@@ -74,6 +74,6 @@ class SkeletonLoaderView: UIView, Themeable {
     }
     
     func updateTheme() {
-//        animationViews.forEach { $0.updateTheme() }
+
     }
 }

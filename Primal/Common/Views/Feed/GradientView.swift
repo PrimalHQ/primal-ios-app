@@ -1,9 +1,9 @@
-//
-//  GradientView.swift
-//  Primal
-//
-//  Created by Pavle D Stevanović on 9.5.23..
-//
+
+
+
+
+
+
 
 import UIKit
 

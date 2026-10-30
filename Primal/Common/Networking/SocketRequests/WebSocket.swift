@@ -1,9 +1,9 @@
-//
-//  WebSocket.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 6.5.24..
-//
+
+
+
+
+
+
 
 import Combine
 import Foundation
@@ -34,11 +34,11 @@ final class WebSocket: NSObject, URLSessionWebSocketDelegate {
     private let url: URL
     private let session: URLSession
     private lazy var webSocketTask: URLSessionWebSocketTask = {
-//        let options = NWProtocolWebSocket.Options()
-//        let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "Unknown"
-//        let ua = "\(APP_NAME)/\(appVersion) (main)"
-//        options.autoReplyPing = true // from default settings of NWWebsocket
-//        options.setAdditionalHeaders([("User-Agent", ua)])
+
+
+
+
+
         
         let task = session.webSocketTask(with: url)
         task.maximumMessageSize = 50_000_000

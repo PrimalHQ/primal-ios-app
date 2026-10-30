@@ -1,9 +1,9 @@
-//
-//  SettingsHeaderView.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 22.10.24..
-//
+
+
+
+
+
+
 
 import UIKit
 

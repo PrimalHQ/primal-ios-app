@@ -1,9 +1,9 @@
-//
-//  PostFeedCell.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 17.5.24..
-//
+
+
+
+
+
+
 
 import UIKit
 import Kingfisher

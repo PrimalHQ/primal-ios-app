@@ -1,9 +1,9 @@
-//
-//  ArticleTopInfoView.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 2.8.24..
-//
+
+
+
+
+
+
 
 import UIKit
 
@@ -19,7 +19,7 @@ class ArticleTopInfoView: UIView, Themeable {
             .paragraphStyle: paragraphStyle,
             .font: UIFont.appFont(withSize: 26, weight: .bold),
             .foregroundColor: UIColor.foreground
-//            .kern: -0.58 / 1.4176
+
         ])
     }
     

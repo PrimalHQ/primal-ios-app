@@ -1,9 +1,9 @@
-//
-//  Connection.swift
-//  Primal
-//
-//  Created by Nikola Lukovic on 31.5.23..
-//
+
+
+
+
+
+
 
 import Foundation
 import Combine
@@ -247,7 +247,7 @@ final class Connection {
             }
             let jsonStr = String(data: jsonData, encoding: .utf8)!
                  
-//            print("REQUEST:\n\(jsonStr)")
+
             self.continousSubHandlers[id] = nil
             self.socket.send(.string(jsonStr))
         }

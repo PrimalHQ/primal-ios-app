@@ -1,9 +1,9 @@
-//
-//  OnboardingStartViewController.swift
-//  Primal
-//
-//  Created by Pavle D Stevanović on 22.4.23..
-//
+
+
+
+
+
+
 
 import UIKit
 import SafariServices

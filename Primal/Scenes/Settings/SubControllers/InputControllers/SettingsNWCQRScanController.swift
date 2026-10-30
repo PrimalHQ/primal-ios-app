@@ -1,9 +1,9 @@
-//
-//  SettingsNWCQRScanController.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 29.5.25..
-//
+
+
+
+
+
+
 
 import UIKit
 import AVFoundation

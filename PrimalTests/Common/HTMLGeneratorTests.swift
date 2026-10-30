@@ -1,9 +1,9 @@
-//
-//  HTMLGeneratorTests.swift
-//  PrimalTests
-//
-//  Created by Pavle Stevanović on 2.9.26..
-//
+
+
+
+
+
+
 
 import XCTest
 @testable import Primal

@@ -1,10 +1,10 @@
-//
-//  SelfSizingTextView.swift
-//  SelfSizingTextView
-//
-//  Created by Peter Edmonston on 4/23/17.
-//  Copyright © 2017 com.peteredmonston. All rights reserved.
-//
+
+
+
+
+
+
+
 
 import UIKit
 

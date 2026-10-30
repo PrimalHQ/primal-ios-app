@@ -1,9 +1,9 @@
-//
-//  WalletReceiveTransitionAnimator.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 31.1.24..
-//
+
+
+
+
+
+
 
 import UIKit
 

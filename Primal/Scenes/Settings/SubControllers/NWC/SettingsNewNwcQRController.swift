@@ -1,9 +1,9 @@
-//
-//  SettingsNewNWCQRController.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 28.1.25..
-//
+
+
+
+
+
+
 
 import UIKit
 

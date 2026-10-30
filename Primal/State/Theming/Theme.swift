@@ -1,9 +1,9 @@
-//
-//  Theme.swift
-//  Primal
-//
-//  Created by Pavle D Stevanović on 23.5.23..
-//
+
+
+
+
+
+
 
 import UIKit
 
@@ -18,8 +18,8 @@ enum Theme: String {
     
     var theme: AppTheme {
         switch self {
-//        case .sunsetWave:       return SunsetWave.instance
-//        case .sunriseWave:      return SunriseWave.instance
+
+
         case .midnightWave:     return MidnightWave.instance
         case .iceWave:          return IceWave.instance
         }
@@ -35,10 +35,10 @@ enum Theme: String {
     
     static var inverse: AppTheme {
         switch current.kind {
-//        case .sunriseWave:
-//            return Theme.midnightWave.theme
-//        case .sunsetWave:
-//            return Theme.iceWave.theme
+
+
+
+
         case .midnightWave:
             return Theme.iceWave.theme
         case .iceWave:

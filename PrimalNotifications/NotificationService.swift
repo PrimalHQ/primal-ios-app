@@ -1,9 +1,9 @@
-//
-//  NotificationService.swift
-//  PrimalNotifications
-//
-//  Created by Pavle Stevanović on 4.4.25..
-//
+
+
+
+
+
+
 
 import UserNotifications
 import Intents
@@ -49,35 +49,35 @@ class NotificationService: UNNotificationServiceExtension {
             return
         }
         
-//        let qaNpub = "npub13rxpxjc6vh65aay2eswlxejsv0f7530sf64c4arydetpckhfjpustsjeaf"
-//        if   let qaNsec = keychain[qaNpub], let keypair = Keypair(nsec: qaNsec),
-//             let obj = try? NostrEvent(kind: EventKind.textNote, content: "Test post from notification i mean really", tags: [], createdAt: Int64(Date().timeIntervalSince1970), signedBy: keypair) {
-//         
-//            var request = URLRequest(url: URL(string: "https://cache1.primal.net/api/")!, cachePolicy: .reloadIgnoringLocalAndRemoteCacheData)
-//            
-//            let body: Any = ["broadcast_events", [
-//                "events": [[
-//                    "id": obj.id,
-//                    "pubkey": obj.pubkey,
-//                    "content": obj.content,
-//                    "created_at": obj.createdAt,
-//                    "kind": obj.kind.rawValue,
-//                    "tags": obj.tags.map { $0.raw },
-//                    "sig": obj.signature as Any
-//                ]],
-//                "relays": ["wss://relay.primal.net"]
-//            ]] as Any
-//            
-//            if let requestBody = try? JSONSerialization.data(withJSONObject: body) {
-//                request.httpMethod = "POST"
-//                request.httpBody = requestBody
-//                request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-//            }
-//            
-//            session
-//                .dataTask(with: request)
-//                .resume()
-//        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         
         guard
             let userId = communicationData["user_pubkey"] as? String,

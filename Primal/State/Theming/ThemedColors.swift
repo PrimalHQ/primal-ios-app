@@ -1,9 +1,9 @@
-//
-//  ThemedColors.swift
-//  Primal
-//
-//  Created by Pavle D Stevanović on 23.5.23..
-//
+
+
+
+
+
+
 
 import UIKit
 

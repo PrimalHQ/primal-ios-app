@@ -1,9 +1,9 @@
-//
-//  ChatViewController.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 8.9.23..
-//
+
+
+
+
+
+
 
 import Combine
 import UIKit
@@ -44,7 +44,7 @@ final class ChatViewController: UIViewController, Themeable, WalletSearchControl
     private let inputParent = UIView()
     private let inputBackground = UIView()
     private let bottomBarSpacer = UIView()
-//    private let loadingSpinner = LoadingSpinnerView().constrainToSize(70)
+
     
     private lazy var postButton = ChatSendButton()
     private let buttonStack = UIStackView()
@@ -87,8 +87,8 @@ final class ChatViewController: UIViewController, Themeable, WalletSearchControl
         
         chatManager.getChatMessages(pubkey: user.data.pubkey) { [weak self] result in
             self?.messages = result
-//            self?.loadingSpinner.stop()
-//            self?.loadingSpinner.isHidden = true
+
+
         }
         
         addPublishers()
@@ -132,9 +132,9 @@ private extension ChatViewController {
         view.addSubview(stack)
         stack.pinToSuperview(edges: [.horizontal, .top], safeArea: true).pinToSuperview(edges: .bottom, safeArea: true)
         
-//        view.addSubview(loadingSpinner)
-//        loadingSpinner.centerToSuperview()
-//        loadingSpinner.play()
+
+
+
         
         table.transform = .init(scaleX: -1, y: 1).rotated(by: .pi)
         table.keyboardDismissMode = .interactive
@@ -214,14 +214,14 @@ private extension ChatViewController {
         
         let atButton = UIButton()
         atButton.setImage(UIImage(named: "AtIcon"), for: .normal)
-//        atButton.addTarget(inputManager, action: #selector(PostingTextViewManager.atButtonPressed), for: .touchUpInside)
+
         
-//        [/*imageButton, cameraButton, atButton,*/ UIView()].forEach {
-//            buttonStack.addArrangedSubview($0)
-//        }
-//        atButton.widthAnchor.constraint(equalTo: imageButton.widthAnchor).isActive = true
+
+
+
+
         
-//        buttonStack.alignment = .center
+
         
         placeholderLabel.font = .appFont(withSize: 16, weight: .regular)
         placeholderLabel.textColor = .foreground4
@@ -354,31 +354,31 @@ private extension ChatViewController {
             self.textHeightConstraint?.isActive = !isEditing
             self.placeholderLabel.isHidden = isEditing || !self.textInputView.text.isEmpty
             
-//            let isImageHidden = !isEditing || images.isEmpty
+
             
             UIView.animate(withDuration: 0.2) {
-//                self.inputBackground.backgroundColor = isEditing ? .background3 : .background3
+
                 
-//                self.buttonStack.isHidden = !isEditing
-//                self.buttonStack.alpha = isEditing ? 1 : 0
-//
-//                self.imagesCollectionView.isHidden = isImageHidden
-//                self.imagesCollectionView.alpha = isImageHidden ? 0 : 1
-//
+
+
+
+
+
+
                 self.textInputView.layoutIfNeeded()
             }
         }
         .store(in: &cancellables)
         
         inputManager.$media.receive(on: DispatchQueue.main).sink { [weak self] images in
-//            self?.imagesCollectionView.imageResources = images
+
             self?.inputContentMaxHeightConstraint?.isActive = !images.isEmpty
             
-//            let isHidden = images.isEmpty
-//            UIView.animate(withDuration: 0.3, animations: {
-//                self.imagesCollectionView.isHidden = isHidden
-//                self.imagesCollectionView.alpha = isHidden ? 0 : 1
-//            })
+
+
+
+
+
         }
         .store(in: &cancellables)
         

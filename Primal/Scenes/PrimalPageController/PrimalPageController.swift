@@ -1,9 +1,9 @@
-//
-//  PrimalPageController.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 4.10.24..
-//
+
+
+
+
+
+
 
 import UIKit
 import Combine

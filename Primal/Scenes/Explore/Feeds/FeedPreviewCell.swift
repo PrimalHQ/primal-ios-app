@@ -1,9 +1,9 @@
-//
-//  FeedPreviewCell.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 26.9.24..
-//
+
+
+
+
+
+
 
 import UIKit
 import Kingfisher

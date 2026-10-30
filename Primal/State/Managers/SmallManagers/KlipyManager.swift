@@ -1,9 +1,9 @@
-//
-//  KlipyManager.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 23.2.26..
-//
+
+
+
+
+
+
 
 import Combine
 import Foundation

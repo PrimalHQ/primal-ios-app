@@ -1,9 +1,9 @@
-//
-//  ArticleWebView.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 16.7.24..
-//
+
+
+
+
+
+
 
 import WebKit
 import NostrSDK
@@ -109,8 +109,8 @@ class ArticleWebView: WKWebView, Themeable {
     func updateContent(_ content: String) {
         loadMarkdown(content)
         
-//        evaluateJavaScript("updateMainContent(\"\(content)\")")
-//        calculateSize()
+
+
     }
     
     private func loadMarkdown(_ content: String) {
@@ -138,20 +138,20 @@ class ArticleWebView: WKWebView, Themeable {
     override func buildMenu(with builder: UIMenuBuilder) {
         builder.replace(menu: .root, with: .init(identifier: .root))
         
-//        builder.replace(menu: .root, with: .init(identifier: .root, children: [
-//            UIAction(title: "Quote", handler: { [weak self] _ in
-//                
-//            }),
-//            UIAction(title: "Comment", handler: { [weak self] _ in
-//                
-//            }),
-//            UIAction(title: "Highlight", handler: { [weak self] _ in
-//                self?.selectedText { text in
-//                    guard let self, let text else { return }
-//                    self.delegate?.articleWebViewHighlight(self, text: text)
-//                }
-//            })
-//        ]))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
     
     var prevSize = CGSize.zero
@@ -201,20 +201,20 @@ extension ArticleWebView: WKUIDelegate {
         }
         completionHandler(nil)
         return
-//        let configuration = UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { suggestedActions in
-//            let customAction1 = UIAction(title: "Custom Option 1", image: nil) { action in
-//                // Handle action
-//                print("Custom Option 1 selected")
-//            }
-//
-//            let customAction2 = UIAction(title: "Custom Option 2", image: nil) { action in
-//                // Handle action
-//                print("Custom Option 2 selected")
-//            }
-//
-//            return nil// UIMenu(title: "", children: [customAction1, customAction2])
-//        }
-//        completionHandler(configuration)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
 }
 

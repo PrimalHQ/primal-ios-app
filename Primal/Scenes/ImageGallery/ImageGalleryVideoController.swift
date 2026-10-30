@@ -1,9 +1,9 @@
-//
-//  ImageGalleryVideoController.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 16. 10. 2025..
-//
+
+
+
+
+
+
 
 import UIKit
 

@@ -1,9 +1,9 @@
-//
-//  PopupZapPollVoteViewController.swift
-//  Primal
-//
-//  Created on 5.3.26..
-//
+
+
+
+
+
+
 
 import Combine
 import UIKit
@@ -103,7 +103,7 @@ final class PopupZapPollVoteViewController: UIViewController {
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 }
 
-// MARK: - Private
+
 
 private extension PopupZapPollVoteViewController {
     var selectedAmount: Int {
@@ -342,7 +342,7 @@ private extension PopupZapPollVoteViewController {
     }
 }
 
-// MARK: - UITextFieldDelegate
+
 
 extension PopupZapPollVoteViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
@@ -390,7 +390,7 @@ extension PopupZapPollVoteViewController: UITextFieldDelegate {
     }
 }
 
-// MARK: - ZapPollAmountButton
+
 
 private final class ZapPollAmountButton: MyButton, Themeable {
     private let amountLabel = UILabel()

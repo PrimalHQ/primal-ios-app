@@ -1,9 +1,9 @@
-//
-//  AdvancedSearchManager.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 11.10.24..
-//
+
+
+
+
+
+
 
 import Combine
 import Foundation
@@ -223,7 +223,7 @@ extension TimePickerOption: PickableEnum {
     static var name: String { "Time Posted" }
 }
 
-// MARK: - Configuration string
+
 
 private extension Array where Element: ParsedUser {
     func configurationString(modifier: String) -> String? {
@@ -291,12 +291,12 @@ extension TimePickerOption {
             dateFormatter.dateFormat = "yyyy-MM-dd_HH:mm"
             
             var string = ""
-//            if let start {
+
                 string += "since:\(dateFormatter.string(from: start))"
-//            }
-//            if let end {
+
+
                 string += " until:\(dateFormatter.string(from: end))"
-//            }
+
         
             return string.isEmpty ? nil : string
         }

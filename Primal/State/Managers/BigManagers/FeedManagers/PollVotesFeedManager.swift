@@ -1,9 +1,9 @@
-//
-//  PollVotesFeedManager.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 6.3.26..
-//
+
+
+
+
+
+
 
 import Combine
 import Foundation
@@ -66,8 +66,8 @@ class PollVotesFeedManager: BaseFeedManager {
                 if newVotes.isEmpty {
                     didReachEnd = true
                 } else {
-//                    let existingPubkeys = Set(users.map { $0.data.pubkey })
-//                    let filtered = votingUsers.filter { !existingPubkeys.contains($0.data.pubkey) }
+
+
                     votesTmp += newVotes
                     votes = votesTmp
                 }

@@ -1,9 +1,9 @@
-//
-//  AvatarView.swift
-//  Primal
-//
-//  Created by Pavle D Stevanović on 29.6.23..
-//
+
+
+
+
+
+
 
 import UIKit
 import Kingfisher

@@ -1,9 +1,9 @@
-//
-//  WalletHomeToTransactionAnimator.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 8.2.24..
-//
+
+
+
+
+
+
 
 import UIKit
 

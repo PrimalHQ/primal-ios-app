@@ -1,9 +1,9 @@
-//
-//  ProfileLastVisit.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 18.9.24..
-//
+
+
+
+
+
+
 
 import Foundation
 import GRDB

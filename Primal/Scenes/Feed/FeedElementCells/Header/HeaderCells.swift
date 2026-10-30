@@ -1,13 +1,13 @@
-//
-//  HeaderCells.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 31.3.26..
-//
+
+
+
+
+
+
 
 import UIKit
 
-// MARK: - Header + Text
+
 
 class HeaderTextCell: FeedElementTextCell {
     static let headerID = "HeaderTextCell"
@@ -39,7 +39,7 @@ class HeaderTextCell: FeedElementTextCell {
     }
 }
 
-// MARK: - Header + Image Gallery
+
 
 class HeaderImageGalleryCell: FeedElementImageGalleryCell {
     static let headerID = "HeaderImageGalleryCell"
@@ -71,7 +71,7 @@ class HeaderImageGalleryCell: FeedElementImageGalleryCell {
     }
 }
 
-// MARK: - Header + Reactions
+
 
 class HeaderReactionsCell: FeedElementReactionsCell {
     static let headerID = "HeaderReactionsCell"
@@ -103,7 +103,7 @@ class HeaderReactionsCell: FeedElementReactionsCell {
     }
 }
 
-// MARK: - Header + Zap Gallery
+
 
 class HeaderZapGalleryCell: FeedElementSmallZapGalleryCell {
     static let headerID = "HeaderZapGalleryCell"
@@ -135,7 +135,7 @@ class HeaderZapGalleryCell: FeedElementSmallZapGalleryCell {
     }
 }
 
-// MARK: - Header + Web Preview (Generic)
+
 
 class HeaderWebPreviewCell<T: LinkPreview>: FeedElementWebPreviewCell<T> {
     static var headerID: String { "HeaderWebPreviewCell" }
@@ -167,7 +167,7 @@ class HeaderWebPreviewCell<T: LinkPreview>: FeedElementWebPreviewCell<T> {
     }
 }
 
-// MARK: - Header + YouTube Preview
+
 
 class HeaderYoutubePreviewCell: FeedElementYoutubePreviewCell {
     static let headerID = "HeaderYoutubePreviewCell"
@@ -199,7 +199,7 @@ class HeaderYoutubePreviewCell: FeedElementYoutubePreviewCell {
     }
 }
 
-// MARK: - Header + Webkit Link Preview
+
 
 class HeaderWebkitPreviewCell: FeedElementWebkitLinkPreviewCell {
     static let headerID = "HeaderWebkitPreviewCell"
@@ -231,7 +231,7 @@ class HeaderWebkitPreviewCell: FeedElementWebkitLinkPreviewCell {
     }
 }
 
-// MARK: - Header + System Web Preview
+
 
 class HeaderSystemWebPreviewCell: FeedElementSystemWebPreviewCell {
     static let headerID = "HeaderSystemWebPreviewCell"
@@ -263,7 +263,7 @@ class HeaderSystemWebPreviewCell: FeedElementSystemWebPreviewCell {
     }
 }
 
-// MARK: - Header + Music Preview
+
 
 class HeaderMusicPreviewCell: FeedElementMusicPreviewCell {
     static let headerID = "HeaderMusicPreviewCell"
@@ -295,7 +295,7 @@ class HeaderMusicPreviewCell: FeedElementMusicPreviewCell {
     }
 }
 
-// MARK: - Header + Tidal Preview
+
 
 class HeaderTidalPreviewCell: FeedElementTidalPreviewCell {
     static let headerID = "HeaderTidalPreviewCell"
@@ -327,7 +327,7 @@ class HeaderTidalPreviewCell: FeedElementTidalPreviewCell {
     }
 }
 
-// MARK: - Header + Post Preview
+
 
 class HeaderPostPreviewCell: FeedElementPostPreviewCell {
     static let headerID = "HeaderPostPreviewCell"
@@ -359,7 +359,7 @@ class HeaderPostPreviewCell: FeedElementPostPreviewCell {
     }
 }
 
-// MARK: - Header + Zap Preview
+
 
 class HeaderZapPreviewCell: FeedElementZapPreviewCell {
     static let headerID = "HeaderZapPreviewCell"
@@ -391,7 +391,7 @@ class HeaderZapPreviewCell: FeedElementZapPreviewCell {
     }
 }
 
-// MARK: - Header + Article
+
 
 class HeaderArticleCell: FeedElementArticleCell {
     static let headerID = "HeaderArticleCell"
@@ -423,7 +423,7 @@ class HeaderArticleCell: FeedElementArticleCell {
     }
 }
 
-// MARK: - Header + Info
+
 
 class HeaderInfoCell: FeedElementInfoCell {
     static let headerID = "HeaderInfoCell"
@@ -455,7 +455,7 @@ class HeaderInfoCell: FeedElementInfoCell {
     }
 }
 
-// MARK: - Header + Live Preview
+
 
 class HeaderLivePreviewCell: FeedElementLivePreviewCell {
     static let headerID = "HeaderLivePreviewCell"
@@ -487,7 +487,7 @@ class HeaderLivePreviewCell: FeedElementLivePreviewCell {
     }
 }
 
-// MARK: - Header + Invoice
+
 
 class HeaderInvoiceCell: FeedElementInvoiceCell {
     static let headerID = "HeaderInvoiceCell"
@@ -519,7 +519,7 @@ class HeaderInvoiceCell: FeedElementInvoiceCell {
     }
 }
 
-// MARK: - Header + Poll
+
 
 class HeaderPollCell: FeedElementPollCell {
     static let headerID = "HeaderPollCell"

@@ -1,9 +1,9 @@
-//
-//  PopupPollTypeController.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 26. 2. 2026..
-//
+
+
+
+
+
+
 
 import UIKit
 

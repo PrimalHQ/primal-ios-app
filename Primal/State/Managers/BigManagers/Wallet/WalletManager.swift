@@ -1,9 +1,9 @@
-//
-//  WalletManager.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 6.10.23..
-//
+
+
+
+
+
+
 
 import Combine
 import GenericJSON
@@ -392,9 +392,9 @@ final class WalletManager {
     func refresh(reset: Bool = true) {
         guard let walletID else { return }
 
-//        if reset {
+
             parsedTransactions = []
-//        }
+
 
         let flow = walletRepo.latestTransactions(walletId: walletID)
         let snapshot = IosWalletPagingFactory.shared.createTransactionSnapshot(pagingFlow: flow)

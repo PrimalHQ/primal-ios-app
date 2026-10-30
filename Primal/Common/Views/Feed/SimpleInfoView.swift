@@ -1,9 +1,9 @@
-//
-//  SimpleInfoView.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 9.10.24..
-//
+
+
+
+
+
+
 
 import UIKit
 

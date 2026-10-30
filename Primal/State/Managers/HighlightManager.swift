@@ -1,9 +1,9 @@
-//
-//  HighlightManager.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 16.7.24..
-//
+
+
+
+
+
+
 
 import Foundation
 

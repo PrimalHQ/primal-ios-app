@@ -1,9 +1,9 @@
-//
-//  WidgetMainAppBridge.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 16. 12. 2025..
-//
+
+
+
+
+
+
 
 protocol WidgetMainAppBridgeProtocol {
     func endAllSessions()
@@ -14,7 +14,7 @@ protocol WidgetMainAppBridgeProtocol {
 
 var WidgetBridge: WidgetMainAppBridgeProtocol = WidgetMainAppBridgeNoOp()
 
-// No Op for the widget
+
 class WidgetMainAppBridgeNoOp: WidgetMainAppBridgeProtocol {
     func endAllSessions() {
         print("NO OP")

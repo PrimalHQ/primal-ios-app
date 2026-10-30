@@ -1,9 +1,9 @@
-//
-//  UIDevice+Extra.swift
-//  Primal
-//
-//  Created by Pavle D Stevanović on 17.5.23..
-//
+
+
+
+
+
+
 
 import UIKit
 

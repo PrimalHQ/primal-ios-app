@@ -1,9 +1,9 @@
-//
-//  RemoteSignerEventCell.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 29. 12. 2025..
-//
+
+
+
+
+
+
 
 import UIKit
 import PrimalShared

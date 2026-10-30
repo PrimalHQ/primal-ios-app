@@ -1,9 +1,9 @@
-//
-//  ProfileShowQRController.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 23.11.23..
-//
+
+
+
+
+
+
 
 import Combine
 import Kingfisher

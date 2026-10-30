@@ -1,9 +1,9 @@
-//
-//  RemoteSignerPendingEventsController.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 10. 12. 2025..
-//
+
+
+
+
+
+
 
 import Combine
 import UIKit

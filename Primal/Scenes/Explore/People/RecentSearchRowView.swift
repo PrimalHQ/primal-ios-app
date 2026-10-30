@@ -1,9 +1,9 @@
-//
-//  RecentSearchRowView.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 29.4.26..
-//
+
+
+
+
+
+
 
 import UIKit
 

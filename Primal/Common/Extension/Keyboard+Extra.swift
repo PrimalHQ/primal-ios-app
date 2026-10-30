@@ -1,9 +1,9 @@
-//
-//  Keyboard+Extra.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 20.4.24..
-//
+
+
+
+
+
+
 
 import Combine
 import UIKit
@@ -20,7 +20,7 @@ enum KeyboardState {
     }
 }
 
-/// Publisher to read keyboard changes.
+
 extension Publishers {
     static var keyboardState: AnyPublisher<KeyboardState, Never> {
         KeyboardManager.instance.$keyboardHeight

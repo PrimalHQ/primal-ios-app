@@ -1,9 +1,9 @@
-//
-//  NoConnectionView.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 11.3.25..
-//
+
+
+
+
+
+
 
 import UIKit
 

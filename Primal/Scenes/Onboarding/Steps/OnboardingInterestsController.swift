@@ -1,9 +1,9 @@
-//
-//  OnboardingInterestsController.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 20.3.24..
-//
+
+
+
+
+
+
 
 import Combine
 import UIKit
@@ -47,7 +47,7 @@ final class OnboardingInterestsController: OnboardingBaseViewController {
     }
 }
 
-// MARK: - Setup
+
 
 private extension OnboardingInterestsController {
     func setup() {
@@ -94,7 +94,7 @@ private extension OnboardingInterestsController {
     }
 }
 
-// MARK: - UITableViewDataSource
+
 
 extension OnboardingInterestsController: UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -126,7 +126,7 @@ extension OnboardingInterestsController: UITableViewDataSource {
     }
 }
 
-// MARK: - UITableViewDelegate
+
 
 extension OnboardingInterestsController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? { nil }
@@ -135,7 +135,7 @@ extension OnboardingInterestsController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat { .leastNormalMagnitude }
 }
 
-// MARK: - SuggestionGroupHeaderCellDelegate
+
 
 extension OnboardingInterestsController: SuggestionGroupHeaderCellDelegate {
     func headerCellDidTapUsers(_ cell: SuggestionGroupHeaderCell) {
@@ -167,7 +167,7 @@ extension OnboardingInterestsController: SuggestionGroupHeaderCellDelegate {
     }
 }
 
-// MARK: - SuggestionGroupUserCellDelegate
+
 
 extension OnboardingInterestsController: SuggestionGroupUserCellDelegate {
     func userCellDidTapFollow(_ cell: SuggestionGroupUserCell) {
@@ -185,7 +185,7 @@ extension OnboardingInterestsController: SuggestionGroupUserCellDelegate {
     }
 }
 
-// MARK: - SuggestionGroupHeaderCell
+
 
 protocol SuggestionGroupHeaderCellDelegate: AnyObject {
     func headerCellDidTapUsers(_ cell: SuggestionGroupHeaderCell)
@@ -325,7 +325,7 @@ final class SuggestionGroupHeaderCell: UITableViewCell {
     }
 }
 
-// MARK: - SuggestionGroupUserCell
+
 
 protocol SuggestionGroupUserCellDelegate: AnyObject {
     func userCellDidTapFollow(_ cell: SuggestionGroupUserCell)

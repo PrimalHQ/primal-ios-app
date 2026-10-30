@@ -1,9 +1,9 @@
-//
-//  FeedElementInvoiceCell.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 9.12.24..
-//
+
+
+
+
+
+
 
 import UIKit
 

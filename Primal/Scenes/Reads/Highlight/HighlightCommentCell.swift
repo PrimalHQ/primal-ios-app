@@ -1,9 +1,9 @@
-//
-//  HighlightCommentCell.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 25.7.24..
-//
+
+
+
+
+
+
 
 import UIKit
 

@@ -1,9 +1,9 @@
-//
-//  PopupInfoBubbleView.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 1. 10. 2025..
-//
+
+
+
+
+
+
 
 import UIKit
 

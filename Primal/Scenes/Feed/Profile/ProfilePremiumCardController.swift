@@ -1,9 +1,9 @@
-//
-//  ProfilePremiumCardController.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 28.1.25..
-//
+
+
+
+
+
+
 
 import UIKit
 
@@ -342,7 +342,7 @@ private extension ProfilePremiumCardController {
             
             switch sender.state {
             case .began:
-//                view.backgroundColor = .clear
+
                 fallthrough
             case .changed:
                 let rotationProgress = (trans.x / 400).clamp(-1, 1)
@@ -422,7 +422,7 @@ private extension ProfilePremiumCardController {
         
         [userImage, userStack, secondLabel, premiumBadge, userCopyStack, becomeLegendButton].enumerated().forEach { index, view in
             UIView.animate(withDuration: 30 / 60, delay: TimeInterval(20 + (index * 2)) / 60, animations: {
-//                view.transform = .identity
+
                 view.alpha = 1
             })
         }
@@ -438,16 +438,16 @@ private extension ProfilePremiumCardController {
         
         CATransaction.commit()
             
-//        CATransaction.begin()
-//        CATransaction.setAnimationTimingFunction(.signinEaseOut)
-//        
+
+
+
         [userImage, userStack, secondLabel, premiumBadge, userCopyStack, becomeLegendButton].enumerated().forEach { index, view in
             UIView.animate(withDuration: 30 / 60, delay: TimeInterval(20 + (index * 2)) / 60, animations: {
                 view.transform = .identity
-//                view.alpha = 1
+
             })
         }
-//        CATransaction.commit()
+
         
     }
 }

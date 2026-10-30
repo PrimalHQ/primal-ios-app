@@ -1,9 +1,9 @@
-//
-//  SettingsConnectedAppController.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 8. 12. 2025..
-//
+
+
+
+
+
+
 
 import Combine
 import UIKit
@@ -143,7 +143,7 @@ class SettingsConnectedAppController: UIViewController {
     }
 }
 
-// MARK: - Section Header Titles
+
 extension SettingsConnectedAppController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let snapshot = dataSource.snapshot()

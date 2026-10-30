@@ -1,9 +1,9 @@
-//
-//  SettingsWalletNWCController.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 23.1.25..
-//
+
+
+
+
+
+
 
 import Combine
 import PrimalShared

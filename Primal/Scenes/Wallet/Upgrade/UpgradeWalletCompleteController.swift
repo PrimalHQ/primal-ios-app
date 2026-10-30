@@ -1,15 +1,15 @@
-//
-//  UpgradeWalletCompleteController.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 11. 2. 2026..
-//
+
+
+
+
+
+
 
 import Lottie
 import UIKit
 
 class UpgradeWalletCompleteController: UIViewController {
-//    let spinner = LottieAnimationView(animation: AnimationType.transferSuccess.animation).constrainToSize(160)
+
     
     let titleLabel = UILabel("Success", color: .white, font: .appFont(withSize: 20, weight: .bold), multiline: true)
     let messageLabel = UILabel("Wallet upgraded!", color: .white, font: .appFont(withSize: 18, weight: .semibold), multiline: true)

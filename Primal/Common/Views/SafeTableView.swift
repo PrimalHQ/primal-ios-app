@@ -1,9 +1,9 @@
-//
-//  SafeTableView.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 18. 7. 2025..
-//
+
+
+
+
+
+
 
 import UIKit
 

@@ -1,9 +1,9 @@
-//
-//  DatabaseManager+Nip05Check.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 10.10.24..
-//
+
+
+
+
+
+
 
 import Combine
 import Foundation

@@ -1,9 +1,9 @@
-//
-//  RemoteSignerWidgetAttributes.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 16. 12. 2025..
-//
+
+
+
+
+
+
 
 import Foundation
 import ActivityKit

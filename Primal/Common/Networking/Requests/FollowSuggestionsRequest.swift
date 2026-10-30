@@ -1,9 +1,9 @@
-//
-//  FollowSuggestionsRequest.swift
-//  Primal
-//
-//  Created by Pavle D Stevanović on 28.4.23..
-//
+
+
+
+
+
+
 
 import Foundation
 import GenericJSON

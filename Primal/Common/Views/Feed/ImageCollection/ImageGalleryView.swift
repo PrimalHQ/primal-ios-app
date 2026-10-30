@@ -1,9 +1,9 @@
-//
-//  ImageGalleryView.swift
-//  Primal
-//
-//  Created by Pavle D Stevanović on 3.5.23..
-//
+
+
+
+
+
+
 
 import UIKit
 import Combine
@@ -25,8 +25,8 @@ class FullScreenFlowLayout: UICollectionViewFlowLayout {
         
         // Set item size to match the collection view's bounds
         itemSize = collectionView.bounds.size
-//        minimumLineSpacing = 0
-//        minimumInteritemSpacing = 0
+
+
     }
 }
 

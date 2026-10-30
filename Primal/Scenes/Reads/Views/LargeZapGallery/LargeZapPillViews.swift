@@ -1,9 +1,9 @@
-//
-//  LargeZapPillViews.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 21.6.24..
-//
+
+
+
+
+
+
 
 import UIKit
 import FLAnimatedImage

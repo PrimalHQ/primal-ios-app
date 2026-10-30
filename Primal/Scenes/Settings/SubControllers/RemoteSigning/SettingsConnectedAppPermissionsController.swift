@@ -1,9 +1,9 @@
-//
-//  SettingsConnectedAppPermissionsController.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 9. 12. 2025..
-//
+
+
+
+
+
+
 
 import Combine
 import UIKit
@@ -128,7 +128,7 @@ class SettingsConnectedAppPermissionsController: UIViewController {
     }
 }
 
-// MARK: - Section Header Titles
+
 extension SettingsConnectedAppPermissionsController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let snapshot = dataSource.snapshot()

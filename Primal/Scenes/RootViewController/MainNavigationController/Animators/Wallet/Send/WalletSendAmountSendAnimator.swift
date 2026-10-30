@@ -1,9 +1,9 @@
-//
-//  WalletSendAmountSendAnimator.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 25.1.24..
-//
+
+
+
+
+
+
 
 import Foundation
 

@@ -1,9 +1,9 @@
-//
-//  VerifiedView.swift
-//  Primal
-//
-//  Created by Pavle D Stevanović on 17.8.23..
-//
+
+
+
+
+
+
 
 import UIKit
 

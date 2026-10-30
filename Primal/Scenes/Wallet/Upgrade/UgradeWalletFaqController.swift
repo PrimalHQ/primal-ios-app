@@ -1,9 +1,9 @@
-//
-//  UgradeWalletFaqController.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 6. 2. 2026..
-//
+
+
+
+
+
+
 
 import UIKit
 

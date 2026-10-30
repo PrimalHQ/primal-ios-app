@@ -1,9 +1,9 @@
-//
-//  RestoreWalletController.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 9. 2. 2026..
-//
+
+
+
+
+
+
 
 import Combine
 import UIKit

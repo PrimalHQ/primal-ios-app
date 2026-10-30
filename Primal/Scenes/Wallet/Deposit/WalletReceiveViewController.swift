@@ -1,9 +1,9 @@
-//
-//  WalletReceiveViewController.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 15.10.23..
-//
+
+
+
+
+
+
 
 import Combine
 import PrimalShared
@@ -371,9 +371,9 @@ private extension WalletReceiveViewController {
         if !WalletManager.instance.hasPremium, let index = infoStack.arrangedSubviews.firstIndex(of: ludLabel) {
             infoStack.insertArrangedSubview(customLightningAddressButton, at: index + 1)
             
-//            customLightningAddressButton
-//                .centerToView(ludLabel, axis: .horizontal)
-//                .pin(to: ludLabel, edges: .top, padding: 50)
+
+
+
         }
         
         mainStack.isHidden = true

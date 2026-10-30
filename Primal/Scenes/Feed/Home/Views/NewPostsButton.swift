@@ -1,9 +1,9 @@
-//
-//  NewPostsButton.swift
-//  Primal
-//
-//  Created by Pavle D Stevanović on 14.7.23..
-//
+
+
+
+
+
+
 
 import FLAnimatedImage
 import UIKit
@@ -141,15 +141,15 @@ final class NewPostsButton: MyButton, Themeable {
     var shouldBeHidden: Bool?
     var animating = false
     func setHidden(_ hidden: Bool, animated: Bool) {
-//        guard isHidden != hidden else { return }
+
         guard shouldBeHidden != hidden else { return }
         
         shouldBeHidden = hidden
 
         guard animated else {
-//            isHidden = hidden
+
             alpha = hidden ? 0 : 1
-//            transform = .identity
+
             return
         }
         
@@ -158,18 +158,18 @@ final class NewPostsButton: MyButton, Themeable {
         }
     }
 
-//    func setIsExcited(_ excited: CGFloat, animated: Bool) {
-//        guard !isHidden, alpha > 0 else { return }
-//        
-//        guard animated else {
-//            transform = PrimalNavigationBar.transformForExcited(excited)
-//            return
-//        }
-//        
-//        UIView.animate(withDuration: 0.25) {
-//            self.transform = PrimalNavigationBar.transformForExcited(excited)
-//        }
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
 
     func updateTheme() {
         backgroundColor = .accent

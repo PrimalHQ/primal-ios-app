@@ -1,9 +1,9 @@
-//
-//  LivePopupDismissGesture.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 13. 8. 2025..
-//
+
+
+
+
+
+
 
 import UIKit
 

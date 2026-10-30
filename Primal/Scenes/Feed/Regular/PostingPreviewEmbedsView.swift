@@ -1,9 +1,9 @@
-//
-//  PostingPreviewEmbedsView.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 8.5.26..
-//
+
+
+
+
+
+
 
 import Combine
 import FLAnimatedImage
@@ -319,7 +319,7 @@ private extension PostingPreviewEmbedsView {
     }
 }
 
-// MARK: - Action sheet presentation
+
 
 private extension PostingPreviewEmbedsView {
     func presentMediaActionSheet(index: Int, total: Int, from sourceView: UIView) {

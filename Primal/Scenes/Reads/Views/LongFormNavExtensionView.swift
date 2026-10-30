@@ -1,9 +1,9 @@
-//
-//  LongFormNavExtensionView.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 29.5.24..
-//
+
+
+
+
+
+
 
 import Combine
 import UIKit
@@ -29,7 +29,7 @@ class LongFormNavExtensionView: UIView, Themeable {
     let profileIcon = UserImageView(height: 40)
     let border = SpacerView(height: 1)
     
-//    let subscribeButton = UIButton(configuration: .accent14("Subscribe")).constrainToSize(height: 38)
+
     let followButton = BrightSmallButton(title: "follow", font: .appFont(withSize: 16, weight: .semibold)).constrainToSize(width: 100)
     let unfollowButton = RoundedSmallButton(text: "following", font: .appFont(withSize: 16, weight: .semibold), horizontalPadding: 0).constrainToSize(width: 100)
     

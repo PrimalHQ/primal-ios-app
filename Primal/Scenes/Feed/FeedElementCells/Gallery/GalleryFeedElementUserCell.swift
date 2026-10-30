@@ -1,9 +1,9 @@
-//
-//  GalleryFeedElementUserCell.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 1.4.26..
-//
+
+
+
+
+
+
 
 import UIKit
 

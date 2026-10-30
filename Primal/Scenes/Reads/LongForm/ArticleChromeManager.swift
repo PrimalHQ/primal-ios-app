@@ -1,9 +1,9 @@
-//
-//  ArticleChromeManager.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 29.7.24..
-//
+
+
+
+
+
+
 
 import Foundation
 import UIKit

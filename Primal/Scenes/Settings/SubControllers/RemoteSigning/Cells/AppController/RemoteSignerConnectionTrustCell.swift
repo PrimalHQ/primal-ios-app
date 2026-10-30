@@ -1,9 +1,9 @@
-//
-//  RemoteSignerConnectionTrustCell.swift
-//  Primal
-//
-//  Created by [Your Name] on [Today’s Date].
-//
+
+
+
+
+
+
 
 import UIKit
 import PrimalShared

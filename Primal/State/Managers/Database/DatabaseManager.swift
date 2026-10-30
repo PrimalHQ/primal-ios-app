@@ -1,9 +1,9 @@
-//
-//  DatabaseManager.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 17.9.24..
-//
+
+
+
+
+
+
 
 import Foundation
 import GRDB
@@ -112,11 +112,11 @@ private extension DatabaseManager {
     private var migrator: DatabaseMigrator {
         var migrator = DatabaseMigrator()
         
-//        #if DEBUG
+
         // Speed up development by nuking the database when migrations change
         // See <https://swiftpackageindex.com/groue/grdb.swift/documentation/grdb/migrations>
         migrator.eraseDatabaseOnSchemaChange = true
-//        #endif
+
         
         migrator.registerMigration("firstSetup") { db in
             try db.create(table: Profile.databaseTableName) { t in

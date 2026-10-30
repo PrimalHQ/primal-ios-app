@@ -45,7 +45,7 @@ protocol _AnyEncodable {
 
 extension AnyEncodable: _AnyEncodable {}
 
-// MARK: - Encodable
+
 
 extension _AnyEncodable {
     public func encode(to encoder: Encoder) throws {

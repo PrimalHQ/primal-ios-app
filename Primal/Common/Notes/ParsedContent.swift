@@ -1,9 +1,9 @@
-//
-//  ParsedContent.swift
-//  Primal
-//
-//  Created by Nikola Lukovic on 15.5.23..
-//
+
+
+
+
+
+
 
 import Combine
 import Foundation
@@ -235,18 +235,18 @@ extension ParsedContent {
             ], range: .init(location: element.position, length: element.length))
         }
         
-//        for element in notes where element.position + element.length <= result.length {
-//            guard let url = URL(string: "note://\(element.reference)") else {
-//                result.addAttributes([
-//                    .foregroundColor: UIColor.accent2.withAlphaComponent(0.5)
-//                ], range: .init(location: element.position, length: element.length))
-//                continue
-//            }
-//            result.addAttributes([
-//                .foregroundColor: UIColor.accent2,
-//                .link: url
-//            ], range: .init(location: element.position, length: element.length))
-//        }
+
+
+
+
+
+
+
+
+
+
+
+
         
         for element in mentions where element.position + element.length <= result.length {
             guard let url = URL(string: "mention://\(element.reference)") else {
@@ -289,9 +289,9 @@ extension ParsedContent {
             ], range: .init(location: element.position, length: element.length))
         }
         
-//        for (index, element) in notes.reversed().enumerated() where element.position + element.length <= result.length {
-//            result.replaceCharacters(in: .init(location: element.position, length: element.length), with: "Mentioned Note \(index + 1)")
-//        }
+
+
+
      
         return result
     }
@@ -362,7 +362,7 @@ extension ParsedContent {
         let new = ParsedContent(post: post, user: user)
         new.hashtags = hashtags
         new.mentions = mentions
-//        new.notes = notes
+
         new.httpUrls = httpUrls
         
         new.mediaResources = mediaResources

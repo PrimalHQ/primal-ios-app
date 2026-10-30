@@ -1,9 +1,9 @@
-//
-//  SceneDelegate.swift
-//  Primal
-//
-//  Created by Pavle D Stevanović on 22.4.23..
-//
+
+
+
+
+
+
 
 import SwiftUI
 import UIKit

@@ -1,9 +1,9 @@
-//
-//  WalletHomeViewController.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 9.10.23..
-//
+
+
+
+
+
+
 
 import AudioToolbox
 import Combine
@@ -130,15 +130,15 @@ final class WalletHomeViewController: UIViewController, Themeable, PrimalNavigat
     
     func updateBuySatsButton() {
         return // Hide the button
-//        guard WalletManager.instance.primal?.userHasWallet == true else {
-//            navigationItem.rightBarButtonItem = nil
-//            return
-//        }
-//        let button = UIButton()
-//        button.setImage(UIImage(named: "buySats"), for: .normal)
-//        button.tintColor = .foreground3
-//        button.addAction(.init(handler: { [weak self] _ in self?.buySatsPressed() }), for: .touchUpInside)
-//        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: button)
+
+
+
+
+
+
+
+
+
     }
     
     func startMonitorTask() {
@@ -153,7 +153,7 @@ final class WalletHomeViewController: UIViewController, Themeable, PrimalNavigat
     }
 }
 
-// MARK: - TableDatasource
+
 extension WalletHomeViewController: UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int { tableData.count }
     
@@ -205,7 +205,7 @@ extension WalletHomeViewController: UITableViewDataSource {
     }
 }
 
-// MARK: - Delegate
+
 extension WalletHomeViewController: TransactionCellDelegate {
     func transactionCellDidTapAvatar(_ cell: TransactionCell) {
         guard
@@ -300,7 +300,7 @@ extension WalletHomeViewController: BuySatsCellDelegate, UpgradeWalletCellDelega
     }
 }
 
-// MARK: - HeaderPanGesture
+
 extension WalletHomeViewController: UIGestureRecognizerDelegate {
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         guard let pan = gestureRecognizer as? UIPanGestureRecognizer else { return true }
@@ -309,7 +309,7 @@ extension WalletHomeViewController: UIGestureRecognizerDelegate {
     }
 }
 
-// MARK: - Private
+
 private extension WalletHomeViewController {
     func setup() {
         title = "Wallet"
@@ -487,11 +487,11 @@ private extension WalletHomeViewController {
         }
         .store(in: &cancellables)
 
-//        WalletManager.instance.$userHasWallet
-//            .map { $0 ?? false }
-//            .receive(on: DispatchQueue.main)
-//            .assign(to: \.isHidden, onWeak: walletActionBar.blockerView)
-//            .store(in: &cancellables)
+
+
+
+
+
     }
     
     func switchToWallet(_ wallet: Wallet) {

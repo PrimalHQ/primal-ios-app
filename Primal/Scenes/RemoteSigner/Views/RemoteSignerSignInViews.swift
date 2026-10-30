@@ -1,9 +1,9 @@
-//
-//  RemoteSignerSignInViews.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 13. 3. 2026..
-//
+
+
+
+
+
+
 
 import UIKit
 import PrimalShared

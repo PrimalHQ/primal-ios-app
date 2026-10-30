@@ -1,9 +1,9 @@
-//
-//  WalletNavView.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 13.10.23..
-//
+
+
+
+
+
+
 
 import Combine
 import UIKit

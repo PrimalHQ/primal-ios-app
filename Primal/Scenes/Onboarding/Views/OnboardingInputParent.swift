@@ -1,9 +1,9 @@
-//
-//  OnboardingInputParent.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 29.11.23..
-//
+
+
+
+
+
+
 
 import UIKit
 

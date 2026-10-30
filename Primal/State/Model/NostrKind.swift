@@ -1,9 +1,9 @@
-//
-//  ResponseKind.swift
-//  Primal
-//
-//  Created by Nikola Lukovic on 23.5.23..
-//
+
+
+
+
+
+
 
 import Foundation
 import GenericJSON

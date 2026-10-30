@@ -1,9 +1,9 @@
-//
-//  PostingTextViewManager.swift
-//  Primal
-//
-//  Created by Pavle D Stevanović on 24.5.23..
-//
+
+
+
+
+
+
 
 import Combine
 import UIKit

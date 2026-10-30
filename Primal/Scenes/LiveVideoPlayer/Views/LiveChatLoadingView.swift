@@ -1,9 +1,9 @@
-//
-//  LiveChatLoadingView.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 22. 8. 2025..
-//
+
+
+
+
+
+
 
 import UIKit
 import Lottie

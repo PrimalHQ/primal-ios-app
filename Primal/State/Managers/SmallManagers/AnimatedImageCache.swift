@@ -1,15 +1,15 @@
-//
-//  AnimatedImageCache.swift
-//  Primal
-//
-//  Created by Pavle Stevanović on 5.12.23..
-//
+
+
+
+
+
+
 
 import Foundation
 import Kingfisher
 import FLAnimatedImage
 
-/// Created on the basis of the Kingfisher image cache
+
 
 extension FLAnimatedImage: CacheCostCalculable {
     public var cacheCost: Int { Int(size.width * size.height) }
