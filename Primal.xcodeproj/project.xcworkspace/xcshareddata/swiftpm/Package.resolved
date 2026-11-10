@@ -6,8 +6,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/breez/breez-sdk-spark-swift.git",
       "state" : {
-        "revision" : "5ec711596e508538fd078110bf618a3d4f7c5c9f",
-        "version" : "0.23.1"
+        "revision" : "2a9f457e9bb84b09f09b5816b07b4ec3612e2e8a",
+        "version" : "0.26.1"
       }
     },
     {
@@ -114,8 +114,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/PrimalHQ/primal-shared-ios",
       "state" : {
-        "revision" : "de8e4cba3cd45439e6026981a2875b5d7d6d82f8",
-        "version" : "0.3.2"
+        "revision" : "5754b56d4200519584d5865ac9ea59b5cf618e31",
+        "version" : "0.3.3"
       }
     },
     {
