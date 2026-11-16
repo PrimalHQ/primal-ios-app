@@ -667,6 +667,8 @@
 		B9DF0CB52C25AE0F009ADC7B /* LargeZapPillViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DF0CB42C25AE0F009ADC7B /* LargeZapPillViews.swift */; };
 		B9DF0CB82C25EF2F009ADC7B /* LongFormZapsPostCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DF0CB72C25EF2F009ADC7B /* LongFormZapsPostCell.swift */; };
 		B9DF8EB02F4C61F600A3FA21 /* KlipyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DF8EAF2F4C61F600A3FA21 /* KlipyManager.swift */; };
+		AA7E10042C00000100000001 /* NoteTranslationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA7E10032C00000100000001 /* NoteTranslationView.swift */; };
+		AA7E10022C00000100000001 /* TranslationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA7E10012C00000100000001 /* TranslationService.swift */; };
 		B9DF8EB32F4C64D700A3FA21 /* KlipyGifController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DF8EB22F4C64C900A3FA21 /* KlipyGifController.swift */; };
 		B9DF8ED62F4E0E7A00A3FA21 /* WalletReceiveToResultAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DF8ED52F4E0E7A00A3FA21 /* WalletReceiveToResultAnimator.swift */; };
 		B9DF8ED82F4F2D1500A3FA21 /* PollInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DF8ED72F4F2D0C00A3FA21 /* PollInputView.swift */; };
@@ -1527,6 +1529,8 @@
 		B9DF0CB42C25AE0F009ADC7B /* LargeZapPillViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LargeZapPillViews.swift; sourceTree = "<group>"; };
 		B9DF0CB72C25EF2F009ADC7B /* LongFormZapsPostCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LongFormZapsPostCell.swift; sourceTree = "<group>"; };
 		B9DF8EAF2F4C61F600A3FA21 /* KlipyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KlipyManager.swift; sourceTree = "<group>"; };
+		AA7E10032C00000100000001 /* NoteTranslationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteTranslationView.swift; sourceTree = "<group>"; };
+		AA7E10012C00000100000001 /* TranslationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranslationService.swift; sourceTree = "<group>"; };
 		B9DF8EB22F4C64C900A3FA21 /* KlipyGifController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KlipyGifController.swift; sourceTree = "<group>"; };
 		B9DF8ED52F4E0E7A00A3FA21 /* WalletReceiveToResultAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletReceiveToResultAnimator.swift; sourceTree = "<group>"; };
 		B9DF8ED72F4F2D0C00A3FA21 /* PollInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PollInputView.swift; sourceTree = "<group>"; };
@@ -2426,6 +2430,7 @@
 			children = (
 				B99E037F2BF75FDE006CCECB /* Helpers */,
 				9E9D46F72A0A72B900D4837B /* PostCell.swift */,
+				AA7E10032C00000100000001 /* NoteTranslationView.swift */,
 				B99E03882BF7B10C006CCECB /* PostFeedCell.swift */,
 				9E9D46F42A0A717400D4837B /* ThreadCell.swift */,
 			);
@@ -2703,6 +2708,7 @@
 				B91EF0E12CECD20700299ECF /* PremiumCustomizationManager.swift */,
 				B9FAC6412D2BEE8400B57EF6 /* BlossomServerManager.swift */,
 				B9DF8EAF2F4C61F600A3FA21 /* KlipyManager.swift */,
+				AA7E10012C00000100000001 /* TranslationService.swift */,
 				B9FAC6472D31A95800B57EF6 /* LinkPreviewManager.swift */,
 			);
 			path = SmallManagers;
@@ -4646,6 +4652,8 @@
 				B9009B652B17A8E7002B0613 /* OnboardingInputParent.swift in Sources */,
 				B9E67EC42D1090DE006BB397 /* TransactionViewDatasource.swift in Sources */,
 				9E9D46F82A0A72B900D4837B /* PostCell.swift in Sources */,
+				AA7E10042C00000100000001 /* NoteTranslationView.swift in Sources */,
+				AA7E10022C00000100000001 /* TranslationService.swift in Sources */,
 				9ECFD3222A013935000D1B2F /* NoteViewController.swift in Sources */,
 				B9E67ECF2D13201B006BB397 /* URL+Extra.swift in Sources */,
 				B9A335232E54B5FE000B2CA7 /* FloatingPlayerMoveGesture.swift in Sources */,
