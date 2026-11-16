@@ -50,6 +50,9 @@ class PostCell: UITableViewCell {
     lazy var nameStack = UIStackView([nameLabel, checkbox, nipLabel, separatorLabel, timeLabel])
     lazy var bottomButtonStack = UIStackView(arrangedSubviews: [replyButton, zapButton, likeButton, repostButton])
     let bookmarkButton = UIButton()
+    let translateButton = UIButton()
+    let translationView = NoteTranslationView()
+    lazy var translationStack = UIStackView(arrangedSubviews: [translateButton, translationView])
     
     var zapGallery: ZapGallery?
     
@@ -60,6 +63,13 @@ class PostCell: UITableViewCell {
     
     // MARK: - State
     var isShowingBookmarked = false
+
+    // MARK: - Translation state
+    private var currentContent: ParsedContent?
+    private var currentTranslation: NoteTranslation?
+    private var translationNoteID: String?
+    private var isTranslationShown = false
+    private var translationTask: Task<Void, Never>?
     
     var useShortText: Bool { false }
     
@@ -72,8 +82,32 @@ class PostCell: UITableViewCell {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
+    override func prepareForReuse() {
+        super.prepareForReuse()
+
+        translationTask?.cancel()
+        translationTask = nil
+        currentContent = nil
+        currentTranslation = nil
+        translationNoteID = nil
+        isTranslationShown = false
+        translationView.isHidden = true
+        translationStack.isHidden = true
+    }
+
     func update(_ content: ParsedContent) {
+        currentContent = content
+
+        if translationNoteID != content.post.id {
+            translationTask?.cancel()
+            translationTask = nil
+            translationNoteID = content.post.id
+            currentTranslation = nil
+            isTranslationShown = false
+        }
+        updateTranslationUI()
+
         let user = content.user.data
         
         nameLabel.text = user.firstIdentifier
@@ -220,7 +254,102 @@ class PostCell: UITableViewCell {
         
         updateMenu(content)
     }
-    
+
+    // MARK: - Translation
+
+    var canTranslateCurrentContent: Bool {
+        guard let currentContent else { return false }
+        return currentContent.post.kind == 1 &&
+            !currentContent.post.content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+
+    private func updateTranslationUI() {
+        translationStack.isHidden = !canTranslateCurrentContent
+        translationView.isHidden = !isTranslationShown
+
+        if isTranslationShown, let currentTranslation {
+            translationView.setTranslation(currentTranslation)
+        }
+
+        let title: String
+        if translationTask != nil {
+            title = "Translating..."
+        } else if isTranslationShown {
+            title = "Hide translation"
+        } else if currentTranslation != nil {
+            title = "Show translation"
+        } else {
+            title = "Translate post"
+        }
+        translateButton.setTitle(title, for: .normal)
+        translateButton.isEnabled = translationTask == nil
+    }
+
+    func toggleTranslation() {
+        if isTranslationShown {
+            isTranslationShown = false
+            updateTranslationUI()
+            refreshTableHeight()
+            return
+        }
+
+        if currentTranslation != nil {
+            isTranslationShown = true
+            updateTranslationUI()
+            refreshTableHeight()
+            return
+        }
+
+        guard let content = currentContent, translationTask == nil else { return }
+
+        let noteID = content.post.id
+        let text = content.post.content
+        let targetLanguage = TranslationService.preferredTargetLanguage
+
+        if let cached = TranslationService.instance.cachedTranslation(content: text, targetLanguage: targetLanguage) {
+            currentTranslation = cached
+            isTranslationShown = true
+            updateTranslationUI()
+            refreshTableHeight()
+            return
+        }
+
+        translationTask = Task { [weak self] in
+            let result = try? await TranslationService.instance.translate(content: text, targetLanguage: targetLanguage)
+
+            await MainActor.run { [weak self] in
+                // The cell may have been reused for another note meanwhile;
+                // the fetched translation is still in the service cache.
+                guard let self, self.translationNoteID == noteID else { return }
+
+                self.translationTask = nil
+
+                if let result {
+                    self.currentTranslation = result
+                    self.isTranslationShown = true
+                }
+
+                self.updateTranslationUI()
+                self.refreshTableHeight()
+            }
+        }
+        updateTranslationUI()
+    }
+
+    private func refreshTableHeight() {
+        var parent = superview
+        while let current = parent {
+            if let tableView = current as? UITableView {
+                UIView.performWithoutAnimation {
+                    tableView.beginUpdates()
+                    tableView.endUpdates()
+                }
+                return
+            }
+            parent = current.superview
+        }
+    }
+
     func updateMenu(_ content: ParsedContent) {
         let postInfo = content.postInfo
         let muteTitle = postInfo.isUserMuted ? "Unmute User" : "Mute User"
@@ -240,12 +369,20 @@ class PostCell: UITableViewCell {
             ("Report user", "warningIcon", .report, .destructive)
         ]
 
-        threeDotsButton.menu = .init(children: actionsData.map { (title, imageName, action, attributes) in
+        var menuChildren: [UIMenuElement] = actionsData.map { (title, imageName, action, attributes) in
             UIAction(title: title, image: UIImage(named: imageName), attributes: attributes) { [weak self] _ in
                 guard let self = self else { return }
                 delegate?.postCellDidTap(self, action)
             }
-        })
+        }
+
+        if canTranslateCurrentContent {
+            menuChildren.append(UIAction(title: isTranslationShown ? "Hide Translation" : "Translate Note") { [weak self] _ in
+                self?.toggleTranslation()
+            })
+        }
+
+        threeDotsButton.menu = .init(children: menuChildren)
         
         bookmarkUpdater = BookmarkManager.instance.isBookmarkedPublisher(content).receive(on: DispatchQueue.main)
             .sink { [weak self] isBookmarked in
@@ -362,6 +499,19 @@ private extension PostCell {
             guard let self else { return }
             delegate?.postCellDidTap(self, isShowingBookmarked ? .unbookmark : .bookmark)
         }), for: .touchUpInside)
+
+        translateButton.setTitle("Translate post", for: .normal)
+        translateButton.setTitleColor(.accent2, for: .normal)
+        translateButton.setTitleColor(.foreground3, for: .disabled)
+        translateButton.titleLabel?.font = .appFont(withSize: 14, weight: .regular)
+        translateButton.contentHorizontalAlignment = .leading
+        translateButton.addTarget(self, action: #selector(translateButtonTapped), for: .touchUpInside)
+
+        translationView.isHidden = true
+
+        translationStack.axis = .vertical
+        translationStack.spacing = 6
+        translationStack.isHidden = true
         
         embeddedLive.addGestureRecognizer(BindableTapGestureRecognizer { [weak self] in
             guard let self else { return }
@@ -386,6 +536,10 @@ private extension PostCell {
         }
     }
     
+    @objc func translateButtonTapped() {
+        toggleTranslation()
+    }
+
     @objc func zapLongPressed(_ recognizer: UILongPressGestureRecognizer) {
         guard case .began = recognizer.state else { return }
         delegate?.postCellDidTap(self, .longTapZap)
