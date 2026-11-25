@@ -535,9 +535,11 @@ class NoteViewController: UIViewController, UITableViewDelegate, Themeable, Wall
         case .articleTag(let tag):
             showViewController(ArticleFeedViewController(feed: .init(name: "#\(tag)", spec: "{\"topic\":\"\(tag)\"}")))
         case .requestDelete:
-            requestDelete(post)
-        }
-    }
+                    requestDelete(post)
+                case .translate:
+                    translatePost(post, in: cell)
+                }
+            }
     
     func showViewController(_ viewController: UIViewController) {
         if let navigationController {
@@ -724,8 +726,46 @@ private extension NoteViewController {
             }
         }))
         present(alert, animated: true)
-    }
-}
+            }
+    
+            func translatePost(_ post: ParsedContent, in cell: UITableViewCell?) {
+                let content = post.post.content
+        
+                guard !content.isEmpty else {
+                    showToast("No text to translate")
+                    return
+                }
+        
+                // Show loading indicator
+                let loadingAlert = UIAlertController(title: "Translating...", message: nil, preferredStyle: .alert)
+                let loadingIndicator = UIActivityIndicatorView(frame: CGRect(x: 10, y: 5, width: 50, height: 50))
+                loadingIndicator.hidesWhenStopped = true
+                loadingIndicator.style = .medium
+                loadingIndicator.startAnimating()
+                loadingAlert.view.addSubview(loadingIndicator)
+                present(loadingAlert, animated: true)
+        
+                TranslationService.shared.translate(content) { [weak self] result in
+                    loadingAlert.dismiss(animated: true) {
+                        switch result {
+                        case .success(let translatedText):
+                            self?.showTranslationResult(original: content, translated: translatedText)
+                        case .failure(let error):
+                            self?.showToast("Translation failed: \(error.localizedDescription)")
+                        }
+                    }
+                }
+            }
+    
+            func showTranslationResult(original: String, translated: String) {
+                let alert = UIAlertController(title: "Translation", message: translated, preferredStyle: .alert)
+                alert.addAction(.init(title: "Copy", style: .default, handler: { _ in
+                    UIPasteboard.general.string = translated
+                }))
+                alert.addAction(.init(title: "Close", style: .cancel))
+                present(alert, animated: true)
+            }
+        }
 
 extension NoteViewController: FeedElementCellDelegate {
     func postCellDidTap(_ cell: UITableViewCell, _ event: PostCellEvent) {

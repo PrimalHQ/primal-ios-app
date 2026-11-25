@@ -148,7 +148,8 @@ class ArticleCell: UITableViewCell, Themeable {
             ("Copy Raw Data", "MenuCopyData", (.copy(.rawData)), []),
             ("Copy Article ID", "MenuCopyNoteID", (.copy(.noteID)), []),
             ("Copy User Public Key", "MenuCopyUserPubkey", (.copy(.userPubkey)), []),
-            ("Mute User", "blockIcon", (.muteUser), .destructive),
+                        ("Translate", "MenuCopyText", (.translate), []),
+                        ("Mute User", "blockIcon", (.muteUser), .destructive),
             ("Report user", "warningIcon", (.report), .destructive)
         ]
         
