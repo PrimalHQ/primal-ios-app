@@ -95,11 +95,12 @@ private extension SettingsMainViewController {
         let notifications = SettingsOptionButton(title: "Notifications")
         devMode.isHidden = !DevModeSettings.devToolsEnabled
         let zaps = SettingsOptionButton(title: "Zaps")
+        let translation = SettingsOptionButton(title: "Translation")
         
         let versionTitleLabel = SettingsTitleView(title: "VERSION")
         
         let bottomStack = UIStackView(arrangedSubviews: [versionTitleLabel, versionLabel, UIView()])
-        let stack = UIStackView(arrangedSubviews: [keys, wallet, network, appearance, connectedApps, contentDisplay, muted, mediaUploads, notifications, devMode, zaps, SpacerView(height: 40), bottomStack])
+        let stack = UIStackView(arrangedSubviews: [keys, wallet, network, appearance, connectedApps, contentDisplay, muted, mediaUploads, notifications, devMode, zaps, translation, SpacerView(height: 40), bottomStack])
         
         let scroll = UIScrollView()
         
@@ -169,9 +170,13 @@ private extension SettingsMainViewController {
         mediaUploads.addAction(.init(handler: { [weak self] _ in self?.show(SettingsMediaUploadsController(), sender: nil) }), for: .touchUpInside)
         
         zaps.addAction(.init(handler: { [weak self] _ in
-            self?.navigationController?.pushViewController(SettingsZapsViewController(), animated: true)
-        }), for: .touchUpInside)
-    }
+                    self?.navigationController?.pushViewController(SettingsZapsViewController(), animated: true)
+                }), for: .touchUpInside)
+        
+                translation.addAction(.init(handler: { [weak self] _ in
+                    self?.navigationController?.pushViewController(SettingsTranslationViewController(), animated: true)
+                }), for: .touchUpInside)
+            }
     
     @objc func keysPressed() {
         navigationController?.pushViewController(SettingsNsecViewController(), animated: true)
