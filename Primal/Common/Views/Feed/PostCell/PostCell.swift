@@ -45,6 +45,7 @@ class PostCell: UITableViewCell {
     let zapPreview = ZapPreviewView()
     let postPreview = PostPreviewView()
     let infoView = SimpleInfoView()
+    let translationView = NoteTranslationView()
     let repostIndicator = RepostedIndicatorView()
     let separatorLabel = UILabel()
     lazy var nameStack = UIStackView([nameLabel, checkbox, nipLabel, separatorLabel, timeLabel])
@@ -67,6 +68,11 @@ class PostCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setup()
         nantesDelegate.cell = self
+    }
+
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        translationView.reset()
     }
     
     required init?(coder: NSCoder) {
@@ -207,6 +213,7 @@ class PostCell: UITableViewCell {
         }
         
         mainLabel.attributedText = useShortText ? content.attributedTextShort : content.attributedText
+        translationView.configure(postID: content.post.id, content: content.post.content)
         mainImages.resources = content.mediaResources
         mainImages.thumbnails = content.videoThumbnails
         mainImages.updateTheme()

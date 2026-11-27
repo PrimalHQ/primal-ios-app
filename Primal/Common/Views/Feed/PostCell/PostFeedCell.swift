@@ -110,7 +110,7 @@ private extension PostFeedCell {
             
         let buttonStackStandIn = UIView()
         let contentStack = UIStackView(axis: .vertical, [
-            nameSuperStack, textStack, invoiceView, articleView, mainImages, linkPresentation, postPreview, zapPreview, infoView, zapGalleryParent, buttonStackStandIn
+            nameSuperStack, textStack, translationView, invoiceView, articleView, mainImages, linkPresentation, postPreview, zapPreview, infoView, zapGalleryParent, buttonStackStandIn
         ])
     
         mainStack.addArrangedSubview(contentStack)

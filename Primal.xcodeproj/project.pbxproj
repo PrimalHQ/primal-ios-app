@@ -164,6 +164,16 @@
 		9E9C421F2A14E46A00F9D7ED /* UIDevice+Extra.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9C421E2A14E46A00F9D7ED /* UIDevice+Extra.swift */; };
 		9E9D46F52A0A717400D4837B /* ThreadCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9D46F42A0A717400D4837B /* ThreadCell.swift */; };
 		9E9D46F82A0A72B900D4837B /* PostCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9D46F72A0A72B900D4837B /* PostCell.swift */; };
+		C0FFEE93834A2F52201978AE /* TranslationSanitizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0FFEE01E8F11F75C848D4E7 /* TranslationSanitizer.swift */; };
+		C0FFEE1251728C91F1884CC9 /* LanguageDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0FFEE8702A3FF95D7833A19 /* LanguageDetector.swift */; };
+		C0FFEE40F5977E2242F48837 /* TranslationCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0FFEE29E1D35A5B4EEFEE9C /* TranslationCache.swift */; };
+		C0FFEEE5A9B50411E0D8DDF7 /* TranslationModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0FFEEBE9AD053674144422E /* TranslationModels.swift */; };
+		C0FFEEC64233035C1FDF47C8 /* NoteTranslationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0FFEE82CF1E067CB90312FE /* NoteTranslationService.swift */; };
+		C0FFEEC6CC4B832F7DEFF508 /* LibreTranslateProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0FFEEF026782561587C6F37 /* LibreTranslateProvider.swift */; };
+		C0FFEEED74D53A7A9551FD97 /* NoteTranslationPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0FFEE3C027C22E1D196A138 /* NoteTranslationPreferences.swift */; };
+		C0FFEEE43326A96FAD48DF79 /* NoteTranslationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0FFEE593A3692B1544539A2 /* NoteTranslationView.swift */; };
+		C0FFEE670424A222E4D40785 /* SettingsTranslationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0FFEE0A5627278BD0BFA3C5 /* SettingsTranslationViewController.swift */; };
+		C0FFEE0C31451F34F8EBF761 /* NoteTranslationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0FFEE433BC1CB74C5EDEF93 /* NoteTranslationTests.swift */; };
 		9E9D46FA2A0A7F9B00D4837B /* GradientView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9D46F92A0A7F9B00D4837B /* GradientView.swift */; };
 		9E9F2F8029F6AB6400A9CDF3 /* IntroVideoController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9F2F6A29F6AB6400A9CDF3 /* IntroVideoController.swift */; };
 		9E9F2F8229F6AB6400A9CDF3 /* OnboardingSigninController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9F2F6E29F6AB6400A9CDF3 /* OnboardingSigninController.swift */; };
@@ -1031,6 +1041,16 @@
 		9E9C421E2A14E46A00F9D7ED /* UIDevice+Extra.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIDevice+Extra.swift"; sourceTree = "<group>"; };
 		9E9D46F42A0A717400D4837B /* ThreadCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadCell.swift; sourceTree = "<group>"; };
 		9E9D46F72A0A72B900D4837B /* PostCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostCell.swift; sourceTree = "<group>"; };
+		C0FFEE01E8F11F75C848D4E7 /* TranslationSanitizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranslationSanitizer.swift; sourceTree = "<group>"; };
+		C0FFEE8702A3FF95D7833A19 /* LanguageDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguageDetector.swift; sourceTree = "<group>"; };
+		C0FFEE29E1D35A5B4EEFEE9C /* TranslationCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranslationCache.swift; sourceTree = "<group>"; };
+		C0FFEEBE9AD053674144422E /* TranslationModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranslationModels.swift; sourceTree = "<group>"; };
+		C0FFEE82CF1E067CB90312FE /* NoteTranslationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteTranslationService.swift; sourceTree = "<group>"; };
+		C0FFEEF026782561587C6F37 /* LibreTranslateProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibreTranslateProvider.swift; sourceTree = "<group>"; };
+		C0FFEE3C027C22E1D196A138 /* NoteTranslationPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteTranslationPreferences.swift; sourceTree = "<group>"; };
+		C0FFEE593A3692B1544539A2 /* NoteTranslationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteTranslationView.swift; sourceTree = "<group>"; };
+		C0FFEE0A5627278BD0BFA3C5 /* SettingsTranslationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsTranslationViewController.swift; sourceTree = "<group>"; };
+		C0FFEE433BC1CB74C5EDEF93 /* NoteTranslationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteTranslationTests.swift; sourceTree = "<group>"; };
 		9E9D46F92A0A7F9B00D4837B /* GradientView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientView.swift; sourceTree = "<group>"; };
 		9E9F2F6A29F6AB6400A9CDF3 /* IntroVideoController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IntroVideoController.swift; sourceTree = "<group>"; };
 		9E9F2F6E29F6AB6400A9CDF3 /* OnboardingSigninController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingSigninController.swift; sourceTree = "<group>"; };
@@ -1746,6 +1766,20 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		C0FFEE189459C7825E1561F4 /* Translation */ = {
+			isa = PBXGroup;
+			children = (
+				C0FFEE01E8F11F75C848D4E7 /* TranslationSanitizer.swift */,
+				C0FFEE8702A3FF95D7833A19 /* LanguageDetector.swift */,
+				C0FFEE29E1D35A5B4EEFEE9C /* TranslationCache.swift */,
+				C0FFEEBE9AD053674144422E /* TranslationModels.swift */,
+				C0FFEE82CF1E067CB90312FE /* NoteTranslationService.swift */,
+				C0FFEEF026782561587C6F37 /* LibreTranslateProvider.swift */,
+				C0FFEE3C027C22E1D196A138 /* NoteTranslationPreferences.swift */,
+			);
+			path = Translation;
+			sourceTree = "<group>";
+		};
 		933DBDA82A1124F7008DCF1F /* Notes */ = {
 			isa = PBXGroup;
 			children = (
@@ -1757,6 +1791,7 @@
 		933DBDAD2A112593008DCF1F /* Common */ = {
 			isa = PBXGroup;
 			children = (
+				C0FFEE189459C7825E1561F4 /* Translation */,
 				9E8834CD2A37BFB9005DB548 /* NSRangeTests.swift */,
 				B94B189F2D5E233600A932CE /* RegexTests.swift */,
 				B9C4A1DF2F5F0A1B00D3E7A1 /* HTMLGeneratorTests.swift */,
@@ -1865,6 +1900,7 @@
 			children = (
 				933DBDAD2A112593008DCF1F /* Common */,
 				BD61E893F7939D2AC33A6A4C /* GenerateAmountsTests.swift */,
+				C0FFEE433BC1CB74C5EDEF93 /* NoteTranslationTests.swift */,
 				D1E2F3A4B5C6D7E8F9A0B1C3 /* PostingPreviewEmbedsViewTests.swift */,
 				9393310629A3E370003954C2 /* PrimalTests.swift */,
 			);
@@ -2225,6 +2261,7 @@
 				9EF4BFC52A8BEEA3003396AA /* SettingsAppearanceViewController.swift */,
 				B94F2C032AEFD9310041181B /* SettingsNetworkViewController.swift */,
 				B90EF0F02B03F7AF00A7CD65 /* SettingsContentDisplayController.swift */,
+				C0FFEE0A5627278BD0BFA3C5 /* SettingsTranslationViewController.swift */,
 				B9B290562B4DB2950069C87F /* SettingsWalletViewController.swift */,
 				B9658AC22D9EADA60037E5DB /* SettingsMediaUploadsController.swift */,
 				B90585372C9DDFD600FC4108 /* SettingsDevModeController.swift */,
@@ -2426,6 +2463,7 @@
 			children = (
 				B99E037F2BF75FDE006CCECB /* Helpers */,
 				9E9D46F72A0A72B900D4837B /* PostCell.swift */,
+				C0FFEE593A3692B1544539A2 /* NoteTranslationView.swift */,
 				B99E03882BF7B10C006CCECB /* PostFeedCell.swift */,
 				9E9D46F42A0A717400D4837B /* ThreadCell.swift */,
 			);
@@ -4646,6 +4684,15 @@
 				B9009B652B17A8E7002B0613 /* OnboardingInputParent.swift in Sources */,
 				B9E67EC42D1090DE006BB397 /* TransactionViewDatasource.swift in Sources */,
 				9E9D46F82A0A72B900D4837B /* PostCell.swift in Sources */,
+				C0FFEE93834A2F52201978AE /* TranslationSanitizer.swift in Sources */,
+				C0FFEE1251728C91F1884CC9 /* LanguageDetector.swift in Sources */,
+				C0FFEE40F5977E2242F48837 /* TranslationCache.swift in Sources */,
+				C0FFEEE5A9B50411E0D8DDF7 /* TranslationModels.swift in Sources */,
+				C0FFEEC64233035C1FDF47C8 /* NoteTranslationService.swift in Sources */,
+				C0FFEEC6CC4B832F7DEFF508 /* LibreTranslateProvider.swift in Sources */,
+				C0FFEEED74D53A7A9551FD97 /* NoteTranslationPreferences.swift in Sources */,
+				C0FFEEE43326A96FAD48DF79 /* NoteTranslationView.swift in Sources */,
+				C0FFEE670424A222E4D40785 /* SettingsTranslationViewController.swift in Sources */,
 				9ECFD3222A013935000D1B2F /* NoteViewController.swift in Sources */,
 				B9E67ECF2D13201B006BB397 /* URL+Extra.swift in Sources */,
 				B9A335232E54B5FE000B2CA7 /* FloatingPlayerMoveGesture.swift in Sources */,
@@ -4886,6 +4933,7 @@
 				B94B18A02D5E233600A932CE /* RegexTests.swift in Sources */,
 				B9C4A1E02F5F0A1B00D3E7A1 /* HTMLGeneratorTests.swift in Sources */,
 				AA9CF3DB44709B5BC13CA5A8 /* GenerateAmountsTests.swift in Sources */,
+				C0FFEE0C31451F34F8EBF761 /* NoteTranslationTests.swift in Sources */,
 				D1E2F3A4B5C6D7E8F9A0B1C2 /* PostingPreviewEmbedsViewTests.swift in Sources */,
 				9393310729A3E370003954C2 /* PrimalTests.swift in Sources */,
 			);
